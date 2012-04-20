@@ -1,5 +1,4 @@
 CC?=gcc
-LD?=gcc
 CFLAGS?=-O0 -ggdb3 -march=native -Wall
 LDFLAGS?=
 INCLUDES=-Llib -Iincludes
@@ -11,7 +10,7 @@ OBJ=kindle_tool.o create.o convert.o
 	$(CC) $(INCLUDES) -c -o $@ $< $(CFLAGS)
 
 kindletool: $(OBJ)
-	$(LD) -o $@ $^ $(LDFLAGS) $(INCLUDES) $(LIBS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(INCLUDES) $(LIBS)
 
 clean:
 	rm -f *.o kindletool
