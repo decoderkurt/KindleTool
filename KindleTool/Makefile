@@ -1,7 +1,7 @@
 CC?=gcc
 LD?=gcc
-CFLAGS?=-O0 -ggdb3 -march=native
-LDFLAGS?=-O0 -ggdb3 -march=native
+CFLAGS?=-O0 -ggdb3 -march=native -Wall
+LDFLAGS?=
 INCLUDES=-Llib -Iincludes
 LIBS=-lcrypto -ltar -lz
 DEPS=kindle_tool.h
