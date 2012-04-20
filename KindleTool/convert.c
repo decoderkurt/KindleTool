@@ -3,17 +3,17 @@
 //  KindleTool
 //
 //  Copyright (C) 2011  Yifan Lu
-//  
+//
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
@@ -26,7 +26,7 @@ FILE *gunzip_file(FILE *input)
     gzFile gz_input;
     unsigned char buffer[BUFFER_SIZE];
     size_t count;
-    
+
     // create a temporary file and open
     if((output = tmpfile()) == NULL)
     {
@@ -119,12 +119,12 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     uint16_t metastring_length;
     char *metastring;
     //unsigned char **metastrings;
-    
+
     // First read the set block size and determine how much to resize
     data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(char));
     fread(data, sizeof(char), OTA_UPDATE_V2_BLOCK_SIZE, input);
     index = 0;
-    
+
     source_revision = *(uint64_t *)&data[index];
     index += sizeof(uint64_t);
     fprintf(stderr, "Minimum OTA    %llu\n", source_revision);
@@ -135,8 +135,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     index += sizeof(uint16_t);
     fprintf(stderr, "Devices        %hd\n", num_devices);
     free(data);
-    
-    // Now get the data 
+
+    // Now get the data
     data = malloc(num_devices * sizeof(uint16_t));
     fread(data, sizeof(uint16_t), num_devices, input);
     for(index = 0; index < num_devices * sizeof(uint16_t); index += sizeof(uint16_t))
@@ -145,12 +145,12 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
         fprintf(stderr, "Device         %s\n", convert_device_id(device));
     }
     free(data);
-    
+
     // Now get second part of set sized data
     data = malloc(OTA_UPDATE_V2_PART_2_BLOCK_SIZE * sizeof(char));
     fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     index = 0;
-    
+
     critical = *(uint16_t *)&data[index];
     index += sizeof(uint16_t);
     fprintf(stderr, "Critical       %hd\n", critical);
@@ -162,7 +162,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     index += sizeof(uint16_t);
     fprintf(stderr, "Metadata       %hd\n", num_metadata);
     free(data);
-    
+
     // Finally, get the metastrings
     for(index = 0; index < num_metadata; index++)
     {
@@ -172,18 +172,18 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
         free(metastring);
     }
-    
+
     if(ferror(input) != 0)
     {
         fprintf(stderr, "Cannot read update correctly.\n");
         return -1;
     }
-    
+
     if(output == NULL)
     {
         return 0;
     }
-    
+
     // Now we can decrypt the data
     return demunger(input, output, 0);
 }
@@ -194,8 +194,8 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     char *cert_name;
     size_t seek;
     unsigned char *signature;
-    
-    
+
+
     if(fread(header->data.signature_header_data, sizeof(char), UPDATE_SIGNATURE_BLOCK_SIZE, input) < UPDATE_SIGNATURE_BLOCK_SIZE)
     {
         fprintf(stderr, "Cannot read signature header.\n");
@@ -260,12 +260,12 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output)
     fprintf(stderr, "Target OTA     %d\n", header->data.ota_update.target_revision);
     fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
     fprintf(stderr, "Optional       %d\n", header->data.ota_update.optional);
-    
+
     if(output == NULL)
     {
         return 0;
     }
-    
+
     return demunger(input, output, 0);
 }
 
@@ -282,12 +282,12 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output)
     fprintf(stderr, "Magic 2        %d\n", header->data.recovery_update.magic_2);
     fprintf(stderr, "Minor          %d\n", header->data.recovery_update.minor);
     fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_update.device));
-    
+
     if(output == NULL)
     {
         return 0;
     }
-    
+
     return demunger(input, output, 0);
 }
 
@@ -388,7 +388,7 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *gz_output;
     FILE *tar_input;
     TAR *tar;
-    
+
     if(argc < 2)
     {
 	fprintf(stderr, "Invalid number of arguments.\n");

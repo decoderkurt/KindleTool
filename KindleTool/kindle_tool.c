@@ -3,17 +3,17 @@
 //  KindleTool
 //
 //  Copyright (C) 2011  Yifan Lu
-//  
+//
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
@@ -44,7 +44,7 @@ int munger(FILE *input, FILE *output, size_t length)
 	unsigned char bytes[BUFFER_SIZE];
 	size_t bytes_read;
 	size_t bytes_written;
-    
+
 	while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
 	{
 		md(bytes, bytes_read);
@@ -66,7 +66,7 @@ int munger(FILE *input, FILE *output, size_t length)
 		fprintf(stderr, "Error munging, cannot read input.\n");
 		return -1;
 	}
-	
+
 	return 0;
 }
 
@@ -96,7 +96,7 @@ int demunger(FILE *input, FILE *output, size_t length)
 		fprintf(stderr, "Error munging, cannot read input.\n");
 		return -1;
 	}
-	
+
 	return 0;
 }
 
@@ -156,7 +156,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     unsigned char output[MD5_DIGEST_LENGTH];
     char output_string_temp[MD5_HASH_LENGTH+1]; // sprintf adds trailing null, we do not want that!
     int i;
-    
+
     MD5_Init(&md5);
     while((bytes_read = fread(bytes, sizeof(char), BUFFER_SIZE, input)) > 0)
     {
