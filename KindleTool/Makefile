@@ -18,8 +18,6 @@ endif
 CFLAGS+=-pipe -Wall
 LDFLAGS?=
 
-DEPS=kindle_tool.h
-
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
