@@ -4,5 +4,8 @@ all:
 debug:
 	make -C KindleTool debug
 
+strip:
+	make -C KindleTool strip
+
 clean:
 	make -C KindleTool clean

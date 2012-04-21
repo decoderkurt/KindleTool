@@ -1,4 +1,5 @@
-CC?=gcc
+GCC?=gcc
+STRIP?=strip
 DEBUG_CFLAGS=-O0 -ggdb3 -march=native
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 
@@ -22,14 +23,18 @@ DEPS=kindle_tool.h
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
-	$(CC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
+	$(GCC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
 
 all:
 	mkdir -p $(OUT_DIR)
 	$(MAKE) kindletool
 
 kindletool: $(OBJS)
-	$(CC) $(INCLUDES) $(CFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
+	$(GCC) $(INCLUDES) $(CFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
+
+strip:
+	$(MAKE) all
+	$(STRIP) -s $(OUT_DIR)/kindletool
 
 debug:
 	$(MAKE) all DEBUG=true
