@@ -1,5 +1,8 @@
 all:
-	cd KindleTool && make
+	make -C KindleTool
+
+debug:
+	make -C KindleTool debug
 
 clean:
-	cd KindleTool && make clean
+	make -C KindleTool clean
