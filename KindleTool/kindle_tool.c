@@ -206,7 +206,7 @@ int kindle_print_help(const char *prog_name)
            "    If no input is provided, input from stdin\n"
            "    If no output is provided, output to stdout\n"
            "    \n"
-           "  %s convert [options] <input>\n"
+           "  %s convert [options] <input>...\n"
            "    Converts a Kindle update package to a gzipped TAR file, and delete input\n"
            "    \n"
            "    Options:\n"

@@ -9,7 +9,7 @@ usage:
     If no input is provided, input from stdin
     If no output is provided, output to stdout
 
-  KindleTool convert [options] <input>
+  KindleTool convert [options] <input>...
     Converts a Kindle update package to a gzipped TAR file, and delete input
 
     Options:
@@ -74,3 +74,6 @@ usage:
 notices:
   1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
   2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
+
+NOTE: This fork is probably broken on everything except Linux x86/arm.
+Patches/Pull requests to fix that are welcome :).

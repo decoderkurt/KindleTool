@@ -392,7 +392,7 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
                 if (output != stdout)
-                    remove(out_name); // clean up our mess
+                    remove(out_name); // clean up our mess, if we made one
                 fail = 1;
             }
             if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
