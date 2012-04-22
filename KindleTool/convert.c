@@ -298,6 +298,7 @@ int kindle_convert_main(int argc, char *argv[])
     static const struct option opts[] = {
         { "stdout", no_argument, NULL, 'c' },
         { "info", no_argument, NULL, 'i' },
+        { "keep", no_argument, NULL, 'k' },
         { "sig", required_argument, NULL, 's' }
     };
     FILE *input;
@@ -306,18 +307,26 @@ int kindle_convert_main(int argc, char *argv[])
     const char *in_name;
     char *out_name;
     int info_only;
+    int keep_ori;
+    int optcount;	// XXX
+    int fail;
 
     sig_output = NULL;
     out_name = NULL;
     output = NULL;
     info_only = 0;
-    optind = -1; // hack to get around the fact that we skipped some arguments
-    while((opt = getopt_long(argc, argv, "ics:", opts, &opt_index)) != -1)
+    keep_ori = 0;
+    optcount = 0;	// XXX
+    fail = 0;
+    while((opt = getopt_long(argc, argv, "icks:", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
             case 'i':
                 info_only = 1;
+                break;
+            case 'k':
+                keep_ori = 1;
                 break;
             case 'c':
                 output = stdout;
@@ -325,61 +334,76 @@ int kindle_convert_main(int argc, char *argv[])
             case 's':
                 if((sig_output = fopen(optarg, "wb")) == NULL)
                 {
-                    fprintf(stderr, "Cannot open signature output for writing.\n");
+                    fprintf(stderr, "Cannot open signature output '%s' for writing.\n", optarg);
                     free(out_name);
                     return -1;
                 }
                 break;
             default:
+                fprintf(stderr, "Unkown option code 0%o\n", opt);
                 break;
         }
     }
-    if(argc < 1)
-    {
-        fprintf(stderr, "No input specified.\n");
-        fclose(sig_output);
-        return -1;
-    }
-    argc -= (optind-1); argv += optind; // next argument
-    in_name = argv[0];
-    if(!info_only && output == NULL) // not info AND not stdout
-    {
-        out_name = malloc(strlen(in_name) + 7);
-        strcpy(out_name, in_name);
-        strcat(out_name, ".tar.gz");
-        if((output = fopen(out_name, "wb")) == NULL)
-        {
-            fprintf(stderr, "Cannot open output for writing.\n");
-            free(out_name);
-            fclose(sig_output);
-            return -1;
+    if (optind < argc) {
+        // Save 'real' options count for debugging purposes
+        optcount = optind;
+        // Iterate over non-options (the file(s) we passed) (Right now, multiple files aren't really supported, and will produce undefined results/crashes)
+        while (optind < argc) {
+            in_name = argv[optind++];
+            printf("in_name = '%s'\n", in_name);	// XXX
+            if(!info_only && output == NULL) // not info AND not stdout
+            {
+                out_name = malloc(strlen(in_name) + 7 + 1);	// Don't forget our friend \0
+                strcpy(out_name, in_name);
+                strcat(out_name, ".tar.gz");
+                printf("out_name = '%s'\n", out_name);	// XXX
+                if((output = fopen(out_name, "wb")) == NULL)
+                {
+                    fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
+                    fail = 1;
+                    continue;	// It's fatal, go away
+                }
+            }
+            if((input = fopen(in_name, "rb")) == NULL)
+            {
+                fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
+                fail = 1;
+                continue;	// It's fatal, go away
+            }
+            if(kindle_convert(input, output, sig_output) < 0)
+            {
+                fprintf(stderr, "Error converting update '%s'.\n", in_name);
+                remove(out_name); // clean up our mess
+                fail = 1;
+            }
+            if(output != stdout && !info_only && !keep_ori) // if output was some file, and we didn't ask to keep it, delete the original
+                remove(in_name);
+
+            fail = 0;
         }
-    }
-    if((input = fopen(in_name, "rb")) == NULL)
-    {
-        fprintf(stderr, "Cannot open input for reading.\n");
-        free(out_name);
-        fclose(sig_output);
-        fclose(output);
+    } else {
+        fprintf(stderr, "No input specified.\n");
+        if (sig_output != NULL)
+            fclose(sig_output);
         return -1;
     }
-    if(kindle_convert(input, output, sig_output) < 0)
-    {
-        fprintf(stderr, "Error converting update.\n");
-        remove(out_name); // clean up our mess
-        free(out_name);
-        fclose(sig_output);
-        fclose(output);
-        fclose(input);
-        return -1;
-    }
-    if(output != stdout && !info_only) // if output was some file, delete the original
-        remove(in_name);
+
+    printf("info_only=%d; optcount=%d; optind=%d; argc=%d\n", info_only, optcount, optind, argc);	// XXX
+
+    // Cleanup behind us
     free(out_name);
-    fclose(sig_output);
-    fclose(output);
-    fclose(input);
-    return 0;
+    if (output != NULL)
+        fclose(output);
+    if (input != NULL)
+        fclose(input);
+    if (sig_output != NULL)
+        fclose(sig_output);
+
+    // Return
+    if (fail)
+        return -1;
+    else
+        return 0;
 }
 
 int kindle_extract_main(int argc, char *argv[])

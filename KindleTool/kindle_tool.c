@@ -390,9 +390,27 @@ int kindle_info_main(int argc, char *argv[])
 
 int main (int argc, char *argv[])
 {
-    char *prog_name;
+    const char *prog_name;
+    const char *cmd;
+
     prog_name = argv[0];
-    argc--; argv++; // discard program name for easier parsing
+    // discard program name for easier parsing
+    argv++;
+    argc--;
+
+    if (argc > 0) {
+        if (strncmp(argv[0], "--", 2) == 0) {
+            // Allow our commands to be passed in longform
+            argv[0] += 2;
+        }
+    } else {
+        // No command was given, print help and die
+        kindle_print_help(prog_name);
+        exit(1);
+    }
+    cmd = argv[0];
+    printf("cmd is %s\n", cmd);	// XXX
+
     if(freopen(NULL, "rb", stdin) == NULL)
     {
         fprintf(stderr, "Cannot set stdin to binary mode.\n");
@@ -403,18 +421,22 @@ int main (int argc, char *argv[])
         fprintf(stderr, "Cannot set stdout to binary mode.\n");
         return -1;
     }
-    if(argc < 1 || strncmp(argv[0], "help", 4) == 0)
+
+    if(strncmp(cmd, "dm", 2) == 0)
+        return kindle_obfuscate_main(argc, argv);
+    else if(strncmp(cmd, "md", 2) == 0)
+        return kindle_deobfuscate_main(argc, argv);
+    else if(strncmp(cmd, "convert", 7) == 0)
+        return kindle_convert_main(argc, argv);
+    else if(strncmp(cmd, "extract", 7) == 0)
+        return kindle_extract_main(argc, argv);
+    else if(strncmp(cmd, "create", 6) == 0)
+        return kindle_create_main(argc, argv);
+    else if(strncmp(cmd, "info", 4) == 0)
+        return kindle_info_main(argc, argv);
+    else {
         return kindle_print_help(prog_name);
-    if(strncmp(argv[0], "dm", 2) == 0)
-        return kindle_obfuscate_main(--argc, ++argv);
-    if(strncmp(argv[0], "md", 2) == 0)
-        return kindle_deobfuscate_main(--argc,++argv);
-    if(strncmp(argv[0], "convert", 7) == 0)
-        return kindle_convert_main(--argc, ++argv);
-    if(strncmp(argv[0], "extract", 7) == 0)
-        return kindle_extract_main(--argc, ++argv);
-    if(strncmp(argv[0], "create", 6) == 0)
-        return kindle_create_main(--argc, ++argv);
-    if(strncmp(argv[0], "info", 4) == 0)
-        return kindle_info_main(--argc, ++argv);
+    }
+
+    return 1;
 }
