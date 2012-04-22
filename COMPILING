@@ -14,3 +14,6 @@ To compile for Windows:
 	2) Install the packages: openssl-devel, zlib-devel
 	3) Compile and install libtar
 	4) Compile using "make" in the tool's directory
+
+NOTE: This fork is probably broken on everything except Linux x86/arm.
+Patches/Pull requests to fix that are welcome :).

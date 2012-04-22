@@ -213,6 +213,7 @@ int kindle_print_help(const char *prog_name)
            "      -c, --stdout                Write to standard output, keeping original files unchanged\n"
            "      -i, --info                  Just print the package information, no conversion done\n"
            "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
+           "      -k, --keep                  Don't delete the input package.\n"
            "      \n"
            "  %s extract <input> <output>\n"
            "    Extracts a Kindle update package to a directory\n"
