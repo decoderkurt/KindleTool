@@ -281,6 +281,9 @@ int kindle_obfuscate_main(int argc, char *argv[])
     FILE *output;
     input = stdin;
     output = stdout;
+    // Skip command
+    argv++;
+    argc--;
     if(argc > 1)
     {
         if((output = fopen(argv[1], "wb")) == NULL)
@@ -316,6 +319,9 @@ int kindle_deobfuscate_main(int argc, char *argv[])
     FILE *output;
     input = stdin;
     output = stdout;
+    // Skip command
+    argv++;
+    argc--;
     if(argc > 1)
     {
         if((output = fopen(argv[1], "wb")) == NULL)
@@ -351,6 +357,9 @@ int kindle_info_main(int argc, char *argv[])
     char md5[MD5_HASH_LENGTH];
     FILE *temp;
     int i;
+    // Skip command
+    argv++;
+    argc--;
     if(argc < 1)
     {
         fprintf(stderr, "No serial number found in input.\n");
