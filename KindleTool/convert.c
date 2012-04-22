@@ -299,7 +299,7 @@ int kindle_convert_main(int argc, char *argv[])
         { "stdout", no_argument, NULL, 'c' },
         { "info", no_argument, NULL, 'i' },
         { "keep", no_argument, NULL, 'k' },
-        { "sig", required_argument, NULL, 's' }
+        { "sig", no_agument, NULL, 's' }
     };
     FILE *input;
     FILE *output;
