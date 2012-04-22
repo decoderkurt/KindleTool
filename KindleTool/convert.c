@@ -306,19 +306,22 @@ int kindle_convert_main(int argc, char *argv[])
     FILE *sig_output;
     const char *in_name;
     char *out_name;
+    char *sig_name;
     int info_only;
     int keep_ori;
+    int extract_sig;
     int optcount;	// XXX
     int fail;
 
     sig_output = NULL;
     out_name = NULL;
+    sig_name = NULL;
     output = NULL;
     info_only = 0;
     keep_ori = 0;
     optcount = 0;	// XXX
     fail = 0;
-    while((opt = getopt_long(argc, argv, "icks:", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "icks", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -332,34 +335,48 @@ int kindle_convert_main(int argc, char *argv[])
                 output = stdout;
                 break;
             case 's':
-                if((sig_output = fopen(optarg, "wb")) == NULL)
-                {
-                    fprintf(stderr, "Cannot open signature output '%s' for writing.\n", optarg);
-                    free(out_name);
-                    return -1;
-                }
+                extract_sig = 1;
                 break;
             default:
                 fprintf(stderr, "Unkown option code 0%o\n", opt);
                 break;
         }
     }
+    // Don't try to output to stdout or extract the package sig if we asked for info only
+    if (info_only) {
+        output = NULL;
+        extract_sig = 0;
+    }
+
     if (optind < argc) {
         // Save 'real' options count for debugging purposes
         optcount = optind;
-        // Iterate over non-options (the file(s) we passed) (Right now, multiple files aren't really supported, and will produce undefined results/crashes)
+        // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
         while (optind < argc) {
             in_name = argv[optind++];
             printf("in_name = '%s'\n", in_name);	// XXX
-            if(!info_only && output == NULL) // not info AND not stdout
+            if(!info_only && output != stdout) // not info only AND not stdout
             {
-                out_name = malloc(strlen(in_name) + 7 + 1);	// Don't forget our friend \0
+                out_name = malloc(strlen(in_name) + 8);	// Don't forget our friend \0
                 strcpy(out_name, in_name);
                 strcat(out_name, ".tar.gz");
                 printf("out_name = '%s'\n", out_name);	// XXX
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
+                    fail = 1;
+                    continue;	// It's fatal, go away
+                }
+            }
+            if(extract_sig)	// we want the package sig (implies not info only)
+            {
+                sig_name = malloc(strlen(in_name) + 5);
+                strcpy(sig_name, in_name);
+                strcat(sig_name, ".sig");
+                printf("sig_name = '%s'\n", sig_name);	// XXX
+                if((sig_output = fopen(sig_name, "wb")) == NULL)
+                {
+                    fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
                     fail = 1;
                     continue;	// It's fatal, go away
                 }
@@ -392,6 +409,7 @@ int kindle_convert_main(int argc, char *argv[])
 
     // Cleanup behind us
     free(out_name);
+    free(sig_name);
     if (output != NULL)
         fclose(output);
     if (input != NULL)
