@@ -320,7 +320,6 @@ int kindle_convert_main(int argc, char *argv[])
     info_only = 0;
     keep_ori = 0;
     optcount = 0;	// XXX
-    fail = 0;
     while((opt = getopt_long(argc, argv, "icks", opts, &opt_index)) != -1)
     {
         switch(opt)
@@ -353,6 +352,7 @@ int kindle_convert_main(int argc, char *argv[])
         optcount = optind;	// XXX
         // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
         while (optind < argc) {
+            fail = 0;
             in_name = argv[optind++];
             printf("in_name = '%s'\n", in_name);	// XXX
             if(!info_only && output != stdout) // not info only AND not stdout
@@ -395,8 +395,6 @@ int kindle_convert_main(int argc, char *argv[])
             }
             if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
                 remove(in_name);
-
-            fail = 0;
         }
     } else {
         fprintf(stderr, "No input specified.\n");
