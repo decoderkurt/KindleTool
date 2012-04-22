@@ -391,30 +391,31 @@ int kindle_convert_main(int argc, char *argv[])
             if(kindle_convert(input, output, sig_output) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
-                remove(out_name); // clean up our mess
+                if (output != stdout)
+                    remove(out_name); // clean up our mess
                 fail = 1;
             }
             if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
                 remove(in_name);
+
+            // Cleanup behind us
+            if (!info_only && output != stdout)
+                free(out_name);
+            if(extract_sig)
+                free(sig_name);
+            if (output != NULL && output != stdout)
+                fclose(output);
+            if (input != NULL)
+                fclose(input);
+            if (sig_output != NULL)
+                fclose(sig_output);
         }
     } else {
         fprintf(stderr, "No input specified.\n");
-        if (sig_output != NULL)
-            fclose(sig_output);
         return -1;
     }
 
     printf("info_only=%d; optcount=%d; optind=%d; argc=%d\n", info_only, optcount, optind, argc);	// XXX
-
-    // Cleanup behind us
-    free(out_name);
-    free(sig_name);
-    if (output != NULL)
-        fclose(output);
-    if (input != NULL)
-        fclose(input);
-    if (sig_output != NULL)
-        fclose(sig_output);
 
     // Return
     if (fail)
