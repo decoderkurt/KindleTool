@@ -350,7 +350,7 @@ int kindle_convert_main(int argc, char *argv[])
 
     if (optind < argc) {
         // Save 'real' options count for debugging purposes
-        optcount = optind;
+        optcount = optind;	// XXX
         // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
         while (optind < argc) {
             in_name = argv[optind++];
@@ -393,7 +393,7 @@ int kindle_convert_main(int argc, char *argv[])
                 remove(out_name); // clean up our mess
                 fail = 1;
             }
-            if(output != stdout && !info_only && !keep_ori) // if output was some file, and we didn't ask to keep it, delete the original
+            if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
                 remove(in_name);
 
             fail = 0;
