@@ -424,64 +424,152 @@ int kindle_convert_main(int argc, char *argv[])
         return 0;
 }
 
+/* libarchive helper funcs, more or less verbatim from the examples/doc */
+int libarchive_copy_data(struct archive *ar, struct archive *aw)
+{
+    int r;
+    const void *buff;
+    size_t size;
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+    int64_t offset;
+#else
+    off_t offset;
+#endif
+
+    for (;;) {
+        r = archive_read_data_block(ar, &buff, &size, &offset);
+        if (r == ARCHIVE_EOF)
+            return (ARCHIVE_OK);
+        if (r != ARCHIVE_OK)
+            return (r);
+        r = archive_write_data_block(aw, buff, size, offset);
+        if (r != ARCHIVE_OK) {
+            fprintf(stderr, "archive_write_data_block() failed: %s\n", archive_error_string(aw));
+            return (r);
+        }
+    }
+}
+
+int libarchive_extract(const char *filename, const char *prefix)
+{
+    struct archive *a;
+    struct archive *ext;
+    struct archive_entry *entry;
+    int flags;
+    int r;
+
+    /* Select which attributes we want to restore. */
+    flags = ARCHIVE_EXTRACT_TIME;
+    flags |= ARCHIVE_EXTRACT_PERM;
+    flags |= ARCHIVE_EXTRACT_ACL;
+    flags |= ARCHIVE_EXTRACT_FFLAGS;
+
+    a = archive_read_new();
+    // Let's handle a wide range or tar formats, just to be on the safe side
+    archive_read_support_format_tar(a);
+    archive_read_support_format_gnutar(a);
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+    archive_read_support_filter_gzip(a);
+#else
+    archive_read_support_compression_gzip(a);
+#endif
+    ext = archive_write_disk_new();
+    archive_write_disk_set_options(ext, flags);
+    archive_write_disk_set_standard_lookup(ext);
+    if (filename != NULL && strcmp(filename, "-") == 0)
+        filename = NULL;
+    if ((r = archive_read_open_file(a, filename, 10240))) {
+        fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
+        return(r);
+    }
+    for (;;) {
+        r = archive_read_next_header(a, &entry);
+        if (r == ARCHIVE_EOF)
+            break;
+        if (r != ARCHIVE_OK)
+            fprintf(stderr, "archive_read_next_header() failed: %s\n", archive_error_string(a));
+        if (r < ARCHIVE_WARN)
+            return(1);
+        // Rewrite entry's pathname to extract in our specified directory
+        const char* path = archive_entry_pathname( entry );
+        char fixed_path[PATH_MAX + 1];
+        snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
+        archive_entry_set_pathname(entry, fixed_path);
+        r = archive_write_header(ext, entry);
+        if (r != ARCHIVE_OK)
+            fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(ext));
+        else if (archive_entry_size(entry) > 0) {
+            libarchive_copy_data(a, ext);
+            if (r != ARCHIVE_OK)
+                fprintf(stderr, "copy_data() failed: %s\n", archive_error_string(ext));
+            if (r < ARCHIVE_WARN)
+                return(1);
+        }
+        r = archive_write_finish_entry(ext);
+        if (r != ARCHIVE_OK)
+            fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
+        if (r < ARCHIVE_WARN)
+            return(1);
+    }
+    archive_read_close(a);
+    archive_read_free(a);
+    archive_write_close(ext);
+    archive_write_free(ext);
+    return(0);
+}
+
 int kindle_extract_main(int argc, char *argv[])
 {
+    char *bin_filename;
+    char *tgz_filename;
+    char *output_dir;
     FILE *bin_input;
-    FILE *gz_output;
-    FILE *tar_input;
-    TAR *tar;
+    FILE *tgz_output;
 
+    // Skip command
+    argv++;
+    argc--;
     if(argc < 2)
     {
-	fprintf(stderr, "Invalid number of arguments.\n");
-	return -1;
+        fprintf(stderr, "Invalid number of arguments.\n");
+        return -1;
     }
-    if((bin_input = fopen(argv[0], "rb")) == NULL)
+    bin_filename = argv[0];
+    output_dir = argv[1];	// FIXME: Do some sanity checks?
+    if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
-	fprintf(stderr, "Cannot open update input.\n");
-	return -1;
+        fprintf(stderr, "Cannot open update input '%s'.\n", bin_filename);
+        return -1;
     }
-    if((gz_output = tmpfile()) == NULL)
+    // Hackish. We don't use a tmpfile anymore, because apparently every tmp function out there
+    // that returns a filename and not a stream descriptor is deprecated, and my libarchive helper expects
+    // a char array, not an fd.
+    tgz_filename = malloc(strlen(bin_filename) + 8);
+    strcpy(tgz_filename, bin_filename);
+    strcat(tgz_filename, ".tar.gz");
+    if((tgz_output = fopen(tgz_filename, "wb")) == NULL)
     {
-        fprintf(stderr, "Cannot create temporary file.\n");
+        fprintf(stderr, "Cannot open temp output '%s' for writing.\n", tgz_filename);
         fclose(bin_input);
         return -1;
     }
-    if(kindle_convert(bin_input, gz_output, NULL) < 0)
+    if(kindle_convert(bin_input, tgz_output, NULL) < 0)
     {
-        fprintf(stderr, "Error converting update.\n");
+        fprintf(stderr, "Error converting update '%s'.\n", bin_filename);
         fclose(bin_input);
-        fclose(gz_output);
+        fclose(tgz_output);
         return -1;
     }
-    rewind(gz_output);
-    if((tar_input = gunzip_file(gz_output)) == NULL)
-    {
-        fprintf(stderr, "Error decompressing update.\n");
-        fclose(bin_input);
-        fclose(gz_output);
-        return -1;
-    }
-    if(tar_fdopen(&tar, fileno(tar_input), NULL, NULL, O_RDONLY, 0644, TAR_GNU) < 0)
-    {
-        fprintf(stderr, "Error opening update tar.\n");
-        fclose(bin_input);
-        fclose(gz_output);
-        fclose(tar_input);
-        return -1;
-    }
-    if(tar_extract_all(tar, argv[1]) < 0)
-    {
-        fprintf(stderr, "Error extracting tar.\n");
-        tar_close(tar);
-        fclose(bin_input);
-        fclose(gz_output);
-        fclose(tar_input);
-        return -1;
-    }
-    tar_close(tar);
     fclose(bin_input);
-    fclose(gz_output);
-    fclose(tar_input);
+    fclose(tgz_output);
+    if (libarchive_extract(tgz_filename, output_dir) < 0 )
+    {
+        fprintf(stderr, "Error extracting temp tarball '%s' to '%s'.\n", tgz_filename, output_dir);
+        remove(tgz_filename);
+        free(tgz_filename);
+        return -1;
+    }
+    remove(tgz_filename);
+    free(tgz_filename);
     return 0;
 }

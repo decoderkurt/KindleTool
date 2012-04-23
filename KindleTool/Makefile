@@ -5,7 +5,7 @@ OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 
 SRCS=kindle_tool.c create.c convert.c
 INCLUDES=-Llib -Iincludes
-LIBS=-lcrypto -ltar -lz
+LIBS=-lcrypto -ltar -larchive -lz
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
