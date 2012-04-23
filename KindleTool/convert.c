@@ -535,7 +535,10 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     bin_filename = argv[0];
-    output_dir = argv[1];	// FIXME: Do some sanity checks?
+    // NOTE: Do some sanity checks for output directory handling?
+    // The 'rewrite pathname entry' cheap method we currently use is pretty 'dumb' (it assumes the path is correct, creating it if need be),
+    // but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
+    output_dir = argv[1];
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
         fprintf(stderr, "Cannot open update input '%s'.\n", bin_filename);
