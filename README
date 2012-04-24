@@ -26,7 +26,7 @@ usage:
     If input is a directory, all files in it will be packed into an update
     If input is a GZIP file, it will be converted to an update.
     If no output is provided, output to stdout.
-    In case of OTA updates, all files with the extension ".ffs" and will be treated as update scripts
+    In case of OTA updates, all files with the extension ".ffs" will be treated as update scripts
 
     Type:
       ota                         OTA V1 update package. Works on Kindle 3.0 and below.

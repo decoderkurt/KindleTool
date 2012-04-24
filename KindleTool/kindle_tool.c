@@ -223,7 +223,7 @@ int kindle_print_help(const char *prog_name)
            "    If input is a directory, all files in it will be packed into an update\n"
            "    If input is a GZIP file, it will be converted to an update.\n"
            "    If no output is provided, output to stdout.\n"
-           "    In case of OTA updates, all files with the extension \".ffs\" and will be treated as update scripts\n"
+           "    In case of OTA updates, all files with the extension \".ffs\" will be treated as update scripts\n"
            "    \n"
            "    Type:\n"
            "      ota                         OTA V1 update package. Works on Kindle 3.0 and below.\n"

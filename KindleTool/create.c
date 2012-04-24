@@ -337,6 +337,140 @@ on_error: // Yes, I know GOTOs are bad, but it's more readable than typing what'
     return -1;
 }
 
+int kindle_create_package_archive(const char *outname, char **filename, const int total_files)
+{
+    struct archive *a;
+    struct archive *disk;
+    struct archive_entry *entry;
+    struct stat st;
+    char buff[8192];
+    int len;
+    int fd;
+    int i;
+
+    a = archive_write_new();
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+    archive_write_add_filter_gzip(a);
+#else
+    archive_write_set_compression_gzip(a);
+#endif
+    archive_write_set_format_gnutar(a);
+    archive_write_open_filename(a, outname);
+
+    disk = archive_read_disk_new();
+    archive_read_disk_set_standard_lookup(disk);
+    for (i = 0; i < total_files; i++) {
+        struct archive *disk = archive_read_disk_new();
+        int r;
+
+        r = archive_read_disk_open(disk, filename[i]);
+        archive_read_disk_set_standard_lookup(disk);
+        if (r != ARCHIVE_OK) {
+            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
+            return 1;
+        }
+
+        for (;;) {
+            entry = archive_entry_new();
+            r = archive_read_next_header2(disk, entry);
+            if (r == ARCHIVE_EOF)
+                break;
+            if (r != ARCHIVE_OK) {
+                fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
+                return 1;
+            }
+            // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
+            stat(archive_entry_pathname(entry), &st);
+            r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
+            if (r < ARCHIVE_OK)
+                fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
+            if (r == ARCHIVE_FATAL)
+                return 1;
+
+            printf("st.st_uid: %d\n", st.st_uid);	// XXX
+            printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
+            printf("entry pathname: %s\n", archive_entry_pathname(entry));	// XXX
+            // And then override a bunch of stuff (namely, uig/guid/chmod)
+            archive_entry_set_uid(entry, 0);
+            archive_entry_set_uname(entry, "root");
+            archive_entry_set_gid(entry, 0);
+            archive_entry_set_gname(entry, "root");
+            // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
+            if (S_ISREG(st.st_mode) && IS_SCRIPT(archive_entry_pathname(entry)))
+                archive_entry_set_perm(entry, 0755);
+            else
+                archive_entry_set_perm(entry, 0644);
+            printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
+
+            // TODO: Build the index file
+
+            // If we have a regular file, sign it, and put the sig in our tarball
+            if (S_ISREG(st.st_mode)) {
+
+            }
+
+            archive_read_disk_descend(disk);
+            printf("Descend in: %s\n", archive_entry_pathname(entry));	// XXX
+            r = archive_write_header(a, entry);
+            if (r < ARCHIVE_OK)
+                fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+            if (r == ARCHIVE_FATAL)
+                return 1;
+            if (r > ARCHIVE_FAILED) {
+                fd = open(archive_entry_sourcepath(entry), O_RDONLY);
+                len = read(fd, buff, sizeof(buff));
+                while (len > 0) {
+                    archive_write_data(a, buff, len);
+                    len = read(fd, buff, sizeof(buff));
+                }
+                close(fd);
+            }
+            archive_entry_free(entry);
+        }
+        // TODO: Add the index to archive
+        archive_read_close(disk);
+        archive_read_free(disk);
+    }
+
+/*
+    while (*filename) {
+      stat(*filename, &st);
+      entry = archive_entry_new();
+      // Start by using the real stat fields
+      archive_entry_copy_stat(entry, &st);
+      archive_entry_set_pathname(entry, *filename);
+      // And then override a bunch of stuff (namely, uig/guid/chmod)
+      archive_entry_set_uid(entry, 0);
+      archive_entry_set_uname(entry, "root");
+      archive_entry_set_gid(entry, 0);
+      archive_entry_set_gname(entry, "root");
+      // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
+      if (S_ISREG(st.st_mode) && IS_SCRIPT(*filename))
+          archive_entry_set_perm(entry, 0755);
+      else
+          archive_entry_set_perm(entry, 0644);
+      archive_write_header(a, entry);
+      fd = open(*filename, O_RDONLY);
+      len = read(fd, buff, sizeof(buff));
+      while ( len > 0 ) {
+          archive_write_data(a, buff, len);
+          len = read(fd, buff, sizeof(buff));
+      }
+      close(fd);
+      archive_entry_free(entry);
+      filename++;
+    }
+*/
+    archive_write_close(a);
+#if ARCHIVE_VERSION_NUMBER >= 3000000
+    archive_write_free(a);
+#else
+    archive_write_finish(a);
+#endif
+
+    return 0;
+}
+
 int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
 {
     char buffer[BUFFER_SIZE];
@@ -579,13 +713,27 @@ int kindle_create_main(int argc, char *argv[])
     FILE *output;
     BIO *bio;
     int i;
+    int optcount;
+    const char *output_filename;
+    char *raw_filelist;
+    char **input_list;
+    int input_index;
+    int input_total;
 
     // defaults
     output = stdout;
     input = NULL;
     temp = NULL;
+    optcount = 0;
+    input_index = 0;
+
+    // Skip command
+    argv++;
+    argc--;
+
+    printf("argc=%d; argv[0]=%s\n", argc, argv[0]);	// XXX
     // update type
-    if(argc < 2)
+    if(argc < 1)
     {
         fprintf(stderr, "Not enough arguments.\n");
         return -1;
@@ -609,9 +757,8 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Invalid update type.\n");
         return -1;
     }
-    argc--; argv++; // next argument
+
     // arguments
-    optind = -1; // hack to get around the fact that we skipped some arguments
     while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:", opts, &opt_index)) != -1)
     {
         switch(opt)
@@ -710,6 +857,9 @@ int kindle_create_main(int argc, char *argv[])
                 info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char*));
                 info.metastrings[info.num_meta-1] = strdup(optarg);
                 break;
+            default:
+                fprintf(stderr, "Unknown option code 0%o\n", opt);
+                break;
         }
     }
     // validation
@@ -723,6 +873,77 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
         goto do_error;
     }
+
+    if (optind < argc) {
+        // Save 'real' options count
+        optcount = optind;
+        // Alloc our input filelist, based on the number of non-options, minus the output
+        input_total = argc - optcount - 1;
+        //input_list = malloc((argc - optcount - 1) * (PATH_MAX + 1));
+        raw_filelist = malloc(input_total * (PATH_MAX + 1));
+        input_list = malloc(sizeof(*input_list) * input_total);
+        printf("argc=%d; optcount=%d; input_total= %d\n", argc, optcount, input_total);	// XXX
+        // Iterate over non-options (the file(s) we passed)
+        while (optind < argc) {
+            // The last one will always be our output
+            printf("optind=%d\n", optind);	// XXX
+            if (optind == argc - 1) {
+                output_filename = argv[optind++];
+                if((output = fopen(output_filename, "wb")) == NULL)
+                {
+                    fprintf(stderr, "Cannot create output '%s'.\n", output_filename);
+                    goto do_error;
+                }
+            } else {
+                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us
+                const char *tmp_buf = argv[optind++];
+                //input_list[input_index] = malloc(strlen(tmp_buf) + 1);
+                //strcpy(input_list[input_index], tmp_buf);
+
+                input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
+                strcpy(input_list[input_index], tmp_buf);
+
+                input_index++;
+
+                // FIXME: If we have a dir, walk it to sign every file...
+            }
+        }
+    } else {
+        fprintf(stderr, "No input/output specified.\n");
+        return -1;
+    }
+
+    // libarch descend XXX
+    kindle_create_package_archive(output_filename, input_list, input_total);
+
+    // XXX
+    printf("optcount=%d; optind=%d; argc=%d\n", optcount, optind, argc);	// XXX
+    printf("output_filename=%s\n", output_filename);	// XXX
+
+    int c;
+    // NOTE: a while (*input_list) loop is unsafe with our crappy data storage...
+    //while (*input_list) {
+    for (c = 0; c < input_total; c++) {
+        /*
+        printf("c=%d\n", c);
+        printf("input_list[c]=%s\n", *input_list);
+        c++;
+        input_list++;
+        */
+        printf("input_list[%d]=%s\n", c, input_list[c]);
+    }
+    // Go back to the start
+    //input_list = input_list - input_index;
+
+    // -XXX
+    // Clean-up
+    //for (i = 0; i < input_index; i++) {
+    //    free(input_list[i]);
+    //}
+    free(input_list);
+    free(raw_filelist);
+
+    /*
     argc -= (optind-1); argv += optind; // next argument
     // input
     if(argc < 1)
@@ -778,13 +999,16 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
     fclose(input);
+    */
     return 0;
 do_error:
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-    fclose(temp);
-    fclose(input);
+    if (temp != NULL)
+        fclose(temp);
+    if (input !=  NULL)
+        fclose(input);
     return -1;
 }

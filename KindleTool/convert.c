@@ -338,7 +338,7 @@ int kindle_convert_main(int argc, char *argv[])
                 extract_sig = 1;
                 break;
             default:
-                fprintf(stderr, "Unkown option code 0%o\n", opt);
+                fprintf(stderr, "Unknown option code 0%o\n", opt);
                 break;
         }
     }
