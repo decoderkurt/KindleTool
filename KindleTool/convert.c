@@ -576,3 +576,5 @@ int kindle_extract_main(int argc, char *argv[])
     free(tgz_filename);
     return 0;
 }
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

@@ -201,3 +201,5 @@ int kindle_create_recovery(UpdateInformation *, FILE *, FILE *);
 int kindle_create_main(int, char **);
 
 #endif
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

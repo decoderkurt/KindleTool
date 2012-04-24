@@ -77,3 +77,5 @@ notices:
 
 NOTE: This fork is probably broken on everything except Linux x86/arm.
 Patches/Pull requests to fix that are welcome :).
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

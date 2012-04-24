@@ -1012,3 +1012,5 @@ do_error:
         fclose(input);
     return -1;
 }
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
