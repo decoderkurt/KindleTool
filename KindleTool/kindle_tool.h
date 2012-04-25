@@ -63,10 +63,8 @@
 #define SERIAL_NO_LENGTH 16
 
 #define IS_SCRIPT(filename) (strncmp(filename+(strlen(filename)-4), ".ffs", 4) == 0)
-/*
 #define IS_SHELL(filename) (strncmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
 #define IS_SIG(filename) (strncmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
-*/
 
 typedef enum {
     UpdateSignature,
@@ -195,7 +193,7 @@ int kindle_extract_main(int, char **);
 
 int sign_file(FILE *, RSA *, FILE *);
 FILE *gzip_file(FILE *);
-int kindle_create_package_archive(const char *, char **, const int);
+int kindle_create_package_archive(const char *, char **, int, RSA *);
 int kindle_create_tar_from_directory(const char *, FILE *, RSA *);
 int kindle_sign_and_add_files(DIR *, char *, RSA *, FILE *, TAR *);
 int kindle_create(UpdateInformation *, FILE *, FILE *);
