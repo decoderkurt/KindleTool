@@ -402,6 +402,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 archive_entry_set_perm(entry, 0644);
             printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
 
+            // NOTE: Make sure we're not adding sig files multiple times because of the directory lookup
             // TODO: Build the index file
 
             // If we have a regular file, sign it, and put the sig in our tarball
@@ -910,6 +911,10 @@ int kindle_create_main(int argc, char *argv[])
         }
     } else {
         fprintf(stderr, "No input/output specified.\n");
+        return -1;
+    }
+    if (input_total < 1) {
+        fprintf(stderr, "You need to specify at least ONE input item in conjunction with the output file.\n");
         return -1;
     }
 
