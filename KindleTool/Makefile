@@ -5,7 +5,7 @@ OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 
 SRCS=kindle_tool.c create.c convert.c
 INCLUDES=-Llib -Iincludes
-LIBS=-lcrypto -ltar -larchive -lz
+LIBS=-lcrypto -larchive
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
@@ -17,7 +17,7 @@ endif
 
 # libarchive is always built with large files support, do the same to avoid issues.
 CFLAGS+=-pipe -Wall -DFILE_OFFSET_BITS=64
-LDFLAGS?=
+LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
@@ -29,7 +29,7 @@ all:
 	$(MAKE) kindletool
 
 kindletool: $(OBJS)
-	$(GCC) $(INCLUDES) $(CFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
+	$(GCC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
 
 strip:
 	$(MAKE) all

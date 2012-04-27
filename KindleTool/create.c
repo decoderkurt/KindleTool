@@ -2,7 +2,7 @@
 //  create.c
 //  KindleTool
 //
-//  Copyright (C) 2011  Yifan Lu
+//  Copyright (C) 2011-2012  Yifan Lu
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -80,263 +80,6 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     return 0;
 }
 
-FILE *gzip_file(FILE *input)
-{
-    gzFile gz_file;
-    unsigned char buffer[BUFFER_SIZE];
-    size_t count;
-    FILE *gz_input;
-
-    // create a temporary file and open it in gzip
-    if((gz_input = tmpfile()) == NULL || (gz_file = gzdopen(fileno(gz_input), "wb")) == NULL)
-    {
-        fprintf(stderr, "Cannot create temporary file to compress input.\n");
-        return NULL;
-    }
-    // read the input and compress it
-    while((count = fread(buffer, sizeof(char), BUFFER_SIZE, input)) > 0)
-    {
-        if(gzwrite(gz_file, buffer, (uint32_t)count) != count)
-        {
-            fprintf(stderr, "Cannot compress input.\n");
-            gzclose(gz_file);
-            return NULL;
-        }
-    }
-    if(ferror(input) != 0)
-    {
-        fprintf(stderr, "Error reading input.\n");
-        gzclose(gz_file);
-        return NULL;
-    }
-    gzflush(gz_file, Z_FINISH); // we cannot gzclose yet, or temp file is deleted
-    // move the file pointer back to the beginning
-    rewind(gz_input);
-    return gz_input;
-}
-
-int kindle_create_tar_from_directory(const char *path, FILE *tar_out, RSA *rsa_pkey)
-{
-    char temp_index[L_tmpnam];
-    char temp_index_sig[L_tmpnam];
-    char *cwd;
-    DIR *dir;
-    FILE *index_file;
-    FILE *index_sig_file;
-    TAR *tar;
-
-    // save current directory
-    cwd = getcwd(NULL, 0);
-    // move to new directory
-    if(chdir(path) < 0)
-    {
-        fprintf(stderr, "Cannot access input directory.\n");
-        chdir((const char*)cwd);
-        return -1;
-    }
-    if((dir = opendir(".")) == NULL)
-    {
-        fprintf(stderr, "Cannot access input directory.\n");
-        chdir((const char*)cwd);
-        return -1;
-    }
-    // create index file
-    tmpnam(temp_index);
-    if((index_file = fopen(temp_index, "w+")) == NULL)
-    {
-        fprintf(stderr, "Cannot create index file.\n");
-        chdir((const char*)cwd);
-        return -1;
-    }
-    // create tar file
-    if(tar_fdopen(&tar, fileno(tar_out), NULL, NULL, O_WRONLY | O_CREAT, 0644, TAR_GNU) < 0)
-    {
-        fprintf(stderr, "Cannot create TAR file.\n");
-        chdir((const char*)cwd);
-        fclose(index_file);
-        remove(temp_index);
-        return -1;
-    }
-    // sign and add files to tar
-    if(kindle_sign_and_add_files(dir, "", rsa_pkey, index_file, tar) < 0)
-    {
-        fprintf(stderr, "Cannot add files to TAR.\n");
-        chdir((const char*)cwd);
-        fclose(index_file);
-        tar_close(tar);
-        remove(temp_index);
-        return -1;
-    }
-    // sign index
-    rewind(index_file);
-    tmpnam(temp_index_sig);
-    if((index_sig_file = fopen(temp_index_sig, "wb")) == NULL || sign_file(index_file, rsa_pkey, index_sig_file) < 0)
-    {
-        fprintf(stderr, "Cannot sign index.\n");
-        chdir((const char*)cwd);
-        fclose(index_file);
-        fclose(index_sig_file);
-        tar_close(tar);
-        remove(temp_index);
-        return -1;
-    }
-    // add index to tar
-    fclose(index_file);
-    fclose(index_sig_file);
-    if(tar_append_file(tar, temp_index, INDEX_FILE_NAME) < 0 || tar_append_file(tar, temp_index_sig, INDEX_SIG_FILE_NAME) < 0)
-    {
-        fprintf(stderr, "Cannot add index to tar archive.\n");
-        chdir((const char*)cwd);
-        fclose(index_file);
-        remove(temp_index);
-        remove(temp_index_sig);
-        return -1;
-    }
-    remove(temp_index);
-    remove(temp_index_sig);
-
-    // clean up
-    tar_append_eof(tar);
-    // we cannot close the tar file yet because it will delete the temp file
-    remove(INDEX_FILE_NAME);
-    closedir(dir);
-    chdir((const char*)cwd);
-    free(cwd);
-	return 0;
-}
-
-int kindle_sign_and_add_files(DIR *dir, char *dirname, RSA *rsa_pkey_file, FILE *out_index, TAR *out_tar)
-{
-    char temp_sig[L_tmpnam];
-    size_t pathlen;
-	struct dirent *ent = NULL;
-	struct stat st;
-	DIR *next = NULL;
-	char *absname = NULL;
-    char *signame = NULL;
-    FILE *file = NULL;
-    FILE *sigfile = NULL;
-    char md5[MD5_HASH_LENGTH+1];
-
-    tmpnam(temp_sig);
-	while ((ent = readdir (dir)) != NULL)
-	{
-        pathlen = strlen(dirname) + strlen(ent->d_name);
-        absname = realloc(absname, pathlen + 1);
-        absname[0] = 0;
-        strcat(absname, dirname);
-        strcat(absname, ent->d_name);
-        absname[pathlen] = 0;
-        if(stat(ent->d_name, &st) != 0)
-        {
-            fprintf(stderr, "Cannot stat %s.\n", absname);
-            goto on_error;
-        }
-		if(S_ISDIR(st.st_mode))
-		{
-			if(strcmp(ent->d_name, "..") == 0 || strcmp(ent->d_name, ".") == 0)
-			{
-				continue;
-			}
-			absname = realloc(absname, pathlen + 2);
-			strcat(absname, "/");
-            absname[pathlen+1] = 0;
-			if(chdir(ent->d_name) < 0)
-            {
-                fprintf(stderr, "Cannot access input directory.\n");
-                goto on_error;
-            }
-			if((next = opendir (".")) == NULL)
-            {
-                fprintf(stderr, "Cannot access input directory.\n");
-                goto on_error;
-            }
-			if(kindle_sign_and_add_files(next,absname,rsa_pkey_file,out_index,out_tar) < 0)
-            {
-                goto on_error;
-            }
-            closedir(next);
-		}
-		else
-		{
-            // open file
-            if((file = fopen(ent->d_name, "r")) == NULL)
-            {
-                fprintf(stderr, "Cannot open %s for reading!\n", absname);
-                goto on_error;
-            }
-			// calculate md5 hashsum
-            if(md5_sum(file, md5) != 0)
-            {
-                fprintf(stderr, "Cannot calculate hash sum for %s\n", absname);
-                goto on_error;
-            }
-            md5[MD5_HASH_LENGTH] = 0;
-            rewind(file);
-			// use openssl to sign file
-            signame = realloc(signame, strlen(absname) + 5);
-            signame[0] = 0;
-            strcat(signame, absname);
-            strcat(signame, ".sig\0");
-            if((sigfile = fopen(temp_sig, "w")) == NULL) // we want a rel path, signame is abs since tar wants abs
-            {
-                fprintf(stderr, "Cannot create signature file %s\n", signame);
-                goto on_error;
-            }
-            if(sign_file(file, rsa_pkey_file, sigfile) < 0)
-            {
-                fprintf(stderr, "Cannot sign %s\n", absname);
-                goto on_error;
-            }
-			// chmod +x if script
-            if(IS_SCRIPT(ent->d_name))
-            {
-                if(chmod(ent->d_name, 0777) < 0)
-                {
-                    fprintf(stderr, "Cannot set executable permission for %s\n", absname);
-                    goto on_error;
-                }
-            }
-			// add file to index
-            if(fprintf(out_index, "%d %s %s %lld %s\n", (IS_SCRIPT(ent->d_name) ? 129 : 128), md5, absname, st.st_size / BLOCK_SIZE, ent->d_name) < 0)
-            {
-                fprintf(stderr, "Cannot write to index file.\n");
-                goto on_error;
-            }
-			// add file to tar
-            fclose(file);
-            if(tar_append_file(out_tar, ent->d_name, absname) < 0)
-            {
-                fprintf(stderr, "Cannot add %s to tar archive.\n", absname);
-                goto on_error;
-            }
-			// add sig to tar
-            fclose(sigfile);
-            if(tar_append_file(out_tar, temp_sig, signame) < 0)
-            {
-                fprintf(stderr, "Cannot add %s to tar archive.\n", signame);
-                goto on_error;
-            }
-            remove(temp_sig);
-		}
-	}
-	chdir("..");
-    free(signame);
-    free(absname);
-    return 0;
-on_error: // Yes, I know GOTOs are bad, but it's more readable than typing what's below for each error above
-    free(signame);
-    free(absname);
-    if(file != NULL)
-        fclose(file);
-    if(sigfile != NULL)
-        fclose(sigfile);
-    if(next != NULL)
-        closedir(next);
-    remove(temp_sig);
-    return -1;
-}
-
 // As usual, largely based on libarchive's doc, examples, and source ;)
 int kindle_create_package_archive(const char *outname, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
@@ -357,8 +100,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char md5[MD5_HASH_LENGTH+1];
     FILE *bundlefile;
 
-    // To avoid code duplication, we're going to add & sign our bundle file with a bit of a hack.
-    // Build it in our PWD, and append it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
+    // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
+    // We'll build it in our PWD, and we've just appended it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
     if((bundlefile = fopen(INDEX_FILE_NAME, "w+")) == NULL)
     {
         fprintf(stderr, "Cannot create index file.\n");
@@ -377,7 +120,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     for (i = 0; i < total_files; i++) {
         disk = archive_read_disk_new();
 
-        // Dirty hack ahoy. If we're the last file in our list/our bundlefile, close its fd
+        // Dirty hack ahoy. If we're the last file in our list, that means we're our bundlefile, close its fd
         if ( i == total_files - 1 )
         {
             printf("Closing bundlefile\n"); // XXX
@@ -431,10 +174,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 archive_entry_set_perm(entry, 0644);
             //printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
 
-            // NOTE: I actually don't know if the directory lookup is live, but let's avoid signing/adding sig files multiple times anyway
+            // NOTE: I actually don't know if the directory lookup is live (probably not), but let's avoid signing/adding sig files multiple times anyway
             if (IS_SIG(pathname))
             {
-                printf("Skipping sig file '%s' because we probably already added it manually\n", pathname);
+                printf("Skipping sig file '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
@@ -837,9 +580,7 @@ int kindle_create_main(int argc, char *argv[])
         { "meta", required_argument, NULL, 'x' }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT32_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
-    struct stat st_buf;
     FILE *input;
-    FILE *temp;
     FILE *output;
     BIO *bio;
     int i;
@@ -853,7 +594,6 @@ int kindle_create_main(int argc, char *argv[])
     // defaults
     output = stdout;
     input = NULL;
-    temp = NULL;
     optcount = 0;
     input_index = 0;
 
@@ -1011,7 +751,6 @@ int kindle_create_main(int argc, char *argv[])
         // Heavily *cough* 'inspired' *cough* from http://stackoverflow.com/questions/5935933/
         // Keep an extra space for the bundlefile
         input_total = argc - optcount;
-        //input_list = malloc((argc - optcount - 1) * (PATH_MAX + 1));
         raw_filelist = malloc(input_total * (PATH_MAX + 1));
         input_list = malloc(sizeof(*input_list) * input_total);
         printf("argc=%d; optcount=%d; input_total= %d\n", argc, optcount, input_total);	// XXX
@@ -1029,15 +768,10 @@ int kindle_create_main(int argc, char *argv[])
             } else {
                 // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us
                 const char *tmp_buf = argv[optind++];
-                //input_list[input_index] = malloc(strlen(tmp_buf) + 1);
-                //strcpy(input_list[input_index], tmp_buf);
-
                 input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
                 strcpy(input_list[input_index], tmp_buf);
 
                 input_index++;
-
-                // FIXME: If we have a dir, walk it to sign every file...
             }
         }
     } else {
@@ -1055,101 +789,74 @@ int kindle_create_main(int argc, char *argv[])
 
     printf("input_total=%d; input_index=%d\n", input_total, input_index);        // XXX
 
-    // libarch descend XXX
-    kindle_create_package_archive(output_filename, input_list, input_total, info.sign_pkey);
-
     // XXX
     printf("optcount=%d; optind=%d; argc=%d\n", optcount, optind, argc);	// XXX
     printf("output_filename=%s\n", output_filename);	// XXX
 
-    int c;
     // NOTE: a while (*input_list) loop is unsafe with our crappy data storage...
-    //while (*input_list) {
+    int c;
     for (c = 0; c < input_total; c++) {
-        /*
-        printf("c=%d\n", c);
-        printf("input_list[c]=%s\n", *input_list);
-        c++;
-        input_list++;
-        */
         printf("input_list[%d]=%s\n", c, input_list[c]);
     }
-    // Go back to the start
-    //input_list = input_list - input_index;
-
     // -XXX
-    // Clean-up
-    //for (i = 0; i < input_index; i++) {
-    //    free(input_list[i]);
-    //}
-    free(input_list);
-    free(raw_filelist);
 
-    /*
-    argc -= (optind-1); argv += optind; // next argument
-    // input
-    if(argc < 1)
+    // Build the package archive name based on the output name.
+    char tarball_filename[PATH_MAX + 1];
+    // While we're at it, check that our output name properly ends in .bin
+    if (IS_BIN(output_filename))
     {
-        fprintf(stderr, "No input found.\n");
-        goto do_error;
-    }
-    if(stat(argv[0], &st_buf) != 0)
-    {
-        fprintf(stderr, "Cannot read input.\n");
-        goto do_error;
-    }
-    if(S_ISDIR (st_buf.st_mode))
-    {
-        // input is a directory
-        if((temp = tmpfile()) == NULL || kindle_create_tar_from_directory(argv[0], temp, info.sign_pkey) < 0)
-        {
-            fprintf(stderr, "Cannot create archive.\n");
-            goto do_error;
-        }
-        rewind(temp);
+        // It is, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
+        size_t len = strlen(output_filename);
+        char *tmp_outname = malloc(len - 3);
+        memcpy(tmp_outname, output_filename, len - 4);
+        tmp_outname[len - 4] = 0;       // . => \0
+        printf("tmp_outname=%s\n", tmp_outname);    // XXX
 
-        if((input = gzip_file(temp)) == NULL)
-        {
-            fprintf(stderr, "Cannot compress archive.\n");
-            goto do_error;
-        }
-        fclose(temp);
+        snprintf(tarball_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
+        free(tmp_outname);
     }
     else
     {
-        // input is a file
-        if((input = fopen(argv[0], "rb")) == NULL)
-        {
-            fprintf(stderr, "Cannot read input.\n");
-            goto do_error;
-        }
+        fprintf(stderr, "The output filename MUST end with '.bin'\n");
+        return -1;
     }
-    argc--; argv++; // next argument
-    // output
-    if(argc > 0)
+
+    printf("tarball_filename=%s; output_filename=%s\n", tarball_filename, output_filename);    // XXX
+
+    // Create our package archive, sigfile & bundlefile included
+    kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
+
+    // And finally, build our package :).
+    if((input = fopen(tarball_filename, "rb")) == NULL)
     {
-        if((output = fopen(argv[0], "wb")) == NULL)
-        {
-            fprintf(stderr, "Cannot create output.\n");
-            goto do_error;
-        }
+        fprintf(stderr, "Cannot read input tarball '%s'.\n", tarball_filename);
+        goto do_error;
     }
-    // write it all to the output
+    if((output = fopen(output_filename, "wb")) == NULL)
+    {
+        fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
+        goto do_error;
+    }
     if(kindle_create(&info, input, output) < 0)
     {
         fprintf(stderr, "Cannot write update to output.\n");
         goto do_error;
     }
+
+    // Clean-up
+    free(input_list);
+    free(raw_filelist);
     fclose(input);
-    */
+    // Remove tarball
+    remove(tarball_filename);
+    fclose(output);
     return 0;
+
 do_error:
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-    if (temp != NULL)
-        fclose(temp);
     if (input !=  NULL)
         fclose(input);
     return -1;

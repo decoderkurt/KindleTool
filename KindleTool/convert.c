@@ -2,7 +2,7 @@
 //  extract.c
 //  KindleTool
 //
-//  Copyright (C) 2011  Yifan Lu
+//  Copyright (C) 2011-2012  Yifan Lu
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,40 +19,6 @@
 //
 
 #include "kindle_tool.h"
-
-FILE *gunzip_file(FILE *input)
-{
-    FILE *output;
-    gzFile gz_input;
-    unsigned char buffer[BUFFER_SIZE];
-    size_t count;
-
-    // create a temporary file and open
-    if((output = tmpfile()) == NULL)
-    {
-        fprintf(stderr, "Cannot create gunzip output.\n");
-        return NULL;
-    }
-    // open the gzip file
-    if((gz_input = gzdopen(fileno(input), "rb")) == NULL)
-    {
-        fprintf(stderr, "Cannot read compressed input.\n");
-        return NULL;
-    }
-    // read the input and decompress it
-    while((count = (uint32_t)gzread(gz_input, buffer, BUFFER_SIZE)) > 0)
-    {
-        if(fwrite(buffer, sizeof(char), BUFFER_SIZE, output) != count)
-        {
-            fprintf(stderr, "Cannot decompress input.\n");
-			gzclose(gz_input);
-            return NULL;
-        }
-    }
-    gzclose(gz_input);
-    rewind(output);
-    return output;
-}
 
 int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
 {

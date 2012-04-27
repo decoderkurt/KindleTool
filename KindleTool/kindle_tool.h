@@ -2,7 +2,7 @@
 //  kindle_tool.h
 //  KindleTool
 //
-//  Copyright (C) 2011  Yifan Lu
+//  Copyright (C) 2011-2012  Yifan Lu
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <libtar.h>
 #include <archive.h>
 #include <archive_entry.h>
 #include <limits.h>
@@ -39,7 +38,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <zlib.h>
 
 #define BUFFER_SIZE 1024
 #define BLOCK_SIZE 64
@@ -65,6 +63,7 @@
 #define IS_SCRIPT(filename) (strncmp(filename+(strlen(filename)-4), ".ffs", 4) == 0)
 #define IS_SHELL(filename) (strncmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
 #define IS_SIG(filename) (strncmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
+#define IS_BIN(filename) (strncmp(filename+(strlen(filename)-4), ".bin", 4) == 0)
 
 typedef enum {
     UpdateSignature,
@@ -179,7 +178,6 @@ int kindle_deobfuscate_main(int, char **);
 int kindle_obfuscate_main(int, char **);
 int kindle_info_main(int, char **);
 
-FILE *gunzip_file(FILE *);
 int kindle_read_bundle_header(UpdateHeader *, FILE *);
 int kindle_convert(FILE *, FILE *, FILE *);
 int kindle_convert_ota_update_v2(FILE *, FILE *);
@@ -192,10 +190,7 @@ int libarchive_extract(const char *, const char *);
 int kindle_extract_main(int, char **);
 
 int sign_file(FILE *, RSA *, FILE *);
-FILE *gzip_file(FILE *);
 int kindle_create_package_archive(const char *, char **, const int, RSA *);
-int kindle_create_tar_from_directory(const char *, FILE *, RSA *);
-int kindle_sign_and_add_files(DIR *, char *, RSA *, FILE *, TAR *);
 int kindle_create(UpdateInformation *, FILE *, FILE *);
 int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *);
 int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
