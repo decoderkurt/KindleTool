@@ -56,7 +56,6 @@
 #define CERTIFICATE_2K_SIZE 256
 
 #define INDEX_FILE_NAME "update-filelist.dat"
-#define INDEX_SIG_FILE_NAME "update-filelist.dat.sig"
 
 #define SERIAL_NO_LENGTH 16
 

@@ -566,7 +566,8 @@ int kindle_create_main(int argc, char *argv[])
         { "cert", required_argument, NULL, 'c' },
         { "opt", required_argument, NULL, 'o' },
         { "crit", required_argument, NULL, 'r' },
-        { "meta", required_argument, NULL, 'x' }
+        { "meta", required_argument, NULL, 'x' },
+        { "archive", no_argument, NULL, 'a' }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT32_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
@@ -579,12 +580,14 @@ int kindle_create_main(int argc, char *argv[])
     char **input_list;
     int input_index;
     int input_total;
+    int keep_archive;
 
     // defaults
     output = stdout;
     input = NULL;
     optcount = 0;
     input_index = 0;
+    keep_archive = 0;
 
     // Skip command
     argv++;
@@ -617,7 +620,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:a", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -715,6 +718,9 @@ int kindle_create_main(int argc, char *argv[])
                 info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char*));
                 info.metastrings[info.num_meta-1] = strdup(optarg);
                 break;
+            case 'a':
+                keep_archive = 1;
+                break;
             default:
                 fprintf(stderr, "Unknown option code 0%o\n", opt);
                 break;
@@ -758,12 +764,15 @@ int kindle_create_main(int argc, char *argv[])
         // Heavily *cough* 'inspired' *cough* from http://stackoverflow.com/questions/5935933/
         // Keep an extra space for the bundlefile
         input_total = argc - optcount;
+        // If we only have one input file, fake it, or things go kablooey with stdout output
+        if (input_total == 1)
+            input_total++;
         raw_filelist = malloc(input_total * (PATH_MAX + 1));
         input_list = malloc(sizeof(*input_list) * input_total);
         // Iterate over non-options (the file(s) we passed)
         while (optind < argc) {
-            // The last one will always be our output
-            if (optind == argc - 1) {
+            // The last one will always be our output (but only check if we have at least one input file, we might really want to output to stdout)
+            if (optind == argc - 1 && input_index > 0) {
                 output_filename = argv[optind++];
                 if((output = fopen(output_filename, "wb")) == NULL)
                 {
@@ -808,8 +817,8 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "The output filename MUST end with '.bin'\n");
-        return -1;
+        // We're outputting to stdout, assign a generic name to the archive
+        snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
     }
 
     // Create our package archive, sigfile & bundlefile included
@@ -821,10 +830,14 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Cannot read input tarball '%s'.\n", tarball_filename);
         goto do_error;
     }
-    if((output = fopen(output_filename, "wb")) == NULL)
+    // Don't try to create a file if we're outputting to stdout
+    if (output != stdout)
     {
-        fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
-        goto do_error;
+        if((output = fopen(output_filename, "wb")) == NULL)
+        {
+            fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
+            goto do_error;
+        }
     }
     if(kindle_create(&info, input, output) < 0)
     {
@@ -835,19 +848,29 @@ int kindle_create_main(int argc, char *argv[])
     // Clean-up
     free(input_list);
     free(raw_filelist);
-    fclose(input);
-    // Remove tarball
-    remove(tarball_filename);
-    fclose(output);
-    return 0;
-
-do_error:
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-    if (input !=  NULL)
+    fclose(input);
+    if (output != stdout)
+        fclose(output);
+    // Remove tarball, unless we asked to keep it
+    if (!keep_archive)
+        remove(tarball_filename);
+
+    return 0;
+
+do_error:
+    // FIXME: Handle properly freeing input_list/raw_filelist?
+    free(info.devices);
+    for(i = 0; i < info.num_meta; i++)
+        free(info.metastrings[i]);
+    free(info.metastrings);
+    if (input != NULL)
         fclose(input);
+    if (output != NULL && output != stdout)
+        fclose(output);
     return -1;
 }
 

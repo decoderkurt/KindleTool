@@ -23,5 +23,5 @@ NOTE: This fork is probably broken on everything except Linux x86/arm.
 Patches/Pull requests to fix that are welcome :).
 
 TODO:
-  * Restore stdout support for create
   * Restore 'if input is a single tgz file, assume it's properly built, and just sign, munge & package it' support
+  * Recap to stderr (in order not to mess up the output to stdout stuff) what we're actually creating
