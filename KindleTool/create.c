@@ -357,15 +357,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char md5[MD5_HASH_LENGTH+1];
     FILE *bundlefile;
 
-    /*
-    // Create our bundlefile as a non-racy tempfile
-    if ((bundlefile = mkstemp("kindletool_bundlefile_XXXXXX")) == -1)
-    {
-        fprintf(stderr, "Failed to create a temp bundlefile.\n");
-        return -1;
-    }
-    */
-
     // To avoid code duplication, we're going to add & sign our bundle file with a bit of a hack.
     // Build it in our PWD, and append it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
     if((bundlefile = fopen(INDEX_FILE_NAME, "w+")) == NULL)
@@ -385,6 +376,13 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
     for (i = 0; i < total_files; i++) {
         disk = archive_read_disk_new();
+
+        // Dirty hack ahoy. If we're the last file in our list/our bundlefile, close its fd
+        if ( i == total_files - 1 )
+        {
+            printf("Closing bundlefile\n"); // XXX
+            fclose(bundlefile);
+        }
 
         r = archive_read_disk_open(disk, filename[i]);
         archive_read_disk_set_standard_lookup(disk);
@@ -409,13 +407,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             char *resolved_path = NULL;
             char *sourcepath = realpath(pathname, resolved_path);
             archive_entry_copy_sourcepath(entry, sourcepath);
-
-            // Dirty hack ahoy. If we're the last file in our list/our bundlefile, close its fd
-            if ( i == total_files - 1 )
-            {
-                printf("Closing bundlefile\n"); // XXX
-                fclose(bundlefile);
-            }
 
             // use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
             lstat(pathname, &st);
@@ -456,6 +447,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if (r == ARCHIVE_FATAL)
                 return 1;
             if (r > ARCHIVE_FAILED) {
+                printf("sourcepath(entry) = '%s'\n", archive_entry_sourcepath(entry));       // XXX
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
                 len = read(fd, buff, sizeof(buff));
                 while (len > 0) {
@@ -565,7 +557,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         return 1;
                     if (r > ARCHIVE_FAILED) {
                         printf("sourcepath(entry_sig) = '%s'\n", archive_entry_sourcepath(entry_sig));       // XXX
-                        fd = open(archive_entry_pathname(entry_sig), O_RDONLY);
+                        fd = open(archive_entry_sourcepath(entry_sig), O_RDONLY);
                         len = read(fd, buff, sizeof(buff));
                         while (len > 0) {
                             archive_write_data(a, buff, len);
@@ -574,11 +566,20 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         close(fd);
                     }
                     archive_entry_free(entry_sig);
+                    // Delete the sigfile once we're done
+                    remove(sourcepath_sig);
                     // Cleanup
                     free(pathname_sig);
                     free(resolved_path_sig);
                     free(sourcepath_sig);
                 }
+            }
+
+            // Delete the bundle file once we're done
+            if ( i == total_files - 1 )
+            {
+                printf("Deleting bundlefile\n"); // XXX
+                remove(sourcepath);
             }
 
             // Cleanup
@@ -590,37 +591,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         archive_read_free(disk);
     }
 
-    // TODO: Don't forget to actually sign & add our bundlefile to the tarball ;). Don't forget to close our open fd to it first!
-
-/*
-    while (*filename) {
-      stat(*filename, &st);
-      entry = archive_entry_new();
-      // Start by using the real stat fields
-      archive_entry_copy_stat(entry, &st);
-      archive_entry_set_pathname(entry, *filename);
-      // And then override a bunch of stuff (namely, uig/guid/chmod)
-      archive_entry_set_uid(entry, 0);
-      archive_entry_set_uname(entry, "root");
-      archive_entry_set_gid(entry, 0);
-      archive_entry_set_gname(entry, "root");
-      // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-      if (S_ISREG(st.st_mode) && IS_SCRIPT(*filename))
-          archive_entry_set_perm(entry, 0755);
-      else
-          archive_entry_set_perm(entry, 0644);
-      archive_write_header(a, entry);
-      fd = open(*filename, O_RDONLY);
-      len = read(fd, buff, sizeof(buff));
-      while ( len > 0 ) {
-          archive_write_data(a, buff, len);
-          len = read(fd, buff, sizeof(buff));
-      }
-      close(fd);
-      archive_entry_free(entry);
-      filename++;
-    }
-*/
     archive_write_close(a);
 #if ARCHIVE_VERSION_NUMBER >= 3000000
     archive_write_free(a);
