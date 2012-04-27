@@ -342,8 +342,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 {
     struct archive *a;
     struct archive *disk;
+    struct archive *disk_sig;
     struct archive_entry *entry;
+    struct archive_entry *entry_sig;
     struct stat st;
+    struct stat st_sig;
+    int r;
     char buff[8192];
     int len;
     int fd;
@@ -379,11 +383,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     archive_write_set_format_gnutar(a);
     archive_write_open_filename(a, outname);
 
-    disk = archive_read_disk_new();
-    archive_read_disk_set_standard_lookup(disk);
     for (i = 0; i < total_files; i++) {
-        struct archive *disk = archive_read_disk_new();
-        int r;
+        disk = archive_read_disk_new();
 
         r = archive_read_disk_open(disk, filename[i]);
         archive_read_disk_set_standard_lookup(disk);
@@ -402,12 +403,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 return 1;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
-            const char* pathname = archive_entry_pathname( entry );
+            // We're gonna use it after freeing entry, make a copy
+            char* pathname = strdup(archive_entry_pathname( entry ));
             // Get our absolute path, or weird things happen with the directory lookup...
             char *resolved_path = NULL;
             char *sourcepath = realpath(pathname, resolved_path);
             archive_entry_copy_sourcepath(entry, sourcepath);
-            free(resolved_path);
 
             // Dirty hack ahoy. If we're the last file in our list/our bundlefile, close its fd
             if ( i == total_files - 1 )
@@ -447,7 +448,25 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 continue;
             }
 
-            // If we have a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
+            archive_read_disk_descend(disk);
+            printf("Descend in: %s\n", pathname);	// XXX
+            r = archive_write_header(a, entry);
+            if (r < ARCHIVE_OK)
+                fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+            if (r == ARCHIVE_FATAL)
+                return 1;
+            if (r > ARCHIVE_FAILED) {
+                fd = open(archive_entry_sourcepath(entry), O_RDONLY);
+                len = read(fd, buff, sizeof(buff));
+                while (len > 0) {
+                    archive_write_data(a, buff, len);
+                    len = read(fd, buff, sizeof(buff));
+                }
+                close(fd);
+            }
+            archive_entry_free(entry);
+
+            // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if (S_ISREG(st.st_mode)) {
                 if((file = fopen(pathname, "r")) == NULL)
                 {
@@ -470,7 +489,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 char signame[PATH_MAX + 1];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
                 printf("signame: %s\n", signame); // XXX
-                printf("**4** '%s'\n", pathname);       // XXX
                 if((sigfile = fopen(signame, "w")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
@@ -499,54 +517,74 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 fclose(sigfile);
 
                 // And now, for the fun part! Ninja our sigfile into the archive... Ugly code duplication ahead!
-                // First things first, write the proper file...
-                r = archive_write_header(a, entry);
-                if (r < ARCHIVE_OK)
-                    fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
-                if (r == ARCHIVE_FATAL)
+                disk_sig = archive_read_disk_new();
+
+                r = archive_read_disk_open(disk_sig, signame);
+                archive_read_disk_set_standard_lookup(disk_sig);
+                if (r != ARCHIVE_OK) {
+                    fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
                     return 1;
-                if (r > ARCHIVE_FAILED) {
-                    printf("sourcepath(entry) = '%s'\n", archive_entry_sourcepath(entry));       // XXX
-                    fd = open(archive_entry_sourcepath(entry), O_RDONLY);
-                    len = read(fd, buff, sizeof(buff));
-                    while (len > 0) {
-                        archive_write_data(a, buff, len);
-                        len = read(fd, buff, sizeof(buff));
+                }
+
+                for (;;) {
+                    // First, inject a new entry, based on our sigfile :)
+                    entry_sig = archive_entry_new();
+                    r = archive_read_next_header2(disk_sig, entry_sig);
+                    if (r == ARCHIVE_EOF)
+                        break;
+                    if (r != ARCHIVE_OK) {
+                        fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk_sig));
+                        return 1;
                     }
-                    close(fd);
-                }
-                archive_entry_free(entry);
+                    // Get some basic entry fields from stat
+                    char* pathname_sig = strdup(archive_entry_pathname( entry_sig ));
+                    char *resolved_path_sig = NULL;
+                    char *sourcepath_sig = realpath(pathname_sig, resolved_path_sig);
+                    archive_entry_copy_sourcepath(entry_sig, sourcepath_sig);
 
-                // Now, inject a new entry, based on our sigfile :)
-                lstat(signame, &st);
-                entry = archive_entry_new();
-                archive_entry_copy_stat(entry, &st);
-                archive_entry_set_pathname(entry, signame);
-                archive_entry_set_uid(entry, 0);
-                archive_entry_set_uname(entry, "root");
-                archive_entry_set_gid(entry, 0);
-                archive_entry_set_gname(entry, "root");
-                archive_entry_set_perm(entry, 0644);
-                // Ninja! The end of the loop should take care of the rest for us ;)
+                    lstat(pathname_sig, &st_sig);
+                    r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
+                    if (r < ARCHIVE_OK)
+                        fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk_sig));
+                    if (r == ARCHIVE_FATAL)
+                        return 1;
+
+                    archive_entry_set_uid(entry_sig, 0);
+                    archive_entry_set_uname(entry_sig, "root");
+                    archive_entry_set_gid(entry_sig, 0);
+                    archive_entry_set_gname(entry_sig, "root");
+                    archive_entry_set_perm(entry_sig, 0644);
+
+                    // And then, write it to the archive...
+                    archive_read_disk_descend(disk_sig);
+                    printf("Descend (sig) in: %s\n", pathname_sig);       // XXX
+                    r = archive_write_header(a, entry_sig);
+                    if (r < ARCHIVE_OK)
+                        fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+                    if (r == ARCHIVE_FATAL)
+                        return 1;
+                    if (r > ARCHIVE_FAILED) {
+                        printf("sourcepath(entry_sig) = '%s'\n", archive_entry_sourcepath(entry_sig));       // XXX
+                        fd = open(archive_entry_pathname(entry_sig), O_RDONLY);
+                        len = read(fd, buff, sizeof(buff));
+                        while (len > 0) {
+                            archive_write_data(a, buff, len);
+                            len = read(fd, buff, sizeof(buff));
+                        }
+                        close(fd);
+                    }
+                    archive_entry_free(entry_sig);
+                    // Cleanup
+                    free(pathname_sig);
+                    free(resolved_path_sig);
+                    free(sourcepath_sig);
+                }
             }
 
-            archive_read_disk_descend(disk);
-            printf("Descend in: %s\n", pathname);	// XXX
-            r = archive_write_header(a, entry);
-            if (r < ARCHIVE_OK)
-                fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
-            if (r == ARCHIVE_FATAL)
-                return 1;
-            if (r > ARCHIVE_FAILED) {
-                fd = open(archive_entry_sourcepath(entry), O_RDONLY);
-                len = read(fd, buff, sizeof(buff));
-                while (len > 0) {
-                    archive_write_data(a, buff, len);
-                    len = read(fd, buff, sizeof(buff));
-                }
-                close(fd);
-            }
-            archive_entry_free(entry);
+            // Cleanup
+            free(pathname);
+            free(resolved_path);
+            free(sourcepath);
         }
         archive_read_close(disk);
         archive_read_free(disk);
