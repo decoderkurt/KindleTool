@@ -731,6 +731,25 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
         goto do_error;
     }
+    // Not sure why we end up with -1 instead of UINT32_MAX, but we do, so, err, use INT32_MAX instead when building an ota update, like the python tool did.
+    if(info.version != OTAUpdateV2 && info.target_revision == UINT32_MAX)
+        info.target_revision = INT32_MAX;
+    // FIXME? Untested, but I assume the same holds true for source_revision, so handle it too.
+    if(info.version != OTAUpdateV2 && info.source_revision > INT32_MAX)
+    {
+        fprintf(stderr, "Source revision for this update type cannot exceed %d\n", INT32_MAX);
+        goto do_error;
+    }
+    // Don't try to build an ota update with ota2 only devices, or shit happens.
+    if(info.version == OTAUpdate)
+    {
+        // OTA v1 only supports one device, we don't need to loop (reject anything newer than a K3GB)
+        if (info.devices[0] > Kindle3Wifi3GEurope)
+        {
+            fprintf(stderr, "Unsupported device for this update type\n");
+            goto do_error;
+        }
+    }
 
     if (optind < argc) {
         // Save 'real' options count

@@ -369,6 +369,10 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(input);
             if (sig_output != NULL)
                 fclose(sig_output);
+
+            // If we're not the last file, throw an LF to untangle the output
+            if (optind < argc)
+                fprintf(stderr, "\n");
         }
     } else {
         fprintf(stderr, "No input specified.\n");
@@ -418,8 +422,10 @@ int libarchive_extract(const char *filename, const char *prefix)
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
+    /*
     flags |= ARCHIVE_EXTRACT_PERM;
     flags |= ARCHIVE_EXTRACT_ACL;
+    */
     flags |= ARCHIVE_EXTRACT_FFLAGS;
 
     a = archive_read_new();
