@@ -418,7 +418,6 @@ int main (int argc, char *argv[])
         exit(1);
     }
     cmd = argv[0];
-    printf("cmd is %s\n", cmd);	// XXX
 
     if(freopen(NULL, "rb", stdin) == NULL)
     {

@@ -276,7 +276,6 @@ int kindle_convert_main(int argc, char *argv[])
     int info_only;
     int keep_ori;
     int extract_sig;
-    int optcount;	// XXX
     int fail;
 
     sig_output = NULL;
@@ -286,7 +285,6 @@ int kindle_convert_main(int argc, char *argv[])
     info_only = 0;
     keep_ori = 0;
     extract_sig = 0;
-    optcount = 0;	// XXX
     fail = 1;
     while((opt = getopt_long(argc, argv, "icks", opts, &opt_index)) != -1)
     {
@@ -316,19 +314,15 @@ int kindle_convert_main(int argc, char *argv[])
     }
 
     if (optind < argc) {
-        // Save 'real' options count for debugging purposes
-        optcount = optind;	// XXX
         // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
         while (optind < argc) {
             fail = 0;
             in_name = argv[optind++];
-            printf("in_name = '%s'\n", in_name);	// XXX
             if(!info_only && output != stdout) // not info only AND not stdout
             {
                 out_name = malloc(strlen(in_name) + 8);	// Don't forget our friend \0
                 strcpy(out_name, in_name);
                 strcat(out_name, ".tar.gz");
-                printf("out_name = '%s'\n", out_name);	// XXX
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
@@ -341,7 +335,6 @@ int kindle_convert_main(int argc, char *argv[])
                 sig_name = malloc(strlen(in_name) + 5);
                 strcpy(sig_name, in_name);
                 strcat(sig_name, ".sig");
-                printf("sig_name = '%s'\n", sig_name);	// XXX
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
@@ -381,8 +374,6 @@ int kindle_convert_main(int argc, char *argv[])
         fprintf(stderr, "No input specified.\n");
         return -1;
     }
-
-    printf("info_only=%d; optcount=%d; optind=%d; argc=%d\n", info_only, optcount, optind, argc);	// XXX
 
     // Return
     if (fail)

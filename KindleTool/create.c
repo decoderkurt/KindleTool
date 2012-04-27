@@ -123,7 +123,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
         if ( i == total_files - 1 )
         {
-            printf("Closing bundlefile\n"); // XXX
             fclose(bundlefile);
         }
 
@@ -159,9 +158,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if (r == ARCHIVE_FATAL)
                 return 1;
 
-            //printf("st.st_uid: %d\n", st.st_uid);	// XXX
-            //printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
-            printf("entry pathname: %s; sourcepath: %s\n", pathname, archive_entry_sourcepath(entry));	// XXX
             // And then override a bunch of stuff (namely, uig/guid/chmod)
             archive_entry_set_uid(entry, 0);
             archive_entry_set_uname(entry, "root");
@@ -172,7 +168,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
-            //printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
 
             // NOTE: I actually don't know if the directory lookup is live (probably not), but let's avoid signing/adding sig files multiple times anyway
             if (IS_SIG(pathname))
@@ -183,14 +178,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             }
 
             archive_read_disk_descend(disk);
-            printf("Descend in: %s\n", pathname);	// XXX
             r = archive_write_header(a, entry);
             if (r < ARCHIVE_OK)
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
             if (r == ARCHIVE_FATAL)
                 return 1;
             if (r > ARCHIVE_FAILED) {
-                printf("sourcepath(entry) = '%s'\n", archive_entry_sourcepath(entry));       // XXX
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
                 len = read(fd, buff, sizeof(buff));
                 while (len > 0) {
@@ -223,7 +216,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
                 char signame[PATH_MAX + 1];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
-                printf("signame: %s\n", signame); // XXX
                 if((sigfile = fopen(signame, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
@@ -292,14 +284,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
                     // And then, write it to the archive...
                     archive_read_disk_descend(disk_sig);
-                    printf("Descend (sig) in: %s\n", pathname_sig);       // XXX
                     r = archive_write_header(a, entry_sig);
                     if (r < ARCHIVE_OK)
                         fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
                     if (r == ARCHIVE_FATAL)
                         return 1;
                     if (r > ARCHIVE_FAILED) {
-                        printf("sourcepath(entry_sig) = '%s'\n", archive_entry_sourcepath(entry_sig));       // XXX
                         fd = open(archive_entry_sourcepath(entry_sig), O_RDONLY);
                         len = read(fd, buff, sizeof(buff));
                         while (len > 0) {
@@ -321,7 +311,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // Delete the bundle file once we're done
             if ( i == total_files - 1 )
             {
-                printf("Deleting bundlefile\n"); // XXX
                 remove(sourcepath);
             }
 
@@ -601,7 +590,6 @@ int kindle_create_main(int argc, char *argv[])
     argv++;
     argc--;
 
-    printf("argc=%d; argv[0]=%s\n", argc, argv[0]);	// XXX
     // update type
     if(argc < 1)
     {
@@ -753,11 +741,9 @@ int kindle_create_main(int argc, char *argv[])
         input_total = argc - optcount;
         raw_filelist = malloc(input_total * (PATH_MAX + 1));
         input_list = malloc(sizeof(*input_list) * input_total);
-        printf("argc=%d; optcount=%d; input_total= %d\n", argc, optcount, input_total);	// XXX
         // Iterate over non-options (the file(s) we passed)
         while (optind < argc) {
             // The last one will always be our output
-            printf("optind=%d\n", optind);	// XXX
             if (optind == argc - 1) {
                 output_filename = argv[optind++];
                 if((output = fopen(output_filename, "wb")) == NULL)
@@ -787,19 +773,6 @@ int kindle_create_main(int argc, char *argv[])
     strcpy(input_list[input_index], INDEX_FILE_NAME);
     input_index++;
 
-    printf("input_total=%d; input_index=%d\n", input_total, input_index);        // XXX
-
-    // XXX
-    printf("optcount=%d; optind=%d; argc=%d\n", optcount, optind, argc);	// XXX
-    printf("output_filename=%s\n", output_filename);	// XXX
-
-    // NOTE: a while (*input_list) loop is unsafe with our crappy data storage...
-    int c;
-    for (c = 0; c < input_total; c++) {
-        printf("input_list[%d]=%s\n", c, input_list[c]);
-    }
-    // -XXX
-
     // Build the package archive name based on the output name.
     char tarball_filename[PATH_MAX + 1];
     // While we're at it, check that our output name properly ends in .bin
@@ -810,7 +783,6 @@ int kindle_create_main(int argc, char *argv[])
         char *tmp_outname = malloc(len - 3);
         memcpy(tmp_outname, output_filename, len - 4);
         tmp_outname[len - 4] = 0;       // . => \0
-        printf("tmp_outname=%s\n", tmp_outname);    // XXX
 
         snprintf(tarball_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
         free(tmp_outname);
@@ -820,8 +792,6 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "The output filename MUST end with '.bin'\n");
         return -1;
     }
-
-    printf("tarball_filename=%s; output_filename=%s\n", tarball_filename, output_filename);    // XXX
 
     // Create our package archive, sigfile & bundlefile included
     kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
