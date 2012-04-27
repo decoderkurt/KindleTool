@@ -338,7 +338,7 @@ on_error: // Yes, I know GOTOs are bad, but it's more readable than typing what'
 }
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
-int kindle_create_package_archive(const char *outname, char **filename, int total_files, RSA *rsa_pkey_file)
+int kindle_create_package_archive(const char *outname, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
     struct archive *disk;
@@ -364,9 +364,6 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
 
     // To avoid code duplication, we're going to add & sign our bundle file with a bit of a hack.
     // Build it in our PWD, and append it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
-    filename[total_files] = INDEX_FILE_NAME;
-    total_files++;
-
     if((bundlefile = fopen(INDEX_FILE_NAME, "w+")) == NULL)
     {
         fprintf(stderr, "Cannot create index file.\n");
@@ -404,23 +401,32 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 return 1;
             }
-            // Get some basic entry fields from stat (use the entry sourcepath, we might be in the middle of a directory lookup)
+            // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
             const char* pathname = archive_entry_pathname( entry );
-            const char* sourcepath = archive_entry_sourcepath( entry ); // TODO:FIXME: I'm dumb, fix this, it's breaking everything ;)
+            // Get our absolute path, or weird things happen with the directory lookup...
+            char *resolved_path = NULL;
+            char *sourcepath = realpath(pathname, resolved_path);
+            archive_entry_copy_sourcepath(entry, sourcepath);
+            free(resolved_path);
+
             // Dirty hack ahoy. If we're the last file in our list/our bundlefile, close its fd
             if ( i == total_files - 1 )
+            {
+                printf("Closing bundlefile\n"); // XXX
                 fclose(bundlefile);
+            }
 
-            stat(sourcepath, &st);
+            // use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
+            lstat(pathname, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if (r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
             if (r == ARCHIVE_FATAL)
                 return 1;
 
-            printf("st.st_uid: %d\n", st.st_uid);	// XXX
-            printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
-            printf("entry pathname: %s\n", pathname);	// XXX
+            //printf("st.st_uid: %d\n", st.st_uid);	// XXX
+            //printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
+            printf("entry pathname: %s; sourcepath: %s\n", pathname, archive_entry_sourcepath(entry));	// XXX
             // And then override a bunch of stuff (namely, uig/guid/chmod)
             archive_entry_set_uid(entry, 0);
             archive_entry_set_uname(entry, "root");
@@ -431,21 +437,21 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
-            printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
+            //printf("entry user: %s\n", archive_entry_uname(entry));	// XXX
 
             // NOTE: I actually don't know if the directory lookup is live, but let's avoid signing/adding sig files multiple times anyway
             if (IS_SIG(pathname))
             {
-                printf("Skipping sig file '%s' because we probably already added it manually", pathname);
+                printf("Skipping sig file '%s' because we probably already added it manually\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
 
             // If we have a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if (S_ISREG(st.st_mode)) {
-                if((file = fopen(sourcepath, "r")) == NULL)
+                if((file = fopen(pathname, "r")) == NULL)
                 {
-                    fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);       // We cheat a bit on the output here, pathname != sourcepath in every case
+                    fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
                     return -1;  // FIXME: Don't return right now, we need to close our archive properly
                 }
                 // Don't hash our bundlefile
@@ -463,10 +469,9 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
 
                 char signame[PATH_MAX + 1];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
-                char source_signame[PATH_MAX + 1];
-                snprintf(signame, PATH_MAX, "%s.sig", sourcepath);
-                printf("signame: %s; source_signame: %s\n", signame, source_signame); // XXX
-                if((sigfile = fopen(source_signame, "w")) == NULL)
+                printf("signame: %s\n", signame); // XXX
+                printf("**4** '%s'\n", pathname);       // XXX
+                if((sigfile = fopen(signame, "w")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
                     return -1;  // FIXME
@@ -501,6 +506,7 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
                 if (r == ARCHIVE_FATAL)
                     return 1;
                 if (r > ARCHIVE_FAILED) {
+                    printf("sourcepath(entry) = '%s'\n", archive_entry_sourcepath(entry));       // XXX
                     fd = open(archive_entry_sourcepath(entry), O_RDONLY);
                     len = read(fd, buff, sizeof(buff));
                     while (len > 0) {
@@ -512,7 +518,7 @@ int kindle_create_package_archive(const char *outname, char **filename, int tota
                 archive_entry_free(entry);
 
                 // Now, inject a new entry, based on our sigfile :)
-                stat(source_signame, &st);
+                lstat(signame, &st);
                 entry = archive_entry_new();
                 archive_entry_copy_stat(entry, &st);
                 archive_entry_set_pathname(entry, signame);
@@ -995,7 +1001,6 @@ int kindle_create_main(int argc, char *argv[])
         optcount = optind;
         // Alloc our input filelist, based on the number of non-options, minus the output
         // Heavily *cough* 'inspired' *cough* from http://stackoverflow.com/questions/5935933/
-        //input_total = argc - optcount - 1;
         // Keep an extra space for the bundlefile
         input_total = argc - optcount;
         //input_list = malloc((argc - optcount - 1) * (PATH_MAX + 1));
@@ -1035,6 +1040,12 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "You need to specify at least ONE input item in conjunction with the output file.\n");
         return -1;
     }
+    // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
+    input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
+    strcpy(input_list[input_index], INDEX_FILE_NAME);
+    input_index++;
+
+    printf("input_total=%d; input_index=%d\n", input_total, input_index);        // XXX
 
     // libarch descend XXX
     kindle_create_package_archive(output_filename, input_list, input_total, info.sign_pkey);
@@ -1046,7 +1057,7 @@ int kindle_create_main(int argc, char *argv[])
     int c;
     // NOTE: a while (*input_list) loop is unsafe with our crappy data storage...
     //while (*input_list) {
-    for (c = 0; c < input_total - 1; c++) {
+    for (c = 0; c < input_total; c++) {
         /*
         printf("c=%d\n", c);
         printf("input_list[c]=%s\n", *input_list);

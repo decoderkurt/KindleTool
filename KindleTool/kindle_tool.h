@@ -193,7 +193,7 @@ int kindle_extract_main(int, char **);
 
 int sign_file(FILE *, RSA *, FILE *);
 FILE *gzip_file(FILE *);
-int kindle_create_package_archive(const char *, char **, int, RSA *);
+int kindle_create_package_archive(const char *, char **, const int, RSA *);
 int kindle_create_tar_from_directory(const char *, FILE *, RSA *);
 int kindle_sign_and_add_files(DIR *, char *, RSA *, FILE *, TAR *);
 int kindle_create(UpdateInformation *, FILE *, FILE *);

@@ -15,7 +15,8 @@ else
 	CFLAGS=$(OPT_CFLAGS)
 endif
 
-CFLAGS+=-pipe -Wall
+# libarchive is always built with large files support, do the same to avoid issues.
+CFLAGS+=-pipe -Wall -DFILE_OFFSET_BITS=64
 LDFLAGS?=
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
