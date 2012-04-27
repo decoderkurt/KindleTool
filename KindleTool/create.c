@@ -731,8 +731,8 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
         goto do_error;
     }
-    // Not sure why we end up with -1 instead of UINT32_MAX, but we do, so, err, use INT32_MAX instead when building an ota update, like the python tool did.
-    if(info.version != OTAUpdateV2 && info.target_revision == UINT32_MAX)
+    // Not sure why we end up with -1 instead of UINT32_MAX, but we do, so, err, clamp to INT32_MAX instead when building an ota update, like the python tool did.
+    if(info.version != OTAUpdateV2 && info.target_revision > INT32_MAX)
         info.target_revision = INT32_MAX;
     // FIXME? Untested, but I assume the same holds true for source_revision, so handle it too.
     if(info.version != OTAUpdateV2 && info.source_revision > INT32_MAX)

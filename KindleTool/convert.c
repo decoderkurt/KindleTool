@@ -422,10 +422,10 @@ int libarchive_extract(const char *filename, const char *prefix)
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
-    /*
-    flags |= ARCHIVE_EXTRACT_PERM;
-    flags |= ARCHIVE_EXTRACT_ACL;
-    */
+    // Don't preserve permissions, as most files in kindle packages will be owned by root, and if the perms are effed up, it gets annoying.
+    // We could also just rewrite every entry in the archive with sane permissions, but that seems a bit overkill.
+    //flags |= ARCHIVE_EXTRACT_PERM;
+    //flags |= ARCHIVE_EXTRACT_ACL;
     flags |= ARCHIVE_EXTRACT_FFLAGS;
 
     a = archive_read_new();
