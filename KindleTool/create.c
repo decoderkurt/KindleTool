@@ -120,7 +120,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     for (i = 0; i < total_files; i++) {
         disk = archive_read_disk_new();
 
-        // Dirty hack ahoy. If we're the last file in our list, that means we're our bundlefile, close its fd
+        // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
         if ( i == total_files - 1 )
         {
             printf("Closing bundlefile\n"); // XXX
@@ -151,7 +151,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             char *sourcepath = realpath(pathname, resolved_path);
             archive_entry_copy_sourcepath(entry, sourcepath);
 
-            // use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
+            // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
             lstat(pathname, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if (r < ARCHIVE_OK)
@@ -203,7 +203,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if (S_ISREG(st.st_mode)) {
-                if((file = fopen(pathname, "r")) == NULL)
+                if((file = fopen(pathname, "rb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
                     return -1;  // FIXME: Don't return right now, we need to close our archive properly
@@ -224,7 +224,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 char signame[PATH_MAX + 1];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
                 printf("signame: %s\n", signame); // XXX
-                if((sigfile = fopen(signame, "w")) == NULL)
+                if((sigfile = fopen(signame, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
                     return -1;  // FIXME
@@ -805,7 +805,7 @@ int kindle_create_main(int argc, char *argv[])
     // While we're at it, check that our output name properly ends in .bin
     if (IS_BIN(output_filename))
     {
-        // It is, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
+        // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
         size_t len = strlen(output_filename);
         char *tmp_outname = malloc(len - 3);
         memcpy(tmp_outname, output_filename, len - 4);

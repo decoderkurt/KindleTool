@@ -285,6 +285,7 @@ int kindle_convert_main(int argc, char *argv[])
     output = NULL;
     info_only = 0;
     keep_ori = 0;
+    extract_sig = 0;
     optcount = 0;	// XXX
     fail = 1;
     while((opt = getopt_long(argc, argv, "icks", opts, &opt_index)) != -1)
