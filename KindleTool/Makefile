@@ -5,7 +5,7 @@ OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
 
 # Kindle cross toolchain prefix
-CROSS_PREFIX=arm-kindle-linux-gnueabi-
+CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 
 SRCS=kindle_tool.c create.c convert.c
 INCLUDES=-Llib -Iincludes

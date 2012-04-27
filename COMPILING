@@ -1,19 +1,27 @@
 Recommended Compilation Directions
 
+Basically, you'll need a working toolchain, OpenSSL, and libarchive (with tar & gzip support).
+
 To compile for Linux:
-	1) Install the dependency packages: libtar-dev, libssl-dev, zlib1g-dev
+	1) Install the dependency packages: libarchive-dev, libssl-dev
 	2) Compile using "make" in the tool's directory
 
 To compile for OSX:
 	1) Get MacPorts
-	2) Install the packages: libtar, openssl, zlib
+	2) Install the packages: libarchive, openssl
 	3) Open the Xcode 4 project and compile
 
 To compile for Windows:
 	1) Get Cygwin
-	2) Install the packages: openssl-devel, zlib-devel
-	3) Compile and install libtar
+	2) Install the packages: openssl-devel
+	3) Compile and install libarchive
 	4) Compile using "make" in the tool's directory
+
+Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).
 
 NOTE: This fork is probably broken on everything except Linux x86/arm.
 Patches/Pull requests to fix that are welcome :).
+
+TODO:
+  * Restore stdout support for create
+  * Restore 'if input is a single tgz file, assume it's properly built, and just sign, munge & package it' support
