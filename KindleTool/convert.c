@@ -85,10 +85,11 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     uint16_t metastring_length;
     char *metastring;
     //unsigned char **metastrings;
+    size_t read_size;
 
     // First read the set block size and determine how much to resize
     data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(char));
-    fread(data, sizeof(char), OTA_UPDATE_V2_BLOCK_SIZE, input);
+    read_size = fread(data, sizeof(char), OTA_UPDATE_V2_BLOCK_SIZE, input);
     index = 0;
 
     source_revision = *(uint64_t *)&data[index];
@@ -104,7 +105,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
 
     // Now get the data
     data = malloc(num_devices * sizeof(uint16_t));
-    fread(data, sizeof(uint16_t), num_devices, input);
+    read_size = fread(data, sizeof(uint16_t), num_devices, input);
     for(index = 0; index < num_devices * sizeof(uint16_t); index += sizeof(uint16_t))
     {
         device = *(uint16_t *)&data[index];
@@ -114,7 +115,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
 
     // Now get second part of set sized data
     data = malloc(OTA_UPDATE_V2_PART_2_BLOCK_SIZE * sizeof(char));
-    fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
+    read_size = fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     index = 0;
 
     critical = *(uint16_t *)&data[index];
@@ -132,9 +133,9 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     // Finally, get the metastrings
     for(index = 0; index < num_metadata; index++)
     {
-        fread(&metastring_length, sizeof(uint16_t), 1, input);
+        read_size = fread(&metastring_length, sizeof(uint16_t), 1, input);
         metastring = malloc(metastring_length);
-        fread(metastring, sizeof(char), metastring_length, input);
+        read_size = fread(metastring, sizeof(char), metastring_length, input);
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
         free(metastring);
     }
