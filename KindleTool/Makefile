@@ -13,7 +13,7 @@ LIBS=-lcrypto -larchive
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
-	CFLAGS=$(DEBUG_CFLAGS)
+	CFLAGS:=$(DEBUG_CFLAGS)
 else
 	OUT_DIR=Release
 	CFLAGS?=$(OPT_CFLAGS)
@@ -21,10 +21,10 @@ endif
 
 ifeq "$(KINDLE)" "true"
 	OUT_DIR=Kindle
-	CFLAGS=$(K3_CFLAGS)
+	CFLAGS:=$(K3_CFLAGS)
 	LDFLAGS=-static -Wl,-O1 -Wl,--as-needed
-	GCC=$(CROSS_PREFIX)gcc
-	STRIP=$(CROSS_PREFIX)strip
+	GCC:=$(CROSS_PREFIX)gcc
+	STRIP:=$(CROSS_PREFIX)strip
 endif
 
 # libarchive is always built with large files support, do the same to avoid issues.
