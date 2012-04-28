@@ -164,7 +164,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             archive_entry_set_gid(entry, 0);
             archive_entry_set_gname(entry, "root");
             // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-            if (S_ISREG(st.st_mode) && IS_SCRIPT(pathname))     // FIXME: Add IS_SHELL
+            if (S_ISREG(st.st_mode) && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
@@ -232,7 +232,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // Don't add the bundlefile to itself
                 if ( i != total_files - 1 )
                 {
-                    if(fprintf(bundlefile, "%d %s %s %lld %s\n", (IS_SCRIPT(pathname) ? 129 : 128), md5, pathname, (long long int)st.st_size / BLOCK_SIZE, sourcepath) < 0) // FIXME: The python script does pathname+"_file" for the last field. Also, add IS_SHELL for backward compat?
+                    if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long int)st.st_size / BLOCK_SIZE, sourcepath) < 0) // FIXME: The python script does pathname+"_file" for the last field.
                     {
                         fprintf(stderr, "Cannot write to index file.\n");
                         return -1;  // FIXME

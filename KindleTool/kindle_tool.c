@@ -223,7 +223,7 @@ int kindle_print_help(const char *prog_name)
            "    You should be able to throw a mix of files & directories as input without trouble.\n"
            "    If input is a single tarball (\".tgz\" or \".tar.gz\") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.\n"
            "    Output should be a file with the extension \".bin\", if it is not provided, output to stdout.\n"
-           "    In case of OTA updates, all files with the extension \".ffs\" will be treated as update scripts.\n"
+           "    In case of OTA updates, all files with the extension \".ffs\" or \".sh\" will be treated as update scripts.\n"
            "    \n"
            "    Type:\n"
            "      ota                         OTA V1 update package. Works on Kindle 3.0 and below.\n"

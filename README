@@ -26,7 +26,7 @@ usage:
     You should be able to throw a mix of files & directories as input without trouble."
     If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.
     Output should be a file with the extension ".bin", if it is not provided, output to stdout.
-    In case of OTA updates, all files with the extension ".ffs" will be treated as update scripts.
+    In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.
 
     Type:
       ota                         OTA V1 update package. Works on Kindle 3.0 and below.
