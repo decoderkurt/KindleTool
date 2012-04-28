@@ -838,17 +838,24 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building update type %s to %s via %s for %hd devices (", info.magic_number, output_filename, tarball_filename, info.num_devices);
+    fprintf(stderr, "Building update type %s to %s via %s for %hd device%s (", info.magic_number, output_filename, tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
-        fprintf(stderr, "%s, ", convert_device_id(info.devices[i]));
+        fprintf(stderr, "%s", convert_device_id(info.devices[i]));
+        if (i != info.num_devices - 1)
+            fprintf(stderr, ", ");
     }
-    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, Metadata: %hd (", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta);
+    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
     // Loop over meta
     for(i = 0; i < info.num_meta; i++)
-        fprintf(stderr, "%s;", info.metastrings[i]);
-    fprintf(stderr, ")\n");
+    {
+        fprintf(stderr, "%s", info.metastrings[i]);
+        if (i != info.num_meta - 1)
+            fprintf(stderr, "; ");
+        else
+            fprintf(stderr, ")\n");
+    }
 
     // Create our package archive, sigfile & bundlefile included
     if (!skip_archive)
