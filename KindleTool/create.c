@@ -575,7 +575,7 @@ int kindle_create_main(int argc, char *argv[])
     BIO *bio;
     int i;
     int optcount;
-    const char *output_filename;
+    char *output_filename;
     char *raw_filelist;
     char **input_list;
     int input_index;
@@ -586,6 +586,7 @@ int kindle_create_main(int argc, char *argv[])
     // defaults
     output = stdout;
     input = NULL;
+    output_filename = NULL;
     optcount = 0;
     input_index = 0;
     keep_archive = 0;
@@ -806,7 +807,7 @@ int kindle_create_main(int argc, char *argv[])
     // Build the package archive name based on the output name.
     char tarball_filename[PATH_MAX + 1];
     // While we're at it, check that our output name properly ends in .bin
-    if (IS_BIN(output_filename))
+    if (output_filename != NULL && IS_BIN(output_filename))
     {
         // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
         size_t len = strlen(output_filename);
@@ -821,7 +822,7 @@ int kindle_create_main(int argc, char *argv[])
     {
         // We're outputting to stdout, assign a generic name to the archive
         snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
-        output_filename = "stdout";
+        output_filename = strdup("standard output");
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
