@@ -826,9 +826,9 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
-    if (argc - optcount == 1)
+    if (input_total <= 2)
     {
-        // We didn't use input_total because we might have faked it for stdout output...
+        // Yes, 2, because we'll aways at least have the bundlefile in there, and we bump input_total when outputting to stdout...
         if (IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
             // NOTE: There's no real check beside the file extension...
@@ -839,7 +839,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building update type %s to %s via %s for %hd device%s (", info.magic_number, output_filename, tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building update type %s to %s %s %s for %hd device%s (", info.magic_number, output_filename, (skip_archive > 0 ? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
