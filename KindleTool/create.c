@@ -45,7 +45,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     }
     while((len = fread(buffer, sizeof(char), BUFFER_SIZE, in_file)) > 0)
     {
-        if (!EVP_SignUpdate(&ctx, buffer, len))
+        if(!EVP_SignUpdate(&ctx, buffer, len))
         {
             fprintf(stderr, "EVP_SignUpdate: failed.\n");
             EVP_PKEY_free(pkey);
@@ -97,7 +97,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     int i;
     FILE *file;
     FILE *sigfile;
-    char md5[MD5_HASH_LENGTH+1];
+    char md5[MD5_HASH_LENGTH + 1];
     FILE *bundlefile;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
@@ -117,34 +117,38 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     archive_write_set_format_gnutar(a);
     archive_write_open_filename(a, outname);
 
-    for (i = 0; i < total_files; i++) {
+    for(i = 0; i < total_files; i++)
+    {
         disk = archive_read_disk_new();
 
         // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
-        if ( i == total_files - 1 )
+        if(i == total_files - 1)
         {
             fclose(bundlefile);
         }
 
         r = archive_read_disk_open(disk, filename[i]);
         archive_read_disk_set_standard_lookup(disk);
-        if (r != ARCHIVE_OK) {
+        if(r != ARCHIVE_OK)
+        {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
             return 1;
         }
 
-        for (;;) {
+        for(;;)
+        {
             entry = archive_entry_new();
             r = archive_read_next_header2(disk, entry);
-            if (r == ARCHIVE_EOF)
+            if(r == ARCHIVE_EOF)
                 break;
-            if (r != ARCHIVE_OK) {
+            if(r != ARCHIVE_OK)
+            {
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 return 1;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
             // We're gonna use it after freeing entry, make a copy
-            char* pathname = strdup(archive_entry_pathname( entry ));
+            char *pathname = strdup(archive_entry_pathname(entry));
             // Get our absolute path, or weird things happen with the directory lookup...
             char *resolved_path = NULL;
             char *sourcepath = realpath(pathname, resolved_path);
@@ -153,9 +157,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
             lstat(pathname, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
-            if (r < ARCHIVE_OK)
+            if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
-            if (r == ARCHIVE_FATAL)
+            if(r == ARCHIVE_FATAL)
                 return 1;
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -164,13 +168,13 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             archive_entry_set_gid(entry, 0);
             archive_entry_set_gname(entry, "root");
             // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-            if (S_ISREG(st.st_mode) && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
+            if(S_ISREG(st.st_mode) && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
 
             // NOTE: I actually don't know if the directory lookup is live (probably not), but let's avoid signing/adding sig files multiple times anyway
-            if (IS_SIG(pathname))
+            if(IS_SIG(pathname))
             {
                 printf("Skipping sig file '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
@@ -179,14 +183,16 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
             archive_read_disk_descend(disk);
             r = archive_write_header(a, entry);
-            if (r < ARCHIVE_OK)
+            if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
-            if (r == ARCHIVE_FATAL)
+            if(r == ARCHIVE_FATAL)
                 return 1;
-            if (r > ARCHIVE_FAILED) {
+            if(r > ARCHIVE_FAILED)
+            {
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
                 len = read(fd, buff, sizeof(buff));
-                while (len > 0) {
+                while(len > 0)
+                {
                     archive_write_data(a, buff, len);
                     len = read(fd, buff, sizeof(buff));
                 }
@@ -195,14 +201,15 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             archive_entry_free(entry);
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
-            if (S_ISREG(st.st_mode)) {
+            if(S_ISREG(st.st_mode))
+            {
                 if((file = fopen(pathname, "rb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
                     return -1;  // FIXME: Don't return right now, we need to close our archive properly
                 }
                 // Don't hash our bundlefile
-                if ( i != total_files - 1 )
+                if(i != total_files - 1)
                 {
                     if(md5_sum(file, md5) != 0)
                     {
@@ -230,7 +237,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 }
 
                 // Don't add the bundlefile to itself
-                if ( i != total_files - 1 )
+                if(i != total_files - 1)
                 {
                     if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long int)st.st_size / BLOCK_SIZE, sourcepath) < 0) // FIXME: The python script does pathname+"_file" for the last field.
                     {
@@ -248,32 +255,35 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
                 r = archive_read_disk_open(disk_sig, signame);
                 archive_read_disk_set_standard_lookup(disk_sig);
-                if (r != ARCHIVE_OK) {
+                if(r != ARCHIVE_OK)
+                {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
                     return 1;
                 }
 
-                for (;;) {
+                for(;;)
+                {
                     // First, inject a new entry, based on our sigfile :)
                     entry_sig = archive_entry_new();
                     r = archive_read_next_header2(disk_sig, entry_sig);
-                    if (r == ARCHIVE_EOF)
+                    if(r == ARCHIVE_EOF)
                         break;
-                    if (r != ARCHIVE_OK) {
+                    if(r != ARCHIVE_OK)
+                    {
                         fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk_sig));
                         return 1;
                     }
                     // Get some basic entry fields from stat
-                    char* pathname_sig = strdup(archive_entry_pathname( entry_sig ));
+                    char *pathname_sig = strdup(archive_entry_pathname(entry_sig));
                     char *resolved_path_sig = NULL;
                     char *sourcepath_sig = realpath(pathname_sig, resolved_path_sig);
                     archive_entry_copy_sourcepath(entry_sig, sourcepath_sig);
 
                     lstat(pathname_sig, &st_sig);
                     r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
-                    if (r < ARCHIVE_OK)
+                    if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk_sig));
-                    if (r == ARCHIVE_FATAL)
+                    if(r == ARCHIVE_FATAL)
                         return 1;
 
                     archive_entry_set_uid(entry_sig, 0);
@@ -285,14 +295,16 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     // And then, write it to the archive...
                     archive_read_disk_descend(disk_sig);
                     r = archive_write_header(a, entry_sig);
-                    if (r < ARCHIVE_OK)
+                    if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
-                    if (r == ARCHIVE_FATAL)
+                    if(r == ARCHIVE_FATAL)
                         return 1;
-                    if (r > ARCHIVE_FAILED) {
+                    if(r > ARCHIVE_FAILED)
+                    {
                         fd = open(archive_entry_sourcepath(entry_sig), O_RDONLY);
                         len = read(fd, buff, sizeof(buff));
-                        while (len > 0) {
+                        while(len > 0)
+                        {
                             archive_write_data(a, buff, len);
                             len = read(fd, buff, sizeof(buff));
                         }
@@ -309,7 +321,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             }
 
             // Delete the bundle file once we're done
-            if ( i == total_files - 1 )
+            if(i == total_files - 1)
             {
                 remove(sourcepath);
             }
@@ -406,7 +418,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
     header = malloc(header_size);
     index = 0;
-    strncpy((char*)header, info->magic_number, MAGIC_NUMBER_LENGTH);
+    strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
     index += MAGIC_NUMBER_LENGTH;
     memcpy(&header[index], &info->source_revision, sizeof(uint64_t)); // source
     index += sizeof(uint64_t);
@@ -431,7 +443,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     index += sizeof(uint8_t);
     memset(&header[index], 0, sizeof(uint8_t)); // 1 byte padding
     index += sizeof(uint8_t);
-    if(md5_sum(input_tgz, (char*)&header[index]) < 0) // md5 hash
+    if(md5_sum(input_tgz, (char *)&header[index]) < 0) // md5 hash
     {
         fprintf(stderr, "Error calculating MD5 of package.\n");
         free(header);
@@ -450,11 +462,11 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         header_size += str_len + sizeof(uint16_t);
         header = realloc(header, header_size);
         // string length: little endian -> big endian
-        memcpy(&header[index], &((uint8_t*)&str_len)[1], sizeof(uint8_t));
+        memcpy(&header[index], &((uint8_t *)&str_len)[1], sizeof(uint8_t));
         index += sizeof(uint8_t);
-        memcpy(&header[index], &((uint8_t*)&str_len)[0], sizeof(uint8_t));
+        memcpy(&header[index], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
         index += sizeof(uint8_t);
-        strncpy((char*)&header[index], info->metastrings[i], str_len);
+        strncpy((char *)&header[index], info->metastrings[i], str_len);
         index += str_len;
     }
 
@@ -473,16 +485,16 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 
 int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *output)
 {
-	UpdateHeader header; // header to write
+    UpdateHeader header; // header to write
 
     memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
     strncpy(header.magic_number, "SP01", 4); // write magic number
     header.data.signature.certificate_number = (uint32_t)info->certificate_number; // 4 byte certificate number
-	if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH+UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH+UPDATE_SIGNATURE_BLOCK_SIZE)
-	{
+    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
+    {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
-	}
+    }
     // write signature to output
     if(sign_file(input_bin, info->sign_pkey, output) < 0)
     {
@@ -494,11 +506,11 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
 
 int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output)
 {
-	UpdateHeader header;
+    UpdateHeader header;
 
-	memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
-	strncpy(header.magic_number, info->magic_number, 4); // magic number
-	header.data.ota_update.source_revision = (uint32_t)info->source_revision; // source
+    memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
+    strncpy(header.magic_number, info->magic_number, 4); // magic number
+    header.data.ota_update.source_revision = (uint32_t)info->source_revision; // source
     header.data.ota_update.target_revision = (uint32_t)info->target_revision; // target
     header.data.ota_update.device = (uint16_t)info->devices[0]; // device
     header.data.ota_update.optional = (unsigned char)info->optional; // optional
@@ -508,10 +520,10 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
         return -1;
     }
     rewind(input_tgz); // rewind input
-    md((unsigned char*)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
+    md((unsigned char *)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
 
     // write header to output
-    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH+OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH+OTA_UPDATE_BLOCK_SIZE)
+    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
@@ -525,9 +537,9 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 {
     UpdateHeader header;
 
-	memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
-	strncpy(header.magic_number, info->magic_number, 4); // magic number
-	header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
+    memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
+    strncpy(header.magic_number, info->magic_number, 4); // magic number
+    header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
     header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
     header.data.recovery_update.minor = (uint32_t)info->minor; // minor
     header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
@@ -537,10 +549,10 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         return -1;
     }
     rewind(input_tgz); // rewind input
-    md((unsigned char*)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
+    md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
 
     // write header to output
-    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH+RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH+RECOVERY_UPDATE_BLOCK_SIZE)
+    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
@@ -554,7 +566,8 @@ int kindle_create_main(int argc, char *argv[])
 {
     int opt;
     int opt_index;
-    static const struct option opts[] = {
+    static const struct option opts[] =
+    {
         { "device", required_argument, NULL, 'd' },
         { "key", required_argument, NULL, 'k' },
         { "bundle", required_argument, NULL, 'b' },
@@ -630,36 +643,36 @@ int kindle_create_main(int argc, char *argv[])
             case 'd':
                 info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                 if(strncmp(optarg, "k1", 2) == 0)
-                    info.devices[info.num_devices-1] = Kindle1;
+                    info.devices[info.num_devices - 1] = Kindle1;
                 else if(strncmp(optarg, "k2", 2) == 0)
-                    info.devices[info.num_devices-1] = Kindle2US;
+                    info.devices[info.num_devices - 1] = Kindle2US;
                 else if(strncmp(optarg, "k2i", 3) == 0)
-                    info.devices[info.num_devices-1] = Kindle2International;
+                    info.devices[info.num_devices - 1] = Kindle2International;
                 else if(strncmp(optarg, "dx", 2) == 0)
-                    info.devices[info.num_devices-1] = KindleDXUS;
+                    info.devices[info.num_devices - 1] = KindleDXUS;
                 else if(strncmp(optarg, "dxi", 3) == 0)
-                    info.devices[info.num_devices-1] = KindleDXInternational;
+                    info.devices[info.num_devices - 1] = KindleDXInternational;
                 else if(strncmp(optarg, "dxg", 3) == 0)
-                    info.devices[info.num_devices-1] = KindleDXGraphite;
+                    info.devices[info.num_devices - 1] = KindleDXGraphite;
                 else if(strncmp(optarg, "k3w", 3) == 0)
-                    info.devices[info.num_devices-1] = Kindle3Wifi;
+                    info.devices[info.num_devices - 1] = Kindle3Wifi;
                 else if(strncmp(optarg, "k3g", 2) == 0)
-                    info.devices[info.num_devices-1] = Kindle3Wifi3G;
+                    info.devices[info.num_devices - 1] = Kindle3Wifi3G;
                 else if(strncmp(optarg, "k3gb", 3) == 0)
-                    info.devices[info.num_devices-1] = Kindle3Wifi3GEurope;
+                    info.devices[info.num_devices - 1] = Kindle3Wifi3GEurope;
                 else if(strncmp(optarg, "k4", 2) == 0)
                 {
-                    info.devices[info.num_devices-1] = Kindle4NonTouch;
+                    info.devices[info.num_devices - 1] = Kindle4NonTouch;
                     strncpy(info.magic_number, "FC04", 4);
                 }
                 else if(strncmp(optarg, "k5w", 3) == 0)
                 {
-                    info.devices[info.num_devices-1] = Kindle5TouchWifi;
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi;
                     strncpy(info.magic_number, "FD04", 4);
                 }
                 else if(strncmp(optarg, "k5g", 2) == 0)
                 {
-                    info.devices[info.num_devices-1] = Kindle5TouchWifi3G;
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
                 }
                 else
@@ -718,8 +731,8 @@ int kindle_create_main(int argc, char *argv[])
                     fprintf(stderr, "Metastring too long. Max length: %d, input: %s\n", 0xFFFF, optarg);
                     goto do_error;
                 }
-                info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char*));
-                info.metastrings[info.num_meta-1] = strdup(optarg);
+                info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char *));
+                info.metastrings[info.num_meta - 1] = strdup(optarg);
                 break;
             case 'a':
                 keep_archive = 1;
@@ -753,14 +766,15 @@ int kindle_create_main(int argc, char *argv[])
     if(info.version == OTAUpdate)
     {
         // OTA v1 only supports one device, we don't need to loop (reject anything newer than a K3GB)
-        if (info.devices[0] > Kindle3Wifi3GEurope)
+        if(info.devices[0] > Kindle3Wifi3GEurope)
         {
             fprintf(stderr, "Unsupported device for this update type\n");
             goto do_error;
         }
     }
 
-    if (optind < argc) {
+    if(optind < argc)
+    {
         // Save 'real' options count
         optcount = optind;
         // Alloc our input filelist, based on the number of non-options, minus the output
@@ -768,21 +782,25 @@ int kindle_create_main(int argc, char *argv[])
         // Keep an extra space for the bundlefile
         input_total = argc - optcount;
         // If we only have one input file, fake it, or things go kablooey with stdout output
-        if (input_total == 1)
+        if(input_total == 1)
             input_total++;
         raw_filelist = malloc(input_total * (PATH_MAX + 1));
         input_list = malloc(sizeof(*input_list) * input_total);
         // Iterate over non-options (the file(s) we passed)
-        while (optind < argc) {
+        while(optind < argc)
+        {
             // The last one will always be our output (but only check if we have at least one input file, we might really want to output to stdout)
-            if (optind == argc - 1 && input_index > 0) {
+            if(optind == argc - 1 && input_index > 0)
+            {
                 output_filename = argv[optind++];
                 if((output = fopen(output_filename, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create output '%s'.\n", output_filename);
                     goto do_error;
                 }
-            } else {
+            }
+            else
+            {
                 // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us
                 const char *tmp_buf = argv[optind++];
                 input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
@@ -791,11 +809,14 @@ int kindle_create_main(int argc, char *argv[])
                 input_index++;
             }
         }
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "No input/output specified.\n");
         return -1;
     }
-    if (input_total < 1) {
+    if(input_total < 1)
+    {
         fprintf(stderr, "You need to specify at least ONE input item in conjunction with the output file.\n");
         return -1;
     }
@@ -807,7 +828,7 @@ int kindle_create_main(int argc, char *argv[])
     // Build the package archive name based on the output name.
     char tarball_filename[PATH_MAX + 1];
     // While we're at it, check that our output name properly ends in .bin
-    if (output_filename != NULL && IS_BIN(output_filename))
+    if(output_filename != NULL && IS_BIN(output_filename))
     {
         // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
         size_t len = strlen(output_filename);
@@ -826,10 +847,10 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
-    if (input_total <= 2)
+    if(input_total <= 2)
     {
         // Yes, 2, because we'll aways at least have the bundlefile in there, and we bump input_total when outputting to stdout...
-        if (IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
+        if(IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
             // NOTE: There's no real check beside the file extension...
             skip_archive = 1;
@@ -844,7 +865,7 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < info.num_devices; i++)
     {
         fprintf(stderr, "%s", convert_device_id(info.devices[i]));
-        if (i != info.num_devices - 1)
+        if(i != info.num_devices - 1)
             fprintf(stderr, ", ");
     }
     fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
@@ -852,14 +873,14 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < info.num_meta; i++)
     {
         fprintf(stderr, "%s", info.metastrings[i]);
-        if (i != info.num_meta - 1)
+        if(i != info.num_meta - 1)
             fprintf(stderr, "; ");
         else
             fprintf(stderr, ")\n");
     }
 
     // Create our package archive, sigfile & bundlefile included
-    if (!skip_archive)
+    if(!skip_archive)
         kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
 
     // And finally, build our package :).
@@ -869,7 +890,7 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
     // Don't try to create a file if we're outputting to stdout
-    if (output != stdout)
+    if(output != stdout)
     {
         if((output = fopen(output_filename, "wb")) == NULL)
         {
@@ -891,10 +912,10 @@ int kindle_create_main(int argc, char *argv[])
         free(info.metastrings[i]);
     free(info.metastrings);
     fclose(input);
-    if (output != stdout)
+    if(output != stdout)
         fclose(output);
     // Remove tarball, unless we asked to keep it
-    if (!keep_archive)
+    if(!keep_archive)
         remove(tarball_filename);
 
     return 0;
@@ -905,9 +926,9 @@ do_error:
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-    if (input != NULL)
+    if(input != NULL)
         fclose(input);
-    if (output != NULL && output != stdout)
+    if(output != NULL && output != stdout)
         fclose(output);
     return -1;
 }

@@ -25,7 +25,7 @@ void md(unsigned char *bytes, size_t length)
     int i;
     for(i = 0; i < length; i++)
     {
-        bytes[i] = ( ( bytes[i] >> 4 | bytes[i] << 4 ) & 0xFF ) ^ 0x7A;
+        bytes[i] = ((bytes[i] >> 4 | bytes[i] << 4) & 0xFF) ^ 0x7A;
     }
 }
 
@@ -34,70 +34,70 @@ void dm(unsigned char *bytes, size_t length)
     int i;
     for(i = 0; i < length; i++)
     {
-        bytes[i] = ( bytes[i] ^ 0x7A );
-        bytes[i] = ( bytes[i] >> 4 | bytes[i] << 4 ) & 0xFF;
+        bytes[i] = (bytes[i] ^ 0x7A);
+        bytes[i] = (bytes[i] >> 4 | bytes[i] << 4) & 0xFF;
     }
 }
 
 int munger(FILE *input, FILE *output, size_t length)
 {
-	unsigned char bytes[BUFFER_SIZE];
-	size_t bytes_read;
-	size_t bytes_written;
+    unsigned char bytes[BUFFER_SIZE];
+    size_t bytes_read;
+    size_t bytes_written;
 
-	while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
-	{
-		md(bytes, bytes_read);
-		bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
-		if(ferror(output) != 0)
-		{
-			fprintf(stderr, "Error munging, cannot write to output.\n");
-			return -1;
-		}
-		else if(bytes_written < bytes_read)
-		{
-			fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
-			return -1;
-		}
-		length -= bytes_read;
-	}
-	if(ferror(input) != 0)
-	{
-		fprintf(stderr, "Error munging, cannot read input.\n");
-		return -1;
-	}
+    while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
+    {
+        md(bytes, bytes_read);
+        bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
+        if(ferror(output) != 0)
+        {
+            fprintf(stderr, "Error munging, cannot write to output.\n");
+            return -1;
+        }
+        else if(bytes_written < bytes_read)
+        {
+            fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
+            return -1;
+        }
+        length -= bytes_read;
+    }
+    if(ferror(input) != 0)
+    {
+        fprintf(stderr, "Error munging, cannot read input.\n");
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 int demunger(FILE *input, FILE *output, size_t length)
 {
-	unsigned char bytes[BUFFER_SIZE];
-	size_t bytes_read;
-	size_t bytes_written;
-	while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
-	{
-		dm(bytes, bytes_read);
-		bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
-		if(ferror(output) != 0)
-		{
-			fprintf(stderr, "Error munging, cannot write to output.\n");
-			return -1;
-		}
-		else if(bytes_written < bytes_read)
-		{
-			fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
-			return -1;
-		}
-		length -= bytes_read;
-	}
-	if(ferror(input) != 0)
-	{
-		fprintf(stderr, "Error munging, cannot read input.\n");
-		return -1;
-	}
+    unsigned char bytes[BUFFER_SIZE];
+    size_t bytes_read;
+    size_t bytes_written;
+    while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
+    {
+        dm(bytes, bytes_read);
+        bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
+        if(ferror(output) != 0)
+        {
+            fprintf(stderr, "Error munging, cannot write to output.\n");
+            return -1;
+        }
+        else if(bytes_written < bytes_read)
+        {
+            fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
+            return -1;
+        }
+        length -= bytes_read;
+    }
+    if(ferror(input) != 0)
+    {
+        fprintf(stderr, "Error munging, cannot read input.\n");
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 const char *convert_device_id(Device dev)
@@ -154,7 +154,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     size_t bytes_read;
     MD5_CTX md5;
     unsigned char output[MD5_DIGEST_LENGTH];
-    char output_string_temp[MD5_HASH_LENGTH+1]; // sprintf adds trailing null, we do not want that!
+    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds trailing null, we do not want that!
     int i;
 
     MD5_Init(&md5);
@@ -164,13 +164,13 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     if(ferror(input) != 0)
     {
-		fprintf(stderr, "Error reading input.\n");
-		return -1;
+        fprintf(stderr, "Error reading input.\n");
+        return -1;
     }
     MD5_Final(output, &md5);
     for(i = 0; i < MD5_DIGEST_LENGTH; i++)
     {
-        sprintf(output_string_temp+(i*2), "%02x", output[i]);
+        sprintf(output_string_temp + (i * 2), "%02x", output[i]);
     }
     memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // remove the trailing null. any better way to do this?
     return 0;
@@ -182,7 +182,7 @@ RSA *get_default_key()
     BIO *bio;
     if(rsa_pkey == NULL)
     {
-        bio = BIO_new_mem_buf((void*)SIGN_KEY, -1);
+        bio = BIO_new_mem_buf((void *)SIGN_KEY, -1);
         if(PEM_read_bio_RSAPrivateKey(bio, &rsa_pkey, NULL, NULL) == NULL)
         {
             fprintf(stderr, "Error loading RSA Private Key File\n");
@@ -195,84 +195,84 @@ RSA *get_default_key()
 int kindle_print_help(const char *prog_name)
 {
     printf(
-           "usage:\n"
-           "  %s dm [ <input> ] [ <output> ]\n"
-           "    Obfuscates data using Amazon's update algorithm.\n"
-           "    If no input is provided, input from stdin\n"
-           "    If no output is provided, output to stdout\n"
-           "    \n"
-           "  %s md [ <input> ] [ <output> ]\n"
-           "    Deobfuscates data using Amazon's update algorithm.\n"
-           "    If no input is provided, input from stdin\n"
-           "    If no output is provided, output to stdout\n"
-           "    \n"
-           "  %s convert [options] <input>...\n"
-           "    Converts a Kindle update package to a gzipped TAR file, and delete input\n"
-           "    \n"
-           "    Options:\n"
-           "      -c, --stdout                Write to standard output, keeping original files unchanged\n"
-           "      -i, --info                  Just print the package information, no conversion done\n"
-           "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
-           "      -k, --keep                  Don't delete the input package.\n"
-           "      \n"
-           "  %s extract <input> <output>\n"
-           "    Extracts a Kindle update package to a directory\n"
-           "    \n"
-           "  %s create <type> <devices> [options] <dir|file>... [ <output> ]\n"
-           "    Creates a Kindle update package\n"
-           "    You should be able to throw a mix of files & directories as input without trouble.\n"
-           "    If input is a single tarball (\".tgz\" or \".tar.gz\") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.\n"
-           "    Output should be a file with the extension \".bin\", if it is not provided, output to stdout.\n"
-           "    In case of OTA updates, all files with the extension \".ffs\" or \".sh\" will be treated as update scripts.\n"
-           "    \n"
-           "    Type:\n"
-           "      ota                         OTA V1 update package. Works on Kindle 3.0 and below.\n"
-           "      ota2                        OTA V2 signed update package. Works on Kindle 4.0 and up.\n"
-           "      recovery                    Recovery package for restoring partitions.\n"
-           "    \n"
-           "    Devices:\n"
-           "      OTA V1 packages only support one device. OTA V2 packages can support multiple devices.\n"
-           "      \n"
-           "      -d, --device k1             Kindle 1\n"
-           "      -d, --device k2             Kindle 2 US\n"
-           "      -d, --device k2i            Kindle 2 International\n"
-           "      -d, --device dx             Kindle DX US\n"
-           "      -d, --device dxi            Kindle DX International\n"
-           "      -d, --device dxg            Kindle DX Graphite\n"
-           "      -d, --device k3w            Kindle 3 Wifi\n"
-           "      -d, --device k3g            Kindle 3 Wifi+3G\n"
-           "      -d, --device k3gb           Kindle 3 Wifi+3G Europe\n"
-           "      -d, --device k4             Kindle 4 (No Touch)\n"
-           "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
-           "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
-           "      \n"
-           "    Options:\n"
-           "      All the following options are optional and advanced.\n"
-           "      -k, --key <file>            PEM file containing RSA private key to sign update. Default is popular jailbreak key.\n"
-           "      -b, --bundle <type>         Manually specify package magic number. Overrides \"type\". Valid bundle versions:\n"
-           "                                    FB01, FB02 = recovery; FC02, FD03 = ota; FC04, FD04, FL01 = ota2\n"
-           "      -s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
-           "                                    Lowest version of device that package supports. Default is 0.\n"
-           "      -t, --tgtrev <ulong|uint>   OTA updates only. Target revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
-           "                                    Highest version of device that package supports. Default is max int value.\n"
-           "      -1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.\n"
-           "      -2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.\n"
-           "      -m, --minor <uint>          Recovery updates only. Minor number. Default is 0.\n"
-           "      -c, --cert <ushort>         OTA V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is 0.\n"
-           "                                    0 = pubdevkey01.pem, 1 = pubprodkey01.pem, 2 = pubprodkey02.pem\n"
-           "      -o, --opt <uchar>           OTA V1 updates only. One byte optional data expressed as a number. Default is 0.\n"
-           "      -r, --crit <uchar>          OTA V2 updates only. One byte optional data expressed as a number. Default is 0.\n"
-           "      -x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple \"--meta\" options supported.\n"
-           "                                    Format of metastring must be: key=value\n"
-           "      -a, --archive               Keep the intermediate archive.\n"
-           "      \n"
-           "  %s info <serialno>\n"
-           "    Get the default root password\n"
-           "    \n"
-           "notices:\n"
-           "  1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
-           "  2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).\n"
-           , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
+        "usage:\n"
+        "  %s dm [ <input> ] [ <output> ]\n"
+        "    Obfuscates data using Amazon's update algorithm.\n"
+        "    If no input is provided, input from stdin\n"
+        "    If no output is provided, output to stdout\n"
+        "    \n"
+        "  %s md [ <input> ] [ <output> ]\n"
+        "    Deobfuscates data using Amazon's update algorithm.\n"
+        "    If no input is provided, input from stdin\n"
+        "    If no output is provided, output to stdout\n"
+        "    \n"
+        "  %s convert [options] <input>...\n"
+        "    Converts a Kindle update package to a gzipped TAR file, and delete input\n"
+        "    \n"
+        "    Options:\n"
+        "      -c, --stdout                Write to standard output, keeping original files unchanged\n"
+        "      -i, --info                  Just print the package information, no conversion done\n"
+        "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
+        "      -k, --keep                  Don't delete the input package.\n"
+        "      \n"
+        "  %s extract <input> <output>\n"
+        "    Extracts a Kindle update package to a directory\n"
+        "    \n"
+        "  %s create <type> <devices> [options] <dir|file>... [ <output> ]\n"
+        "    Creates a Kindle update package\n"
+        "    You should be able to throw a mix of files & directories as input without trouble.\n"
+        "    If input is a single tarball (\".tgz\" or \".tar.gz\") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.\n"
+        "    Output should be a file with the extension \".bin\", if it is not provided, output to stdout.\n"
+        "    In case of OTA updates, all files with the extension \".ffs\" or \".sh\" will be treated as update scripts.\n"
+        "    \n"
+        "    Type:\n"
+        "      ota                         OTA V1 update package. Works on Kindle 3.0 and below.\n"
+        "      ota2                        OTA V2 signed update package. Works on Kindle 4.0 and up.\n"
+        "      recovery                    Recovery package for restoring partitions.\n"
+        "    \n"
+        "    Devices:\n"
+        "      OTA V1 packages only support one device. OTA V2 packages can support multiple devices.\n"
+        "      \n"
+        "      -d, --device k1             Kindle 1\n"
+        "      -d, --device k2             Kindle 2 US\n"
+        "      -d, --device k2i            Kindle 2 International\n"
+        "      -d, --device dx             Kindle DX US\n"
+        "      -d, --device dxi            Kindle DX International\n"
+        "      -d, --device dxg            Kindle DX Graphite\n"
+        "      -d, --device k3w            Kindle 3 Wifi\n"
+        "      -d, --device k3g            Kindle 3 Wifi+3G\n"
+        "      -d, --device k3gb           Kindle 3 Wifi+3G Europe\n"
+        "      -d, --device k4             Kindle 4 (No Touch)\n"
+        "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
+        "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
+        "      \n"
+        "    Options:\n"
+        "      All the following options are optional and advanced.\n"
+        "      -k, --key <file>            PEM file containing RSA private key to sign update. Default is popular jailbreak key.\n"
+        "      -b, --bundle <type>         Manually specify package magic number. Overrides \"type\". Valid bundle versions:\n"
+        "                                    FB01, FB02 = recovery; FC02, FD03 = ota; FC04, FD04, FL01 = ota2\n"
+        "      -s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
+        "                                    Lowest version of device that package supports. Default is 0.\n"
+        "      -t, --tgtrev <ulong|uint>   OTA updates only. Target revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
+        "                                    Highest version of device that package supports. Default is max int value.\n"
+        "      -1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.\n"
+        "      -2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.\n"
+        "      -m, --minor <uint>          Recovery updates only. Minor number. Default is 0.\n"
+        "      -c, --cert <ushort>         OTA V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is 0.\n"
+        "                                    0 = pubdevkey01.pem, 1 = pubprodkey01.pem, 2 = pubprodkey02.pem\n"
+        "      -o, --opt <uchar>           OTA V1 updates only. One byte optional data expressed as a number. Default is 0.\n"
+        "      -r, --crit <uchar>          OTA V2 updates only. One byte optional data expressed as a number. Default is 0.\n"
+        "      -x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple \"--meta\" options supported.\n"
+        "                                    Format of metastring must be: key=value\n"
+        "      -a, --archive               Keep the intermediate archive.\n"
+        "      \n"
+        "  %s info <serialno>\n"
+        "    Get the default root password\n"
+        "    \n"
+        "notices:\n"
+        "  1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
+        "  2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).\n"
+        , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
     return 0;
 }
 
@@ -399,7 +399,7 @@ int kindle_info_main(int argc, char *argv[])
     return 0;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     const char *prog_name;
     const char *cmd;
@@ -409,12 +409,16 @@ int main (int argc, char *argv[])
     argv++;
     argc--;
 
-    if (argc > 0) {
-        if (strncmp(argv[0], "--", 2) == 0) {
+    if(argc > 0)
+    {
+        if(strncmp(argv[0], "--", 2) == 0)
+        {
             // Allow our commands to be passed in longform
             argv[0] += 2;
         }
-    } else {
+    }
+    else
+    {
         // No command was given, print help and die
         kindle_print_help(prog_name);
         exit(1);
@@ -444,7 +448,8 @@ int main (int argc, char *argv[])
         return kindle_create_main(argc, argv);
     else if(strncmp(cmd, "info", 4) == 0)
         return kindle_info_main(argc, argv);
-    else {
+    else
+    {
         return kindle_print_help(prog_name);
     }
 

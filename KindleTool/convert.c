@@ -122,7 +122,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     index += sizeof(uint16_t);
     fprintf(stderr, "Critical       %hd\n", critical);
     md5_sum = &data[index];
-    dm((unsigned char*)md5_sum, MD5_HASH_LENGTH);
+    dm((unsigned char *)md5_sum, MD5_HASH_LENGTH);
     index += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, md5_sum);
     num_metadata = *(uint16_t *)&data[index];
@@ -221,7 +221,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output)
         fprintf(stderr, "Cannot read OTA header.\n");
         return -1;
     }
-    dm((unsigned char*)header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
+    dm((unsigned char *)header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.ota_update.md5_sum);
     fprintf(stderr, "Minimum OTA    %d\n", header->data.ota_update.source_revision);
     fprintf(stderr, "Target OTA     %d\n", header->data.ota_update.target_revision);
@@ -243,7 +243,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output)
         fprintf(stderr, "Cannot read recovery update header.\n");
         return -1;
     }
-    dm((unsigned char*)header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
+    dm((unsigned char *)header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.recovery_update.md5_sum);
     fprintf(stderr, "Magic 1        %d\n", header->data.recovery_update.magic_1);
     fprintf(stderr, "Magic 2        %d\n", header->data.recovery_update.magic_2);
@@ -262,7 +262,8 @@ int kindle_convert_main(int argc, char *argv[])
 {
     int opt;
     int opt_index;
-    static const struct option opts[] = {
+    static const struct option opts[] =
+    {
         { "stdout", no_argument, NULL, 'c' },
         { "info", no_argument, NULL, 'i' },
         { "keep", no_argument, NULL, 'k' },
@@ -309,29 +310,32 @@ int kindle_convert_main(int argc, char *argv[])
         }
     }
     // Don't try to output to stdout or extract the package sig if we asked for info only
-    if (info_only) {
+    if(info_only)
+    {
         output = NULL;
         extract_sig = 0;
     }
 
-    if (optind < argc) {
+    if(optind < argc)
+    {
         // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
-        while (optind < argc) {
+        while(optind < argc)
+        {
             fail = 0;
             in_name = argv[optind++];
             if(!info_only && output != stdout) // not info only AND not stdout
             {
-                out_name = malloc(strlen(in_name) + 8);	// Don't forget our friend \0
+                out_name = malloc(strlen(in_name) + 8); // Don't forget our friend \0
                 strcpy(out_name, in_name);
                 strcat(out_name, ".tar.gz");
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
                     fail = 1;
-                    continue;	// It's fatal, go away
+                    continue;   // It's fatal, go away
                 }
             }
-            if(extract_sig)	// we want the package sig (implies not info only)
+            if(extract_sig) // we want the package sig (implies not info only)
             {
                 sig_name = malloc(strlen(in_name) + 5);
                 strcpy(sig_name, in_name);
@@ -340,19 +344,19 @@ int kindle_convert_main(int argc, char *argv[])
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
                     fail = 1;
-                    continue;	// It's fatal, go away
+                    continue;   // It's fatal, go away
                 }
             }
             if((input = fopen(in_name, "rb")) == NULL)
             {
                 fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
                 fail = 1;
-                continue;	// It's fatal, go away
+                continue;   // It's fatal, go away
             }
             if(kindle_convert(input, output, sig_output) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
-                if (output != stdout)
+                if(output != stdout)
                     remove(out_name); // clean up our mess, if we made one
                 fail = 1;
             }
@@ -360,28 +364,30 @@ int kindle_convert_main(int argc, char *argv[])
                 remove(in_name);
 
             // Cleanup behind us
-            if (!info_only && output != stdout)
+            if(!info_only && output != stdout)
                 free(out_name);
             if(extract_sig)
                 free(sig_name);
-            if (output != NULL && output != stdout)
+            if(output != NULL && output != stdout)
                 fclose(output);
-            if (input != NULL)
+            if(input != NULL)
                 fclose(input);
-            if (sig_output != NULL)
+            if(sig_output != NULL)
                 fclose(sig_output);
 
             // If we're not the last file, throw an LF to untangle the output
-            if (optind < argc)
+            if(optind < argc)
                 fprintf(stderr, "\n");
         }
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "No input specified.\n");
         return -1;
     }
 
     // Return
-    if (fail)
+    if(fail)
         return -1;
     else
         return 0;
@@ -399,14 +405,16 @@ int libarchive_copy_data(struct archive *ar, struct archive *aw)
     off_t offset;
 #endif
 
-    for (;;) {
+    for(;;)
+    {
         r = archive_read_data_block(ar, &buff, &size, &offset);
-        if (r == ARCHIVE_EOF)
+        if(r == ARCHIVE_EOF)
             return (ARCHIVE_OK);
-        if (r != ARCHIVE_OK)
+        if(r != ARCHIVE_OK)
             return (r);
         r = archive_write_data_block(aw, buff, size, offset);
-        if (r != ARCHIVE_OK) {
+        if(r != ARCHIVE_OK)
+        {
             fprintf(stderr, "archive_write_data_block() failed: %s\n", archive_error_string(aw));
             return (r);
         }
@@ -441,39 +449,42 @@ int libarchive_extract(const char *filename, const char *prefix)
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
-    if (filename != NULL && strcmp(filename, "-") == 0)
+    if(filename != NULL && strcmp(filename, "-") == 0)
         filename = NULL;
-    if ((r = archive_read_open_file(a, filename, 10240))) {
+    if((r = archive_read_open_file(a, filename, 10240)))
+    {
         fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
         return(r);
     }
-    for (;;) {
+    for(;;)
+    {
         r = archive_read_next_header(a, &entry);
-        if (r == ARCHIVE_EOF)
+        if(r == ARCHIVE_EOF)
             break;
-        if (r != ARCHIVE_OK)
+        if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_read_next_header() failed: %s\n", archive_error_string(a));
-        if (r < ARCHIVE_WARN)
+        if(r < ARCHIVE_WARN)
             return(1);
         // Rewrite entry's pathname to extract in our specified directory
-        const char* path = archive_entry_pathname( entry );
+        const char *path = archive_entry_pathname(entry);
         char fixed_path[PATH_MAX + 1];
         snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
         archive_entry_set_pathname(entry, fixed_path);
         r = archive_write_header(ext, entry);
-        if (r != ARCHIVE_OK)
+        if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(ext));
-        else if (archive_entry_size(entry) > 0) {
+        else if(archive_entry_size(entry) > 0)
+        {
             libarchive_copy_data(a, ext);
-            if (r != ARCHIVE_OK)
+            if(r != ARCHIVE_OK)
                 fprintf(stderr, "copy_data() failed: %s\n", archive_error_string(ext));
-            if (r < ARCHIVE_WARN)
+            if(r < ARCHIVE_WARN)
                 return(1);
         }
         r = archive_write_finish_entry(ext);
-        if (r != ARCHIVE_OK)
+        if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
-        if (r < ARCHIVE_WARN)
+        if(r < ARCHIVE_WARN)
             return(1);
     }
     archive_read_close(a);
@@ -530,7 +541,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     fclose(bin_input);
     fclose(tgz_output);
-    if (libarchive_extract(tgz_filename, output_dir) < 0 )
+    if(libarchive_extract(tgz_filename, output_dir) < 0)
     {
         fprintf(stderr, "Error extracting temp tarball '%s' to '%s'.\n", tgz_filename, output_dir);
         remove(tgz_filename);

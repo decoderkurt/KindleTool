@@ -66,7 +66,8 @@
 #define IS_TGZ(filename) (strncmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
 #define IS_TARBALL(filename) (strncmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 
-typedef enum {
+typedef enum
+{
     UpdateSignature,
     OTAUpdateV2,
     OTAUpdate,
@@ -74,14 +75,16 @@ typedef enum {
     UnknownUpdate = -1
 } BundleVersion;
 
-typedef enum {
+typedef enum
+{
     CertificateDeveloper = 0x00,
     Certificate1K = 0x01,
     Certificate2K = 0x02,
     CertificateUnknown = 0xFF
 } CertificateNumber;
 
-typedef enum {
+typedef enum
+{
     Kindle1 = 0x01,
     Kindle2US = 0x02,
     Kindle2International = 0x03,
@@ -97,11 +100,13 @@ typedef enum {
     KindleUnknown = 0x00
 } Device;
 
-typedef struct {
+typedef struct
+{
     CertificateNumber certificate_number;
 } UpdateSignatureHeader;
 
-typedef struct {
+typedef struct
+{
     uint32_t source_revision;
     uint32_t target_revision;
     uint16_t device;
@@ -110,7 +115,8 @@ typedef struct {
     char md5_sum[MD5_HASH_LENGTH];
 } OTAUpdateHeader;
 
-typedef struct {
+typedef struct
+{
     unsigned char unused[12];
     char md5_sum[MD5_HASH_LENGTH];
     uint32_t magic_1;
@@ -119,19 +125,22 @@ typedef struct {
     uint32_t device;
 } RecoveryUpdateHeader;
 
-typedef struct {
+typedef struct
+{
     char magic_number[MAGIC_NUMBER_LENGTH];
-	union {
-		OTAUpdateHeader ota_update;
-		RecoveryUpdateHeader recovery_update;
-		UpdateSignatureHeader signature;
-		unsigned char ota_header_data[OTA_UPDATE_BLOCK_SIZE];
-		unsigned char signature_header_data[UPDATE_SIGNATURE_BLOCK_SIZE];
-		unsigned char recovery_header_data[RECOVERY_UPDATE_BLOCK_SIZE];
-	} data;
+    union
+    {
+        OTAUpdateHeader ota_update;
+        RecoveryUpdateHeader recovery_update;
+        UpdateSignatureHeader signature;
+        unsigned char ota_header_data[OTA_UPDATE_BLOCK_SIZE];
+        unsigned char signature_header_data[UPDATE_SIGNATURE_BLOCK_SIZE];
+        unsigned char recovery_header_data[RECOVERY_UPDATE_BLOCK_SIZE];
+    } data;
 } UpdateHeader;
 
-typedef struct {
+typedef struct
+{
     char magic_number[MAGIC_NUMBER_LENGTH];
     BundleVersion version;
     RSA *sign_pkey;
@@ -171,8 +180,8 @@ void dm(unsigned char *, size_t);
 int munger(FILE *, FILE *, size_t);
 int demunger(FILE *, FILE *, size_t);
 const char *convert_device_id(Device);
-BundleVersion get_bundle_version(char*);
-int md5_sum(FILE *, char*);
+BundleVersion get_bundle_version(char *);
+int md5_sum(FILE *, char *);
 RSA *get_default_key();
 int kindle_print_help(const char *prog_name);
 int kindle_deobfuscate_main(int, char **);
