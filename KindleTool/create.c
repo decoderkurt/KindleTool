@@ -132,7 +132,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         if(r != ARCHIVE_OK)
         {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
-            return 1;
+            return 1;  // FIXME
         }
 
         for(;;)
@@ -144,7 +144,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r != ARCHIVE_OK)
             {
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
-                return 1;
+                return 1;  // FIXME
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
             // We're gonna use it after freeing entry, make a copy
@@ -155,12 +155,13 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             archive_entry_copy_sourcepath(entry, sourcepath);
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
+            // NOTE: Err, except that we use the resolved path in sourcepath, and that's what we use to read the file we actually put in the archive, so, err... :D
             lstat(pathname, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
-                return 1;
+                return 1;  // FIXME
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
             archive_entry_set_uid(entry, 0);
@@ -882,7 +883,7 @@ int kindle_create_main(int argc, char *argv[])
 
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive) {
-        if (kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) < 0)
+        if (kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked file
