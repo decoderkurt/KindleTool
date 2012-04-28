@@ -16,7 +16,7 @@ ifeq "$(DEBUG)" "true"
 	CFLAGS=$(DEBUG_CFLAGS)
 else
 	OUT_DIR=Release
-	CFLAGS=$(OPT_CFLAGS)
+	CFLAGS?=$(OPT_CFLAGS)
 endif
 
 ifeq "$(KINDLE)" "true"
