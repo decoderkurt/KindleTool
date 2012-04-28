@@ -602,6 +602,7 @@ int kindle_create_main(int argc, char *argv[])
     output_filename = NULL;
     optcount = 0;
     input_index = 0;
+    input_total = 0;
     keep_archive = 0;
     skip_archive = 0;
 
@@ -880,8 +881,15 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Create our package archive, sigfile & bundlefile included
-    if(!skip_archive)
-        kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
+    if(!skip_archive) {
+        if (kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) < 0)
+        {
+            fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
+            // Delete the borked file
+            remove(tarball_filename);
+            goto do_error;
+        }
+    }
 
     // And finally, build our package :).
     if((input = fopen(tarball_filename, "rb")) == NULL)
@@ -921,7 +929,11 @@ int kindle_create_main(int argc, char *argv[])
     return 0;
 
 do_error:
-    // FIXME: Handle properly freeing input_list/raw_filelist?
+    if (input_total > 0)
+    {
+        free(input_list);
+        free(raw_filelist);
+    }
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
