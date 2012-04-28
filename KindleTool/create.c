@@ -581,6 +581,7 @@ int kindle_create_main(int argc, char *argv[])
     int input_index;
     int input_total;
     int keep_archive;
+    int skip_archive;
 
     // defaults
     output = stdout;
@@ -588,6 +589,7 @@ int kindle_create_main(int argc, char *argv[])
     optcount = 0;
     input_index = 0;
     keep_archive = 0;
+    skip_archive = 0;
 
     // Skip command
     argv++;
@@ -819,10 +821,38 @@ int kindle_create_main(int argc, char *argv[])
     {
         // We're outputting to stdout, assign a generic name to the archive
         snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
+        output_filename = "stdout";
     }
 
+    // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
+    if (argc - optcount == 1)
+    {
+        // We didn't use input_total because we might have faked it for stdout output...
+        if (IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
+        {
+            // NOTE: There's no real check beside the file extension...
+            skip_archive = 1;
+            // Use it as our tarball...
+            snprintf(tarball_filename, PATH_MAX, "%s", input_list[0]);
+        }
+    }
+
+    // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
+    fprintf(stderr, "Building update type %s to %s via %s for %hd devices (", info.magic_number, output_filename, tarball_filename, info.num_devices);
+    // Loop over devices
+    for(i = 0; i < info.num_devices; i++)
+    {
+        fprintf(stderr, "%s, ", convert_device_id(info.devices[i]));
+    }
+    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, Metadata: %hd (", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta);
+    // Loop over meta
+    for(i = 0; i < info.num_meta; i++)
+        fprintf(stderr, "%s;", info.metastrings[i]);
+    fprintf(stderr, ")\n");
+
     // Create our package archive, sigfile & bundlefile included
-    kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
+    if (!skip_archive)
+        kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey);
 
     // And finally, build our package :).
     if((input = fopen(tarball_filename, "rb")) == NULL)

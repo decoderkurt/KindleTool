@@ -63,6 +63,8 @@
 #define IS_SHELL(filename) (strncmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
 #define IS_SIG(filename) (strncmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
 #define IS_BIN(filename) (strncmp(filename+(strlen(filename)-4), ".bin", 4) == 0)
+#define IS_TGZ(filename) (strncmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
+#define IS_TARBALL(filename) (strncmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 
 typedef enum {
     UpdateSignature,
