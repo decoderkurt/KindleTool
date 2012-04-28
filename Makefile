@@ -1,14 +1,14 @@
 all:
-	make -C KindleTool
+	$(MAKE) -C KindleTool
 
 kindle:
-	make -C KindleTool kindle
+	$(MAKE) -C KindleTool kindle
 
 debug:
-	make -C KindleTool debug
+	$(MAKE) -C KindleTool debug
 
 strip:
-	make -C KindleTool strip
+	$(MAKE) -C KindleTool strip
 
 clean:
-	make -C KindleTool clean
+	$(MAKE) -C KindleTool clean
