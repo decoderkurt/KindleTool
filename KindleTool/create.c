@@ -644,35 +644,35 @@ int kindle_create_main(int argc, char *argv[])
         {
             case 'd':
                 info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
-                if(strncmp(optarg, "k1", 2) == 0)
+                if(strcmp(optarg, "k1") == 0)
                     info.devices[info.num_devices - 1] = Kindle1;
-                else if(strncmp(optarg, "k2", 2) == 0)
+                else if(strcmp(optarg, "k2") == 0)
                     info.devices[info.num_devices - 1] = Kindle2US;
-                else if(strncmp(optarg, "k2i", 3) == 0)
+                else if(strcmp(optarg, "k2i") == 0)
                     info.devices[info.num_devices - 1] = Kindle2International;
-                else if(strncmp(optarg, "dx", 2) == 0)
+                else if(strcmp(optarg, "dx") == 0)
                     info.devices[info.num_devices - 1] = KindleDXUS;
-                else if(strncmp(optarg, "dxi", 3) == 0)
+                else if(strcmp(optarg, "dxi") == 0)
                     info.devices[info.num_devices - 1] = KindleDXInternational;
-                else if(strncmp(optarg, "dxg", 3) == 0)
+                else if(strcmp(optarg, "dxg") == 0)
                     info.devices[info.num_devices - 1] = KindleDXGraphite;
-                else if(strncmp(optarg, "k3w", 3) == 0)
+                else if(strcmp(optarg, "k3w") == 0)
                     info.devices[info.num_devices - 1] = Kindle3Wifi;
-                else if(strncmp(optarg, "k3g", 2) == 0)
+                else if(strcmp(optarg, "k3g") == 0)
                     info.devices[info.num_devices - 1] = Kindle3Wifi3G;
-                else if(strncmp(optarg, "k3gb", 3) == 0)
+                else if(strcmp(optarg, "k3gb") == 0)
                     info.devices[info.num_devices - 1] = Kindle3Wifi3GEurope;
-                else if(strncmp(optarg, "k4", 2) == 0)
+                else if(strcmp(optarg, "k4") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle4NonTouch;
                     strncpy(info.magic_number, "FC04", 4);
                 }
-                else if(strncmp(optarg, "k5w", 3) == 0)
+                else if(strcmp(optarg, "k5w") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi;
                     strncpy(info.magic_number, "FD04", 4);
                 }
-                else if(strncmp(optarg, "k5g", 2) == 0)
+                else if(strcmp(optarg, "k5g") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
