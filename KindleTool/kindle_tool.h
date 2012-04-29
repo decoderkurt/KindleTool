@@ -180,6 +180,7 @@ void dm(unsigned char *, size_t);
 int munger(FILE *, FILE *, size_t);
 int demunger(FILE *, FILE *, size_t);
 const char *convert_device_id(Device);
+const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);
 RSA *get_default_key();

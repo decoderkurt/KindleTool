@@ -44,7 +44,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output)
     {
         case OTAUpdateV2:
             fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-            return kindle_convert_ota_update_v2(input, output); // no absolutet size, so no struct to pass
+            return kindle_convert_ota_update_v2(input, output); // no absolute size, so no struct to pass
             break;
         case UpdateSignature:
             if(kindle_convert_signature(&header, input, sig_output) < 0)

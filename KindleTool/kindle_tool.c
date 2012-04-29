@@ -134,6 +134,24 @@ const char *convert_device_id(Device dev)
     }
 }
 
+const char *convert_bundle_version(BundleVersion bundlev)
+{
+    switch(bundlev)
+    {
+        case UpdateSignature:
+            return "Signature";
+        case OTAUpdateV2:
+            return "OTA V2";
+        case OTAUpdate:
+            return "OTA";
+        case RecoveryUpdate:
+            return "Recovery";
+        case UnknownUpdate:
+        default:
+            return "Unknown";
+    }
+}
+
 BundleVersion get_bundle_version(char magic_number[4])
 {
     if(!strncmp(magic_number, "FB02", 4) || !strncmp(magic_number, "FB01", 4))
