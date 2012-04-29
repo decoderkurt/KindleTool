@@ -28,7 +28,7 @@ ifeq "$(KINDLE)" "true"
 endif
 
 # libarchive is always built with large files support, do the same to avoid issues.
-CFLAGS+=-pipe -Wall -DFILE_OFFSET_BITS=64
+CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64
 LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
