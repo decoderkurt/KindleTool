@@ -99,6 +99,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
     FILE *bundlefile;
+    int dirty_bundlefile;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
     // We'll build it in our PWD, and we've just appended it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
@@ -107,6 +108,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         fprintf(stderr, "Cannot create index file.\n");
         return -1;
     }
+    dirty_bundlefile = 1;
 
     a = archive_write_new();
 #if ARCHIVE_VERSION_NUMBER >= 3000000
@@ -125,6 +127,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         if(i == total_files - 1)
         {
             fclose(bundlefile);
+            dirty_bundlefile = 0;
         }
 
         r = archive_read_disk_open(disk, filename[i]);
@@ -132,7 +135,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         if(r != ARCHIVE_OK)
         {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
-            return 1;  // FIXME
+            goto cleanup;
         }
 
         for(;;)
@@ -144,7 +147,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r != ARCHIVE_OK)
             {
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
-                return 1;  // FIXME
+                goto cleanup;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
             // We're gonna use it after freeing entry, make a copy
@@ -161,7 +164,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
-                return 1;  // FIXME
+                goto cleanup;
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
             archive_entry_set_uid(entry, 0);
@@ -187,7 +190,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
             if(r == ARCHIVE_FATAL)
-                return 1;
+                goto cleanup;
             if(r > ARCHIVE_FAILED)
             {
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
@@ -207,7 +210,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if((file = fopen(pathname, "rb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
-                    return -1;  // FIXME: Don't return right now, we need to close our archive properly
+                    goto cleanup;
                 }
                 // Don't hash our bundlefile
                 if(i != total_files - 1)
@@ -216,7 +219,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "Cannot calculate hash sum for '%s'\n", pathname);
                         fclose(file);
-                        return -1;  // FIXME
+                        goto cleanup;
                     }
                     md5[MD5_HASH_LENGTH] = 0;
                     rewind(file);
@@ -227,14 +230,15 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if((sigfile = fopen(signame, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
-                    return -1;  // FIXME
+                    goto cleanup;
                 }
                 if(sign_file(file, rsa_pkey_file, sigfile) < 0)
                 {
                     fprintf(stderr, "Cannot sign '%s'\n", pathname);
                     fclose(file);
                     fclose(sigfile);
-                    return -1;  // FIXME
+                    remove(signame);   // Delete empty/broken sigfile
+                    goto cleanup;
                 }
 
                 // Don't add the bundlefile to itself
@@ -243,7 +247,11 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, st.st_size / BLOCK_SIZE, sourcepath) < 0) // FIXME: The python script does pathname+"_file" for the last field.
                     {
                         fprintf(stderr, "Cannot write to index file.\n");
-                        return -1;  // FIXME
+                        // Cleanup a bit before crapping out
+                        fclose(file);
+                        fclose(sigfile);
+                        remove(signame);
+                        goto cleanup;
                     }
                 }
 
@@ -259,7 +267,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if(r != ARCHIVE_OK)
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
-                    return 1;
+                    remove(signame);
+                    goto cleanup;
                 }
 
                 for(;;)
@@ -272,7 +281,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r != ARCHIVE_OK)
                     {
                         fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk_sig));
-                        return 1;
+                        remove(signame);
+                        goto cleanup;
                     }
                     // Get some basic entry fields from stat
                     char *pathname_sig = strdup(archive_entry_pathname(entry_sig));
@@ -285,7 +295,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk_sig));
                     if(r == ARCHIVE_FATAL)
-                        return 1;
+                    {
+                        remove(signame);
+                        goto cleanup;
+                    }
 
                     archive_entry_set_uid(entry_sig, 0);
                     archive_entry_set_uname(entry_sig, "root");
@@ -299,7 +312,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
                     if(r == ARCHIVE_FATAL)
-                        return 1;
+                    {
+                        remove(signame);
+                        goto cleanup;
+                    }
                     if(r > ARCHIVE_FAILED)
                     {
                         fd = open(archive_entry_sourcepath(entry_sig), O_RDONLY);
@@ -344,6 +360,14 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 #endif
 
     return 0;
+
+cleanup:
+    // Close & remove the bundlefile if we crapped out in the middle of processing
+    if (dirty_bundlefile)
+        fclose(bundlefile);
+    remove(INDEX_FILE_NAME);
+    // FIXME: We're probably leaking stuff, too...
+    return 1;
 }
 
 int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
