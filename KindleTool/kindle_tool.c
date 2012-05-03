@@ -287,10 +287,16 @@ int kindle_print_help(const char *prog_name)
         "  %s info <serialno>\n"
         "    Get the default root password\n"
         "    \n"
+        "  %s version\n"
+        "    Show some info about this KindleTool build\n"
+        "    \n"
+        "  %s help\n"
+        "    Show this help screen\n"
+        "    \n"
         "notices:\n"
         "  1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
         "  2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).\n"
-        , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
+        , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
     return 0;
 }
 

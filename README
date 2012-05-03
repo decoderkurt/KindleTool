@@ -72,6 +72,12 @@ usage:
   KindleTool info <serialno>
     Get the default root password
 
+  KindleTool version
+    Show some info about this KindleTool build
+
+  KindleTool help
+    Show this help screen
+
 notices:
   1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
   2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
