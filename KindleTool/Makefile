@@ -38,7 +38,8 @@ $(OUT_DIR)/%.o: %.c
 
 all:
 	mkdir -p $(OUT_DIR)
-	$(shell ./version.sh)
+	touch version.h
+	./version.sh `$(GCC) -dumpversion`
 	$(MAKE) kindletool
 
 kindletool: $(OBJS)
