@@ -4,7 +4,7 @@
 VER_FILE="version-inc"
 
 # Fallback version
-FALLBACK_VER="v0.5.GIT"
+FALLBACK_VER="v0.5-GIT"
 
 # Get the GCC version number, if we passed one
 if [[ -n "$1" ]] ; then
@@ -17,13 +17,14 @@ if [[ -f "VERSION" ]] ; then
 	VER="$(< VERSION)"
 elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 	# Get a properly formatted version string from our latest tag
-	VER="$(git describe --match "v[0-9]*" --abbrev=4 HEAD 2>/dev/null)"
+	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	case "$VER" in
 		v[0-9]*)
 			# Check if our working directory is dirty
 			git update-index -q --refresh
 			[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
-			VER=${VER//-/.}
+			# - => .
+			#VER=${VER//-/.}
 		;;
 		*)
 			VER="${FALLBACK_VER}"
@@ -33,7 +34,7 @@ else
 fi
 
 # Strip the leading 'v'
-VER=$(expr "${VER}${VER_GCC}" : v*'\(.*\)')
+#VER=$(expr "${VER}${VER_GCC}" : v*'\(.*\)')
 
 # Get current version from include file
 if [[ -r "${VER_FILE}" ]] ; then
