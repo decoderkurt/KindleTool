@@ -37,7 +37,7 @@ fi
 VER="${VER}${VER_GCC}"
 
 # Strip the leading 'v'
-#VER=$(expr "${VER}" : v*'\(.*\)')
+#VER=${VER#v*}
 
 # Get current version from include file
 if [[ -r "${VER_FILE}" ]] ; then
