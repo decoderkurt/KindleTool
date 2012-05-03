@@ -27,8 +27,13 @@ ifeq "$(KINDLE)" "true"
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
+# Version handling (taken from the git makefiles)
+version-inc: FORCE
+	@sh ./version.sh `$(GCC) -dumpversion`
+-include version-inc
+
 # libarchive is always built with large files support, do the same to avoid issues.
-CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64
+CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64 -DKT_VERSION='"$(KT_VERSION)"'
 LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
@@ -38,8 +43,6 @@ $(OUT_DIR)/%.o: %.c
 
 all:
 	mkdir -p $(OUT_DIR)
-	touch version.h
-	./version.sh `$(GCC) -dumpversion`
 	$(MAKE) kindletool
 
 kindletool: $(OBJS)
@@ -64,3 +67,6 @@ clean:
 	rm -rf Debug/kindletool
 	rm -rf Kindle/*.o
 	rm -rf Kindle/kindletool
+	rm -rf version-inc
+
+.PHONY: FORCE

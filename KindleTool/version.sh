@@ -1,27 +1,49 @@
 #!/bin/sh
 
-# Build a header file with our version tag, from git & gcc (Heavily inspired from mplayer's version.sh)
+# Build a make include with our version tag, from git & gcc (Heavily inspired from git's GIT-VERSION-GEN)
+VER_FILE="version-inc"
+
+# Fallback version
+FALLBACK_VER="v0.5.GIT"
 
 # Get the GCC version number, if we passed one
 if [[ -n "$1" ]] ; then
-	gcc_ver=" (GCC ${1})"
+	VER_GCC=" (GCC ${1})"
 fi
 
 # If we have a VERSION file, just use that (that's useful for package managers)
+# Otherwise, and if we have a proper git repo, use git!
 if [[ -f "VERSION" ]] ; then
-	version="$(< VERSION)"
+	VER="$(< VERSION)"
+elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
+	# Get a properly formatted version string from our latest tag
+	VER="$(git describe --match "v[0-9]*" --abbrev=4 HEAD 2>/dev/null)"
+	case "$VER" in
+		v[0-9]*)
+			# Check if our working directory is dirty
+			git update-index -q --refresh
+			[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
+			VER=${VER//-/.}
+		;;
+		*)
+			VER="${FALLBACK_VER}"
+	esac
+else
+	VER="${FALLBACK_VER}"
 fi
 
-# Otherwise, use git!
-if [[ -z "${version}" ]] ; then
-	git_rev="$(git describe --always HEAD 2>/dev/null)"
-	# If that didn't work, well, tough luck.
-	[[ -z "${git_rev}" ]] && git_rev="git"
+# Strip the leading 'v'
+VER=$(expr "${VER}${VER_GCC}" : v*'\(.*\)')
 
-	version="${git_rev}"
+# Get current version from include file
+if [[ -r "${VER_FILE}" ]] ; then
+	VER_CURRENT="$(sed -e 's/^KT_VERSION = //' <${VER_FILE})"
+else
+	VER_CURRENT="unset"
 fi
 
-REVISION="#define KT_REV \"${version}${gcc_ver}\""
-
-# Build our header file
-echo "${REVISION}" > version.h
+# Update our include file, if need be
+if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
+	echo >&2 "KT_VERSION = ${VER}"
+	echo "KT_VERSION = ${VER}" >${VER_FILE}
+fi

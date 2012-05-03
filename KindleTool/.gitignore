@@ -2,3 +2,5 @@
 Release/
 Debug/
 Kindle/
+# Ignore version tag
+version-inc

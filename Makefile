@@ -1,5 +1,5 @@
 all:
-	$(MAKE) -C KindleTool
+	$(MAKE) -C KindleTool all
 
 kindle:
 	$(MAKE) -C KindleTool kindle

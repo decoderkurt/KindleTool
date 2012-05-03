@@ -66,7 +66,10 @@
 #define IS_TGZ(filename) (strncmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
 #define IS_TARBALL(filename) (strncmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 
-#include "version.h"
+// Version tag fallback
+#ifndef KT_VERSION
+#define KT_VERSION "0.5.GIT"
+#endif
 
 typedef enum
 {

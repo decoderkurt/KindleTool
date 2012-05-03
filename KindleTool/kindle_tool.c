@@ -296,7 +296,7 @@ int kindle_print_help(const char *prog_name)
 
 int kindle_print_version(const char *prog_name)
 {
-    printf("%s (KindleTool) %s built on %s @ %s\n", prog_name, KT_REV, __DATE__, __TIME__);
+    printf("%s (KindleTool) %s built on %s @ %s\n", prog_name, KT_VERSION, __DATE__, __TIME__);
     return 0;
 }
 
