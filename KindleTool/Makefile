@@ -38,6 +38,7 @@ $(OUT_DIR)/%.o: %.c
 
 all:
 	mkdir -p $(OUT_DIR)
+	$(shell ./version.sh)
 	$(MAKE) kindletool
 
 kindletool: $(OBJS)

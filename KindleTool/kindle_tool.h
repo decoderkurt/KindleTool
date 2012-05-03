@@ -66,6 +66,8 @@
 #define IS_TGZ(filename) (strncmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
 #define IS_TARBALL(filename) (strncmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 
+#include "version.h"
+
 typedef enum
 {
     UpdateSignature,
@@ -184,7 +186,8 @@ const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);
 RSA *get_default_key();
-int kindle_print_help(const char *prog_name);
+int kindle_print_help(const char *);
+int kindle_print_version(const char *);
 int kindle_deobfuscate_main(int, char **);
 int kindle_obfuscate_main(int, char **);
 int kindle_info_main(int, char **);

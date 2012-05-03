@@ -294,6 +294,12 @@ int kindle_print_help(const char *prog_name)
     return 0;
 }
 
+int kindle_print_version(const char *prog_name)
+{
+    printf("%s (KindleTool) %s built on %s @ %s\n", prog_name, KT_REV, __DATE__, __TIME__);
+    return 0;
+}
+
 int kindle_obfuscate_main(int argc, char *argv[])
 {
     FILE *input;
@@ -466,6 +472,8 @@ int main(int argc, char *argv[])
         return kindle_create_main(argc, argv);
     else if(strncmp(cmd, "info", 4) == 0)
         return kindle_info_main(argc, argv);
+    else if(strncmp(cmd, "version", 7) == 0)
+        return kindle_print_version(prog_name);
     else
     {
         return kindle_print_help(prog_name);
