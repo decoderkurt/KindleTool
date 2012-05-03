@@ -33,8 +33,11 @@ else
 	VER="${FALLBACK_VER}"
 fi
 
+# Add the GCC Version
+VER="${VER}${VER_GCC}"
+
 # Strip the leading 'v'
-#VER=$(expr "${VER}${VER_GCC}" : v*'\(.*\)')
+#VER=$(expr "${VER}" : v*'\(.*\)')
 
 # Get current version from include file
 if [[ -r "${VER_FILE}" ]] ; then
@@ -47,4 +50,9 @@ fi
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo >&2 "KT_VERSION = ${VER}"
 	echo "KT_VERSION = ${VER}" >${VER_FILE}
+fi
+
+# Build a proper VERSION file (PMS)
+if [[ "${2}" == "PMS" ]] ; then
+	echo "${VER}" > VERSION
 fi
