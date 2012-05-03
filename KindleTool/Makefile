@@ -69,4 +69,5 @@ clean:
 	rm -rf Kindle/kindletool
 	rm -rf version-inc
 
+.PHONY: all clean
 .PHONY: FORCE
