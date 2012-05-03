@@ -143,7 +143,7 @@ const char *convert_bundle_version(BundleVersion bundlev)
         case OTAUpdateV2:
             return "OTA V2";
         case OTAUpdate:
-            return "OTA";
+            return "OTA V1";
         case RecoveryUpdate:
             return "Recovery";
         case UnknownUpdate:

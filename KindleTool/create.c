@@ -791,7 +791,7 @@ int kindle_create_main(int argc, char *argv[])
     // Don't try to build an ota update with ota2 only devices, or shit happens.
     if(info.version == OTAUpdate)
     {
-        // OTA v1 only supports one device, we don't need to loop (reject anything newer than a K3GB)
+        // OTA V1 only supports one device, we don't need to loop (reject anything newer than a K3GB)
         if(info.devices[0] > Kindle3Wifi3GEurope)
         {
             fprintf(stderr, "Unsupported device for this update type\n");
