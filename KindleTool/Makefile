@@ -27,8 +27,10 @@ ifeq "$(KINDLE)" "true"
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
+default: all
+
 # Version handling (taken from the git makefiles)
-version-inc: FORCE
+version-inc: .FORCE
 	@sh ./version.sh `$(GCC) -dumpversion`
 -include version-inc
 
@@ -41,15 +43,15 @@ OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 $(OUT_DIR)/%.o: %.c
 	$(GCC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
 
-all:
+outdir:
 	mkdir -p $(OUT_DIR)
-	$(MAKE) kindletool
 
-kindletool: $(OBJS)
+all: outdir kindletool
+
+kindletool: version-inc $(OBJS)
 	$(GCC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
 
-strip:
-	$(MAKE) all
+strip: all
 	$(STRIP) -s $(OUT_DIR)/kindletool
 
 debug:
@@ -57,8 +59,6 @@ debug:
 
 kindle:
 	$(MAKE) strip KINDLE=true
-
-default: all
 
 clean:
 	rm -rf Release/*.o
@@ -69,5 +69,5 @@ clean:
 	rm -rf Kindle/kindletool
 	rm -rf version-inc
 
-.PHONY: all clean
-.PHONY: FORCE
+.PHONY: all clean default outdir kindletool strip debug kindle
+.PHONY: .FORCE
