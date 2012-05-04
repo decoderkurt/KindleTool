@@ -3,7 +3,8 @@
 KindleTool \- creates/extracts Kindle updates and more
 .SH SYNOPSIS
 .B kindletool
-.I "<create|convert|extract|info|dm|md|version|help>" "[options]"
+.RB < create | convert | extract | info | dm | md | version | help >
+.RI [ options ]
 .SH DESCRIPTION
 KindleTool will help you create or extract Kindle update packages
 .SH OPTIONS
@@ -12,13 +13,13 @@ KindleTool will help you create or extract Kindle update packages
 .RB < ota | ota2 | recovery >
 Set the update type.
 .TP
-.BI \-d\  device \fR,\ \fB\-\-device= device
+.BI \-d " device, " \-\-device= device
 Set the target device.
 .I device
 is one of
-.B k1\fR,\ \fBk2\fR,\ \fBk2i\fR,\ \fBdx\fR,\ \fBdxi\fR,\ \fBdxg\fR,\ \fBk3w\fR,\ \fBk3g\fR,\ \fBk3gb\fR,\ \fBk4\fR,\ \fBk5w\fR\ or\ \fBk5g\fR.
+.BR k1 ", " k2 ", " k2i ", " dx ", " dxi ", " dxg ", " k3w ", " k3g ", " k3gb ", " k4 ", " k5w " or " k5g .
 .TP
-.BR \-k ", " \-\-key\ \fRfile
+.BR \-k ", " \-\-key " file"
 Set the private key used to sign files & package.
 .SS convert
 .SS extract
