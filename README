@@ -15,7 +15,7 @@ usage:
     Options:
       -c, --stdout                Write to standard output, keeping original files unchanged
       -i, --info                  Just print the package information, no conversion done
-      -s, --sig                   OTA V2 updates only. Extract the package signature to.
+      -s, --sig                   OTA V2 updates only. Extract the package signature.
       -k, --keep                  Don't delete the input package.
 
   KindleTool extract <input> <output>

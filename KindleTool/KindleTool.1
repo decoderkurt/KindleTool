@@ -6,25 +6,195 @@ KindleTool \- creates/extracts Kindle updates and more
 .RB < create | convert | extract | info | dm | md | version | help >
 .RI [ options ]
 .SH DESCRIPTION
-KindleTool will help you create or extract Kindle update packages
+KindleTool will help you create, convert, mangle or extract Kindle update packages, among other things.
 .SH OPTIONS
 .SS create
+.IR Syntax :
+.RB < type "> <" devices "> [" options "] <" dir | file ">... [<" output ">]"
+.RS
+Creates a Kindle update package
+.br
+You should be able to throw a mix of files & directories as input without trouble.
+.br
+If input is a single tarball
+.RI ( .tgz " or " .tar.gz )
+file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.
+.br
+Output should be a file with the extension
+.IR .bin ,
+if it is not provided, output to stdout.
+.br
+In case of OTA updates, all files with the extension
+.IR .ffs " or " .sh
+will be treated as update scripts.
+.RE
 .TP
 .RB < ota | ota2 | recovery >
 Set the update type.
+.br
+.B OTA V1
+update package. Works on Kindle 3.0 and below.
+.br
+.B OTA V2
+signed update package. Works on Kindle 4.0 and up.
+.br
+.B Recovery
+package for restoring partitions.
 .TP
-.BI \-d " device, " \-\-device= device
-Set the target device.
+.BI \-d ", " \-\-device " device"
+Set the target device(s).
+.br
+.B OTA V1
+packages only support one device.
+.br
+.B OTA V2
+packages can support multiple devices, this parameter can then be specified multiple times.
+.br
 .I device
 is one of
 .BR k1 ", " k2 ", " k2i ", " dx ", " dxi ", " dxg ", " k3w ", " k3g ", " k3gb ", " k4 ", " k5w " or " k5g .
 .TP
 .BR \-k ", " \-\-key " file"
-Set the private key used to sign files & package.
+PEM file containing RSA private key to sign update. Default is popular jailbreak key.
+.TP
+.BR \-b ", " \-\-bundle " type"
+Manually specify package magic number. Overrides the update type.
+.br
+.I type
+is one of
+.BR FB01 ", " FB02 " for "
+.IR recovery ;
+.BR FC02 ", " FD03 " for "
+.IR ota " or "
+.BR FC04 ", " FD04 ", " FL01 " for "
+.I ota2
+.TP
+.BR \-s ", " \-\-srcrev " uint"
+OTA updates only. Source revision.
+.B OTA V1
+uses
+.IR uint ,
+.B OTA V2
+uses
+.IR ulong .
+.br
+Lowest version of device that package supports. Default is
+.IR 0 .
+.TP
+.BR \-t ", " \-\-tgtrev " uint"
+OTA updates only. Target revision.
+.B OTA V1
+uses
+.IR uint ,
+.B OTA V2
+uses
+.IR ulong .
+.br
+Highest version of device that package supports. Default is
+.I max int
+value.
+.TP
+.BR \-1 ", " \-\-magic1 " uint"
+Recovery updates only. Magic number 1. Default is
+.IR 0 .
+.TP
+.BR \-2 ", " \-\-magic2 " uint"
+Recovery updates only. Magic number 2. Default is
+.IR 0 .
+.TP
+.BR \-m ", " \-\-minor " uint"
+Recovery updates only. Minor number. Default is
+.IR 0 .
+.TP
+.BR \-c ", " \-\-cert " ushort"
+OTA V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is
+.IR 0 .
+.br
+.BR 0 " = "
+.IR pubdevkey01.pem ,
+.BR 1 " = "
+.IR pubprodkey01.pem ,
+.BR 2 " = "
+.I pubprodkey02.pem
+.TP
+.BR \-o ", " \-\-opt " uchar"
+OTA V1 updates only. One byte optional data expressed as a number. Default is
+.IR 0 .
+.TP
+.BR \-r ", " \-\-crit " uchar"
+OTA V2 updates only. One byte optional data expressed as a number. Default is
+.IR 0 .
+.TP
+.BR \-x ", " \-\-meta " str"
+OTA V2 updates only. An optional string to add. This parameter can then be specified multiple times.
+.br
+Format of metastring must be:
+.BR key = \fIvalue
+.TP
+.BR \-a ", " \-\-archive
+Keep the intermediate archive.
 .SS convert
+.IR Syntax :
+.RB [ options "] <" input >...
+.RS
+Converts a Kindle update package to a gzipped TAR file, and delete input.
+.RE
+.TP
+.BR \-c ", " \-\-stdout
+Write to standard output, keeping original files unchanged
+.TP
+.BR \-i ", " \-\-info
+Just print the package information, no conversion done
+.TP
+.BR \-s ", " \-\-sig
+.B OTA V2
+updates only. Extract the package signature.
+.TP
+.BR \-k ", " \-\-keep
+Don't delete the input package.
 .SS extract
+.IR Syntax :
+.RB < input "> <" output >
+.RS
+Extracts a Kindle update package to a directory
+.RE
 .SS info
+.IR Syntax :
+.RB < serialno >
+.RS
+Get the default root password
+.RE
 .SS dm
+.IR Syntax :
+.RB [< input ">] [<" output >]
+.RS
+Obfuscates data using Amazon's update algorithm.
+.br
+If no input is provided, input from stdin
+.br
+If no output is provided, output to stdout
+.RE
 .SS md
+.IR Syntax :
+.RB [< input ">] [<" output >]
+.RS
+Deobfuscates data using Amazon's update algorithm.
+.br
+If no input is provided, input from stdin
+.br
+If no output is provided, output to stdout
+.RE
 .SS version
+Show some info about this KindleTool build
 .SS help
+Show the help screen
+.SH NOTES
+This fork is probably broken on everything except Linux x86/arm.
+.br
+Patches/Pull requests to fix that are welcome :).
+.SH BUGS
+Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
+.br
+Currently, even though OTA V2 supports updates that run on multiple devices,
+.br
+it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch)
