@@ -29,8 +29,8 @@ usage:
     In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.
 
     Type:
-      ota                         OTA V1 update package. Works on Kindle 3.0 and below.
-      ota2                        OTA V2 signed update package. Works on Kindle 4.0 and up.
+      ota                         OTA V1 update package. Works on Kindle 3 and older.
+      ota2                        OTA V2 signed update package. Works on Kindle 4 and newer.
       recovery                    Recovery package for restoring partitions.
 
     Devices:
