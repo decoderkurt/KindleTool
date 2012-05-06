@@ -886,7 +886,7 @@ int kindle_create_main(int argc, char *argv[])
         if(i != info.num_devices - 1)
             fprintf(stderr, ", ");
     }
-    fprintf(stderr, ") Min. OTA: %"PRId64"u, Target OTA: %"PRId64"u, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
+    fprintf(stderr, ") Min. OTA: %"PRIu64", Target OTA: %"PRIu64", Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", info.source_revision, info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
     // Loop over meta
     for(i = 0; i < info.num_meta; i++)
     {
