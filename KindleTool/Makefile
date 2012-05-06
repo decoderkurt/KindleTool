@@ -35,7 +35,7 @@ version-inc: .FORCE
 -include version-inc
 
 # libarchive is always built with large files support, do the same to avoid issues.
-CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64 -DKT_VERSION='"$(KT_VERSION)"'
+CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DKT_VERSION='"$(KT_VERSION)"'
 LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
