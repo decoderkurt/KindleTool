@@ -39,6 +39,11 @@
 #include <string.h>
 #include <unistd.h>
 
+// Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3
+#if ARCHIVE_VERSION_NUMBER < 3000000
+#error "KindleTool depends on libarchive >= 3.0.0"
+#endif
+
 #define BUFFER_SIZE 1024
 #define BLOCK_SIZE 64
 
