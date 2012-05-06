@@ -94,10 +94,10 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
 
     source_revision = *(uint64_t *)&data[index];
     index += sizeof(uint64_t);
-    fprintf(stderr, "Minimum OTA    %"PRIu64"\n", source_revision);
+    fprintf(stderr, "Minimum OTA    %llu\n", (long long) source_revision);
     target_revision = *(uint64_t *)&data[index];
     index += sizeof(uint64_t);
-    fprintf(stderr, "Target OTA     %"PRIu64"\n", target_revision);
+    fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
     num_devices = *(uint16_t *)&data[index];
     index += sizeof(uint16_t);
     fprintf(stderr, "Devices        %hd\n", num_devices);
