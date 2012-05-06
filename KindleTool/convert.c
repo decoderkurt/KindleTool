@@ -399,11 +399,7 @@ int libarchive_copy_data(struct archive *ar, struct archive *aw)
     int r;
     const void *buff;
     size_t size;
-#if ARCHIVE_VERSION_NUMBER >= 3000000
     int64_t offset;
-#else
-    off_t offset;
-#endif
 
     for(;;)
     {
@@ -441,11 +437,7 @@ int libarchive_extract(const char *filename, const char *prefix)
     // Let's handle a wide range or tar formats, just to be on the safe side
     archive_read_support_format_tar(a);
     archive_read_support_format_gnutar(a);
-#if ARCHIVE_VERSION_NUMBER >= 3000000
     archive_read_support_filter_gzip(a);
-#else
-    archive_read_support_compression_gzip(a);
-#endif
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);

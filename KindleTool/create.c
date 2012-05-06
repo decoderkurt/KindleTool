@@ -111,11 +111,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     dirty_bundlefile = 1;
 
     a = archive_write_new();
-#if ARCHIVE_VERSION_NUMBER >= 3000000
     archive_write_add_filter_gzip(a);
-#else
-    archive_write_set_compression_gzip(a);
-#endif
     archive_write_set_format_gnutar(a);
     archive_write_open_filename(a, outname);
 
@@ -353,11 +349,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     }
 
     archive_write_close(a);
-#if ARCHIVE_VERSION_NUMBER >= 3000000
     archive_write_free(a);
-#else
-    archive_write_finish(a);
-#endif
 
     return 0;
 
