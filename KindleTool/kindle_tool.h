@@ -40,8 +40,8 @@
 #include <unistd.h>
 
 // Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3
-#if ARCHIVE_VERSION_NUMBER < 3000000
-#error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.0
+#if ARCHIVE_VERSION_NUMBER < 3000003
+#error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #endif
 
 #define BUFFER_SIZE 1024
