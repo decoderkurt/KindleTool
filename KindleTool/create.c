@@ -425,52 +425,52 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
 
 int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output)
 {
-    int header_size;
+    unsigned int header_size;
     unsigned char *header;
-    int index;
+    int hindex;
     int i;
     size_t str_len;
 
     // first part of the set sized data
     header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
     header = malloc(header_size);
-    index = 0;
+    hindex = 0;
     strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
-    index += MAGIC_NUMBER_LENGTH;
-    memcpy(&header[index], &info->source_revision, sizeof(uint64_t)); // source
-    index += sizeof(uint64_t);
-    memcpy(&header[index], &info->target_revision, sizeof(uint64_t)); // target
-    index += sizeof(uint64_t);
-    memcpy(&header[index], &info->num_devices, sizeof(uint16_t)); // device count
-    index += sizeof(uint16_t);
+    hindex += MAGIC_NUMBER_LENGTH;
+    memcpy(&header[hindex], &info->source_revision, sizeof(uint64_t)); // source
+    hindex += sizeof(uint64_t);
+    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // target
+    hindex += sizeof(uint64_t);
+    memcpy(&header[hindex], &info->num_devices, sizeof(uint16_t)); // device count
+    hindex += sizeof(uint16_t);
 
     // next, we write the devices
     header_size += info->num_devices * sizeof(uint16_t);
     header = realloc(header, header_size);
     for(i = 0; i < info->num_devices; i++)
     {
-        memcpy(&header[index], &info->devices[i], sizeof(uint16_t)); // device
-        index += sizeof(uint16_t);
+        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t)); // device
+        hindex += sizeof(uint16_t);
     }
 
     // part two of the set sized data
     header_size += OTA_UPDATE_V2_PART_2_BLOCK_SIZE;
     header = realloc(header, header_size);
-    memcpy(&header[index], &info->critical, sizeof(uint8_t)); // critical
-    index += sizeof(uint8_t);
-    memset(&header[index], 0, sizeof(uint8_t)); // 1 byte padding
-    index += sizeof(uint8_t);
-    if(md5_sum(input_tgz, (char *)&header[index]) < 0) // md5 hash
+    memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // critical
+    hindex += sizeof(uint8_t);
+    memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
+    hindex += sizeof(uint8_t);
+    if(md5_sum(input_tgz, (char *)&header[hindex]) < 0) // md5 hash
     {
         fprintf(stderr, "Error calculating MD5 of package.\n");
         free(header);
         return -1;
     }
     rewind(input_tgz); // reset input for later reading
-    md(&header[index], MD5_HASH_LENGTH); // obfuscate md5 hash
-    index += MD5_HASH_LENGTH;
-    memcpy(&header[index], &info->num_meta, sizeof(uint16_t)); // num meta, cannot be casted
-    index += sizeof(uint16_t);
+    md(&header[hindex], MD5_HASH_LENGTH); // obfuscate md5 hash
+    hindex += MD5_HASH_LENGTH;
+    memcpy(&header[hindex], &info->num_meta, sizeof(uint16_t)); // num meta, cannot be casted
+    hindex += sizeof(uint16_t);
 
     // next, we write the meta strings
     for(i = 0; i < info->num_meta; i++)
@@ -479,12 +479,12 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         header_size += str_len + sizeof(uint16_t);
         header = realloc(header, header_size);
         // string length: little endian -> big endian
-        memcpy(&header[index], &((uint8_t *)&str_len)[1], sizeof(uint8_t));
-        index += sizeof(uint8_t);
-        memcpy(&header[index], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
-        index += sizeof(uint8_t);
-        strncpy((char *)&header[index], info->metastrings[i], str_len);
-        index += str_len;
+        memcpy(&header[hindex], &((uint8_t *)&str_len)[1], sizeof(uint8_t));
+        hindex += sizeof(uint8_t);
+        memcpy(&header[hindex], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
+        hindex += sizeof(uint8_t);
+        strncpy((char *)&header[hindex], info->metastrings[i], str_len);
+        hindex += str_len;
     }
 
     // now, we write the header to the file

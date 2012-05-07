@@ -22,7 +22,7 @@
 
 void md(unsigned char *bytes, size_t length)
 {
-    int i;
+    unsigned int i;
     for(i = 0; i < length; i++)
     {
         bytes[i] = ((bytes[i] >> 4 | bytes[i] << 4) & 0xFF) ^ 0x7A;
@@ -31,7 +31,7 @@ void md(unsigned char *bytes, size_t length)
 
 void dm(unsigned char *bytes, size_t length)
 {
-    int i;
+    unsigned int i;
     for(i = 0; i < length; i++)
     {
         bytes[i] = (bytes[i] ^ 0x7A);
@@ -194,13 +194,29 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     return 0;
 }
 
-RSA *get_default_key()
+RSA *get_default_key(void)
 {
+    static char sign_key[] =
+        "-----BEGIN RSA PRIVATE KEY-----\n"
+        "MIICXgIBAAKBgQDJn1jWU+xxVv/eRKfCPR9e47lPWN2rH33z9QbfnqmCxBRLP6mM\n"
+        "jGy6APyycQXg3nPi5fcb75alZo+Oh012HpMe9LnpeEgloIdm1E4LOsyrz4kttQtG\n"
+        "RlzCErmBGt6+cAVEV86y2phOJ3mLk0Ek9UQXbIUfrvyJnS2MKLG2cczjlQIDAQAB\n"
+        "AoGASLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJuDY6yAbYiO7kDppqj4l8\n"
+        "wGogTpv98OMXauY8JgQj6tgO5LkY2upttukDr8uhE2z9Dh7HMZV/rDYa+9rybJus\n"
+        "RiAQDmF+VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmECQQDoIokOr0fYz3UT\n"
+        "SbHfD3engXFPZ+JaJqU8xayR7C+Gp5I0CgSnCDTQVgdkVGbPuLVYiWDIcEaxjvVr\n"
+        "hXYt2Ac9AkEA3lnERgg0RmWBC3K8toCyfDvr8eXao+xgUJ3lNWbqS0HtwxczwnIE\n"
+        "H49IIDojbTnLUr3OitFMZuaJuT2MtWzTOQJBAK6GCHU54tJmZqbxqQEDJ/qPnxkM\n"
+        "CWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCECQQDI\n"
+        "s5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8X0K\n"
+        "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
+        "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\n"
+        "-----END RSA PRIVATE KEY-----\0";
     static RSA *rsa_pkey = NULL;
     BIO *bio;
     if(rsa_pkey == NULL)
     {
-        bio = BIO_new_mem_buf((void *)SIGN_KEY, -1);
+        bio = BIO_new_mem_buf((void *)sign_key, -1);
         if(PEM_read_bio_RSAPrivateKey(bio, &rsa_pkey, NULL, NULL) == NULL)
         {
             fprintf(stderr, "Error loading RSA Private Key File\n");

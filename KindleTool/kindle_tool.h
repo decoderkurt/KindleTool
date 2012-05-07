@@ -168,23 +168,6 @@ typedef struct
     char **metastrings;
 } UpdateInformation;
 
-static const char SIGN_KEY[] =
-    "-----BEGIN RSA PRIVATE KEY-----\n"
-    "MIICXgIBAAKBgQDJn1jWU+xxVv/eRKfCPR9e47lPWN2rH33z9QbfnqmCxBRLP6mM\n"
-    "jGy6APyycQXg3nPi5fcb75alZo+Oh012HpMe9LnpeEgloIdm1E4LOsyrz4kttQtG\n"
-    "RlzCErmBGt6+cAVEV86y2phOJ3mLk0Ek9UQXbIUfrvyJnS2MKLG2cczjlQIDAQAB\n"
-    "AoGASLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJuDY6yAbYiO7kDppqj4l8\n"
-    "wGogTpv98OMXauY8JgQj6tgO5LkY2upttukDr8uhE2z9Dh7HMZV/rDYa+9rybJus\n"
-    "RiAQDmF+VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmECQQDoIokOr0fYz3UT\n"
-    "SbHfD3engXFPZ+JaJqU8xayR7C+Gp5I0CgSnCDTQVgdkVGbPuLVYiWDIcEaxjvVr\n"
-    "hXYt2Ac9AkEA3lnERgg0RmWBC3K8toCyfDvr8eXao+xgUJ3lNWbqS0HtwxczwnIE\n"
-    "H49IIDojbTnLUr3OitFMZuaJuT2MtWzTOQJBAK6GCHU54tJmZqbxqQEDJ/qPnxkM\n"
-    "CWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCECQQDI\n"
-    "s5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8X0K\n"
-    "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
-    "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\n"
-    "-----END RSA PRIVATE KEY-----\0";
-
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);
 int munger(FILE *, FILE *, size_t);
@@ -193,7 +176,7 @@ const char *convert_device_id(Device);
 const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);
-RSA *get_default_key();
+RSA *get_default_key(void);
 int kindle_print_help(const char *);
 int kindle_print_version(const char *);
 int kindle_deobfuscate_main(int, char **);

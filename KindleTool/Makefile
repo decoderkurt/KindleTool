@@ -34,8 +34,17 @@ version-inc: .FORCE
 	@sh ./version.sh `$(GCC) -dumpversion`
 -include version-inc
 
+CFLAGS+=-pipe
+# Moar warnings!
+CFLAGS+=-Wall -Wformat -Wformat-security
+CFLAGS+=-Wextra -Wunused
+CFLAGS+=-Wshadow
+CFLAGS+=-Wmissing-prototypes
+CFLAGS+=-Wcast-qual
 # libarchive is always built with large files support, do the same to avoid issues.
-CFLAGS+=-pipe -Wall -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DKT_VERSION='"$(KT_VERSION)"'
+CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
+
 LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
