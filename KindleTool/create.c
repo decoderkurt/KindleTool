@@ -785,7 +785,7 @@ int kindle_create_main(int argc, char *argv[])
     if(info.version == OTAUpdate)
     {
         // OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
-        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FC02", 4) != 0 || strncmp(info.magic_number, "FD03", 4) != 0))
+        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FC02", 4) != 0 && strncmp(info.magic_number, "FD03", 4) != 0))
         {
             // FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5, so fix it silently.
             strncpy(info.magic_number, "FC02", 4);
