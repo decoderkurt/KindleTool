@@ -43,6 +43,7 @@ elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 			REV="${REV:1}"
 			# Fake our rev number
 			FREV="$(( REV + 1))"
+			# NOTE: In our case, another cheap way to get this commit count would be via $(git rev-list HEAD | wc -l)
 			# Switch the rev number in our final output
 			VER="${VER/r${REV}/r${FREV}}"
 		;;
