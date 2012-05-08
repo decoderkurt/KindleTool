@@ -109,7 +109,11 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     for(hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t))
     {
         device = *(uint16_t *)&data[hindex];
-        fprintf(stderr, "Device         %s\n", convert_device_id(device));
+        // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id
+        if (strcmp(convert_device_id(device), "Unknown") == 0)
+            fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
+        else
+            fprintf(stderr, "Device         %s\n", convert_device_id(device));
     }
     free(data);
 
