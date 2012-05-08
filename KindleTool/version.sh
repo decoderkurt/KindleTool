@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Build a make include with our version tag, from git & gcc (Heavily inspired from git's GIT-VERSION-GEN)
 VER_FILE="version-inc"
@@ -7,15 +7,15 @@ VER_FILE="version-inc"
 FALLBACK_VER="v0.5-GIT"
 
 # Get the GCC version number, if we passed one
-if [ -n "$1" ] ; then
+if [[ -n "$1" ]] ; then
 	VER_GCC=" (GCC ${1})"
 fi
 
 # If we have a VERSION file, just use that (that's useful for package managers)
 # Otherwise, and if we have a proper git repo, use git!
-if [ -f "VERSION" ] ; then
+if [[ -f "VERSION" ]] ; then
 	VER="$(< VERSION)"
-elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
+elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 	# Get a properly formatted version string from our latest tag
 	#VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	# Or from the first commit (Provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
@@ -24,13 +24,13 @@ elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 		v[0-9]*)
 			# Check if our working directory is dirty
 			git update-index -q --refresh
-			[ -z "$(git diff-index --name-only HEAD --)" ] || VER="${VER}-dirty"
+			[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
 			# - => .
 			#VER=${VER//-/.}
 		;;
 		TAIL*)
 			git update-index -q --refresh
-			[ -z "$(git diff-index --name-only HEAD --)" ] || VER="${VER}-dirty"
+			[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
 			# - => .
 			#VER=${VER//-/.}
 			# TAIL- => r (ala SVN)
@@ -60,19 +60,21 @@ VER="${VER}${VER_GCC}"
 #VER=${VER#v*}
 
 # Get current version from include file
-if [ -r "${VER_FILE}" ] ; then
-	VER_CURRENT="$(sed -e 's/^KT_VERSION = //' <${VER_FILE})"
+if [[ -r "${VER_FILE}" ]] ; then
+	VER_CURRENT="$(<${VER_FILE})"
+	# Strip var assignment
+	VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 else
 	VER_CURRENT="unset"
 fi
 
 # Update our include file, if need be
-if [ "${VER}" != "${VER_CURRENT}" ] ; then
+if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo >&2 "KT_VERSION = ${VER}"
 	echo "KT_VERSION = ${VER}" >${VER_FILE}
 fi
 
 # Build a proper VERSION file (PMS)
-if [ "${1}" == "PMS" ] ; then
+if [[ "${1}" == "PMS" ]] ; then
 	echo "${VER}" > VERSION
 fi

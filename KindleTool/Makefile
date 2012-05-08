@@ -30,8 +30,9 @@ endif
 default: all
 
 # Version handling (taken from the git makefiles)
+SHELL:=/bin/bash
 version-inc: .FORCE
-	@sh ./version.sh `$(GCC) -dumpversion`
+	@$(SHELL) ./version.sh `$(GCC) -dumpversion`
 -include version-inc
 
 CFLAGS+=-pipe
