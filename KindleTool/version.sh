@@ -18,6 +18,8 @@ if [ -f "VERSION" ] ; then
 elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 	# Get a properly formatted version string from our latest tag
 	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
+	# Or from the first commit (manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL)
+	#VER="$(git describe --match TAIL 2>/dev/null)"
 	case "$VER" in
 		v[0-9]*)
 			# Check if our working directory is dirty
@@ -25,6 +27,14 @@ elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 			[ -z "$(git diff-index --name-only HEAD --)" ] || VER="${VER}-dirty"
 			# - => .
 			#VER=${VER//-/.}
+		;;
+		TAIL*)
+			git update-index -q --refresh
+			[ -z "$(git diff-index --name-only HEAD --)" ] || VER="${VER}-dirty"
+			# - => .
+			#VER=${VER//-/.}
+			# TAIL => r (ala SVN)
+			VER="${VER//TAIL-/r}"
 		;;
 		*)
 			VER="${FALLBACK_VER}"
