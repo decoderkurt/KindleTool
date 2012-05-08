@@ -128,6 +128,10 @@ const char *convert_device_id(Device dev)
             return "Kindle 5 Touch Wifi";
         case Kindle5TouchWifi3G:
             return "Kindle 5 Touch Wifi+3G";
+        case Kindle5TouchWifi3GEurope:
+            return "Kindle 5 Touch Wifi+3G Europe";
+        case Kindle5TouchUnknown:
+            return "Kindle 5 Touch ??Unknown??";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -279,6 +283,8 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k4             Kindle 4 (No Touch)\n"
         "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
+        "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)\n"
+        "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code the 5.1.0 update can run on)\n"
         "      \n"
         "    Options:\n"
         "      All the following options are optional and advanced.\n"

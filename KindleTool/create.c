@@ -693,6 +693,16 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
                 }
+                else if(strcmp(optarg, "k5gb") == 0)
+                {
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3GEurope;
+                    strncpy(info.magic_number, "FD04", 4);
+                }
+                else if(strcmp(optarg, "k5u") == 0)
+                {
+                    info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
+                    strncpy(info.magic_number, "FD04", 4);
+                }
                 else
                 {
                     fprintf(stderr, "Unknown device %s.\n", optarg);
