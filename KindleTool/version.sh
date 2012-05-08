@@ -17,9 +17,9 @@ if [ -f "VERSION" ] ; then
 	VER="$(< VERSION)"
 elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 	# Get a properly formatted version string from our latest tag
-	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
+	#VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	# Or from the first commit (Provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
-	#VER="$(git describe --match TAIL 2>/dev/null)"
+	VER="$(git describe --match TAIL 2>/dev/null)"
 	case "$VER" in
 		v[0-9]*)
 			# Check if our working directory is dirty
@@ -36,7 +36,15 @@ elif [ -z "${VER}" -a -d "../.git" -o -f ".git" ] ; then
 			# TAIL- => r (ala SVN)
 			VER="${VER//TAIL-/r}"
 			# Technically, we get the number of commits *after* TAIL, so, effectively, TAIL is r0, not r1 like in SVN.
-			# We could tweak the output some more to correct that, but it's not really worth the effort ;).
+			# Tweak the output some more to fake that :).
+			# Strip everything after the first dash
+			REV="${VER%%-*}"
+			# Strip the first char (r)
+			REV="${REV:1}"
+			# Fake our rev number
+			FREV="$(( REV + 1))"
+			# Switch the rev number in our final output
+			VER="${VER/r${REV}/r${FREV}}"
 		;;
 		*)
 			VER="${FALLBACK_VER}"
