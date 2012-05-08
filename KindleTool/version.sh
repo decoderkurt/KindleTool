@@ -54,8 +54,10 @@ else
 	VER="${FALLBACK_VER}"
 fi
 
-# Add the GCC Version
-VER="${VER}${VER_GCC}"
+# Add the GCC Version, unless we asked to build a VERSION file
+if [[ "${1}" != "PMS" ]] ; then
+	VER="${VER}${VER_GCC}"
+fi
 
 # Strip the leading 'v'
 #VER=${VER#v*}
