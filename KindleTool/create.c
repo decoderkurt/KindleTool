@@ -355,7 +355,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
 cleanup:
     // Close & remove the bundlefile if we crapped out in the middle of processing
-    if (dirty_bundlefile)
+    if(dirty_bundlefile)
         fclose(bundlefile);
     remove(INDEX_FILE_NAME);
     // FIXME: We're probably leaking stuff, too...
@@ -899,8 +899,9 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Create our package archive, sigfile & bundlefile included
-    if(!skip_archive) {
-        if (kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) != 0)
+    if(!skip_archive)
+    {
+        if(kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked file
@@ -947,7 +948,7 @@ int kindle_create_main(int argc, char *argv[])
     return 0;
 
 do_error:
-    if (input_total > 0)
+    if(input_total > 0)
     {
         free(input_list);
         free(raw_filelist);
