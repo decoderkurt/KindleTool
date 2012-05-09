@@ -7,13 +7,15 @@ export LDFLAGS="-Wl,--as-needed"
 OPENSSL_DIR="openssl-0.9.8w"
 LIBARCHIVE_DIR="libarchive-3.0.4"
 
-# Clone it if it's not there'
+# Clone it if it's not there
 if [[ ! -d KindleTool/KindleTool ]] ; then
 	git clone git://github.com/NiLuJe/KindleTool.git
 fi
 
-# openssl: same way as in my cross builds
+# OpenSSL: pretty much the same way as in my arm builds
 if [[ ! -d "${OPENSSL_DIR}" ]] ; then
+	echo "* Building ${OPENSSL_DIR} ..."
+	echo ""
 	export LDFLAGS="-Wa,--noexecstack"
 	tar -xvzf /usr/portage/distfiles/${OPENSSL_DIR}.tar.gz
 	cd ${OPENSSL_DIR}
@@ -35,8 +37,10 @@ if [[ ! -d "${OPENSSL_DIR}" ]] ; then
 	cd ..
 fi
 
-# libarchive:
+# libarchive
 if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+	echo "* Building ${LIBARCHIVE_DIR} ..."
+	echo ""
 	export ac_cv_header_ext2fs_ext2_fs_h=0
 	export LDFLAGS="-Wl,--as-needed"
 	tar -xvzf /usr/portage/distfiles/${LIBARCHIVE_DIR}.tar.gz
@@ -47,6 +51,8 @@ if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 fi
 
 # KindleTool (OpenSSL-1)
+echo "* Building KindleTool (OpenSSL-1) ..."
+echo ""
 cd KindleTool/KindleTool
 rm -rf lib
 git pull
@@ -66,6 +72,8 @@ tar -cvzf kindletool-${REV}-static.tar.gz kindletool
 
 
 # KindleTool (OpenSSL-0.9.8)
+echo "* Building KindleTool (OpenSSL-0.9.8) ..."
+echo ""
 cd KindleTool/KindleTool
 rm -rf lib
 git pull
