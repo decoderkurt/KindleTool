@@ -50,6 +50,17 @@ if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 	cd ..
 fi
 
+# Build KT packages credits
+cat > CREDITS << EOF
+* kindletool:
+
+KindleTool, Copyright (C) 2011-2012  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+(https://github.com/NiLuJe/KindleTool/)
+
+libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
+(http://libarchive.github.com/)
+EOF
+
 # KindleTool (OpenSSL-1)
 echo "* Building KindleTool (OpenSSL-1) ..."
 echo ""
@@ -68,7 +79,8 @@ VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-tar -cvzf kindletool-${REV}-static.tar.gz kindletool
+cp -v KindleTool/README ./README
+tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README
 
 
 # KindleTool (OpenSSL-0.9.8)
@@ -93,4 +105,5 @@ VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool
+cp -v KindleTool/README ./README
+tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README
