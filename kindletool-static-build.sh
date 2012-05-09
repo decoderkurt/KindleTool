@@ -80,7 +80,7 @@ REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
-cp -v KindleTool/KindleTool.1 ./KindleTool.1
+cp -v KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
 tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README
 
 
@@ -107,5 +107,5 @@ REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
-cp -v KindleTool/KindleTool.1 ./KindleTool.1
+cp -v KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
 tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README
