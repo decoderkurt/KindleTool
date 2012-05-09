@@ -362,7 +362,7 @@ cleanup:
     return 1;
 }
 
-int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
+int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     char buffer[BUFFER_SIZE];
     size_t count;
@@ -376,20 +376,23 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
                 fprintf(stderr, "Error opening temp file.\n");
                 return -1;
             }
-            if(kindle_create_ota_update_v2(info, input_tgz, temp) < 0) // create the update
+            if(kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0) // create the update
             {
                 fprintf(stderr, "Error creating update package.\n");
                 fclose(temp);
                 return -1;
             }
             rewind(temp); // rewind the file before reading back
-            if(kindle_create_signature(info, temp, output) < 0) // write the signature
+            if (!fake_sign)
             {
-                fprintf(stderr, "Error signing update package.\n");
-                fclose(temp);
-                return -1;
+                if(kindle_create_signature(info, temp, output) < 0) // write the signature (unless we asked for an unsigned package)
+                {
+                    fprintf(stderr, "Error signing update package.\n");
+                    fclose(temp);
+                    return -1;
+                }
+                rewind(temp); // rewind the file before writing it to output
             }
-            rewind(temp); // rewind the file before writing it to output
             // write the update
             while((count = fread(buffer, sizeof(char), BUFFER_SIZE, temp)) > 0)
             {
@@ -410,10 +413,10 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
             return 0;
             break;
         case OTAUpdate:
-            return kindle_create_ota_update(info, input_tgz, output);
+            return kindle_create_ota_update(info, input_tgz, output, fake_sign);
             break;
         case RecoveryUpdate:
-            return kindle_create_recovery(info, input_tgz, output);
+            return kindle_create_recovery(info, input_tgz, output, fake_sign);
             break;
         case UnknownUpdate:
         default:
@@ -423,7 +426,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output)
     return -1;
 }
 
-int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output)
+int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     unsigned int header_size;
     unsigned char *header;
@@ -460,13 +463,40 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     hindex += sizeof(uint8_t);
     memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
     hindex += sizeof(uint8_t);
-    if(md5_sum(input_tgz, (char *)&header[hindex]) < 0) // md5 hash
+
+    // If we asked for a fake package, the Kindle expects to see the MD5 sum of the obfuscated archive, but a clear archive...
+    // If you're confused with the whole md/munger/dm/demunger, the line starts right there! :D
+    // Sum a temp obfuscated tarball to fake it ;)
+    if (fake_sign)
     {
-        fprintf(stderr, "Error calculating MD5 of package.\n");
-        free(header);
-        return -1;
+        FILE *obfuscated_tgz;
+        if((obfuscated_tgz = tmpfile()) == NULL)
+        {
+            fprintf(stderr, "Error opening temp file.\n");
+            return -1;
+        }
+        demunger(input_tgz, obfuscated_tgz, 0);
+        rewind(input_tgz);
+        rewind(obfuscated_tgz);
+        if(md5_sum(obfuscated_tgz, (char *)&header[hindex]) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            free(header);
+            return -1;
+        }
+        fclose(obfuscated_tgz);
     }
-    rewind(input_tgz); // reset input for later reading
+    else
+    {
+        if(md5_sum(input_tgz, (char *)&header[hindex]) < 0) // md5 hash
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            free(header);
+            return -1;
+        }
+        rewind(input_tgz); // reset input for later reading
+    }
+
     md(&header[hindex], MD5_HASH_LENGTH); // obfuscate md5 hash
     hindex += MD5_HASH_LENGTH;
     memcpy(&header[hindex], &info->num_meta, sizeof(uint16_t)); // num meta, cannot be casted
@@ -497,7 +527,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 
     // write the actual update
     free(header);
-    return munger(input_tgz, output, 0);
+    return munger(input_tgz, output, 0, fake_sign);
 }
 
 int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *output)
@@ -521,7 +551,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     return 0;
 }
 
-int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output)
+int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     UpdateHeader header;
 
@@ -531,12 +561,34 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     header.data.ota_update.target_revision = (uint32_t)info->target_revision; // target
     header.data.ota_update.device = (uint16_t)info->devices[0]; // device
     header.data.ota_update.optional = (unsigned char)info->optional; // optional
-    if(md5_sum(input_tgz, header.data.ota_update.md5_sum) < 0)
+
+    if (fake_sign)
     {
-        fprintf(stderr, "Error calculating MD5 of input tgz.\n");
-        return -1;
+        FILE *obfuscated_tgz;
+        if((obfuscated_tgz = tmpfile()) == NULL)
+        {
+            fprintf(stderr, "Error opening temp file.\n");
+            return -1;
+        }
+        demunger(input_tgz, obfuscated_tgz, 0);
+        rewind(input_tgz);
+        rewind(obfuscated_tgz);
+        if(md5_sum(obfuscated_tgz, header.data.ota_update.md5_sum) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            return -1;
+        }
+        fclose(obfuscated_tgz);
     }
-    rewind(input_tgz); // rewind input
+    else
+    {
+        if(md5_sum(input_tgz, header.data.ota_update.md5_sum) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of input tgz.\n");
+            return -1;
+        }
+        rewind(input_tgz); // rewind input
+    }
     md((unsigned char *)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
 
     // write header to output
@@ -547,10 +599,10 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     }
 
     // write package to output
-    return munger(input_tgz, output, 0);
+    return munger(input_tgz, output, 0, fake_sign);
 }
 
-int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output)
+int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     UpdateHeader header;
 
@@ -560,12 +612,34 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
     header.data.recovery_update.minor = (uint32_t)info->minor; // minor
     header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
-    if(md5_sum(input_tgz, header.data.recovery_update.md5_sum) < 0)
+
+    if (fake_sign)
     {
-        fprintf(stderr, "Error calculating MD5 of input tgz.\n");
-        return -1;
+        FILE *obfuscated_tgz;
+        if((obfuscated_tgz = tmpfile()) == NULL)
+        {
+            fprintf(stderr, "Error opening temp file.\n");
+            return -1;
+        }
+        demunger(input_tgz, obfuscated_tgz, 0);
+        rewind(input_tgz);
+        rewind(obfuscated_tgz);
+        if(md5_sum(obfuscated_tgz, header.data.recovery_update.md5_sum) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            return -1;
+        }
+        fclose(obfuscated_tgz);
     }
-    rewind(input_tgz); // rewind input
+    else
+    {
+        if(md5_sum(input_tgz, header.data.recovery_update.md5_sum) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of input tgz.\n");
+            return -1;
+        }
+        rewind(input_tgz); // rewind input
+    }
     md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
 
     // write header to output
@@ -576,7 +650,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     }
 
     // write package to output
-    return munger(input_tgz, output, 0);
+    return munger(input_tgz, output, 0, fake_sign);
 }
 
 int kindle_create_main(int argc, char *argv[])
@@ -597,7 +671,8 @@ int kindle_create_main(int argc, char *argv[])
         { "opt", required_argument, NULL, 'o' },
         { "crit", required_argument, NULL, 'r' },
         { "meta", required_argument, NULL, 'x' },
-        { "archive", no_argument, NULL, 'a' }
+        { "archive", no_argument, NULL, 'a' },
+        { "unsigned", no_argument, NULL, 'u' }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT32_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
@@ -612,6 +687,7 @@ int kindle_create_main(int argc, char *argv[])
     int input_total;
     int keep_archive;
     int skip_archive;
+    int fake_sign;
 
     // defaults
     output = stdout;
@@ -622,6 +698,7 @@ int kindle_create_main(int argc, char *argv[])
     input_total = 0;
     keep_archive = 0;
     skip_archive = 0;
+    fake_sign = 0;
 
     // Skip command
     argv++;
@@ -654,7 +731,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:a", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:au", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -764,6 +841,9 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case 'a':
                 keep_archive = 1;
+                break;
+            case 'u':
+                fake_sign = 1;
                 break;
             default:
                 fprintf(stderr, "Unknown option code 0%o\n", opt);
@@ -889,7 +969,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s (%s) update to %s %s %s for %hd device%s (", (convert_bundle_version(info.version)), info.magic_number, output_filename, (skip_archive > 0 ? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building %s%s (%s) update to %s %s %s for %hd device%s (", (fake_sign > 0 ? "fake " : ""), (convert_bundle_version(info.version)), info.magic_number, output_filename, (skip_archive > 0 ? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
@@ -935,7 +1015,7 @@ int kindle_create_main(int argc, char *argv[])
             goto do_error;
         }
     }
-    if(kindle_create(&info, input, output) < 0)
+    if(kindle_create(&info, input, output, fake_sign) < 0)
     {
         fprintf(stderr, "Cannot write update to output.\n");
         goto do_error;

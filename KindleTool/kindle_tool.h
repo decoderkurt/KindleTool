@@ -172,7 +172,7 @@ typedef struct
 
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);
-int munger(FILE *, FILE *, size_t);
+int munger(FILE *, FILE *, size_t, const int);
 int demunger(FILE *, FILE *, size_t);
 const char *convert_device_id(Device);
 const char *convert_bundle_version(BundleVersion);
@@ -198,11 +198,11 @@ int kindle_extract_main(int, char **);
 
 int sign_file(FILE *, RSA *, FILE *);
 int kindle_create_package_archive(const char *, char **, const int, RSA *);
-int kindle_create(UpdateInformation *, FILE *, FILE *);
-int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *);
+int kindle_create(UpdateInformation *, FILE *, FILE *, const int);
+int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const int);
 int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
-int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *);
-int kindle_create_recovery(UpdateInformation *, FILE *, FILE *);
+int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *, const int);
+int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const int);
 int kindle_create_main(int, char **);
 
 #endif
