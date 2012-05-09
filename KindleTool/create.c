@@ -881,6 +881,14 @@ int kindle_create_main(int argc, char *argv[])
             strncpy(info.magic_number, "FC02", 4);
         }
     }
+    // Same thing with recovery updates
+    if(info.version == RecoveryUpdate)
+    {
+        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
+        {
+            strncpy(info.magic_number, "FB02", 4);
+        }
+    }
 
     if(optind < argc)
     {
