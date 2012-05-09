@@ -976,7 +976,7 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
-    // Don't try to build unsigned package if we didn't feed a signel proper tarball
+    // Don't try to build an unsigned package if we didn't feed a single proper tarball
     if (fake_sign && !skip_archive)
     {
         fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
