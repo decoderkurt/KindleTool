@@ -307,6 +307,7 @@ int kindle_print_help(const char *prog_name)
         "      -x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple \"--meta\" options supported.\n"
         "                                    Format of metastring must be: key=value\n"
         "      -a, --archive               Keep the intermediate archive.\n"
+        "      -u, --unsigned              Build an unsigned package.\n"
         "      \n"
         "  %s info <serialno>\n"
         "    Get the default root password\n"
