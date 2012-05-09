@@ -22,7 +22,7 @@ endif
 ifeq "$(KINDLE)" "true"
 	OUT_DIR=Kindle
 	CFLAGS:=$(K3_CFLAGS)
-	LDFLAGS=-static -Wl,-O1 -Wl,--as-needed
+	LDFLAGS=-Wl,-O1 -Wl,--as-needed
 	GCC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
