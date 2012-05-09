@@ -976,6 +976,13 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
+    // Don't try to build unsigned package if we didn't feed a signel proper tarball
+    if (fake_sign && !skip_archive)
+    {
+        fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
+        goto do_error;
+    }
+
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
     fprintf(stderr, "Building %s%s (%s) update to %s %s %s for %hd device%s (", (fake_sign > 0 ? "fake " : ""), (convert_bundle_version(info.version)), info.magic_number, output_filename, (skip_archive > 0 ? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
