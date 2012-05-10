@@ -83,19 +83,19 @@ int demunger(FILE *input, FILE *output, size_t length)
         bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
         if(ferror(output) != 0)
         {
-            fprintf(stderr, "Error munging, cannot write to output.\n");
+            fprintf(stderr, "Error demunging, cannot write to output.\n");
             return -1;
         }
         else if(bytes_written < bytes_read)
         {
-            fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
+            fprintf(stderr, "Error demunging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
             return -1;
         }
         length -= bytes_read;
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error munging, cannot read input.\n");
+        fprintf(stderr, "Error demunging, cannot read input.\n");
         return -1;
     }
 
@@ -236,12 +236,12 @@ int kindle_print_help(const char *prog_name)
 {
     printf(
         "usage:\n"
-        "  %s dm [ <input> ] [ <output> ]\n"
+        "  %s md [ <input> ] [ <output> ]\n"
         "    Obfuscates data using Amazon's update algorithm.\n"
         "    If no input is provided, input from stdin\n"
         "    If no output is provided, output to stdout\n"
         "    \n"
-        "  %s md [ <input> ] [ <output> ]\n"
+        "  %s dm [ <input> ] [ <output> ]\n"
         "    Deobfuscates data using Amazon's update algorithm.\n"
         "    If no input is provided, input from stdin\n"
         "    If no output is provided, output to stdout\n"
@@ -357,7 +357,7 @@ int kindle_obfuscate_main(int argc, char *argv[])
             return -1;
         }
     }
-    if(demunger(input, output, 0) < 0)
+    if(munger(input, output, 0, 0) < 0)
     {
         fprintf(stderr, "Cannot obfuscate.\n");
         fclose(input);
@@ -395,7 +395,7 @@ int kindle_deobfuscate_main(int argc, char *argv[])
             return -1;
         }
     }
-    if(munger(input, output, 0, 0) < 0)
+    if(demunger(input, output, 0) < 0)
     {
         fprintf(stderr, "Cannot deobfuscate.\n");
         fclose(input);
@@ -491,9 +491,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if(strncmp(cmd, "dm", 2) == 0)
+    if(strncmp(cmd, "md", 2) == 0)
         return kindle_obfuscate_main(argc, argv);
-    else if(strncmp(cmd, "md", 2) == 0)
+    else if(strncmp(cmd, "dm", 2) == 0)
         return kindle_deobfuscate_main(argc, argv);
     else if(strncmp(cmd, "convert", 7) == 0)
         return kindle_convert_main(argc, argv);
