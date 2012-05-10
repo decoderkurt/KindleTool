@@ -464,27 +464,26 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
     hindex += sizeof(uint8_t);
 
-    // If we asked for a fake package, the Kindle expects to see the MD5 sum of the obfuscated archive, but a clear archive...
-    // If you're confused with the whole md/munger/dm/demunger, the line starts right there! :D
-    // Sum a temp obfuscated tarball to fake it ;)
+    // Even if we asked for a fake package, the Kindle still expects a proper package...
+    // Sum a temp deobfuscated tarball to fake it ;)
     if (fake_sign)
     {
-        FILE *obfuscated_tgz;
-        if((obfuscated_tgz = tmpfile()) == NULL)
+        FILE *demunged_tgz;
+        if((demunged_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
             return -1;
         }
-        demunger(input_tgz, obfuscated_tgz, 0);
+        demunger(input_tgz, demunged_tgz, 0);
         rewind(input_tgz);
-        rewind(obfuscated_tgz);
-        if(md5_sum(obfuscated_tgz, (char *)&header[hindex]) < 0)
+        rewind(demunged_tgz);
+        if(md5_sum(demunged_tgz, (char *)&header[hindex]) < 0)
         {
-            fprintf(stderr, "Error calculating MD5 of package.\n");
+            fprintf(stderr, "Error calculating MD5 of fake package.\n");
             free(header);
             return -1;
         }
-        fclose(obfuscated_tgz);
+        fclose(demunged_tgz);
     }
     else
     {
