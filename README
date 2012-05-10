@@ -1,10 +1,10 @@
 usage:
-  KindleTool dm [ <input> ] [ <output> ]
+  KindleTool md [ <input> ] [ <output> ]
     Obfuscates data using Amazon's update algorithm.
     If no input is provided, input from stdin
     If no output is provided, output to stdout
 
-  KindleTool md [ <input> ] [ <output> ]
+  KindleTool dm [ <input> ] [ <output> ]
     Deobfuscates data using Amazon's update algorithm.
     If no input is provided, input from stdin
     If no output is provided, output to stdout
