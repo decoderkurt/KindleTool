@@ -221,7 +221,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     rewind(file);
                 }
 
-                char signame[PATH_MAX + 1];
+                char signame[PATH_MAX];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
                 if((sigfile = fopen(signame, "wb")) == NULL)
                 {
@@ -942,11 +942,11 @@ int kindle_create_main(int argc, char *argv[])
     input_index++;
 
     // Build the package archive name based on the output name.
-    char tarball_filename[PATH_MAX + 1];
+    char tarball_filename[PATH_MAX];
     // While we're at it, check that our output name properly ends in .bin
     if(output_filename != NULL && IS_BIN(output_filename))
     {
-        // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need out proper output name later
+        // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need our proper output name later
         size_t len = strlen(output_filename);
         char *tmp_outname = malloc(len - 3);
         memcpy(tmp_outname, output_filename, len - 4);

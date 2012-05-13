@@ -277,16 +277,15 @@ int kindle_convert_main(int argc, char *argv[])
     FILE *output;
     FILE *sig_output;
     const char *in_name;
-    char *out_name;
-    char *sig_name;
+    char out_name[PATH_MAX];
+    char sig_name[PATH_MAX];
+    size_t len;
     int info_only;
     int keep_ori;
     int extract_sig;
     int fail;
 
     sig_output = NULL;
-    out_name = NULL;
-    sig_name = NULL;
     output = NULL;
     info_only = 0;
     keep_ori = 0;
@@ -327,11 +326,21 @@ int kindle_convert_main(int argc, char *argv[])
         {
             fail = 0;
             in_name = argv[optind++];
+            // Check that input properly ends in .bin
+            if(!IS_BIN(in_name))
+            {
+                fprintf(stderr, "The input file must be a '.bin' update package.\n");
+                fail = 1;
+                continue;   // It's fatal, go away
+            }
             if(!info_only && output != stdout) // not info only AND not stdout
             {
-                out_name = malloc(strlen(in_name) + 8); // Don't forget our friend \0
-                strcpy(out_name, in_name);
-                strcat(out_name, ".tar.gz");
+                len = strlen(in_name);
+                char *tmp_outname = malloc(len - 3);
+                memcpy(tmp_outname, in_name, len - 4);
+                tmp_outname[len - 4] = 0;   // . => \0
+                snprintf(out_name, PATH_MAX, "%s.tar.gz", tmp_outname);
+                free(tmp_outname);
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
@@ -341,9 +350,7 @@ int kindle_convert_main(int argc, char *argv[])
             }
             if(extract_sig) // we want the package sig (implies not info only)
             {
-                sig_name = malloc(strlen(in_name) + 5);
-                strcpy(sig_name, in_name);
-                strcat(sig_name, ".sig");
+                snprintf(sig_name, PATH_MAX, "%s.sig", in_name);
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
@@ -368,10 +375,6 @@ int kindle_convert_main(int argc, char *argv[])
                 remove(in_name);
 
             // Cleanup behind us
-            if(!info_only && output != stdout)
-                free(out_name);
-            if(extract_sig)
-                free(sig_name);
             if(output != NULL && output != stdout)
                 fclose(output);
             if(input != NULL)
@@ -463,7 +466,7 @@ int libarchive_extract(const char *filename, const char *prefix)
             return(1);
         // Rewrite entry's pathname to extract in our specified directory
         const char *path = archive_entry_pathname(entry);
-        char fixed_path[PATH_MAX + 1];
+        char fixed_path[PATH_MAX];
         snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
         archive_entry_set_pathname(entry, fixed_path);
         r = archive_write_header(ext, entry);
@@ -493,7 +496,8 @@ int libarchive_extract(const char *filename, const char *prefix)
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
-    char *tgz_filename;
+    char tgz_filename[PATH_MAX];
+    size_t len;
     char *output_dir;
     FILE *bin_input;
     FILE *tgz_output;
@@ -507,6 +511,12 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     bin_filename = argv[0];
+    // Check that input properly ends in .bin
+    if(!IS_BIN(bin_filename))
+    {
+        fprintf(stderr, "The input file must be a '.bin' update package.\n");
+        return -1;
+    }
     // NOTE: Do some sanity checks for output directory handling?
     // The 'rewrite pathname entry' cheap method we currently use is pretty 'dumb' (it assumes the path is correct, creating it if need be),
     // but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
@@ -519,9 +529,13 @@ int kindle_extract_main(int argc, char *argv[])
     // Hackish. We don't use a tmpfile anymore, because apparently every tmp function out there
     // that returns a filename and not a stream descriptor is deprecated, and my libarchive helper expects
     // a char array, not an fd.
-    tgz_filename = malloc(strlen(bin_filename) + 8);
-    strcpy(tgz_filename, bin_filename);
-    strcat(tgz_filename, ".tar.gz");
+    len = strlen(bin_filename);
+    char *tmp_outname = malloc(len - 3);
+    memcpy(tmp_outname, bin_filename, len - 4);
+    tmp_outname[len - 4] = 0;   // . => \0
+    snprintf(tgz_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
+    free(tmp_outname);
+
     if((tgz_output = fopen(tgz_filename, "wb")) == NULL)
     {
         fprintf(stderr, "Cannot open temp output '%s' for writing.\n", tgz_filename);
@@ -541,11 +555,9 @@ int kindle_extract_main(int argc, char *argv[])
     {
         fprintf(stderr, "Error extracting temp tarball '%s' to '%s'.\n", tgz_filename, output_dir);
         remove(tgz_filename);
-        free(tgz_filename);
         return -1;
     }
     remove(tgz_filename);
-    free(tgz_filename);
     return 0;
 }
 
