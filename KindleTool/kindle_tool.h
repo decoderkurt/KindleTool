@@ -161,12 +161,12 @@ typedef struct
     uint32_t magic_1;
     uint32_t magic_2;
     uint32_t minor;
-    int num_devices;
+    uint16_t num_devices;
     Device *devices;
     CertificateNumber certificate_number;
-    unsigned char optional;
-    unsigned char critical;
-    int num_meta;
+    uint16_t optional;
+    uint16_t critical;
+    uint16_t num_meta;
     char **metastrings;
 } UpdateInformation;
 
