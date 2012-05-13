@@ -855,6 +855,7 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Invalid number of supported devices, %d, for this update type.\n", info.num_devices);
         goto do_error;
     }
+    // NOTE: Unreachable on x86_32, strtoul does its own clamping to prevent under/overflow ;)
     if(info.version != OTAUpdateV2 && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
     {
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
