@@ -110,7 +110,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     {
         device = *(uint16_t *)&data[hindex];
         // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id
-        if (strcmp(convert_device_id(device), "Unknown") == 0)
+        if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
         else
             fprintf(stderr, "Device         %s\n", convert_device_id(device));
@@ -122,7 +122,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     read_size = fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     hindex = 0;
 
-    critical = *(uint8_t *)&data[hindex];       // bundlefuncs says critical is 1 byte + 1 byte padding, so obey that, even if we find stuff (garbage?) in the padding byte of official updates
+    critical = *(uint8_t *)&data[hindex];       // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that, even if we find stuff (garbage?) in the padding byte of official updates
     hindex += sizeof(uint16_t);
     fprintf(stderr, "Critical       %hhu\n", critical);
     pkg_md5_sum = &data[hindex];
@@ -389,7 +389,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(sig_output);
             // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wapped in an UpdateSignature)
             stat(sig_name, &st);
-            if (st.st_size == 0)
+            if(st.st_size == 0)
                 remove(sig_name);
 
             // If we're not the last file, throw an LF to untangle the output

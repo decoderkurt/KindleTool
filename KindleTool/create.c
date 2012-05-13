@@ -383,7 +383,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                 return -1;
             }
             rewind(temp); // rewind the file before reading back
-            if (!fake_sign)
+            if(!fake_sign)
             {
                 if(kindle_create_signature(info, temp, output) < 0) // write the signature (unless we asked for an unsigned package)
                 {
@@ -466,7 +466,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 
     // Even if we asked for a fake package, the Kindle still expects a proper package...
     // Sum a temp deobfuscated tarball to fake it ;)
-    if (fake_sign)
+    if(fake_sign)
     {
         FILE *demunged_tgz;
         if((demunged_tgz = tmpfile()) == NULL)
@@ -561,7 +561,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     header.data.ota_update.device = (uint16_t)info->devices[0]; // device
     header.data.ota_update.optional = (unsigned char)info->optional; // optional
 
-    if (fake_sign)
+    if(fake_sign)
     {
         FILE *obfuscated_tgz;
         if((obfuscated_tgz = tmpfile()) == NULL)
@@ -612,7 +612,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     header.data.recovery_update.minor = (uint32_t)info->minor; // minor
     header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
 
-    if (fake_sign)
+    if(fake_sign)
     {
         FILE *obfuscated_tgz;
         if((obfuscated_tgz = tmpfile()) == NULL)
@@ -966,7 +966,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Don't try to build an unsigned package if we didn't feed a single proper tarball
-    if (fake_sign && !skip_archive)
+    if(fake_sign && !skip_archive)
     {
         fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
         goto do_error;

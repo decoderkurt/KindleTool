@@ -48,7 +48,7 @@ int munger(FILE *input, FILE *output, size_t length, const int fake_sign)
     while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
     {
         // Don't munge if we asked for a fake package
-        if (!fake_sign)
+        if(!fake_sign)
             md(bytes, bytes_read);
         bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
         if(ferror(output) != 0)
