@@ -280,6 +280,7 @@ int kindle_convert_main(int argc, char *argv[])
     char out_name[PATH_MAX];
     char sig_name[PATH_MAX];
     size_t len;
+    struct stat st;
     int info_only;
     int keep_ori;
     int extract_sig;
@@ -350,7 +351,12 @@ int kindle_convert_main(int argc, char *argv[])
             }
             if(extract_sig) // we want the package sig (implies not info only)
             {
-                snprintf(sig_name, PATH_MAX, "%s.sig", in_name);
+                len = strlen(in_name);
+                char *tmp_outname = malloc(len - 3);
+                memcpy(tmp_outname, in_name, len - 4);
+                tmp_outname[len - 4] = 0;   // . => \0
+                snprintf(sig_name, PATH_MAX, "%s.sig", tmp_outname);
+                free(tmp_outname);
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
@@ -381,6 +387,10 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(input);
             if(sig_output != NULL)
                 fclose(sig_output);
+            // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for every other update types)
+            stat(sig_name, &st);
+            if (st.st_size == 0)
+                remove(sig_name);
 
             // If we're not the last file, throw an LF to untangle the output
             if(optind < argc)
