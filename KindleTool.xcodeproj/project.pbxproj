@@ -159,9 +159,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-ltar",
+					"-larchive",
 					"-lcrypto",
-					"-lz",
 				);
 				SDKROOT = macosx;
 			};
@@ -186,9 +185,8 @@
 				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
-					"-ltar",
+					"-larchive",
 					"-lcrypto",
-					"-lz",
 				);
 				SDKROOT = macosx;
 			};
