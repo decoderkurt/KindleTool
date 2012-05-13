@@ -459,10 +459,8 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     // part two of the set sized data
     header_size += OTA_UPDATE_V2_PART_2_BLOCK_SIZE;
     header = realloc(header, header_size);
-    memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // critical
-    hindex += sizeof(uint8_t);
-    memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
-    hindex += sizeof(uint8_t);
+    memcpy(&header[hindex], &info->critical, sizeof(uint16_t)); // critical
+    hindex += sizeof(uint16_t);
 
     // Even if we asked for a fake package, the Kindle still expects a proper package...
     // Sum a temp deobfuscated tarball to fake it ;)
@@ -819,7 +817,7 @@ int kindle_create_main(int argc, char *argv[])
                 info.certificate_number = (CertificateNumber)atoi(optarg);
                 break;
             case 'o':
-                info.optional = (uint16_t)atoi(optarg);
+                info.optional = (uint8_t)atoi(optarg);
                 break;
             case 'r':
                 info.critical = (uint16_t)atoi(optarg);

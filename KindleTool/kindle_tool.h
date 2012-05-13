@@ -164,7 +164,7 @@ typedef struct
     uint16_t num_devices;
     Device *devices;
     CertificateNumber certificate_number;
-    uint16_t optional;
+    unsigned char optional;
     uint16_t critical;
     uint16_t num_meta;
     char **metastrings;
