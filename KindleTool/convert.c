@@ -79,7 +79,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     uint16_t num_devices;
     uint16_t device;
     //uint16_t *devices;
-    uint16_t critical;
+    uint8_t critical;
     char *pkg_md5_sum;
     uint16_t num_metadata;
     uint16_t metastring_length;
@@ -122,9 +122,9 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     read_size = fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     hindex = 0;
 
-    critical = *(uint16_t *)&data[hindex];
+    critical = *(uint8_t *)&data[hindex];       // bundlefuncs says critical is 1 byte + 1 byte padding, so obey that, even if we find stuff (garbage?) in the padding byte of official updates
     hindex += sizeof(uint16_t);
-    fprintf(stderr, "Critical       %hd\n", critical);
+    fprintf(stderr, "Critical       %hhu\n", critical);
     pkg_md5_sum = &data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
@@ -227,10 +227,10 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output)
     }
     dm((unsigned char *)header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.ota_update.md5_sum);
-    fprintf(stderr, "Minimum OTA    %d\n", header->data.ota_update.source_revision);
-    fprintf(stderr, "Target OTA     %d\n", header->data.ota_update.target_revision);
+    fprintf(stderr, "Minimum OTA    %u\n", header->data.ota_update.source_revision);
+    fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
     fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
-    fprintf(stderr, "Optional       %d\n", header->data.ota_update.optional);
+    fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
 
     if(output == NULL)
     {

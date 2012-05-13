@@ -459,8 +459,10 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     // part two of the set sized data
     header_size += OTA_UPDATE_V2_PART_2_BLOCK_SIZE;
     header = realloc(header, header_size);
-    memcpy(&header[hindex], &info->critical, sizeof(uint16_t)); // critical
-    hindex += sizeof(uint16_t);
+    memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // critical
+    hindex += sizeof(uint8_t);
+    memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
+    hindex += sizeof(uint8_t);
 
     // Even if we asked for a fake package, the Kindle still expects a proper package...
     // Sum a temp deobfuscated tarball to fake it ;)
@@ -820,7 +822,7 @@ int kindle_create_main(int argc, char *argv[])
                 info.optional = (uint8_t)atoi(optarg);
                 break;
             case 'r':
-                info.critical = (uint16_t)atoi(optarg);
+                info.critical = (uint8_t)atoi(optarg);
                 break;
             case 'x':
                 if(strchr(optarg, '=') == NULL) // metastring must contain =
@@ -856,16 +858,6 @@ int kindle_create_main(int argc, char *argv[])
     if(info.version != OTAUpdateV2 && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
     {
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
-        goto do_error;
-    }
-    // Not sure why we end up with -1 instead of UINT32_MAX, but we do, so, err, clamp to INT32_MAX instead when building an ota update, like the python tool did.
-    // Since the default is hardcoded, fix it silently.
-    if(info.version != OTAUpdateV2 && info.target_revision > INT32_MAX)
-        info.target_revision = INT32_MAX;
-    // FIXME? Untested, but I assume the same holds true for source_revision, so handle it too.
-    if(info.version != OTAUpdateV2 && info.source_revision > INT32_MAX)
-    {
-        fprintf(stderr, "Source revision for this update type cannot exceed %d\n", INT32_MAX);
         goto do_error;
     }
     // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
@@ -989,7 +981,7 @@ int kindle_create_main(int argc, char *argv[])
         if(i != info.num_devices - 1)
             fprintf(stderr, ", ");
     }
-    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hd, Optional: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
+    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Optional: %hhu, Magic 1: %d, Magic 2: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
     // Loop over meta
     for(i = 0; i < info.num_meta; i++)
     {
