@@ -1,4 +1,4 @@
-GCC?=gcc
+CC?=gcc
 STRIP?=strip
 DEBUG_CFLAGS=-O0 -ggdb3 -march=native
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
@@ -23,7 +23,7 @@ ifeq "$(KINDLE)" "true"
 	OUT_DIR=Kindle
 	CFLAGS:=$(K3_CFLAGS)
 	LDFLAGS=-Wl,-O1 -Wl,--as-needed
-	GCC:=$(CROSS_PREFIX)gcc
+	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
@@ -32,7 +32,7 @@ default: all
 # Version handling (taken from the git makefiles)
 SHELL:=/bin/bash
 version-inc: .FORCE
-	@$(SHELL) ./version.sh `$(GCC) -dumpversion`
+	@$(SHELL) ./version.sh `$(CC) -dumpversion`
 -include version-inc
 
 CFLAGS+=-pipe
@@ -51,7 +51,7 @@ LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
-	$(GCC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
+	$(CC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
 
 outdir:
 	mkdir -p $(OUT_DIR)
@@ -59,7 +59,7 @@ outdir:
 all: outdir kindletool
 
 kindletool: version-inc $(OBJS)
-	$(GCC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
+	$(CC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
 
 strip: all
 	$(STRIP) -s $(OUT_DIR)/kindletool
