@@ -56,7 +56,10 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-all: outdir kindletool
+kindletool.1:
+	cp -af KindleTool.1 kindletool.1
+
+all: outdir kindletool kindletool.1
 
 kindletool: version-inc $(OBJS)
 	$(CC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
@@ -78,6 +81,7 @@ clean:
 	rm -rf Kindle/*.o
 	rm -rf Kindle/kindletool
 	rm -rf version-inc
+	rm -rf kindletool.1
 
 .PHONY: all clean default outdir kindletool strip debug kindle
 .PHONY: .FORCE

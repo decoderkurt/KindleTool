@@ -4,3 +4,5 @@ Debug/
 Kindle/
 # Ignore version tag
 version-inc
+# Ignore lowercase (Linux) manpage
+kindletool.1

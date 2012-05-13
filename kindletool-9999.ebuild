@@ -52,7 +52,7 @@ src_install() {
 
 	dobin ${MY_PN}/${outdir}/${PN} || die "failed to install ${PN} binary"
 
-	doman ${MY_PN}/${MY_PN}.1 || die "failed to install ${PN} manpage"
+	doman ${MY_PN}/${PN}.1 || die "failed to install ${PN} manpage"
 
 	dodoc README || die "failed to install ${PN} doc"
 }
