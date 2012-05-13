@@ -387,7 +387,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(input);
             if(sig_output != NULL)
                 fclose(sig_output);
-            // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for every other update types)
+            // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wapped in an UpdateSignature)
             stat(sig_name, &st);
             if (st.st_size == 0)
                 remove(sig_name);
