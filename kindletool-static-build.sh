@@ -79,11 +79,13 @@ VER_FILE="version-inc"
 VER_CURRENT="$(<${VER_FILE})"
 VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 REV="${VER_CURRENT%%-*}"
+./version.sh PMS
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog
+mv -v KindleTool/KindleTool/VERSION ./VERSION
+tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
 
 
 # KindleTool (OpenSSL-0.9.8)
@@ -107,8 +109,10 @@ VER_FILE="version-inc"
 VER_CURRENT="$(<${VER_FILE})"
 VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 REV="${VER_CURRENT%%-*}"
+./version.sh PMS
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog
+mv -v KindleTool/KindleTool/VERSION ./VERSION
+tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
