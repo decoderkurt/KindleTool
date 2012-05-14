@@ -8,13 +8,14 @@ To compile for Linux:
 
 To compile for OSX:
 	1) Get MacPorts
-	2) Install the packages: libarchive, openssl
-	3) Open the Xcode 4 project and compile
+	2) Install the package: openssl
+	3) Compile and install libarchive >= 3.0.3 (the version available in MacPorts/Fink is outdated and Homebrew didn't have a libarchive formula at the time of writing)
+	4) Open the Xcode 4 project and compile
 
 To compile for Windows:
 	1) Get Cygwin
 	2) Install the packages: openssl-devel
-	3) Compile and install libarchive
+	3) Compile and install libarchive >= 3.0.3
 	4) Compile using "make" in the tool's directory
 
 Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).
