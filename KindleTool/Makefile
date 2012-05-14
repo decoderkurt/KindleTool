@@ -8,7 +8,8 @@ K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer 
 CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 
 SRCS=kindle_tool.c create.c convert.c
-INCLUDES=-Llib -Iincludes
+
+CPPFLAGS?=-Iincludes
 LIBS=-lcrypto -larchive
 
 ifeq "$(DEBUG)" "true"
@@ -46,12 +47,15 @@ CFLAGS+=-Wcast-qual
 CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 
-LDFLAGS?=-Wl,-O1 -Wl,--as-needed
+ifndef LDFLAGS
+	LDFLAGS:=-Llib
+	LDFLAGS+=-Wl,-O1 -Wl,--as-needed
+endif
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
-	$(CC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
 
 outdir:
 	mkdir -p $(OUT_DIR)
@@ -62,7 +66,7 @@ kindletool.1:
 all: outdir kindletool kindletool.1
 
 kindletool: version-inc $(OBJS)
-	$(CC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o$(OUT_DIR)/$@
 
 strip: all
 	$(STRIP) -s $(OUT_DIR)/kindletool

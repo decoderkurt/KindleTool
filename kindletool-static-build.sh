@@ -2,7 +2,7 @@
 
 export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-export LDFLAGS="-Wl,--as-needed"
+export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 OPENSSL_DIR="openssl-0.9.8w"
 LIBARCHIVE_DIR="libarchive-3.0.4"
@@ -42,7 +42,7 @@ if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 	echo "* Building ${LIBARCHIVE_DIR} ..."
 	echo ""
 	export ac_cv_header_ext2fs_ext2_fs_h=0
-	export LDFLAGS="-Wl,--as-needed"
+	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 	tar -xvzf /usr/portage/distfiles/${LIBARCHIVE_DIR}.tar.gz
 	cd ${LIBARCHIVE_DIR}
 	./configure --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
@@ -64,6 +64,7 @@ EOF
 # KindleTool (OpenSSL-1)
 echo "* Building KindleTool (OpenSSL-1) ..."
 echo ""
+export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 cd KindleTool/KindleTool
 rm -rf lib
 git pull
