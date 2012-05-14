@@ -75,11 +75,10 @@ make strip
 
 # Package it
 git log --stat --graph > ../../ChangeLog
-VER_FILE="version-inc"
-VER_CURRENT="$(<${VER_FILE})"
-VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
-REV="${VER_CURRENT%%-*}"
 ./version.sh PMS
+VER_FILE="VERSION"
+VER_CURRENT="$(<${VER_FILE})"
+REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
@@ -105,11 +104,10 @@ make strip
 
 # Package it
 git log --stat --graph > ../../ChangeLog
-VER_FILE="version-inc"
-VER_CURRENT="$(<${VER_FILE})"
-VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
-REV="${VER_CURRENT%%-*}"
 ./version.sh PMS
+VER_FILE="VERSION"
+VER_CURRENT="$(<${VER_FILE})"
+REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
