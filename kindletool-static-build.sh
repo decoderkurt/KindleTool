@@ -74,6 +74,7 @@ make clean
 make strip
 
 # Package it
+git log --stat --graph > ../../ChangeLog
 VER_FILE="version-inc"
 VER_CURRENT="$(<${VER_FILE})"
 VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
@@ -82,7 +83,7 @@ cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1
+tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog
 
 
 # KindleTool (OpenSSL-0.9.8)
@@ -101,6 +102,7 @@ make clean
 make strip
 
 # Package it
+git log --stat --graph > ../../ChangeLog
 VER_FILE="version-inc"
 VER_CURRENT="$(<${VER_FILE})"
 VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
@@ -109,4 +111,4 @@ cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README ./README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1
+tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog
