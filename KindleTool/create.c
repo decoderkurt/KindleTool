@@ -209,7 +209,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     goto cleanup;
                 }
                 // Don't hash our bundlefile
-                if(i != total_files - 1)
+                if(dirty_bundlefile)
                 {
                     if(md5_sum(file, md5) != 0)
                     {
@@ -238,9 +238,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 }
 
                 // Don't add the bundlefile to itself
-                if(i != total_files - 1)
+                if(dirty_bundlefile)
                 {
-                    if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long) st.st_size / BLOCK_SIZE, sourcepath) < 0) // FIXME: The python script does pathname+"_file" for the last field.
+                    // FIXME: The python script uses pathname+"_file" for the last field (display name)
+                    if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long) st.st_size / BLOCK_SIZE, sourcepath) < 0)
                     {
                         fprintf(stderr, "Cannot write to index file.\n");
                         // Cleanup a bit before crapping out
@@ -334,7 +335,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             }
 
             // Delete the bundle file once we're done
-            if(i == total_files - 1)
+            if(!dirty_bundlefile)
             {
                 remove(sourcepath);
             }
