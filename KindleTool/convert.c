@@ -80,6 +80,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     uint16_t device;
     //uint16_t *devices;
     uint8_t critical;
+    uint8_t padding;
     char *pkg_md5_sum;
     uint16_t num_metadata;
     uint16_t metastring_length;
@@ -122,9 +123,12 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     read_size = fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     hindex = 0;
 
-    critical = *(uint8_t *)&data[hindex];       // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that, even if we find stuff (garbage?) in the padding byte of official updates
-    hindex += sizeof(uint16_t);
+    critical = *(uint8_t *)&data[hindex];       // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
+    hindex += sizeof(uint8_t);
     fprintf(stderr, "Critical       %hhu\n", critical);
+    padding = *(uint8_t *)&data[hindex];        // Print the (garbage?) padding byte found in official updates...
+    hindex += sizeof(uint8_t);
+    fprintf(stderr, "Padding Byte   %hhu (%02X)\n", padding, padding);
     pkg_md5_sum = &data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
