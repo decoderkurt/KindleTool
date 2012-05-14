@@ -674,7 +674,7 @@ int kindle_create_main(int argc, char *argv[])
         { "archive", no_argument, NULL, 'a' },
         { "unsigned", no_argument, NULL, 'u' }
     };
-    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT32_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
+    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
     FILE *output;
     BIO *bio;
@@ -718,11 +718,13 @@ int kindle_create_main(int argc, char *argv[])
     {
         info.version = OTAUpdate;
         strncpy(info.magic_number, "FC02", 4);
+        info.target_revision = UINT32_MAX;
     }
     else if(strncmp(argv[0], "recovery", 8) == 0)
     {
         info.version = RecoveryUpdate;
         strncpy(info.magic_number, "FB02", 4);
+        info.target_revision = UINT32_MAX;
     }
     else
     {
@@ -802,10 +804,10 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 break;
             case 's':
-                info.source_revision = strtoul(optarg, NULL, 0);
+                info.source_revision = strtoull(optarg, NULL, 0);
                 break;
             case 't':
-                info.target_revision = strtoul(optarg, NULL, 0);
+                info.target_revision = strtoull(optarg, NULL, 0);
                 break;
             case '1':
                 info.magic_1 = atoi(optarg);
@@ -856,7 +858,6 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Invalid number of supported devices, %d, for this update type.\n", info.num_devices);
         goto do_error;
     }
-    // NOTE: Unreachable on x86_32, strtoul does its own clamping to prevent under/overflow ;)
     if(info.version != OTAUpdateV2 && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
     {
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
