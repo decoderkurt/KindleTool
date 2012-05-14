@@ -296,7 +296,7 @@ int kindle_print_help(const char *prog_name)
         "      -s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
         "                                    Lowest version of device that package supports. Default is 0.\n"
         "      -t, --tgtrev <ulong|uint>   OTA updates only. Target revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
-        "                                    Highest version of device that package supports. Default is max int value.\n"
+        "                                    Highest version of device that package supports. Default is ulong/uint max value.\n"
         "      -1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.\n"
         "      -2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.\n"
         "      -m, --minor <uint>          Recovery updates only. Minor number. Default is 0.\n"
