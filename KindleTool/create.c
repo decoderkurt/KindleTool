@@ -81,6 +81,16 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 }
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
+static void excluded_callback(struct archive *, void *, struct archive_entry *);
+static void excluded_callback(struct archive *a, void *_data, struct archive_entry *entry)
+{
+    _data = NULL;	// Shutup, GCC.
+    printf("Skipping sig file '%s' to avoid duplicates\n", archive_entry_pathname(entry));
+    if (!archive_read_disk_can_descend(a))
+        return;
+    archive_read_disk_descend(a);
+}
+
 int kindle_create_package_archive(const char *outname, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
@@ -88,6 +98,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     struct archive *disk_sig;
     struct archive_entry *entry;
     struct archive_entry *entry_sig;
+    struct archive *matching;
     struct stat st;
     struct stat st_sig;
     int r;
@@ -110,6 +121,11 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     }
     dirty_bundlefile = 1;
 
+    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselve in a slighlty hackish way
+    matching = archive_match_new();
+    if (archive_match_exclude_pattern(matching, "*.sig") != ARCHIVE_OK)
+        fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
@@ -128,6 +144,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
         r = archive_read_disk_open(disk, filename[i]);
         archive_read_disk_set_standard_lookup(disk);
+        archive_read_disk_set_matching(disk, matching, excluded_callback, NULL);
         if(r != ARCHIVE_OK)
         {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
@@ -144,7 +161,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             {
                 // FIXME: cannot stat when repacking an extracted update, because the lookup is not live, and there were .sig files. (Meaning we'll try to loop over a sig file we've already recreated ourself and then deleted => file not found/cannot stat)
                 // 2/ Get away with a warning only here when r == whatever_error_tag_is_cannot_stat (find out [ARCHIVE_FAILED / -25]) and the file extension is sig (the filename might be tricky to get at this point, is entry complete enough to get the filename? [no] How would we get it straight from disk? [doable, archive_error_string has it, cf archive_read_disk_posix.c#L885])
-                // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*)
+                // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*) [Except it's matching against... an entry ;'(]
                 // 4/ Portability: Use libarchive's AE_ISREG instead of S_ISREG (win32 friendly, which still leaves the hard stat calls to deal with among other POSIXy stuff...)
                 // 5/ libarchive uses mkstemp() internally... (That wouldn't solve our problem, we'd be storing *two* sig files with the sme name, in different entries... Probably a bad idea ;D)
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
@@ -179,9 +196,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 archive_entry_set_perm(entry, 0644);
 
             // NOTE: I actually don't know if the directory lookup is live (probably not), but let's avoid signing/adding sig files multiple times anyway
+            // FIXME: Probably unreachable anyway.
             if(IS_SIG(pathname))
             {
-                printf("Skipping sig file '%s' to avoid duplicates\n", pathname);
+                printf("Hackishly skipping sig file '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
@@ -356,6 +374,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
     archive_write_close(a);
     archive_write_free(a);
+	
+    archive_match_free(matching);
 
     return 0;
 
