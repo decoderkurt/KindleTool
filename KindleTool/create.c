@@ -85,7 +85,7 @@ static void excluded_callback(struct archive *, void *, struct archive_entry *);
 static void excluded_callback(struct archive *a, void *_data, struct archive_entry *entry)
 {
     _data = NULL;	// Shutup, GCC.
-    printf("Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
+    fprintf(stderr, "Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
     if (!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
@@ -121,7 +121,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     }
     dirty_bundlefile = 1;
 
-    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourself in a slightly hackish way
+    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
     matching = archive_match_new();
     if (archive_match_exclude_pattern(matching, "*.sig") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
@@ -166,7 +166,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
             if(r != ARCHIVE_OK)
             {
-                // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and the delete) signature files.
+                // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and then delete) signature files.
                 // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, adn then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
                 // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
                 if(r == ARCHIVE_FAILED)
@@ -182,7 +182,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     // If libarchive failed to stat a .sig file, print a warning, and go on
                     if(IS_SIG(sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
                     {
-                        printf("Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", sourcepath);
+                        fprintf(stderr, "Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", sourcepath);
 
                         free(error_string);
                         free(sourcepath);
@@ -232,7 +232,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // FIXME: Probably unreachable anyway.
             if(IS_SIG(pathname))
             {
-                printf("Hackishly skipping sig file '%s' to avoid looping\n", pathname);
+                fprintf(stderr, "Hackishly skipping sig file '%s' to avoid looping\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
@@ -240,7 +240,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // Exclude bundlefiles that aren't our own, to avoid ending up with multiple bundlefiles...
             if(IS_DAT(pathname) && dirty_bundlefile)
             {
-                printf("Skipping original bundlefile '%s' to avoid duplicates\n", pathname);
+                fprintf(stderr, "Skipping original bundlefile '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
