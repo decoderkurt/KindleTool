@@ -123,13 +123,13 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
     // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
     matching = archive_match_new();
-    if (archive_match_exclude_pattern(matching, "*.sig") != ARCHIVE_OK)
+    if (archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles! (Except it'll of course exclude *our* bundefile, too... -_-")
-    //if (archive_match_exclude_pattern(matching, "*pdate*.dat") != ARCHIVE_OK)
+    //if (archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
     //    fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     // But do include *our* bundlefile... :D (Not sure how/if it's supposed to work with the disk API...)
-    //if (archive_match_include_pattern(matching, INDEX_FILE_NAME) != ARCHIVE_OK)
+    //if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK)	// This is INDEX_FILE_NAME
     //    fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
 
     a = archive_write_new();
@@ -167,7 +167,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r != ARCHIVE_OK)
             {
                 // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and then delete) signature files.
-                // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, adn then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
+                // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, and then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
                 // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
                 if(r == ARCHIVE_FAILED)
                 {
@@ -228,8 +228,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             else
                 archive_entry_set_perm(entry, 0644);
 
-            // NOTE: I actually don't know if the directory lookup is live (probably not), but let's avoid signing/adding sig files multiple times anyway
-            // FIXME: Probably unreachable anyway.
+            // NOTE: We're already taking care of this via libarchive's pattern exclusion, but this one is case insensitive, and can still catch something that might've slipped through...
             if(IS_SIG(pathname))
             {
                 fprintf(stderr, "Hackishly skipping sig file '%s' to avoid looping\n", pathname);
