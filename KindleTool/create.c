@@ -197,11 +197,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     free(sourcepath);
                     free(error_desc);
                 }
-                // FIXME: cannot stat when repacking an extracted update, because the lookup is not live, and there were .sig files. (Meaning we'll try to loop over a sig file we've already recreated ourself and then deleted => file not found/cannot stat)
-                // 2/ Get away with a warning only here when r == whatever_error_tag_is_cannot_stat (find out [ARCHIVE_FAILED / -25]) and the file extension is sig (the filename might be tricky to get at this point, is entry complete enough to get the filename? [no] How would we get it straight from disk? [doable, archive_error_string has it, cf archive_read_disk_posix.c#L885])
-                // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*) [Except it's matching against... an entry ;'(]
-                // 4/ Portability: Use libarchive's AE_ISREG instead of S_ISREG (win32 friendly, which still leaves the hard stat calls to deal with among other POSIXy stuff...)
-                // 5/ libarchive uses mkstemp() internally... (That wouldn't solve our problem, we'd be storing *two* sig files with the sme name, in different entries... Probably a bad idea ;D)
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 goto cleanup;
             }
