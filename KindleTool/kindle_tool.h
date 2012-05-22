@@ -70,6 +70,7 @@
 #define IS_BIN(filename) (strncasecmp(filename+(strlen(filename)-4), ".bin", 4) == 0)
 #define IS_TGZ(filename) (strncasecmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
+#define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
 // Version tag fallback
 #ifndef KT_VERSION

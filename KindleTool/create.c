@@ -85,7 +85,7 @@ static void excluded_callback(struct archive *, void *, struct archive_entry *);
 static void excluded_callback(struct archive *a, void *_data, struct archive_entry *entry)
 {
     _data = NULL;	// Shutup, GCC.
-    printf("Skipping sig file '%s' to avoid duplicates\n", archive_entry_pathname(entry));
+    printf("Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
     if (!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
@@ -121,10 +121,16 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     }
     dirty_bundlefile = 1;
 
-    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselve in a slighlty hackish way
+    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourself in a slightly hackish way
     matching = archive_match_new();
     if (archive_match_exclude_pattern(matching, "*.sig") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+    // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles! (Except it'll of course exclude *our* bundefile, too... -_-")
+    //if (archive_match_exclude_pattern(matching, "*pdate*.dat") != ARCHIVE_OK)
+    //    fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+    // But do include *our* bundlefile... :D (Not sure how/if it's supposed to work with the disk API...)
+    //if (archive_match_include_pattern(matching, INDEX_FILE_NAME) != ARCHIVE_OK)
+    //    fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
 
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
@@ -157,8 +163,40 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             r = archive_read_next_header2(disk, entry);
             if(r == ARCHIVE_EOF)
                 break;
+
             if(r != ARCHIVE_OK)
             {
+                // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and the delete) signature files.
+                // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, adn then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
+                // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
+                if(r == ARCHIVE_FAILED)
+                {
+                    // We don't have an archive entry, and no really adequate public API (AFAICT), so getting the filename is a bitch...
+                    // The only thing we have acces to that knows the filepath is... the error string. So parse it :/
+                    char *error_string = strdup(archive_error_string(disk));
+                    char *pch_error;
+                    pch_error = strtok(error_string, ":");
+                    char *sourcepath = strdup(pch_error);
+                    pch_error = strtok(NULL, ":");
+                    char *error_desc = strdup(pch_error);
+                    // If libarchive failed to stat a .sig file, print a warning, and go on
+                    if(IS_SIG(sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
+                    {
+                        printf("Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", sourcepath);
+
+                        free(error_string);
+                        free(sourcepath);
+                        free(error_desc);
+
+                        archive_entry_free(entry);
+                        continue;
+                    }
+
+                    // Cleanup
+                    free(error_string);
+                    free(sourcepath);
+                    free(error_desc);
+                }
                 // FIXME: cannot stat when repacking an extracted update, because the lookup is not live, and there were .sig files. (Meaning we'll try to loop over a sig file we've already recreated ourself and then deleted => file not found/cannot stat)
                 // 2/ Get away with a warning only here when r == whatever_error_tag_is_cannot_stat (find out [ARCHIVE_FAILED / -25]) and the file extension is sig (the filename might be tricky to get at this point, is entry complete enough to get the filename? [no] How would we get it straight from disk? [doable, archive_error_string has it, cf archive_read_disk_posix.c#L885])
                 // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*) [Except it's matching against... an entry ;'(]
@@ -199,7 +237,15 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // FIXME: Probably unreachable anyway.
             if(IS_SIG(pathname))
             {
-                printf("Hackishly skipping sig file '%s' to avoid duplicates\n", pathname);
+                printf("Hackishly skipping sig file '%s' to avoid looping\n", pathname);
+                archive_entry_free(entry);
+                continue;
+            }
+			
+            // Exclude bundlefiles that aren't our own, to avoid ending up with multiple bundlefiles...
+            if(IS_DAT(pathname) && dirty_bundlefile)
+            {
+                printf("Skipping original bundlefile '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
