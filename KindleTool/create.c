@@ -142,7 +142,14 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 break;
             if(r != ARCHIVE_OK)
             {
-                fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
+                // FIXME: cannot stat when repacking an extracted update, because the lookup is not live, and there were .sig files. (Meaning we'll try to loop over a sig file we've already recreated ourself and then deleted => file not found/cannot stat)
+                // 1/ Make the IS_* extension stuff case insensitive
+                // 2/ Get away with a warning only here when r == whatever_error_tag_is_cannot_stat (find out [ARCHIVE_FAILED / -25]) and the file extension is sig (the filename might be tricky to get at this point, is entry complete enough to get the filename? [no] How would we get it straight from disk? [doable, archive_error_string has it, cf archive_read_disk_posix.c#L885])
+                // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*)
+                // 4/ Portability: Use libarchive's AE_ISREG instead of S_ISREG (win32 friendly, which mostly leaves the hard stat calls to deal with)
+                // 5/ libarchive uses mkstemp() internally... (That wouldn't solve our problem, we'd be storing *two* sig files with the sme name, in different entries... Probably a bad idea ;D)
+                // 6/ Find out if there's a cleaner way to build platform specific makefiles other than checking $(OS)...
+                fprintf(stderr, "archive_read_next_header2() failed: %s for file '%s' (%d)\n", archive_error_string(disk), archive_entry_pathname(entry), r);
                 goto cleanup;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
@@ -277,7 +284,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         break;
                     if(r != ARCHIVE_OK)
                     {
-                        fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk_sig));
+                        fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
                         remove(signame);
                         goto cleanup;
                     }
@@ -290,7 +297,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     lstat(pathname_sig, &st_sig);
                     r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
                     if(r < ARCHIVE_OK)
-                        fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk_sig));
+                        fprintf(stderr, "archive_read_disk_entry_from_file() for sig failed: %s\n", archive_error_string(disk_sig));
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);
@@ -307,7 +314,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     archive_read_disk_descend(disk_sig);
                     r = archive_write_header(a, entry_sig);
                     if(r < ARCHIVE_OK)
-                        fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+                        fprintf(stderr, "archive_write_header() for sig failed: %s\n", archive_error_string(a));
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);

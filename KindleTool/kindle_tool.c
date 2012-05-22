@@ -412,7 +412,8 @@ int kindle_info_main(int argc, char *argv[])
     char *serial_no;
     char md5[MD5_HASH_LENGTH];
     FILE *temp;
-    int i;
+    unsigned int i;
+    unsigned char snc_i;
     // Skip command
     argv++;
     argc--;
@@ -430,9 +431,10 @@ int kindle_info_main(int argc, char *argv[])
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
-        if(islower(serial_no[i]))
+        snc_i = serial_no[i];	// Ugly workaround to shutup a Cywgin GCC warning (array subscript has type 'char')
+        if(islower(snc_i))
         {
-            serial_no[i] = toupper(serial_no[i]);
+            serial_no[i] = toupper(snc_i);
         }
     }
     // find root password
