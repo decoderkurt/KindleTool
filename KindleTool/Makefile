@@ -60,8 +60,7 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-# FIXME: Use a more robust check to check only for case insensitive OS... (ie. include BSDs here, instead of just Linux; or just check for every Windows versions...)
-ifeq "$(OS)" "Linux"
+ifneq "$(OS)" "Windows_NT"
 kindletool.1:
 	cp -af KindleTool.1 kindletool.1
 else
@@ -82,7 +81,7 @@ debug:
 kindle:
 	$(MAKE) strip KINDLE=true
 
-ifeq "$(OS)" "Linux"
+ifneq "$(OS)" "Windows_NT"
 clean_man:
 	rm -rf kindletool.1
 else
