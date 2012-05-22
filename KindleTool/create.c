@@ -147,7 +147,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // !! 3/ Better, just use the libarchive API to exclude .sig files... :D (cf. archive_read_disk_set_matching / archive_match_*)
                 // 4/ Portability: Use libarchive's AE_ISREG instead of S_ISREG (win32 friendly, which still leaves the hard stat calls to deal with among other POSIXy stuff...)
                 // 5/ libarchive uses mkstemp() internally... (That wouldn't solve our problem, we'd be storing *two* sig files with the sme name, in different entries... Probably a bad idea ;D)
-                fprintf(stderr, "archive_read_next_header2() failed: %s for file '%s' (%d)\n", archive_error_string(disk), archive_entry_pathname(entry), r);
+                fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 goto cleanup;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
