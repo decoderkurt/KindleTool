@@ -64,12 +64,12 @@
 
 #define SERIAL_NO_LENGTH 16
 
-#define IS_SCRIPT(filename) (strncmp(filename+(strlen(filename)-4), ".ffs", 4) == 0)
-#define IS_SHELL(filename) (strncmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
-#define IS_SIG(filename) (strncmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
-#define IS_BIN(filename) (strncmp(filename+(strlen(filename)-4), ".bin", 4) == 0)
-#define IS_TGZ(filename) (strncmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
-#define IS_TARBALL(filename) (strncmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
+#define IS_SCRIPT(filename) (strncasecmp(filename+(strlen(filename)-4), ".ffs", 4) == 0)
+#define IS_SHELL(filename) (strncasecmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
+#define IS_SIG(filename) (strncasecmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
+#define IS_BIN(filename) (strncasecmp(filename+(strlen(filename)-4), ".bin", 4) == 0)
+#define IS_TGZ(filename) (strncasecmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
+#define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 
 // Version tag fallback
 #ifndef KT_VERSION
