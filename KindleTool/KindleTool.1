@@ -16,6 +16,8 @@ Creates a Kindle update package
 .br
 You should be able to throw a mix of files & directories as input without trouble.
 .br
+Just keep in mind that if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!
+.br
 If input is a single tarball
 .RI ( .tgz " or " .tar.gz )
 file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.
