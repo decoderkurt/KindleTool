@@ -29,7 +29,7 @@
 * KindleTool create &lt;**type**&gt; &lt;**devices**&gt; [*options*] &lt;**dir**|**file**&gt;... [ &lt;**output**&gt; ]
 
 >> Creates a Kindle update package  
->> You should be able to throw a mix of files &amp; directories as input without trouble."  
+>> You should be able to throw a mix of files &amp; directories as input without trouble.  
 >> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
 >> Output should be a file with the extension ".bin", if it is not provided, output to stdout.  
 >> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.  
