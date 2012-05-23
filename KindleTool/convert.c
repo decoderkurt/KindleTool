@@ -86,7 +86,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     uint16_t metastring_length;
     char *metastring;
     //unsigned char **metastrings;
-    size_t read_size __attribute__ ((unused));
+    size_t read_size __attribute__((unused));
 
     // First read the set block size and determine how much to resize
     data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(char));

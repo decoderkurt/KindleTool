@@ -82,9 +82,9 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static void excluded_callback(struct archive *, void *, struct archive_entry *);
-static void excluded_callback(struct archive *a, void *_data __attribute__ ((unused)), struct archive_entry *entry)
+static void excluded_callback(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
-    fprintf(stderr, "Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
+    fprintf(stderr, "Skipping original bundle/sig file '%s' to avoid duplicates/looping\n", archive_entry_pathname(entry));
     if(!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
@@ -124,14 +124,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     matching = archive_match_new();
     if(archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
-    /*
-    // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles! (Except it'll of course exclude *our* bundefile, too... -_-")
-    if (archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
+    // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles!
+    if(archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
-    // But do include *our* bundlefile... :D (Not sure how/if it's supposed to work with the disk API...)
-    if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK) // This is INDEX_FILE_NAME
-        fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
-    */
+
 
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
@@ -149,7 +145,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             dirty_bundlefile = 0;
         }
 
-        archive_read_disk_set_matching(disk, matching, excluded_callback, NULL);
+        // Don't apply the exclude list to our bundlefile... :)
+        if(dirty_bundlefile)
+            archive_read_disk_set_matching(disk, matching, excluded_callback, NULL);
         archive_read_disk_set_standard_lookup(disk);
 
         r = archive_read_disk_open(disk, filename[i]);
@@ -171,6 +169,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and then delete) signature files.
                 // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, and then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
                 // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
+                // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin...
                 if(r == ARCHIVE_FAILED)
                 {
                     // We don't have an archive entry, and no really adequate public API (AFAICT), so getting the filename is a bitch...
@@ -230,10 +229,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             else
                 archive_entry_set_perm(entry, 0644);
 
-            // NOTE: We're already taking care of this via libarchive's pattern exclusion, but this one is case insensitive, and can still catch something that might've slipped through...
+            // NOTE: We're already taking care of this via libarchive's pattern exclusion, but these are case insensitive, and can still catch something that might've slipped through... (But, granted, it's a bit overkill)
             if(IS_SIG(pathname))
             {
-                fprintf(stderr, "Hackishly skipping sig file '%s' to avoid looping\n", pathname);
+                fprintf(stderr, "Hackishly skipping original sig file '%s' to avoid looping\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
@@ -241,7 +240,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             // Exclude bundlefiles that aren't our own, to avoid ending up with multiple bundlefiles...
             if(IS_DAT(pathname) && dirty_bundlefile)
             {
-                fprintf(stderr, "Skipping original bundlefile '%s' to avoid duplicates\n", pathname);
+                fprintf(stderr, "Hackishly skipping original bundlefile '%s' to avoid duplicates\n", pathname);
                 archive_entry_free(entry);
                 continue;
             }
