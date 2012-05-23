@@ -2,19 +2,19 @@
 ## usage:
 * KindleTool md [ &lt;**input**&gt; ] [ &lt;**output**&gt; ]
 
->> Obfuscates data using Amazon's update algorithm.
->> If no input is provided, input from stdin
->> If no output is provided, output to stdout
+>> Obfuscates data using Amazon's update algorithm.  
+>> If no input is provided, input from stdin  
+>> If no output is provided, output to stdout  
 
 * KindleTool dm [ &lt;**input**&gt; ] [ &lt;**output**&gt; ]
 
->> Deobfuscates data using Amazon's update algorithm.
->> If no input is provided, input from stdin
->> If no output is provided, output to stdout
+>> Deobfuscates data using Amazon's update algorithm.  
+>> If no input is provided, input from stdin  
+>> If no output is provided, output to stdout  
 
 * KindleTool convert [*options*] &lt;**input**&gt;...
 
->> Converts a Kindle update package to a gzipped TAR file, and delete input
+>> Converts a Kindle update package to a gzipped TAR file, and delete input  
 
 	Options:
 		-c, --stdout                Write to standard output, keeping original files unchanged
@@ -24,15 +24,15 @@
 
 * KindleTool extract &lt;**input**&gt; &lt;**output**&gt;
 
->> Extracts a Kindle update package to a directory
+>> Extracts a Kindle update package to a directory  
 
 * KindleTool create &lt;**type**&gt; &lt;**devices**&gt; [*options*] &lt;**dir**|**file**&gt;... [ &lt;**output**&gt; ]
 
->> Creates a Kindle update package
->> You should be able to throw a mix of files &amp; directories as input without trouble."
->> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.
->> Output should be a file with the extension ".bin", if it is not provided, output to stdout.
->> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.
+>> Creates a Kindle update package  
+>> You should be able to throw a mix of files &amp; directories as input without trouble."  
+>> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
+>> Output should be a file with the extension ".bin", if it is not provided, output to stdout.  
+>> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.  
 
 	Type:
 		ota                         OTA V1 update package. Works on Kindle 3 and older.
@@ -81,22 +81,22 @@
 
 * KindleTool info &lt;**serialno**&gt;
 
->> Get the default root password
+>> Get the default root password  
 
 * KindleTool version
 
->> Show some info about this KindleTool build
+>> Show some info about this KindleTool build  
 
 * KindleTool help
 
->> Show this help screen
+>> Show this help screen  
 
 ### notices:
 1. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
 2. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create a update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
 
 ### NOTE:
-> This fork is probably broken on everything except Linux x86/x86_64/arm, Cygwin x86.
-> Patches/Pull requests to fix that are welcome :).
+> This fork is probably broken on everything except Linux x86/x86_64/arm, Cygwin x86.  
+> Patches/Pull requests to fix that are welcome :).  
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-space off; replace-trailing-space-save off;
