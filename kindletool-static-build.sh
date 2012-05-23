@@ -83,7 +83,7 @@ cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README.md ./README
 # Quick! Markdown => plaintext
-sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/*//g;s/>>/\t/g;s/^> /  /g;s/#//g' README
+sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 mv -v KindleTool/KindleTool/VERSION ./VERSION
 tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
@@ -114,7 +114,7 @@ cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 cp -v KindleTool/README.md ./README
 # Quick! Markdown => plaintext
-sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/*//g;s/>>/\t/g;s/^> /  /g;s/#//g' README
+sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 mv -v KindleTool/KindleTool/VERSION ./VERSION
 tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
