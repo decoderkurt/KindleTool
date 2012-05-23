@@ -128,7 +128,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     if(archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
-
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
