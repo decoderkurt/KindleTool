@@ -744,7 +744,7 @@ int kindle_create_main(int argc, char *argv[])
     FILE *output;
     BIO *bio;
     int i;
-    int optcount;
+    int optcount = 0;
     char *output_filename;
     char *raw_filelist;
     char **input_list;
@@ -758,7 +758,6 @@ int kindle_create_main(int argc, char *argv[])
     output = stdout;
     input = NULL;
     output_filename = NULL;
-    optcount = 0;
     input_index = 0;
     input_total = 0;
     keep_archive = 0;

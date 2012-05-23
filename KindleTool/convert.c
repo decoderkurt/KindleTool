@@ -100,7 +100,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     hindex += sizeof(uint64_t);
     fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
     num_devices = *(uint16_t *)&data[hindex];
-    hindex += sizeof(uint16_t);
+    //hindex += sizeof(uint16_t);       // Shut clang's sa up
     fprintf(stderr, "Devices        %hd\n", num_devices);
     free(data);
 
@@ -134,7 +134,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
     num_metadata = *(uint16_t *)&data[hindex];
-    hindex += sizeof(uint16_t);
+    //hindex += sizeof(uint16_t);       // Shut clang's sa up
     fprintf(stderr, "Metadata       %hd\n", num_metadata);
     free(data);
 
