@@ -81,7 +81,9 @@ VER_CURRENT="$(<${VER_FILE})"
 REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-cp -v KindleTool/README ./README
+cp -v KindleTool/README.md ./README
+# Quick! Markdown => plaintext
+sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/*//g;s/>>/\t/g;s/^> /  /g;s/#//g' README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 mv -v KindleTool/KindleTool/VERSION ./VERSION
 tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
@@ -110,7 +112,9 @@ VER_CURRENT="$(<${VER_FILE})"
 REV="${VER_CURRENT%%-*}"
 cd ../..
 cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-cp -v KindleTool/README ./README
+cp -v KindleTool/README.md ./README
+# Quick! Markdown => plaintext
+sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/*//g;s/>>/\t/g;s/^> /  /g;s/#//g' README
 cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 mv -v KindleTool/KindleTool/VERSION ./VERSION
 tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
