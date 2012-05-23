@@ -125,12 +125,14 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     matching = archive_match_new();
     if (archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+    /*
     // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles! (Except it'll of course exclude *our* bundefile, too... -_-")
-    //if (archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
-    //    fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+    if (archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
+        fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     // But do include *our* bundlefile... :D (Not sure how/if it's supposed to work with the disk API...)
-    //if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK)	// This is INDEX_FILE_NAME
-    //    fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
+    if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK)	// This is INDEX_FILE_NAME
+        fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
+    */
 
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
@@ -148,9 +150,10 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             dirty_bundlefile = 0;
         }
 
-        r = archive_read_disk_open(disk, filename[i]);
-        archive_read_disk_set_standard_lookup(disk);
         archive_read_disk_set_matching(disk, matching, excluded_callback, NULL);
+        archive_read_disk_set_standard_lookup(disk);
+
+        r = archive_read_disk_open(disk, filename[i]);
         if(r != ARCHIVE_OK)
         {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
