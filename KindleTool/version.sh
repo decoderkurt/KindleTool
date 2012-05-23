@@ -6,6 +6,11 @@ VER_FILE="version-inc"
 # Fallback version
 FALLBACK_VER="v0.5-GIT"
 
+# If we don't have git installed (Why, oh why would you do that? :D), just use the fallback
+if ! git help &>/dev/null ; then
+	echo "${FALLBACK_VER}" > VERSION
+fi
+
 # Get the GCC version number, if we passed one
 if [[ -n "$1" ]] ; then
 	VER_GCC=" (GCC ${1})"
