@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit git-2
+inherit base git-2
 
 MY_PN="KindleTool"
 
@@ -54,5 +54,5 @@ src_install() {
 
 	doman ${MY_PN}/${PN}.1 || die "failed to install ${PN} manpage"
 
-	dodoc README || die "failed to install ${PN} doc"
+	base_src_install_docs
 }
