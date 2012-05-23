@@ -26,7 +26,7 @@ DEPEND="${RDEPEND}
 	dev-libs/openssl
 	app-arch/libarchive[zlib]"
 
-DOCS=( "README" )
+DOCS=( "README.md" )
 
 S="${WORKDIR}/${MY_PN}"
 
