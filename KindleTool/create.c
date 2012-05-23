@@ -82,9 +82,8 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static void excluded_callback(struct archive *, void *, struct archive_entry *);
-static void excluded_callback(struct archive *a, void *_data, struct archive_entry *entry)
+static void excluded_callback(struct archive *a, void *_data __attribute__ ((unused)), struct archive_entry *entry)
 {
-    _data = NULL;   // Shutup, GCC.
     fprintf(stderr, "Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
     if(!archive_read_disk_can_descend(a))
         return;
