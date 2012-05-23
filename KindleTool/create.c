@@ -84,9 +84,9 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 static void excluded_callback(struct archive *, void *, struct archive_entry *);
 static void excluded_callback(struct archive *a, void *_data, struct archive_entry *entry)
 {
-    _data = NULL;	// Shutup, GCC.
+    _data = NULL;   // Shutup, GCC.
     fprintf(stderr, "Skipping sig file '%s' to avoid looping\n", archive_entry_pathname(entry));
-    if (!archive_read_disk_can_descend(a))
+    if(!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
 }
@@ -123,14 +123,14 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
     // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
     matching = archive_match_new();
-    if (archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
+    if(archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     /*
     // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles! (Except it'll of course exclude *our* bundefile, too... -_-")
     if (archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     // But do include *our* bundlefile... :D (Not sure how/if it's supposed to work with the disk API...)
-    if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK)	// This is INDEX_FILE_NAME
+    if (archive_match_include_pattern(matching, "^update\\-filelist\\.dat$") != ARCHIVE_OK) // This is INDEX_FILE_NAME
         fprintf(stderr, "archive_match_include_pattern() failed: %s\n", archive_error_string(matching));
     */
 
@@ -238,7 +238,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 archive_entry_free(entry);
                 continue;
             }
-			
+
             // Exclude bundlefiles that aren't our own, to avoid ending up with multiple bundlefiles...
             if(IS_DAT(pathname) && dirty_bundlefile)
             {
@@ -417,7 +417,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
     archive_write_close(a);
     archive_write_free(a);
-	
+
     archive_match_free(matching);
 
     return 0;

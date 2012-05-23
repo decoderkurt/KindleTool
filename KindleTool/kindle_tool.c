@@ -431,7 +431,7 @@ int kindle_info_main(int argc, char *argv[])
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
-        snc_i = serial_no[i];	// Ugly workaround to shutup a Cywgin GCC warning
+        snc_i = serial_no[i];   // Ugly workaround to shutup a Cywgin GCC warning
         if(islower(snc_i))
         {
             serial_no[i] = toupper(snc_i);
