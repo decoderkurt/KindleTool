@@ -332,8 +332,8 @@ int kindle_convert_main(int argc, char *argv[])
         {
             fail = 0;
             in_name = argv[optind++];
-            // Check that input properly ends in .bin
-            if(!IS_BIN(in_name))
+            // Check that input properly ends in .bin, unless we just want to parse the header
+            if(!info_only && !IS_BIN(in_name))
             {
                 fprintf(stderr, "The input file must be a '.bin' update package.\n");
                 fail = 1;
@@ -378,7 +378,7 @@ int kindle_convert_main(int argc, char *argv[])
             if(kindle_convert(input, output, sig_output) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
-                if(output != stdout)
+                if(output != NULL && output != stdout)
                     remove(out_name); // clean up our mess, if we made one
                 fail = 1;
             }

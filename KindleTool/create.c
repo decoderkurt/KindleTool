@@ -796,6 +796,8 @@ int kindle_create_main(int argc, char *argv[])
     int keep_archive;
     int skip_archive;
     int fake_sign;
+    struct archive_entry *entry;
+    struct archive *match;
 
     // defaults
     output = stdout;
@@ -1043,25 +1045,61 @@ int kindle_create_main(int argc, char *argv[])
 
     // Build the package archive name based on the output name.
     char tarball_filename[PATH_MAX];
-    // While we're at it, check that our output name properly ends in .bin
-    if(output_filename != NULL && IS_BIN(output_filename))
+    // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
+    if(output_filename != NULL)
     {
-        // It does, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need our proper output name later
-        size_t len = strlen(output_filename);
-        char *tmp_outname = malloc(len - 3);
-        memcpy(tmp_outname, output_filename, len - 4);
-        tmp_outname[len - 4] = 0;       // . => \0
+        if(!fake_sign)
+        {
+            // Use libarchive's pattern matching, because it handles ./ in a smart way
+            match = archive_match_new();
+            entry = archive_entry_new();
 
-        snprintf(tarball_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
-        free(tmp_outname);
+            if(archive_match_exclude_pattern(match, "./update*\\.bin$") != ARCHIVE_OK)
+                fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
+
+            archive_entry_copy_pathname(entry, output_filename);
+
+            if(archive_match_path_excluded(match, entry) != 1)
+            {
+                fprintf(stderr, "Your output file needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n");
+                return -1;
+            }
+            else
+            {
+                // It follows the proper naming scheme, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need our proper output name later
+                size_t len = strlen(output_filename);
+                char *tmp_outname = malloc(len - 3);
+                memcpy(tmp_outname, output_filename, len - 4);
+                tmp_outname[len - 4] = 0;       // . => \0
+
+                snprintf(tarball_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
+                free(tmp_outname);
+            }
+
+            // Cleanup
+            archive_entry_free(entry);
+            archive_match_free(match);
+        }
+        else
+        {
+            // We're outputting to a non .bin file, assign a generic name to the archive
+            snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
+        }
     }
     else
     {
-        // We're outputting to stdout or a non .bin file, assign a generic name to the archive
-        snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
-        // If we're really outputting to stdout, also fix the output filename
         if (output == stdout)
+        {
+            // We're outputting to stdout, assign a generic name to the archive
+            snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
+            // If we're really outputting to stdout, fix the output filename
             output_filename = strdup("standard output");
+        }
+        else
+        {
+            fprintf(stderr, "Huh, something went wrong. We don't have an output filename, yet we don't want to output to stdout :?\n");
+            return -1;
+        }
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
@@ -1149,8 +1187,8 @@ int kindle_create_main(int argc, char *argv[])
         fclose(output);
     else
         free(output_filename);
-    // Remove tarball, unless we asked to keep it
-    if(!keep_archive)
+    // Remove tarball, unless we asked to keep it, or we used an existent tarball as sole input
+    if(!keep_archive && !skip_archive)
         remove(tarball_filename);
 
     return 0;
