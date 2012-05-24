@@ -122,6 +122,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char *pathname_sig = NULL;
     char *resolved_path_sig = NULL;
     char *sourcepath_sig = NULL;
+    char *pathnamecpy = NULL;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
     // We'll build it in our PWD, and we've just appended it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
@@ -314,16 +315,20 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // Don't add the bundlefile to itself
                 if(dirty_bundlefile)
                 {
-                    // FIXME: The python script uses pathname+"_file" for the last field (display name)
-                    if(fprintf(bundlefile, "%d %s %s %lld %s\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long) st.st_size / BLOCK_SIZE, sourcepath) < 0)
+                    // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
+                    // Use a copy of pathname to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
+                    pathnamecpy = strdup(pathname);
+                    if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
                     {
                         fprintf(stderr, "Cannot write to index file.\n");
                         // Cleanup a bit before crapping out
                         fclose(file);
                         fclose(sigfile);
                         remove(signame);
+                        free(pathnamecpy);
                         goto cleanup;
                     }
+                    free(pathnamecpy);
                 }
 
                 // Cleanup

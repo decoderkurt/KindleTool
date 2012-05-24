@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 
 // Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3
 #if ARCHIVE_VERSION_NUMBER < 3000003
