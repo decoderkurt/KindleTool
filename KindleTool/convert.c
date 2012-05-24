@@ -218,6 +218,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
             free(signature);
             return -1;
         }
+        free(signature);
     }
     return 0;
 }

@@ -215,7 +215,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
+            {
+                free(pathname);
+                free(resolved_path);
+                free(sourcepath);
                 goto cleanup;
+            }
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
             archive_entry_set_uid(entry, 0);
@@ -249,7 +254,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
             if(r == ARCHIVE_FATAL)
+            {
+                free(pathname);
+                free(resolved_path);
+                free(sourcepath);
                 goto cleanup;
+            }
             if(r > ARCHIVE_FAILED)
             {
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
@@ -269,6 +279,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if((file = fopen(pathname, "rb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
+                    free(pathname);
+                    free(resolved_path);
+                    free(sourcepath);
                     goto cleanup;
                 }
                 // Don't hash our bundlefile
@@ -278,6 +291,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "Cannot calculate hash sum for '%s'\n", pathname);
                         fclose(file);
+                        free(pathname);
+                        free(resolved_path);
+                        free(sourcepath);
                         goto cleanup;
                     }
                     md5[MD5_HASH_LENGTH] = 0;
@@ -289,6 +305,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if((sigfile = fopen(signame, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
+                    free(pathname);
+                    free(resolved_path);
+                    free(sourcepath);
                     goto cleanup;
                 }
                 if(sign_file(file, rsa_pkey_file, sigfile) < 0)
@@ -297,6 +316,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     fclose(file);
                     fclose(sigfile);
                     remove(signame);   // Delete empty/broken sigfile
+                    free(pathname);
+                    free(resolved_path);
+                    free(sourcepath);
                     goto cleanup;
                 }
 
@@ -311,6 +333,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         fclose(file);
                         fclose(sigfile);
                         remove(signame);
+                        free(pathname);
+                        free(resolved_path);
+                        free(sourcepath);
                         goto cleanup;
                     }
                 }
@@ -328,6 +353,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
                     remove(signame);
+                    free(pathname);
+                    free(resolved_path);
+                    free(sourcepath);
                     goto cleanup;
                 }
 
@@ -342,6 +370,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
                         remove(signame);
+                        free(pathname);
+                        free(resolved_path);
+                        free(sourcepath);
                         goto cleanup;
                     }
                     // Get some basic entry fields from stat
@@ -357,6 +388,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);
+                        free(pathname);
+                        free(resolved_path);
+                        free(sourcepath);
+                        free(pathname_sig);
+                        free(resolved_path_sig);
+                        free(sourcepath_sig);
                         goto cleanup;
                     }
 
@@ -374,6 +411,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);
+                        free(pathname);
+                        free(resolved_path);
+                        free(sourcepath);
+                        free(pathname_sig);
+                        free(resolved_path_sig);
+                        free(sourcepath_sig);
                         goto cleanup;
                     }
                     if(r > ARCHIVE_FAILED)
@@ -1014,9 +1057,11 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        // We're outputting to stdout, assign a generic name to the archive
+        // We're outputting to stdout or a non .bin file, assign a generic name to the archive
         snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
-        output_filename = strdup("standard output");
+        // If we're really outputting to stdout, also fix the output filename
+        if (output == stdout)
+            output_filename = strdup("standard output");
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
@@ -1102,6 +1147,8 @@ int kindle_create_main(int argc, char *argv[])
     fclose(input);
     if(output != stdout)
         fclose(output);
+    else
+        free(output_filename);
     // Remove tarball, unless we asked to keep it
     if(!keep_archive)
         remove(tarball_filename);
@@ -1113,6 +1160,8 @@ do_error:
     {
         free(input_list);
         free(raw_filelist);
+        if(output == stdout)
+            free(output_filename);
     }
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
