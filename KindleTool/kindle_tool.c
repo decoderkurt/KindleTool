@@ -72,14 +72,16 @@ int munger(FILE *input, FILE *output, size_t length, const int fake_sign)
     return 0;
 }
 
-int demunger(FILE *input, FILE *output, size_t length)
+int demunger(FILE *input, FILE *output, size_t length, const int fake_sign)
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
     size_t bytes_written;
     while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
     {
-        dm(bytes, bytes_read);
+        // Don't demunge if we supplied a fake package
+        if(!fake_sign)
+            dm(bytes, bytes_read);
         bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
         if(ferror(output) != 0)
         {
@@ -254,6 +256,7 @@ int kindle_print_help(const char *prog_name)
         "      -i, --info                  Just print the package information, no conversion done\n"
         "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
         "      -k, --keep                  Don't delete the input package.\n"
+        "      -u, --unsigned              Assume input is an unsigned package.\n"
         "      \n"
         "  %s extract <input> <output>\n"
         "    Extracts a Kindle update package to a directory\n"
@@ -396,7 +399,7 @@ int kindle_deobfuscate_main(int argc, char *argv[])
             return -1;
         }
     }
-    if(demunger(input, output, 0) < 0)
+    if(demunger(input, output, 0, 0) < 0)
     {
         fprintf(stderr, "Cannot deobfuscate.\n");
         fclose(input);

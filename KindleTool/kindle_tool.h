@@ -174,7 +174,7 @@ typedef struct
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);
 int munger(FILE *, FILE *, size_t, const int);
-int demunger(FILE *, FILE *, size_t);
+int demunger(FILE *, FILE *, size_t, const int);
 const char *convert_device_id(Device);
 const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
@@ -187,11 +187,11 @@ int kindle_obfuscate_main(int, char **);
 int kindle_info_main(int, char **);
 
 int kindle_read_bundle_header(UpdateHeader *, FILE *);
-int kindle_convert(FILE *, FILE *, FILE *);
-int kindle_convert_ota_update_v2(FILE *, FILE *);
+int kindle_convert(FILE *, FILE *, FILE *, const int);
+int kindle_convert_ota_update_v2(FILE *, FILE *, const int);
 int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
-int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *);
-int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *);
+int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const int);
+int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const int);
 int kindle_convert_main(int, char **);
 int libarchive_copy_data(struct archive *, struct archive *);
 int libarchive_extract(const char *, const char *);

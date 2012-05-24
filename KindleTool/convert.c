@@ -29,7 +29,7 @@ int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-int kindle_convert(FILE *input, FILE *output, FILE *sig_output)
+int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const int fake_sign)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -44,7 +44,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output)
     {
         case OTAUpdateV2:
             fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-            return kindle_convert_ota_update_v2(input, output); // no absolute size, so no struct to pass
+            return kindle_convert_ota_update_v2(input, output, fake_sign); // no absolute size, so no struct to pass
             break;
         case UpdateSignature:
             if(kindle_convert_signature(&header, input, sig_output) < 0)
@@ -52,15 +52,15 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output)
                 fprintf(stderr, "Cannot extract signature file!\n");
                 return -1;
             }
-            return kindle_convert(input, output, sig_output);
+            return kindle_convert(input, output, sig_output, fake_sign);
             break;
         case OTAUpdate:
             fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
-            return kindle_convert_ota_update(&header, input, output);
+            return kindle_convert_ota_update(&header, input, output, fake_sign);
             break;
         case RecoveryUpdate:
             fprintf(stderr, "Bundle Type    %s\n", "Recovery");
-            return kindle_convert_recovery(&header, input, output);
+            return kindle_convert_recovery(&header, input, output, fake_sign);
             break;
         case UnknownUpdate:
         default:
@@ -70,7 +70,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output)
     return -1; // if we get here, there has been an error
 }
 
-int kindle_convert_ota_update_v2(FILE *input, FILE *output)
+int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
 {
     char *data;
     unsigned int hindex;
@@ -160,7 +160,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output)
     }
 
     // Now we can decrypt the data
-    return demunger(input, output, 0);
+    return demunger(input, output, 0, fake_sign);
 }
 
 int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
@@ -222,7 +222,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     return 0;
 }
 
-int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output)
+int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const int fake_sign)
 {
     if(fread(header->data.ota_header_data, sizeof(char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
@@ -241,10 +241,10 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output)
         return 0;
     }
 
-    return demunger(input, output, 0);
+    return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output)
+int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const int fake_sign)
 {
     if(fread(header->data.recovery_header_data, sizeof(char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
@@ -263,7 +263,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output)
         return 0;
     }
 
-    return demunger(input, output, 0);
+    return demunger(input, output, 0, fake_sign);
 }
 
 int kindle_convert_main(int argc, char *argv[])
@@ -275,7 +275,8 @@ int kindle_convert_main(int argc, char *argv[])
         { "stdout", no_argument, NULL, 'c' },
         { "info", no_argument, NULL, 'i' },
         { "keep", no_argument, NULL, 'k' },
-        { "sig", no_argument, NULL, 's' }
+        { "sig", no_argument, NULL, 's' },
+        { "unsigned", no_argument, NULL, 'u' }
     };
     FILE *input;
     FILE *output;
@@ -289,6 +290,7 @@ int kindle_convert_main(int argc, char *argv[])
     int info_only;
     int keep_ori;
     int extract_sig;
+    int fake_sign;
     int fail;
 
     sig_output = NULL;
@@ -296,8 +298,9 @@ int kindle_convert_main(int argc, char *argv[])
     info_only = 0;
     keep_ori = 0;
     extract_sig = 0;
+    fake_sign = 0;
     fail = 1;
-    while((opt = getopt_long(argc, argv, "icks", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "icksu", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -312,6 +315,9 @@ int kindle_convert_main(int argc, char *argv[])
                 break;
             case 's':
                 extract_sig = 1;
+                break;
+            case 'u':
+                fake_sign = 1;
                 break;
             default:
                 fprintf(stderr, "Unknown option code 0%o\n", opt);
@@ -332,8 +338,8 @@ int kindle_convert_main(int argc, char *argv[])
         {
             fail = 0;
             in_name = argv[optind++];
-            // Check that input properly ends in .bin, unless we just want to parse the header
-            if(!info_only && !IS_BIN(in_name))
+            // Check that a valid package input properly ends in .bin, unless we just want to parse the header
+            if(!fake_sign && !info_only && !IS_BIN(in_name))
             {
                 fprintf(stderr, "The input file must be a '.bin' update package.\n");
                 fail = 1;
@@ -342,9 +348,9 @@ int kindle_convert_main(int argc, char *argv[])
             if(!info_only && output != stdout) // not info only AND not stdout
             {
                 len = strlen(in_name);
-                tmp_outname = malloc(len - 3);
-                memcpy(tmp_outname, in_name, len - 4);
-                tmp_outname[len - 4] = 0;   // . => \0
+                tmp_outname = malloc(len - (3 + fake_sign));
+                memcpy(tmp_outname, in_name, len - (4 + fake_sign));
+                tmp_outname[len - (4 + fake_sign)] = 0;   // . => \0
                 snprintf(out_name, PATH_MAX, "%s.tar.gz", tmp_outname);
                 free(tmp_outname);
                 if((output = fopen(out_name, "wb")) == NULL)
@@ -375,7 +381,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fail = 1;
                 continue;   // It's fatal, go away
             }
-            if(kindle_convert(input, output, sig_output) < 0)
+            if(kindle_convert(input, output, sig_output, fake_sign) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
                 if(output != NULL && output != stdout)
@@ -559,7 +565,7 @@ int kindle_extract_main(int argc, char *argv[])
         fclose(bin_input);
         return -1;
     }
-    if(kindle_convert(bin_input, tgz_output, NULL) < 0)
+    if(kindle_convert(bin_input, tgz_output, NULL, 0) < 0)
     {
         fprintf(stderr, "Error converting update '%s'.\n", bin_filename);
         fclose(bin_input);

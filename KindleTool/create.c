@@ -568,7 +568,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
             fprintf(stderr, "Error opening temp file.\n");
             return -1;
         }
-        demunger(input_tgz, demunged_tgz, 0);
+        demunger(input_tgz, demunged_tgz, 0, 0);
         rewind(input_tgz);
         rewind(demunged_tgz);
         if(md5_sum(demunged_tgz, (char *)&header[hindex]) < 0)
@@ -665,7 +665,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
             fprintf(stderr, "Error opening temp file.\n");
             return -1;
         }
-        demunger(input_tgz, obfuscated_tgz, 0);
+        demunger(input_tgz, obfuscated_tgz, 0, 0);
         rewind(input_tgz);
         rewind(obfuscated_tgz);
         if(md5_sum(obfuscated_tgz, header.data.ota_update.md5_sum) < 0)
@@ -718,7 +718,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
             fprintf(stderr, "Error opening temp file.\n");
             return -1;
         }
-        demunger(input_tgz, obfuscated_tgz, 0);
+        demunger(input_tgz, obfuscated_tgz, 0, 0);
         rewind(input_tgz);
         rewind(obfuscated_tgz);
         if(md5_sum(obfuscated_tgz, header.data.recovery_update.md5_sum) < 0)
