@@ -1081,7 +1081,7 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        if (output == stdout)
+        if(output == stdout)
         {
             // We're outputting to stdout, assign a generic name to the archive
             snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
