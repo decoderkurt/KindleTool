@@ -20,6 +20,8 @@
 
 #include "kindle_tool.h"
 
+static void excluded_callback(struct archive *, void *, struct archive_entry *);
+
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
     /* Taken from: http://stackoverflow.com/a/2054412/91422 */
@@ -81,7 +83,6 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 }
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
-static void excluded_callback(struct archive *, void *, struct archive_entry *);
 static void excluded_callback(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
     fprintf(stderr, "Skipping original bundle/sig file '%s' to avoid duplicates/looping\n", archive_entry_pathname(entry));
@@ -110,6 +111,17 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char md5[MD5_HASH_LENGTH + 1];
     FILE *bundlefile;
     int dirty_bundlefile;
+    char *error_string = NULL;
+    char *pch_error = NULL;
+    char *error_sourcepath = NULL;
+    char *error_desc = NULL;
+    char *pathname = NULL;
+    char *resolved_path = NULL;
+    char *sourcepath = NULL;
+    char signame[PATH_MAX];
+    char *pathname_sig = NULL;
+    char *resolved_path_sig = NULL;
+    char *sourcepath_sig = NULL;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
     // We'll build it in our PWD, and we've just appended it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
@@ -127,6 +139,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles!
     if(archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+
+    entry = archive_entry_new();
+    entry_sig = archive_entry_new();
 
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
@@ -158,7 +173,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
         for(;;)
         {
-            entry = archive_entry_new();
+            archive_entry_clear(entry);
             r = archive_read_next_header2(disk, entry);
             if(r == ARCHIVE_EOF)
                 break;
@@ -171,41 +186,34 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin...
                 if(r == ARCHIVE_FAILED)
                 {
+                    // (Late) Cleanup
+                    free(error_string);
+                    free(error_sourcepath);
+                    free(error_desc);
+
                     // We don't have an archive entry, and no really adequate public API (AFAICT), so getting the filename is a bitch...
                     // The only thing we have acces to that knows the filepath is... the error string. So parse it :/
-                    char *error_string = strdup(archive_error_string(disk));
-                    char *pch_error;
+                    error_string = strdup(archive_error_string(disk));
                     pch_error = strtok(error_string, ":");
-                    char *sourcepath = strdup(pch_error);
+                    error_sourcepath = strdup(pch_error);
                     pch_error = strtok(NULL, ":");
-                    char *error_desc = strdup(pch_error);
+                    error_desc = strdup(pch_error);
                     // If libarchive failed to stat a .sig file, print a warning, and go on
-                    if(IS_SIG(sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
+                    if(IS_SIG(error_sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
                     {
-                        fprintf(stderr, "Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", sourcepath);
-
-                        free(error_string);
-                        free(sourcepath);
-                        free(error_desc);
-
-                        archive_entry_free(entry);
+                        fprintf(stderr, "Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", error_sourcepath);
                         continue;
                     }
-
-                    // Cleanup
-                    free(error_string);
-                    free(sourcepath);
-                    free(error_desc);
                 }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 goto cleanup;
             }
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
-            // We're gonna use it after freeing entry, make a copy
-            char *pathname = strdup(archive_entry_pathname(entry));
+            // We're gonna use it after clearing entry, make a copy
+            pathname = strdup(archive_entry_pathname(entry));
             // Get our absolute path, or weird things happen with the directory lookup...
-            char *resolved_path = NULL;
-            char *sourcepath = realpath(pathname, resolved_path);
+            resolved_path = NULL;
+            sourcepath = realpath(pathname, resolved_path);
             archive_entry_copy_sourcepath(entry, sourcepath);
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
@@ -216,9 +224,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
             {
-                free(pathname);
-                free(resolved_path);
-                free(sourcepath);
                 goto cleanup;
             }
 
@@ -237,7 +242,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(IS_SIG(pathname))
             {
                 fprintf(stderr, "Hackishly skipping original sig file '%s' to avoid looping\n", pathname);
-                archive_entry_free(entry);
                 continue;
             }
 
@@ -245,7 +249,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             if(IS_DAT(pathname) && dirty_bundlefile)
             {
                 fprintf(stderr, "Hackishly skipping original bundlefile '%s' to avoid duplicates\n", pathname);
-                archive_entry_free(entry);
                 continue;
             }
 
@@ -255,9 +258,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
             if(r == ARCHIVE_FATAL)
             {
-                free(pathname);
-                free(resolved_path);
-                free(sourcepath);
                 goto cleanup;
             }
             if(r > ARCHIVE_FAILED)
@@ -271,7 +271,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 }
                 close(fd);
             }
-            archive_entry_free(entry);
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(S_ISREG(st.st_mode))
@@ -279,9 +278,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 if((file = fopen(pathname, "rb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
-                    free(pathname);
-                    free(resolved_path);
-                    free(sourcepath);
                     goto cleanup;
                 }
                 // Don't hash our bundlefile
@@ -291,23 +287,16 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "Cannot calculate hash sum for '%s'\n", pathname);
                         fclose(file);
-                        free(pathname);
-                        free(resolved_path);
-                        free(sourcepath);
                         goto cleanup;
                     }
                     md5[MD5_HASH_LENGTH] = 0;
                     rewind(file);
                 }
 
-                char signame[PATH_MAX];
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
                 if((sigfile = fopen(signame, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
-                    free(pathname);
-                    free(resolved_path);
-                    free(sourcepath);
                     goto cleanup;
                 }
                 if(sign_file(file, rsa_pkey_file, sigfile) < 0)
@@ -316,9 +305,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     fclose(file);
                     fclose(sigfile);
                     remove(signame);   // Delete empty/broken sigfile
-                    free(pathname);
-                    free(resolved_path);
-                    free(sourcepath);
                     goto cleanup;
                 }
 
@@ -333,9 +319,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         fclose(file);
                         fclose(sigfile);
                         remove(signame);
-                        free(pathname);
-                        free(resolved_path);
-                        free(sourcepath);
                         goto cleanup;
                     }
                 }
@@ -353,16 +336,13 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
                     remove(signame);
-                    free(pathname);
-                    free(resolved_path);
-                    free(sourcepath);
                     goto cleanup;
                 }
 
                 for(;;)
                 {
                     // First, inject a new entry, based on our sigfile :)
-                    entry_sig = archive_entry_new();
+                    archive_entry_clear(entry_sig);
                     r = archive_read_next_header2(disk_sig, entry_sig);
                     if(r == ARCHIVE_EOF)
                         break;
@@ -370,15 +350,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
                         remove(signame);
-                        free(pathname);
-                        free(resolved_path);
-                        free(sourcepath);
                         goto cleanup;
                     }
                     // Get some basic entry fields from stat
-                    char *pathname_sig = strdup(archive_entry_pathname(entry_sig));
-                    char *resolved_path_sig = NULL;
-                    char *sourcepath_sig = realpath(pathname_sig, resolved_path_sig);
+                    pathname_sig = strdup(archive_entry_pathname(entry_sig));
+                    resolved_path_sig = NULL;
+                    sourcepath_sig = realpath(pathname_sig, resolved_path_sig);
                     archive_entry_copy_sourcepath(entry_sig, sourcepath_sig);
 
                     lstat(pathname_sig, &st_sig);
@@ -388,12 +365,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);
-                        free(pathname);
-                        free(resolved_path);
-                        free(sourcepath);
-                        free(pathname_sig);
-                        free(resolved_path_sig);
-                        free(sourcepath_sig);
                         goto cleanup;
                     }
 
@@ -411,12 +382,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r == ARCHIVE_FATAL)
                     {
                         remove(signame);
-                        free(pathname);
-                        free(resolved_path);
-                        free(sourcepath);
-                        free(pathname_sig);
-                        free(resolved_path_sig);
-                        free(sourcepath_sig);
                         goto cleanup;
                     }
                     if(r > ARCHIVE_FAILED)
@@ -430,7 +395,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         }
                         close(fd);
                     }
-                    archive_entry_free(entry_sig);
                     // Delete the sigfile once we're done
                     remove(sourcepath_sig);
                     // Cleanup
@@ -438,6 +402,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     free(resolved_path_sig);
                     free(sourcepath_sig);
                 }
+                archive_read_close(disk_sig);
+                archive_read_free(disk_sig);
             }
 
             // Delete the bundle file once we're done
@@ -458,6 +424,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     archive_write_close(a);
     archive_write_free(a);
 
+    archive_entry_free(entry);
+    archive_entry_free(entry_sig);
+
     archive_match_free(matching);
 
     return 0;
@@ -467,7 +436,16 @@ cleanup:
     if(dirty_bundlefile)
         fclose(bundlefile);
     remove(INDEX_FILE_NAME);
-    // FIXME: We're probably leaking stuff, too...
+    // Free what we might have alloc'ed
+    free(pathname);
+    free(resolved_path);
+    free(sourcepath);
+    free(pathname_sig);
+    free(resolved_path_sig);
+    free(sourcepath_sig);
+    // And what libarchive might have alloc'ed
+    archive_entry_free(entry);
+    archive_entry_free(entry_sig);
     return 1;
 }
 
@@ -541,7 +519,10 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     unsigned char *header;
     int hindex;
     int i;
+    FILE *demunged_tgz;
     size_t str_len;
+
+    demunged_tgz = NULL;
 
     // first part of the set sized data
     header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
@@ -577,7 +558,6 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     // Sum a temp deobfuscated tarball to fake it ;)
     if(fake_sign)
     {
-        FILE *demunged_tgz;
         if((demunged_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
@@ -662,6 +642,9 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
 int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     UpdateHeader header;
+    FILE *obfuscated_tgz;
+
+    obfuscated_tgz = NULL;
 
     memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
     strncpy(header.magic_number, info->magic_number, 4); // magic number
@@ -672,7 +655,6 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
 
     if(fake_sign)
     {
-        FILE *obfuscated_tgz;
         if((obfuscated_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
@@ -713,6 +695,9 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
 int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
 {
     UpdateHeader header;
+    FILE *obfuscated_tgz;
+
+    obfuscated_tgz = NULL;
 
     memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
     strncpy(header.magic_number, info->magic_number, 4); // magic number
@@ -723,7 +708,6 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 
     if(fake_sign)
     {
-        FILE *obfuscated_tgz;
         if((obfuscated_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
@@ -788,21 +772,24 @@ int kindle_create_main(int argc, char *argv[])
     BIO *bio;
     int i;
     int optcount = 0;
-    char *output_filename;
+    char *output_filename = NULL;
     char *raw_filelist;
     char **input_list;
     int input_index;
     int input_total;
+    const char *tmp_buf = NULL;
+    char tarball_filename[PATH_MAX];
     int keep_archive;
     int skip_archive;
     int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
+    size_t len;
+    char *tmp_outname = NULL;
 
     // defaults
     output = stdout;
     input = NULL;
-    output_filename = NULL;
     input_index = 0;
     input_total = 0;
     keep_archive = 0;
@@ -1020,7 +1007,7 @@ int kindle_create_main(int argc, char *argv[])
             else
             {
                 // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us
-                const char *tmp_buf = argv[optind++];
+                tmp_buf = argv[optind++];
                 input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
                 strcpy(input_list[input_index], tmp_buf);
 
@@ -1044,7 +1031,6 @@ int kindle_create_main(int argc, char *argv[])
     input_index++;
 
     // Build the package archive name based on the output name.
-    char tarball_filename[PATH_MAX];
     // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
     if(output_filename != NULL)
     {
@@ -1062,13 +1048,15 @@ int kindle_create_main(int argc, char *argv[])
             if(archive_match_path_excluded(match, entry) != 1)
             {
                 fprintf(stderr, "Your output file needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n");
+                archive_entry_free(entry);
+                archive_match_free(match);
                 return -1;
             }
             else
             {
                 // It follows the proper naming scheme, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need our proper output name later
-                size_t len = strlen(output_filename);
-                char *tmp_outname = malloc(len - 3);
+                len = strlen(output_filename);
+                tmp_outname = malloc(len - 3);
                 memcpy(tmp_outname, output_filename, len - 4);
                 tmp_outname[len - 4] = 0;       // . => \0
 

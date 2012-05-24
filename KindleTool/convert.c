@@ -170,7 +170,6 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     size_t seek;
     unsigned char *signature;
 
-
     if(fread(header->data.signature_header_data, sizeof(char), UPDATE_SIGNATURE_BLOCK_SIZE, input) < UPDATE_SIGNATURE_BLOCK_SIZE)
     {
         fprintf(stderr, "Cannot read signature header.\n");
@@ -283,6 +282,7 @@ int kindle_convert_main(int argc, char *argv[])
     FILE *sig_output;
     const char *in_name;
     char out_name[PATH_MAX];
+    char *tmp_outname = NULL;
     char sig_name[PATH_MAX];
     size_t len;
     struct stat st;
@@ -342,7 +342,7 @@ int kindle_convert_main(int argc, char *argv[])
             if(!info_only && output != stdout) // not info only AND not stdout
             {
                 len = strlen(in_name);
-                char *tmp_outname = malloc(len - 3);
+                tmp_outname = malloc(len - 3);
                 memcpy(tmp_outname, in_name, len - 4);
                 tmp_outname[len - 4] = 0;   // . => \0
                 snprintf(out_name, PATH_MAX, "%s.tar.gz", tmp_outname);
@@ -357,7 +357,7 @@ int kindle_convert_main(int argc, char *argv[])
             if(extract_sig) // we want the package sig (implies not info only)
             {
                 len = strlen(in_name);
-                char *tmp_outname = malloc(len - 3);
+                tmp_outname = malloc(len - 3);
                 memcpy(tmp_outname, in_name, len - 4);
                 tmp_outname[len - 4] = 0;   // . => \0
                 snprintf(sig_name, PATH_MAX, "%s.sig", tmp_outname);
@@ -446,6 +446,8 @@ int libarchive_extract(const char *filename, const char *prefix)
     struct archive_entry *entry;
     int flags;
     int r;
+    const char *path = NULL;
+    char fixed_path[PATH_MAX];
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
@@ -480,10 +482,9 @@ int libarchive_extract(const char *filename, const char *prefix)
         if(r < ARCHIVE_WARN)
             return(1);
         // Rewrite entry's pathname to extract in our specified directory
-        const char *path = archive_entry_pathname(entry);
-        char fixed_path[PATH_MAX];
+        path = archive_entry_pathname(entry);
         snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
-        archive_entry_set_pathname(entry, fixed_path);
+        archive_entry_copy_pathname(entry, fixed_path);
         r = archive_write_header(ext, entry);
         if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(ext));
@@ -516,6 +517,7 @@ int kindle_extract_main(int argc, char *argv[])
     char *output_dir;
     FILE *bin_input;
     FILE *tgz_output;
+    char *tmp_outname = NULL;
 
     // Skip command
     argv++;
@@ -542,10 +544,10 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Hackish. We don't use a tmpfile anymore, because apparently every tmp function out there
-    // that returns a filename and not a stream descriptor is deprecated, and my libarchive helper expects
+    // that returns a filename and not a stream descriptor is deprecated/racy, and my libarchive helper expects
     // a char array, not an fd.
     len = strlen(bin_filename);
-    char *tmp_outname = malloc(len - 3);
+    tmp_outname = malloc(len - 3);
     memcpy(tmp_outname, bin_filename, len - 4);
     tmp_outname[len - 4] = 0;   // . => \0
     snprintf(tgz_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
