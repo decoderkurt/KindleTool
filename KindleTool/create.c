@@ -206,8 +206,11 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     }
                 }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
+                // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but haven't yet realloc'ed em...)
+                pathname = resolved_path = sourcepath = NULL;
                 goto cleanup;
             }
+
             // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
             // We're gonna use it after clearing entry, make a copy
             pathname = strdup(archive_entry_pathname(entry));
@@ -350,6 +353,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
                         remove(signame);
+                        // Avoid a double free (beginning from the second iteration, since we freed pathname_sig & co at the end of the first iteration, but haven't yet realloc'ed em...)
+                        pathname_sig = resolved_path_sig = sourcepath_sig = NULL;
                         goto cleanup;
                     }
                     // Get some basic entry fields from stat
