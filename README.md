@@ -21,6 +21,7 @@
 		-i, --info                  Just print the package information, no conversion done
 		-s, --sig                   OTA V2 updates only. Extract the package signature.
 		-k, --keep                  Don't delete the input package.
+		-u, --unsigned              Assume input is an unsigned package
 
 * KindleTool extract &lt;**input**&gt; &lt;**output**&gt;
 
