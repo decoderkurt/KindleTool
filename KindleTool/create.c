@@ -1008,7 +1008,9 @@ int kindle_create_main(int argc, char *argv[])
             if(optind == argc - 1 && input_index > 0)
             {
                 output_filename = argv[optind++];
-                // FIXME: Allow stdout with multiple inputs, too...
+                // If it's a single dash, output to stdout (like tar c)
+                if(strcmp(output_filename, "-") == 0)
+                    output_filename = NULL;
             }
             else
             {
@@ -1088,18 +1090,10 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        if(output == stdout)
-        {
-            // We're outputting to stdout, assign a generic name to the archive
-            snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
-            // If we're really outputting to stdout, fix the output filename
-            output_filename = strdup("standard output");
-        }
-        else
-        {
-            fprintf(stderr, "Huh, something went wrong. We don't have an output filename, yet we don't want to output to stdout :?\n");
-            return -1;
-        }
+        // We're outputting to stdout, assign a generic name to the archive
+        snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
+        // If we're really outputting to stdout, fix the output filename
+        output_filename = strdup("standard output");
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
