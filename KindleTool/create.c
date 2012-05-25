@@ -207,7 +207,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     }
                 }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
-                // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but haven't yet realloc'ed em...)
+                // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
                 pathname = resolved_path = sourcepath = NULL;
                 goto cleanup;
             }
@@ -358,7 +358,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
                         remove(signame);
-                        // Avoid a double free (beginning from the second iteration, since we freed pathname_sig & co at the end of the first iteration, but haven't yet realloc'ed em...)
+                        // Avoid a double free (beginning from the second iteration, since we freed pathname_sig & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
                         pathname_sig = resolved_path_sig = sourcepath_sig = NULL;
                         goto cleanup;
                     }
@@ -430,7 +430,6 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
         archive_read_close(disk);
         archive_read_free(disk);
     }
-
     archive_write_close(a);
     archive_write_free(a);
 
@@ -456,6 +455,7 @@ cleanup:
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
+    archive_match_free(matching);
     return 1;
 }
 
@@ -1008,11 +1008,7 @@ int kindle_create_main(int argc, char *argv[])
             if(optind == argc - 1 && input_index > 0)
             {
                 output_filename = argv[optind++];
-                if((output = fopen(output_filename, "wb")) == NULL)
-                {
-                    fprintf(stderr, "Cannot create output '%s'.\n", output_filename);
-                    goto do_error;
-                }
+                // FIXME: Allow stdout with multiple inputs, too...
             }
             else
             {
@@ -1057,7 +1053,7 @@ int kindle_create_main(int argc, char *argv[])
 
             if(archive_match_path_excluded(match, entry) != 1)
             {
-                fprintf(stderr, "Your output file needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n");
+                fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n", output_filename);
                 archive_entry_free(entry);
                 archive_match_free(match);
                 return -1;
@@ -1082,6 +1078,12 @@ int kindle_create_main(int argc, char *argv[])
         {
             // We're outputting to a non .bin file, assign a generic name to the archive
             snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
+        }
+        // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output
+        if((output = fopen(output_filename, "wb")) == NULL)
+        {
+            fprintf(stderr, "Cannot create output '%s'.\n", output_filename);
+            goto do_error;
         }
     }
     else

@@ -33,7 +33,7 @@
 >> You should be able to throw a mix of files &amp; directories as input without trouble.  
 >> Just keep in mind that if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
 >> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
->> Output should be a file with the extension ".bin", if it is not provided, output to stdout.  
+>> Output should be a file with the extension ".bin", if it is not provided, and we only have a single input file, output to stdout.  
 >> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.  
 
 	Type:
