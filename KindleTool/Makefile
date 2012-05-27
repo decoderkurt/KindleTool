@@ -9,7 +9,19 @@ CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 
 SRCS=kindle_tool.c create.c convert.c
 
-CPPFLAGS?=-Iincludes
+default: all
+
+# OS & Version handling (taken from the git makefiles)
+SHELL:=/bin/bash
+version-inc: .FORCE
+	@$(SHELL) ./version.sh `$(CC) -dumpversion`
+-include version-inc
+
+ifeq "$(OSTYPE)" "Darwin"
+	CPPFLAGS?=-I/opt/local/include
+else
+	CPPFLAGS?=-Iincludes
+endif
 LIBS=-lcrypto -larchive
 
 ifeq "$(DEBUG)" "true"
@@ -28,14 +40,6 @@ ifeq "$(KINDLE)" "true"
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
-default: all
-
-# Version handling (taken from the git makefiles)
-SHELL:=/bin/bash
-version-inc: .FORCE
-	@$(SHELL) ./version.sh `$(CC) -dumpversion`
--include version-inc
-
 CFLAGS+=-pipe
 # Moar warnings!
 CFLAGS+=-Wall -Wformat -Wformat-security
@@ -48,8 +52,12 @@ CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 
 ifndef LDFLAGS
-	LDFLAGS:=-Llib
-	LDFLAGS+=-Wl,-O1 -Wl,--as-needed
+	ifeq "$(OSTYPE)" "Darwin"
+		LDFLAGS:=-L/opt/local/lib
+	else
+		LDFLAGS:=-Llib
+		LDFLAGS+=-Wl,-O1 -Wl,--as-needed
+	endif
 endif
 
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
@@ -60,7 +68,7 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-ifeq "$(SHELL uname)" "Linux"
+ifeq "$(OSTYPE)" "Linux"
 kindletool.1:
 	cp -af KindleTool.1 kindletool.1
 else
@@ -81,7 +89,7 @@ debug:
 kindle:
 	$(MAKE) strip KINDLE=true
 
-ifeq "$(SHELL uname)" "Linux"
+ifeq "$(OSTYPE)" "Linux"
 clean_man:
 	rm -rf kindletool.1
 else

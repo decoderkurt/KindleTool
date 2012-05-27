@@ -6,6 +6,9 @@ VER_FILE="version-inc"
 # Fallback version
 FALLBACK_VER="v0.5-GIT"
 
+# Apparently, bsdmake hates me, so, get uname's output from here
+UNAME="$(uname -s)"
+
 # If we don't have git installed (Why, oh why would you do that? :D), just use the fallback
 if ! git help &>/dev/null ; then
 	echo "${FALLBACK_VER}" > VERSION
@@ -78,8 +81,10 @@ fi
 
 # Update our include file, if need be
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
-	echo >&2 "KT_VERSION = ${VER}"
+	#echo >&2 "KT_VERSION = ${VER}"
 	echo "KT_VERSION = ${VER}" >${VER_FILE}
+	#echo >&2 "OSTYPE = ${UNAME}"
+	echo "OSTYPE = ${UNAME}" >>${VER_FILE}
 fi
 
 # Build a proper VERSION file (PMS)
