@@ -60,7 +60,7 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-ifneq "$(OS)" "Windows_NT"
+ifeq "$(SHELL uname)" "Linux"
 kindletool.1:
 	cp -af KindleTool.1 kindletool.1
 else
@@ -81,7 +81,7 @@ debug:
 kindle:
 	$(MAKE) strip KINDLE=true
 
-ifneq "$(OS)" "Windows_NT"
+ifeq "$(SHELL uname)" "Linux"
 clean_man:
 	rm -rf kindletool.1
 else
