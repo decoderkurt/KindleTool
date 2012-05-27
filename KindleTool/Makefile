@@ -13,7 +13,7 @@ default: all
 
 # OS & Version handling (taken from the git makefiles)
 SHELL:=/bin/bash
-version-inc: .FORCE
+version-inc:
 	@$(SHELL) ./version.sh `$(CC) -dumpversion`
 -include version-inc
 
@@ -107,4 +107,3 @@ clean: clean_man
 
 
 .PHONY: all clean clean_man default outdir kindletool strip debug kindle
-.PHONY: .FORCE

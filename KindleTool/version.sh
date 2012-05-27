@@ -81,7 +81,7 @@ fi
 
 # Update our include file, if need be
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
-	#echo >&2 "KT_VERSION = ${VER}"
+	echo >&2 "KT_VERSION = ${VER}"
 	echo "KT_VERSION = ${VER}" >${VER_FILE}
 	#echo >&2 "OSTYPE = ${UNAME}"
 	echo "OSTYPE = ${UNAME}" >>${VER_FILE}
