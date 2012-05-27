@@ -41,18 +41,3 @@ src_compile() {
 		emake || die "failed to build ${PN}"
 	fi
 }
-
-src_install() {
-	local outdir
-	if use debug; then
-		outdir="Debug"
-	else
-		outdir="Release"
-	fi
-
-	dobin ${MY_PN}/${outdir}/${PN} || die "failed to install ${PN} binary"
-
-	doman ${MY_PN}/${PN}.1 || die "failed to install ${PN} manpage"
-
-	base_src_install_docs
-}

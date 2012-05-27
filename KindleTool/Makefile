@@ -17,13 +17,16 @@ version-inc:
 	@$(SHELL) ./version.sh `$(CC) -dumpversion`
 -include version-inc
 
+PREFIX:=/usr
 ifeq "$(OSTYPE)" "Darwin"
 	DESTDIR?=/opt/local
+	PREFIX:=/.
 else
 	DESTDIR?=/usr/local
+	PREFIX:=/.
 endif
-BINDIR:=$(DESTDIR)/bin
-MANDIR:=$(DESTDIR)/share/man/man1
+BINDIR:=$(DESTDIR)$(PREFIX)/bin
+MANDIR:=$(DESTDIR)$(PREFIX)/share/man/man1
 
 ifeq "$(OSTYPE)" "Darwin"
 	CPPFLAGS?=-I/opt/local/include
