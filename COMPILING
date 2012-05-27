@@ -9,8 +9,10 @@ To compile for Linux:
 To compile for OSX:
 	1) Get MacPorts
 	2) Install the package: openssl
-	3) Compile and install libarchive >= 3.0.3 (the version available in MacPorts/Fink is outdated and Homebrew didn't have a libarchive formula at the time of writing)
-	4) Open the Xcode 4 project and compile
+	3) Setup a local portfile repository (http://guide.macports.org/#development.local-repositories) based on the one found in the ports folder (AFAIK, MacPorts default prefix in /opt/local).
+	3B) Don't forget to properly edit MacPorts' sources.conf file, and to run portindex in the root of your repository
+	4) Install the package: libarchive (You should end hopefully end up with libarchive-3.0.4, if you properly setup your portfile repo ;))
+	5) Open the Xcode 4 project and compile (Or compile using "make" in the tool's directory)
 
 To compile for Windows:
 	1) Get Cygwin
@@ -23,6 +25,3 @@ To compile for Windows:
 	5) Compile using "make" in the tool's directory
 
 Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).
-
-NOTE: This fork is probably broken on everything except Linux x86/x86_64/arm, Cygwin x86.
-Patches/Pull requests to fix that are welcome :).
