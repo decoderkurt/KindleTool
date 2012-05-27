@@ -10,8 +10,7 @@ To compile for OSX:
 	1) Get MacPorts
 	2) Setup a local portfile repository (http://guide.macports.org/#development.local-repositories) based on the one found in the ports folder (AFAIK, MacPorts' default prefix is /opt/local).
 	2B) Don't forget to properly edit MacPorts' sources.conf file, and to run portindex in the root of your repository
-	3) Install the package: libarchive (You should hopefully end up with libarchive-3.0.4, if you properly setup your portfile repo ;))
-	4) Open the Xcode 4 project and compile (Or compile using "make" in the tool's directory, or install it via MacPorts if you used our bare portfile repo)
+	3) Install the package: kindletool
 
 To compile for Windows:
 	1) Get Cygwin
