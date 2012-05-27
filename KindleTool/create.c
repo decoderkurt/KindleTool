@@ -119,10 +119,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char *resolved_path = NULL;
     char *sourcepath = NULL;
     char signame[PATH_MAX];
-    char sourcesigname[PATH_MAX];
-    char *pathname_sig = NULL;
-    char *resolved_path_sig = NULL;
-    char *sourcepath_sig = NULL;
+    char sigabsolutepath[PATH_MAX];
     char *pathnamecpy = NULL;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
@@ -213,7 +210,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 goto cleanup;
             }
 
-            // Get some basic entry fields from stat (use the entry pathname, we might be in the middle of a directory lookup)
+            // Get some basic entry fields from stat (use the absolute path, we might be in the middle of a directory lookup)
             // We're gonna use it after clearing entry, make a copy
             pathname = strdup(archive_entry_pathname(entry));
             // Get our absolute path, or weird things happen with the directory lookup...
@@ -222,8 +219,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             archive_entry_copy_sourcepath(entry, sourcepath);
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
-            // NOTE: Err, except that we use the resolved path in sourcepath, and that's what we use to read the file we actually put in the archive, so, err... :D
-            lstat(pathname, &st);
+            // NOTE: Err, except that we use the resolved path in sourcepath, and that's also what we use to read the file we actually put in the archive, so, err... :D
+            lstat(sourcepath, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
@@ -299,9 +296,9 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 }
 
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
-                // Use the absolute path, libarchive apparently does a chdir when walking a directory tree on OS X...
-                snprintf(sourcesigname, PATH_MAX, "%s.sig", sourcepath);
-                if((sigfile = fopen(sourcesigname, "wb")) == NULL)
+                // Use the absolute path, libarchive might do a chdir when walking a directory tree on some platforms (OS X) (And it's good practice anyway, and we already do it for everything else...)
+                snprintf(sigabsolutepath, PATH_MAX, "%s.sig", sourcepath);
+                if((sigfile = fopen(sigabsolutepath, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot create signature file '%s'\n", signame);
                     goto cleanup;
@@ -311,7 +308,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     fprintf(stderr, "Cannot sign '%s'\n", pathname);
                     fclose(file);
                     fclose(sigfile);
-                    remove(sourcesigname);   // Delete empty/broken sigfile
+                    remove(sigabsolutepath);   // Delete empty/broken sigfile
                     goto cleanup;
                 }
 
@@ -327,7 +324,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         // Cleanup a bit before crapping out
                         fclose(file);
                         fclose(sigfile);
-                        remove(sourcesigname);
+                        remove(sigabsolutepath);
                         free(pathnamecpy);
                         goto cleanup;
                     }
@@ -341,12 +338,12 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // And now, for the fun part! Ninja our sigfile into the archive... Ugly code duplication ahead!
                 disk_sig = archive_read_disk_new();
 
-                r = archive_read_disk_open(disk_sig, sourcesigname);
+                r = archive_read_disk_open(disk_sig, sigabsolutepath);
                 archive_read_disk_set_standard_lookup(disk_sig);
                 if(r != ARCHIVE_OK)
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
-                    remove(sourcesigname);
+                    remove(sigabsolutepath);
                     goto cleanup;
                 }
 
@@ -360,27 +357,22 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                     if(r != ARCHIVE_OK)
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
-                        remove(sourcesigname);
-                        // Avoid a double free (beginning from the second iteration, since we freed pathname_sig & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
-                        pathname_sig = resolved_path_sig = sourcepath_sig = NULL;
+                        remove(sigabsolutepath);
                         goto cleanup;
                     }
                     // Get some basic entry fields from stat
-                    pathname_sig = strdup(archive_entry_pathname(entry_sig));
-                    resolved_path_sig = NULL;
-                    sourcepath_sig = realpath(pathname_sig, resolved_path_sig);
-                    archive_entry_copy_sourcepath(entry_sig, sourcepath_sig);
+                    archive_entry_copy_sourcepath(entry_sig, sigabsolutepath);
 
-                    lstat(sourcepath_sig, &st_sig);
+                    lstat(sigabsolutepath, &st_sig);
                     r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
                     if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_read_disk_entry_from_file() for sig failed: %s\n", archive_error_string(disk_sig));
                     if(r == ARCHIVE_FATAL)
                     {
-                        remove(sourcesigname);
+                        remove(sigabsolutepath);
                         goto cleanup;
                     }
-                    
+
                     // Fix the entry pathname to be relative, we switched to absolute paths earlier...
                     archive_entry_copy_pathname(entry_sig, signame);
 
@@ -397,7 +389,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         fprintf(stderr, "archive_write_header() for sig failed: %s\n", archive_error_string(a));
                     if(r == ARCHIVE_FATAL)
                     {
-                        remove(sourcesigname);
+                        remove(sigabsolutepath);
                         goto cleanup;
                     }
                     if(r > ARCHIVE_FAILED)
@@ -412,11 +404,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         close(fd);
                     }
                     // Delete the sigfile once we're done
-                    remove(sourcepath_sig);
-                    // Cleanup
-                    free(pathname_sig);
-                    free(resolved_path_sig);
-                    free(sourcepath_sig);
+                    remove(sigabsolutepath);
                 }
                 archive_read_close(disk_sig);
                 archive_read_free(disk_sig);
@@ -455,9 +443,6 @@ cleanup:
     free(pathname);
     free(resolved_path);
     free(sourcepath);
-    free(pathname_sig);
-    free(resolved_path_sig);
-    free(sourcepath_sig);
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
