@@ -91,7 +91,7 @@ endif
 all: outdir kindletool kindletool.1
 
 kindletool: version-inc $(OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(OBJS) -o$(OUT_DIR)/$@ $(LIBS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
 
 strip: all
 	$(STRIP) -s $(OUT_DIR)/kindletool
