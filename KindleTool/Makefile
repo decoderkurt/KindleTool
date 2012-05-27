@@ -18,6 +18,14 @@ version-inc:
 -include version-inc
 
 ifeq "$(OSTYPE)" "Darwin"
+	DESTDIR?=/opt/local
+else
+	DESTDIR?=/usr/local
+endif
+BINDIR:=$(DESTDIR)/bin
+MANDIR:=$(DESTDIR)/share/man/man1
+
+ifeq "$(OSTYPE)" "Darwin"
 	CPPFLAGS?=-I/opt/local/include
 else
 	CPPFLAGS?=-Iincludes
@@ -105,5 +113,21 @@ clean: clean_man
 	rm -rf Kindle/kindletool
 	rm -rf version-inc
 
+ifeq "$(OSTYPE)" "Linux"
+install_man:
+	install -d -m 755 $(MANDIR)
+	install -m 644 kindletool.1 $(MANDIR)
+else
+install_man:
+	install -d -m 755 $(MANDIR)
+	install -m 644 KindleTool.1 $(MANDIR)
+endif
 
-.PHONY: all clean clean_man default outdir kindletool strip debug kindle
+install: all install_man
+	install -d -m 755 $(BINDIR)
+	install '$(OUT_DIR)/kindletool' $(BINDIR)
+	install -d -m 755 $(MANDIR)
+	install -m 644 kindletool.1 $(MANDIR)
+
+
+.PHONY: all install install_man clean clean_man default outdir kindletool strip debug kindle

@@ -12,3 +12,6 @@ strip:
 
 clean:
 	$(MAKE) -C KindleTool clean
+
+install:
+	$(MAKE) -C KindleTool install
