@@ -35,7 +35,7 @@ ifeq "$(OSTYPE)" "Darwin"
 else
 	CPPFLAGS?=-Iincludes
 endif
-LIBS=-lcrypto -larchive
+LIBS=-larchive -lz -lcrypto
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
