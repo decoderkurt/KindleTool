@@ -53,6 +53,13 @@ ifeq "$(KINDLE)" "true"
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
+# OS X's strip is weird. I'm not even sure it's safe to call at all (check what really happens with otool)...
+ifeq "$(OSTYPE)" "Darwin"
+	STRIP_OPTS:=
+else
+	STRIP_OPTS:=-s
+endif
+
 CFLAGS+=-pipe
 # Moar warnings!
 CFLAGS+=-Wall -Wformat -Wformat-security
@@ -94,7 +101,7 @@ kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
 
 strip: all
-	$(STRIP) -s $(OUT_DIR)/kindletool
+	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool
 
 debug:
 	$(MAKE) all DEBUG=true
