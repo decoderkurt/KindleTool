@@ -14,7 +14,7 @@ default: all
 # OS & Version handling (taken from the git makefiles)
 SHELL:=/bin/bash
 version-inc:
-	@$(SHELL) ./version.sh `$(CC) -dumpversion`
+	@$(SHELL) ./version.sh
 -include version-inc
 
 ifndef DESTDIR

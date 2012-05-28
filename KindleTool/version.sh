@@ -14,11 +14,6 @@ if ! git help &>/dev/null ; then
 	echo "${FALLBACK_VER}" > VERSION
 fi
 
-# Get the GCC version number, if we passed one
-if [[ -n "$1" ]] ; then
-	VER_GCC=" (GCC ${1})"
-fi
-
 # If we have a VERSION file, just use that (that's useful for package managers)
 # Otherwise, and if we have a proper git repo, use git!
 if [[ -f "VERSION" ]] ; then
@@ -60,11 +55,6 @@ elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 	esac
 else
 	VER="${FALLBACK_VER}"
-fi
-
-# Add the GCC Version, unless we asked to build a VERSION file
-if [[ "${1}" != "PMS" ]] ; then
-	VER="${VER}${VER_GCC}"
 fi
 
 # Strip the leading 'v'
