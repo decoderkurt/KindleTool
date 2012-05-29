@@ -184,7 +184,7 @@ EOF
 	VER_CURRENT="$(<${VER_FILE})"
 	REV="${VER_CURRENT%%-*}"
 	cd ../..
-	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
+	cp -v KindleTool/KindleTool/Release/kindletool.exe ./kindletool.exe
 	cp -v KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
 	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
