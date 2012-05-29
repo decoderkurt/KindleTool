@@ -2,22 +2,6 @@
 
 OSTYPE="$(uname -s)"	# FIXME: Check that it's correct for Cygwin, or use uname -o (and fix version.sh if needed, while we're at it)
 
-case "${OSTYPE}" in
-	"Linux" )
-		Build_Linux
-	;;
-	"Cygwin" )
-		Build_Cygwin
-	;;
-	"Darwin" )
-		Build_OSX
-	;;
-	* )
-		echo "Unknown OS: ${OSTYPE}"
-		exit 1
-	;;
-esac
-
 ## Linux!
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
@@ -266,3 +250,20 @@ EOF
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 }
+
+# Main
+case "${OSTYPE}" in
+	"Linux" )
+		Build_Linux
+	;;
+	"Cygwin" )
+		Build_Cygwin
+	;;
+	"Darwin" )
+		Build_OSX
+	;;
+	* )
+		echo "Unknown OS: ${OSTYPE}"
+		exit 1
+	;;
+esac
