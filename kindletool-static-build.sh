@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OSTYPE="$(uname -s)"	# FIXME: Check that it's correct for Cygwin, or use uname -o (and fix version.sh if needed, while we're at it)
+OSTYPE="$(uname -s)"
 
 ## Linux!
 Build_Linux() {
@@ -165,10 +165,16 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
-	## FIXME: Move dynamic libraries...
+	# Disable dynamic libraries...
+	mv -v /usr/lib/libarchive.la{,.disabled}
+	mv -v /usr/lib/libarchive.dll.a{,.disabled}
+	mv -v /usr/bin/cygarchive-12.dll{,.disabled}
 	make clean
 	make strip
-	## FIXME: Restore dynamic libraries...
+	## Restore dynamic libraries...
+	mv -v /usr/lib/libarchive.la{.disabled,}
+	mv -v /usr/lib/libarchive.dll.a{.disabled,}
+	mv -v /usr/bin/cygarchive-12.dll{.disabled,}
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
@@ -182,7 +188,9 @@ EOF
 	# Quick! Markdown => plaintext
 	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-cygwin.tar.gz kindletool CREDITS README ChangeLog VERSION
+	# LF => CRLF...
+	unix2dos CREDITS README ChangeLog
+	7z a -tzip kindletool-${REV}-cygwin.zip kindletool CREDITS README ChangeLog VERSION
 }
 
 # OS X !
@@ -255,7 +263,8 @@ case "${OSTYPE}" in
 	"Linux" )
 		Build_Linux
 	;;
-	"Cygwin" )
+	CYGWIN* )
+		## NOTE: Output from uname -s is uppercase and appends info about the host's Windows version (ie. CYGWIN_NT-6.1), while uname -o will simply report Cygwin
 		Build_Cygwin
 	;;
 	"Darwin" )
