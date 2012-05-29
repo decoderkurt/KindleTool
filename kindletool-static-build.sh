@@ -93,7 +93,7 @@ EOF
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
-	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	rm -f kindletool README kindletool.1 ChangeLog VERSION
 
 
 	# KindleTool (OpenSSL-0.9.8)
