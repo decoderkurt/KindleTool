@@ -162,14 +162,10 @@ libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http
 (http://libarchive.github.com/)
 EOF
 
-	# KindleTool (OpenSSL-1)
+	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
 	## FIXME: Move dynamic libraries...
-	rm -rf lib
-	mkdir -p lib
-	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib	# Check the filenames...
-	cd KindleTool/KindleTool
 	make clean
 	make strip
 	## FIXME: Restore dynamic libraries...
@@ -226,11 +222,14 @@ libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http
 (http://libarchive.github.com/)
 EOF
 
-	# KindleTool (OpenSSL-1)
+	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
 	## FIXME: Move dynamic libraries (MacPorts)...
 	cd KindleTool/KindleTool
+	rm -rf lib
+	mkdir -p lib
+	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib	# Check the filename...
 	make clean
 	make strip	# FIXME: If strip doesn't horribly breaks mach-o binaries...
 	## FIXME: Restore dynamic libraries (MacPorts)...
