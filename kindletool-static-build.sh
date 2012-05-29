@@ -9,7 +9,7 @@ Build_Linux() {
 	export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	OPENSSL_DIR="openssl-0.9.8w"
+	OPENSSL_DIR="openssl-0.9.8x"
 	LIBARCHIVE_DIR="libarchive-3.0.4"
 
 	# Make sure we're up to date
