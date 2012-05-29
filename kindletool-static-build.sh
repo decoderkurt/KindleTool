@@ -77,6 +77,7 @@ EOF
 	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
 	make clean
 	make strip
+	rm -rf lib
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
@@ -92,6 +93,7 @@ EOF
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-static.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 
 
 	# KindleTool (OpenSSL-0.9.8)
@@ -107,6 +109,7 @@ EOF
 	cd ..
 	make clean
 	make strip
+	rm -rf lib
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
@@ -122,6 +125,7 @@ EOF
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-static-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 }
 
 # Win32 !
@@ -192,6 +196,7 @@ EOF
 	# LF => CRLF...
 	unix2dos CREDITS README ChangeLog
 	7z a -tzip kindletool-${REV}-cygwin.zip kindletool.exe CREDITS README ChangeLog VERSION
+	rm -f kindletool.exe CREDITS README ChangeLog VERSION
 }
 
 # OS X !
@@ -243,6 +248,7 @@ EOF
 	make clean
 	make strip	# FIXME: If strip doesn't horribly breaks mach-o binaries...
 	## FIXME: Restore static & dynamic libraries (MacPorts)...
+	rm -rf lib
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
@@ -258,6 +264,7 @@ EOF
 	cp -v KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
+	rm -f kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 }
 
 # Main
