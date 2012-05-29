@@ -165,6 +165,7 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
+	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
 	mv -v /usr/lib/libarchive.la{,.disabled}
 	mv -v /usr/lib/libarchive.dll.a{,.disabled}
