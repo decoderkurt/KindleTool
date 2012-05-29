@@ -191,7 +191,7 @@ EOF
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	# LF => CRLF...
 	unix2dos CREDITS README ChangeLog
-	7z a -tzip kindletool-${REV}-cygwin.zip kindletool CREDITS README ChangeLog VERSION
+	7z a -tzip kindletool-${REV}-cygwin.zip kindletool.exe CREDITS README ChangeLog VERSION
 }
 
 # OS X !
