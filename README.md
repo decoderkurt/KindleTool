@@ -57,7 +57,7 @@
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)
-		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code the 5.1.0 update can run on)
+		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)
 
 	Options:
 		All the following options are optional and advanced.
