@@ -226,7 +226,8 @@ Build_OSX() {
 	fi
 
 	# Build KT packages credits
-	cat > CREDITS << EOF
+	mkdir -p Release
+	cat > Release/CREDITS << EOF
 * kindletool:
 
 KindleTool, Copyright (C) 2011-2012  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
@@ -246,25 +247,27 @@ EOF
 	mkdir -p lib
 	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib	# Check the filename...
 	make clean
-	make strip	# FIXME: If strip doesn't horribly breaks mach-o binaries...
+	make strip
 	## FIXME: Restore static & dynamic libraries (MacPorts)...
 	rm -rf lib
 
 	# Package it
-	git log --stat --graph > ../../ChangeLog
+	git log --stat --graph > ../../Release/ChangeLog
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
 	REV="${VER_CURRENT%%-*}"
 	cd ../..
-	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-	cp -v KindleTool/README.md ./README
+	cd Release
+	cp -v ../KindleTool/KindleTool/Release/kindletool ./kindletool
+	cp -v ../KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
-	cp -v KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
-	mv -v KindleTool/KindleTool/VERSION ./VERSION
+	sed -i '' 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
+	cp -v ../KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
+	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README KindleTool.1 ChangeLog VERSION
+	cd ..
 }
 
 # Main

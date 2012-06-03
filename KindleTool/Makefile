@@ -57,7 +57,7 @@ ifeq "$(KINDLE)" "true"
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
-# OS X's strip is weird. I'm not even sure it's safe to call at all (check what really happens with otool)...
+# Oh, OS X...
 ifeq "$(OSTYPE)" "Darwin"
 	STRIP_OPTS:=
 else

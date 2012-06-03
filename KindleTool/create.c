@@ -182,7 +182,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and then delete) signature files.
                 // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, and then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
                 // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
-                // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin...
+                // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin & OS X...
                 if(r == ARCHIVE_FAILED)
                 {
                     // (Late) Cleanup
