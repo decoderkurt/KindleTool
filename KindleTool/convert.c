@@ -381,6 +381,20 @@ int kindle_convert_main(int argc, char *argv[])
                 fail = 1;
                 continue;   // It's fatal, go away
             }
+            // If we're outputting to stdout, set a dummy human readable output name
+            if(!info_only && output == stdout)
+            {
+                snprintf(out_name, PATH_MAX, "standard output");
+            }
+            // Print a recap of what we're doing
+            if(info_only)
+            {
+                fprintf(stderr, "Checking %supdate package %s\n", (fake_sign? "fake " : ""), in_name);
+            }
+            else
+            {
+                fprintf(stderr, "Converting %supdate package %s to %s (%s, %s)\n", (fake_sign? "fake " : ""), in_name, out_name, (extract_sig? "with sig" : "without sig"), (keep_ori? "keep input" : "delete input"));
+            }
             if(kindle_convert(input, output, sig_output, fake_sign) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
@@ -565,6 +579,8 @@ int kindle_extract_main(int argc, char *argv[])
         fclose(bin_input);
         return -1;
     }
+    // Print a recap of what we're about to do
+    fprintf(stderr, "Extracting update package %s to %s via %s\n", bin_filename, output_dir, tgz_filename);
     if(kindle_convert(bin_input, tgz_output, NULL, 0) < 0)
     {
         fprintf(stderr, "Error converting update '%s'.\n", bin_filename);

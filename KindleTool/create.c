@@ -1108,7 +1108,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s%s (%s) update to %s %s %s for %hd device%s (", (fake_sign > 0 ? "fake " : ""), (convert_bundle_version(info.version)), info.magic_number, output_filename, (skip_archive > 0 ? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building %s%s (%s) update to %s %s %s for %hd device%s (", (fake_sign? "fake " : ""), (convert_bundle_version(info.version)), info.magic_number, output_filename, (skip_archive? "directly from" : "via"), tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
@@ -1116,7 +1116,7 @@ int kindle_create_main(int argc, char *argv[])
         if(i != info.num_devices - 1)
             fprintf(stderr, ", ");
     }
-    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Optional: %hhu, Magic 1: %d, Magic 2: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta > 0 ? " (" : "\n"));
+    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Optional: %hhu, Magic 1: %d, Magic 2: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.optional, info.magic_1, info.magic_2, info.num_meta, (info.num_meta? " (" : "\n"));
     // Loop over meta
     for(i = 0; i < info.num_meta; i++)
     {
