@@ -240,15 +240,13 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
-	export LDFLAGS="-Llib"	# We might not even need to add -L/opt/local/lib and touch MacPorts' libarchive...
-	## FIXME: Move static & dynamic libraries (MacPorts)...
+	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool
 	rm -rf lib
 	mkdir -p lib
-	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib	# Check the filename...
+	cp ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
 	make clean
 	make strip
-	## FIXME: Restore static & dynamic libraries (MacPorts)...
 	rm -rf lib
 
 	# Package it
@@ -268,6 +266,8 @@ EOF
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 	cd ..
+	
+	## NOTE: Do we need to do a MacPorts build? (Link against MacPorts libs, instead of OS X's OpenSSL 0.9.8/Zlib 1.2.5 ?
 }
 
 # Main
