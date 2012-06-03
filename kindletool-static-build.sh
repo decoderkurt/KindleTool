@@ -262,7 +262,7 @@ EOF
 	cp -v ../KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v ../KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	sed -i '' 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
+	perl -pi -e 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^\* /  /g;s/\*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^([[:digit:]])\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
 	cp -v ../KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
 	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
