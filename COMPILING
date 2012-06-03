@@ -6,6 +6,8 @@ To compile for Linux:
 	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev (NB: Some distro use the zlib1g name for zlib...)
 	2) Compile using "make" in the tool's directory
 
+Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).
+
 To compile for OSX:
 	1) Get MacPorts
 	2) Setup a local portfile repository (http://guide.macports.org/#development.local-repositories) based on the one found in the ports folder (AFAIK, MacPorts' default prefix is /opt/local).
@@ -21,5 +23,3 @@ To compile for Windows:
 		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
 	4.2) If you want to download it via wget from the Cygwin shell, you'll have to install wget/curl, and jump through a few hoops to setup the SSL CA certs... (google is your friend).
 	5) Compile using "make" in the tool's directory
-
-Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).

@@ -266,8 +266,8 @@ EOF
 	tar -cvzf kindletool-${REV}-osx.tar.gz kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README KindleTool.1 ChangeLog VERSION
 	cd ..
-	
-	## NOTE: Do we need to do a MacPorts build? (Link against MacPorts libs, instead of OS X's OpenSSL 0.9.8/Zlib 1.2.5 ?
+
+	## NOTE: Do we need to do a MacPorts build? (link against MacPorts libs, instead of OS X's OpenSSL 0.9.8/zlib 1.2.5?
 }
 
 # Main

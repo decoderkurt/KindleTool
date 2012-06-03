@@ -75,7 +75,7 @@
 
 // Version tag fallback
 #ifndef KT_VERSION
-#define KT_VERSION "v0.5-GIT"
+#define KT_VERSION "v1.1-GIT"
 #endif
 
 typedef enum
