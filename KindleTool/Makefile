@@ -20,7 +20,11 @@ version-inc:
 ifndef DESTDIR
 	PREFIX:=/.
 else
+ifeq "$(OSTYPE)" "Darwin"
+	PREFIX:=/opt/local
+else
 	PREFIX:=/usr
+endif
 endif
 ifeq "$(OSTYPE)" "Darwin"
 	DESTDIR?=/opt/local

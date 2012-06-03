@@ -15,7 +15,7 @@ homepage         https://github.com/NiLuJe/KindleTool/
 platforms        darwin
 
 fetch.type       git
-git.url          https://github.com/NiLuJe/kindletool.git
+git.url          https://github.com/NiLuJe/KindleTool.git
 
 depends_lib      port:openssl port:libarchive
 
