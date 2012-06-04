@@ -96,6 +96,7 @@ EOF
 	cd lib
 	ln -sfv libcrypto.so.0.9.8 libcrypto.so
 	cd ..
+	cp -vrL ../../${OPENSSL_DIR}/include/openssl includes
 	if [[ "${ARCH}" == "x86_64" ]] ; then
 		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
 		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
