@@ -270,14 +270,17 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
+	export CPPFLAGS="-Iincludes"
 	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool
-	rm -rf lib
-	mkdir -p lib
+	rm -rf lib includes
+	mkdir -p lib includes
 	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
+	cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
+	cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
 	make clean
 	make strip
-	rm -rf lib
+	rm -rf lib includes
 
 	# Package it
 	git log --stat --graph > ../../Release/ChangeLog
