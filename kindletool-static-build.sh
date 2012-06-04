@@ -91,6 +91,7 @@ EOF
 	rm -rf lib includes
 	mkdir -p lib includes
 	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
+	#cp -v ../../${OPENSSL_DIR}/libcrypto.a lib
 	cp -v ../../${OPENSSL_DIR}/libcrypto.so.0.9.8 lib
 	cd lib
 	ln -sfv libcrypto.so.0.9.8 libcrypto.so

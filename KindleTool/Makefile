@@ -42,6 +42,10 @@ else
 	CPPFLAGS?=-Iincludes
 endif
 LIBS=-larchive -lz -lcrypto
+# Needed for linking statically against OpenSSL on Linux
+#ifeq "$(OSTYPE)" "Linux"
+#	LIBS+=-ldl
+#endif
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
