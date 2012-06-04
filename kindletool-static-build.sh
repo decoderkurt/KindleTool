@@ -108,7 +108,7 @@ EOF
 	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-static-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	tar -cvzf kindletool-${REV}-linux-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool README kindletool.1 ChangeLog VERSION
 
 
@@ -144,7 +144,7 @@ EOF
 	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-static-${ARCH}-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	tar -cvzf kindletool-${REV}-linux-${ARCH}-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 }
 
