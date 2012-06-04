@@ -43,7 +43,11 @@ Build_Linux() {
 		chmod a+rx gentoo.config
 		sed -i '1s,^:$,#!/usr/bin/perl,' Configure
 		sed -i '/^"debug-steve/d' Configure
-		./Configure linux-generic32 -DL_ENDIAN -O2 -march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
+		if [[ "${ARCH}" == "x86_64" ]] ; then
+			./Configure linux-generic64 -DL_ENDIAN -O2 -march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
+		else
+			./Configure linux-generic32 -DL_ENDIAN -O2 -march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
+		fi
 		grep '^CFLAG=' Makefile | LC_ALL=C sed -e 's:^CFLAG=::' -e 's:-ffast-math ::g' -e 's:-fomit-frame-pointer ::g' -e 's:-O[0-9] ::g' -e 's:-march=[-a-z0-9]* ::g' -e 's:-mcpu=[-a-z0-9]* ::g' -e 's:-m[a-z0-9]* ::g' >| x-compile-tmp
 		CFLAG="$(< x-compile-tmp)"
 		sed -i -e "/^CFLAG/s:=.*:=${CFLAG} ${CFLAGS}:" -e "/^SHARED_LDFLAGS=/s:$: ${LDFLAGS}:" Makefile
