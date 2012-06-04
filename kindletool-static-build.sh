@@ -83,39 +83,6 @@ libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http
 (http://libarchive.github.com/)
 EOF
 
-	# KindleTool (OpenSSL-1)
-	echo "* Building KindleTool (OpenSSL-1) . . ."
-	echo ""
-	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
-	cd KindleTool/KindleTool
-	rm -rf lib includes
-	mkdir -p lib includes
-	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
-	if [[ "${ARCH}" == "x86_64" ]] ; then
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
-	fi
-	make clean
-	make strip
-	rm -rf lib includes
-
-	# Package it
-	git log --stat --graph > ../../ChangeLog
-	./version.sh PMS
-	VER_FILE="VERSION"
-	VER_CURRENT="$(<${VER_FILE})"
-	REV="${VER_CURRENT%%-*}"
-	cd ../..
-	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-	cp -v KindleTool/README.md ./README
-	# Quick! Markdown => plaintext
-	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
-	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-linux-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
-	rm -f kindletool README kindletool.1 ChangeLog VERSION
-
-
 	# KindleTool (OpenSSL-0.9.8)
 	echo "* Building KindleTool (OpenSSL-0.9.8) . . ."
 	echo ""
@@ -150,6 +117,38 @@ EOF
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-linux-${ARCH}-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
+
+	# KindleTool (OpenSSL-1)
+	echo "* Building KindleTool (OpenSSL-1) . . ."
+	echo ""
+	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
+	cd KindleTool/KindleTool
+	rm -rf lib includes
+	mkdir -p lib includes
+	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
+	if [[ "${ARCH}" == "x86_64" ]] ; then
+		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
+		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
+	fi
+	make clean
+	make strip
+	rm -rf lib includes
+
+	# Package it
+	git log --stat --graph > ../../ChangeLog
+	./version.sh PMS
+	VER_FILE="VERSION"
+	VER_CURRENT="$(<${VER_FILE})"
+	REV="${VER_CURRENT%%-*}"
+	cd ../..
+	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
+	cp -v KindleTool/README.md ./README
+	# Quick! Markdown => plaintext
+	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
+	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
+	mv -v KindleTool/KindleTool/VERSION ./VERSION
+	tar -cvzf kindletool-${REV}-linux-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	rm -f kindletool README kindletool.1 ChangeLog VERSION
 }
 
 # Win32 !
