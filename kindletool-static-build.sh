@@ -30,7 +30,7 @@ Build_Linux() {
 		echo ""
 		export LDFLAGS="-Wa,--noexecstack"
 		if [[ ! -f "./${OPENSSL_DIR}.tar.gz" ]] ; then
-			wget -O "http://www.openssl.org/source/${OPENSSL_DIR}.tar.gz" "./${OPENSSL_DIR}.tar.gz"
+			wget -O "./${OPENSSL_DIR}.tar.gz" "http://www.openssl.org/source/${OPENSSL_DIR}.tar.gz"
 		fi
 		tar -xvzf ./${OPENSSL_DIR}.tar.gz
 		cd ${OPENSSL_DIR}
