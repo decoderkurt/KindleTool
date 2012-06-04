@@ -2,6 +2,8 @@ Recommended Compilation Directions
 
 Basically, you'll need a working toolchain, OpenSSL, and libarchive >= 3.0.3 (with gzip support).
 
+If you don't want to bother, static binaries are available here: http://www.mobileread.com/forums/showpost.php?p=2074293&postcount=187
+
 To compile for Linux:
 	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev (NB: Some distro use the zlib1g name for zlib...)
 	2) Compile using "make" in the tool's directory
