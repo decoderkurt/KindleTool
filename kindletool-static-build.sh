@@ -86,13 +86,14 @@ EOF
 	# KindleTool (OpenSSL-0.9.8)
 	echo "* Building KindleTool (OpenSSL-0.9.8) . . ."
 	echo ""
+	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
 	mkdir -p lib includes
 	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
 	cp -v ../../${OPENSSL_DIR}/libcrypto.so.0.9.8 lib
 	cd lib
-	ln -sf libcrypto.so.0.9.8 libcrypto.so
+	ln -sfv libcrypto.so.0.9.8 libcrypto.so
 	cd ..
 	if [[ "${ARCH}" == "x86_64" ]] ; then
 		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
@@ -121,7 +122,6 @@ EOF
 	# KindleTool (OpenSSL-1)
 	echo "* Building KindleTool (OpenSSL-1) . . ."
 	echo ""
-	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
 	mkdir -p lib includes
