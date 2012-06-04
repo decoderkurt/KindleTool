@@ -8,7 +8,7 @@ To compile for Linux:
 	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev (NB: Some distro use the zlib1g name for zlib...)
 	2) Compile using "make" in the tool's directory
 
-Fellow Gentoo users, there's an ebuild right here, put it in your local overlay as dev-util/kindletool and enjoy ;).
+Fellow Gentoo users, there's a portage overlay in the gentoo folder, enjoy ;).
 
 To compile for OSX:
 	1) Get MacPorts

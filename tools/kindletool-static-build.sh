@@ -22,7 +22,7 @@ Build_Linux() {
 	git pull
 
 	# Get out of our git tree
-	cd ..
+	cd ../..
 
 	# OpenSSL: pretty much the same way as in my arm builds
 	if [[ ! -d "${OPENSSL_DIR}" ]] ; then
@@ -166,7 +166,7 @@ Build_Cygwin() {
 	git pull
 
 	# Get out of our git tree
-	cd ..
+	cd ../..
 
 	# libarchive
 	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
@@ -240,7 +240,7 @@ Build_OSX() {
 	git pull
 
 	# Get out of our git tree
-	cd ..
+	cd ../..
 
 	# libarchive
 	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
