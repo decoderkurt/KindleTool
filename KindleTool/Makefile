@@ -1,6 +1,12 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-O0 -ggdb3 -march=native
+DEBUG_CFLAGS=-O0 -march=native
+# Clang doesn't like -ggdb3
+ifeq "$(CC)" "clang"
+	DEBUG_CFLAGS+=-g3
+else
+	DEBUG_CFLAGS+=-ggdb3
+endif
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
 
@@ -70,16 +76,18 @@ else
 	STRIP_OPTS:=-s
 endif
 
-CFLAGS+=-pipe
+# Use a different varname in order to support appending stuff here even when setting CFLAGS as an argument to make...
+KT_CFLAGS:=$(CFLAGS)
+KT_CFLAGS+=-pipe
 # Moar warnings!
-CFLAGS+=-Wall -Wformat -Wformat-security
-CFLAGS+=-Wextra -Wunused
-CFLAGS+=-Wshadow
-CFLAGS+=-Wmissing-prototypes
-CFLAGS+=-Wcast-qual
+KT_CFLAGS+=-Wall -Wformat -Wformat-security
+KT_CFLAGS+=-Wextra -Wunused
+KT_CFLAGS+=-Wshadow
+KT_CFLAGS+=-Wmissing-prototypes
+KT_CFLAGS+=-Wcast-qual
 # libarchive is always built with large files support, do the same to avoid issues.
-CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
-CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
+KT_CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 
 ifndef LDFLAGS
 	ifeq "$(OSTYPE)" "Darwin"
@@ -93,7 +101,7 @@ endif
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CPPFLAGS) $(KT_CFLAGS) -o $@ -c $<
 
 outdir:
 	mkdir -p $(OUT_DIR)
@@ -108,7 +116,7 @@ endif
 all: outdir kindletool kindletool.1
 
 kindletool: version-inc $(OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
+	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
 
 strip: all
 	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool
