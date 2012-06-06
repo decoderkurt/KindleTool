@@ -160,6 +160,8 @@ Build_Cygwin() {
 	export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
+	# NOTE: Do we need to bother with the whole MACOSX_DEPLOYMENT_TARGET thingy? (From what I gather, probably, if we want the binaries to run on anything older than 10.7...)
+
 	LIBARCHIVE_DIR="libarchive-3.0.4"
 
 	# Make sure we're up to date
