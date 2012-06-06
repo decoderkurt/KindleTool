@@ -9,6 +9,10 @@ FALLBACK_VER="v1.1-GIT"
 # Apparently, bsdmake hates me, so, get uname's output from here
 UNAME="$(uname -s)"
 
+# Used to add a Linux like user@host compile-time tag
+COMPILE_BY="$(whoami | sed 's/\\/\\\\/')"
+COMPILE_HOST="$(hostname)"
+
 # If we don't have git installed (Why, oh why would you do that? :D), just use the fallback
 if ! git help &>/dev/null ; then
 	echo "${FALLBACK_VER}" > VERSION
@@ -72,9 +76,11 @@ fi
 # Update our include file, if need be
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo >&2 "KT_VERSION = ${VER}"
-	echo "KT_VERSION = ${VER}" >${VER_FILE}
+	echo "KT_VERSION = ${VER}" > ${VER_FILE}
 	#echo >&2 "OSTYPE = ${UNAME}"
-	echo "OSTYPE = ${UNAME}" >>${VER_FILE}
+	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
+	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
+	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
 fi
 
 # Build a proper VERSION file (PMS)

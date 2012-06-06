@@ -88,6 +88,10 @@ KT_CFLAGS+=-Wcast-qual
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
+# Add a user@host build tag, unless explicitly forbidden
+ifndef KT_NO_USERATHOST_TAG
+	KT_CFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
+endif
 
 ifndef LDFLAGS
 	ifeq "$(OSTYPE)" "Darwin"

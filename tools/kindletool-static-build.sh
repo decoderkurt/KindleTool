@@ -273,6 +273,8 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
+	# 3rd party's computer, don't add the user@host tag
+	export KT_NO_USERATHOST_TAG="true"
 	export CPPFLAGS="-Iincludes"
 	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool

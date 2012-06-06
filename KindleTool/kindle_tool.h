@@ -78,6 +78,11 @@
 #define KT_VERSION "v1.1-GIT"
 #endif
 
+// user@host tag fallback
+#ifndef KT_USERATHOST
+#define KT_USERATHOST "someone@somewhere"
+#endif
+
 typedef enum
 {
     UpdateSignature,

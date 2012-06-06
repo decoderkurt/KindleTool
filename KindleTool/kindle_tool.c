@@ -332,9 +332,9 @@ int kindle_print_help(const char *prog_name)
 int kindle_print_version(const char *prog_name)
 {
 #ifdef __clang__
-    printf("%s (KindleTool) %s built with Clang %d.%d.%d on %s @ %s against %s\n", prog_name, KT_VERSION, __clang_major__, __clang_minor__, __clang_patchlevel__, __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
+    printf("%s (KindleTool) %s built by %s with Clang %d.%d.%d on %s @ %s against %s\n", prog_name, KT_VERSION, KT_USERATHOST, __clang_major__, __clang_minor__, __clang_patchlevel__, __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
 #else
-    printf("%s (KindleTool) %s built with GCC %d.%d.%d on %s @ %s against %s\n", prog_name, KT_VERSION, __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
+    printf("%s (KindleTool) %s built by %s with GCC %d.%d.%d on %s @ %s against %s\n", prog_name, KT_VERSION, KT_USERATHOST, __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
 #endif
     return 0;
 }
