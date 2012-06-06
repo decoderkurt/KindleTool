@@ -100,7 +100,7 @@ endif
 
 # Let's say we want to default to building stuff that will work on OS X 10.6/10.7... If I get how this stuff works, that should do it...
 #ifeq "$(OSTYPE)" "Darwin"
-#	# Check that we don't mess with MacPorts, which defaults to the OS version... (Although I'm not sure MacPorts even sets it for us, since we're not using autotools...)
+#	# Check that we don't mess with MacPorts, which defaults to the OS version... (I'm not sure MacPorts even sets it for us, since we're not using autotools...)
 #	# Although it supposedly defaults to the OS version since OS X 10.5 anyway, so...
 #	ifndef MACOSX_DEPLOYMENT_TARGET
 #		export MACOSX_DEPLOYMENT_TARGET=10.6
