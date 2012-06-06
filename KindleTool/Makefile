@@ -98,16 +98,13 @@ ifndef LDFLAGS
 	endif
 endif
 
-# Do we actually need this on OS X? It supposedly defaults to the OS version since 10.5... (Meaning we'd need to set this *only* when building backwards compatible binaries?)
+# Let's say we want to default to building stuff that will work on OS X 10.6/10.7... If I get how this stuff works, that should do it...
 #ifeq "$(OSTYPE)" "Darwin"
+#	# Check that we don't mess with MacPorts, which defaults to the OS version... (Although I'm not sure MacPorts even sets it for us, since we're not using autotools...)
+#	# Although it supposedly defaults to the OS version since OS X 10.5 anyway, so...
 #	ifndef MACOSX_DEPLOYMENT_TARGET
-#		export MACOSX_DEPLOYMENT_TARGET=10.7
-#		KT_CFLAGS+=-mmacosx-version-min=10.7
-#		# I'm assuming the following was mostly used when building universal binaries?
-#		# Do we also need to pass -arch x86_64 to clang?
-#		CPPFLAGS+=-isysroot /Developer/SDKs/MacOSX10.7.sdk
-#		LDFLAGS+=-Wl,-syslibroot,/Developer/SDKs/MacOSX10.7sdk
-#		# Or /Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk ?
+#		export MACOSX_DEPLOYMENT_TARGET=10.6
+#		KT_CFLAGS+=-mmacosx-version-min=10.6
 #	endif
 #endif
 
