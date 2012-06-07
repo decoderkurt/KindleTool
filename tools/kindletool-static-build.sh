@@ -87,11 +87,13 @@ EOF
 	echo "* Building KindleTool (OpenSSL-0.9.8) . . ."
 	echo ""
 	# Fake user@host tag
-	export KT_NO_USERATHOST_TAG="true"
-	if [[ "${ARCH}" == "x86_64" ]] ; then
-		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
-	else
-		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	if [[ "$(whoami)" == "niluje" ]] ; then
+		export KT_NO_USERATHOST_TAG="true"
+		if [[ "${ARCH}" == "x86_64" ]] ; then
+			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+		else
+			export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+		fi
 	fi
 	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
@@ -205,8 +207,10 @@ EOF
 	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
-	export KT_NO_USERATHOST_TAG="true"
-	export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	if [[ "$(whoami)" == "niluje" ]] ; then
+		export KT_NO_USERATHOST_TAG="true"
+		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
 	mv -v /usr/lib/libarchive.la{,.disabled}
@@ -284,8 +288,10 @@ EOF
 	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
-	export KT_NO_USERATHOST_TAG="true"
-	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' -e '[nNiIlLuUjJeE]{6}$' > /dev/null 2>&1 ; then
+		export KT_NO_USERATHOST_TAG="true"
+		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	fi
 	export CPPFLAGS="-Iincludes"
 	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool
