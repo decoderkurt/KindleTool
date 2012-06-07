@@ -206,7 +206,7 @@ EOF
 	echo ""
 	# Fake user@host tag
 	export KT_NO_USERATHOST_TAG="true"
-	export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@cygwin\"'"
+	export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
 	mv -v /usr/lib/libarchive.la{,.disabled}
@@ -285,7 +285,7 @@ EOF
 	echo ""
 	# Fake user@host tag
 	export KT_NO_USERATHOST_TAG="true"
-	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@osx\"'"
+	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 	export CPPFLAGS="-Iincludes"
 	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool
