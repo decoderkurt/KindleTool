@@ -86,6 +86,13 @@ EOF
 	# KindleTool (OpenSSL-0.9.8)
 	echo "* Building KindleTool (OpenSSL-0.9.8) . . ."
 	echo ""
+	# Fake user@host tag
+	export KT_NO_USERATHOST_TAG="true"
+	if [[ "${ARCH}" == "x86_64" ]] ; then
+		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	else
+		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+	fi
 	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
@@ -197,6 +204,9 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
+	# Fake user@host tag
+	export KT_NO_USERATHOST_TAG="true"
+	export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@cygwin\"'"
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
 	mv -v /usr/lib/libarchive.la{,.disabled}
@@ -273,8 +283,9 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
-	# 3rd party's computer, don't add the user@host tag
+	# Fake user@host tag
 	export KT_NO_USERATHOST_TAG="true"
+	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@osx\"'"
 	export CPPFLAGS="-Iincludes"
 	export LDFLAGS="-Llib"
 	cd KindleTool/KindleTool
