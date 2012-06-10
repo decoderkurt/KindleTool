@@ -91,7 +91,7 @@ static void excluded_callback(struct archive *a, void *_data __attribute__((unus
     archive_read_disk_descend(a);
 }
 
-int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
+int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file, FILE *bundlefile)
 {
     struct archive *a;
     struct archive *disk;
@@ -109,8 +109,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
-    FILE *bundlefile;
-    int dirty_bundlefile;
+    int dirty_bundlefile = 1;
     char *error_string = NULL;
     char *pch_error = NULL;
     char *error_sourcepath = NULL;
@@ -122,15 +121,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char sigabsolutepath[PATH_MAX];
     int sigfd;
     char *pathnamecpy = NULL;
-
-    // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
-    // We'll build it in our PWD, and we've just appended it to our filelist. It should be the last file walked. We just need to close our open fd at the right time.
-    if((bundlefile = fopen(INDEX_FILE_NAME, "w+")) == NULL)
-    {
-        fprintf(stderr, "Cannot create index file.\n");
-        return -1;
-    }
-    dirty_bundlefile = 1;
 
     // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
     matching = archive_match_new();
@@ -228,6 +218,15 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             if(r == ARCHIVE_FATAL)
             {
                 goto cleanup;
+            }
+
+            // Fix the entry pathname of our bundlefile, right now it's a tempfile...
+            if(!dirty_bundlefile)
+            {
+                // We also need to fix our pathname var, since it's what used for status/error output, and more importantly, what's used to build the entry name of the sigfile
+                free(pathname);
+                pathname = strdup(INDEX_FILE_NAME);
+                archive_entry_copy_pathname(entry, pathname);
             }
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -452,7 +451,6 @@ cleanup:
     // Close & remove the bundlefile if we crapped out in the middle of processing
     if(dirty_bundlefile)
         fclose(bundlefile);
-    remove(INDEX_FILE_NAME);
     // Free what we might have alloc'ed
     free(pathname);
     free(resolved_path);
@@ -793,6 +791,9 @@ int kindle_create_main(int argc, char *argv[])
     int input_index;
     int input_total;
     const char *tmp_buf = NULL;
+    char bundle_filename[] = "/tmp/kindletool_create_bundlefile_XXXXXX";
+    int bundle_fd = -1;
+    FILE *bundlefile = NULL;
     char tarball_filename[PATH_MAX];
     int tarball_fd = -1;
     int keep_archive;
@@ -1038,8 +1039,21 @@ int kindle_create_main(int argc, char *argv[])
         return -1;
     }
     // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
+    // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
+    bundle_fd = mkstemp(bundle_filename);
+    if(bundle_fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temporary file.\n");
+        return -1;
+    }
+    if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
+    {
+        fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
+        return -1;
+    }
+    // Now that it's created, append it as the last file...
     input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
-    strcpy(input_list[input_index], INDEX_FILE_NAME);
+    strcpy(input_list[input_index], bundle_filename);
     input_index++;
 
     // Build the package archive name based on the output name.
@@ -1107,6 +1121,12 @@ int kindle_create_main(int argc, char *argv[])
             goto do_error;
         }
     }
+    else
+    {
+        // We're not building a tarball, we need to cleanup our temp bundlefile ourselves
+        fclose(bundlefile);
+        unlink(bundle_filename);
+    }
 
     // Don't try to build an unsigned package if we didn't feed a single proper tarball
     if(fake_sign && !skip_archive)
@@ -1140,16 +1160,20 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_total, info.sign_pkey) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_total, info.sign_pkey, bundlefile) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
-            // Delete the borked file
+            // Delete the borked files
             close(tarball_fd);
             unlink(tarball_filename);
+            // The bundlefile too, which might be a bit overkill, since it may already have been deleted
+            unlink(bundle_filename);
             goto do_error;
         }
         // Apparently, we opened it, so we need to close it ;)
         close(tarball_fd);
+        // We don't need our bundlefile anymore...
+        unlink(bundle_filename);
     }
 
     // And finally, build our package :).
@@ -1207,6 +1231,12 @@ do_error:
         fclose(input);
     if(output != NULL && output != stdout)
         fclose(output);
+    // kindle_create_package_archive() has to take care of bundlefile itself, and the timing of error handling here can be tricky, so check if the fd is valid before closing it...
+    if(fcntl(bundle_fd, F_GETFL) != -1 || errno != EBADF)
+    {
+        fclose(bundlefile);
+        unlink(bundle_filename);
+    }
     return -1;
 }
 
