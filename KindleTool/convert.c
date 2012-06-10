@@ -503,6 +503,8 @@ int libarchive_extract(const char *filename, const char *prefix)
             return(1);
         // Rewrite entry's pathname to extract in our specified directory
         path = archive_entry_pathname(entry);
+        // Print what we're extracting
+        fprintf(stderr, "x %s\n", path);
         snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
         archive_entry_copy_pathname(entry, fixed_path);
         r = archive_write_header(ext, entry);
