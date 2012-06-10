@@ -532,12 +532,11 @@ int libarchive_extract(const char *filename, const char *prefix)
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
-    char tgz_filename[PATH_MAX];
-    size_t len;
+    char tgz_filename[] = "/tmp/kindletool_extract_tgz_XXXXXX";
     char *output_dir;
     FILE *bin_input;
+    int tgz_fd;
     FILE *tgz_output;
-    char *tmp_outname = NULL;
 
     // Skip command
     argv++;
@@ -563,17 +562,17 @@ int kindle_extract_main(int argc, char *argv[])
         fprintf(stderr, "Cannot open update input '%s'.\n", bin_filename);
         return -1;
     }
-    // Hackish. We don't use a tmpfile anymore, because apparently every tmp function out there
-    // that returns a filename and not a stream descriptor is deprecated/racy, and my libarchive helper expects
-    // a char array, not an fd.
-    len = strlen(bin_filename);
-    tmp_outname = malloc(len - 3);
-    memcpy(tmp_outname, bin_filename, len - 4);
-    tmp_outname[len - 4] = 0;   // . => \0
-    snprintf(tgz_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
-    free(tmp_outname);
-
-    if((tgz_output = fopen(tgz_filename, "wb")) == NULL)
+    // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
+    // We always create them in /tmp, and rely on the OS implementation to handle the umask,
+    // it'll cost us less LOC that way since I don't really want to introduce a dedicated util function for tempfile handling...
+    tgz_fd = mkstemp(tgz_filename);
+    if(tgz_fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temporary file.\n");
+        fclose(bin_input);
+        return -1;
+    }
+    if((tgz_output = fdopen(tgz_fd, "wb")) == NULL)
     {
         fprintf(stderr, "Cannot open temp output '%s' for writing.\n", tgz_filename);
         fclose(bin_input);
@@ -593,10 +592,10 @@ int kindle_extract_main(int argc, char *argv[])
     if(libarchive_extract(tgz_filename, output_dir) < 0)
     {
         fprintf(stderr, "Error extracting temp tarball '%s' to '%s'.\n", tgz_filename, output_dir);
-        remove(tgz_filename);
+        unlink(tgz_filename);
         return -1;
     }
-    remove(tgz_filename);
+    unlink(tgz_filename);
     return 0;
 }
 
