@@ -392,11 +392,11 @@ int kindle_convert_main(int argc, char *argv[])
             // Print a recap of what we're doing
             if(info_only)
             {
-                fprintf(stderr, "Checking %supdate package %s\n", (fake_sign? "fake " : ""), in_name);
+                fprintf(stderr, "Checking %supdate package %s\n", (fake_sign ? "fake " : ""), in_name);
             }
             else
             {
-                fprintf(stderr, "Converting %supdate package %s to %s (%s, %s)\n", (fake_sign? "fake " : ""), in_name, out_name, (extract_sig? "with sig" : "without sig"), (keep_ori? "keep input" : "delete input"));
+                fprintf(stderr, "Converting %supdate package %s to %s (%s, %s)\n", (fake_sign ? "fake " : ""), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
             }
             if(kindle_convert(input, output, sig_output, fake_sign) < 0)
             {
