@@ -120,6 +120,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     char *sourcepath = NULL;
     char signame[PATH_MAX];
     char sigabsolutepath[PATH_MAX];
+    int sigfd;
     char *pathnamecpy = NULL;
 
     // To avoid some more code duplication (and because I suck at C), we're going to add & sign our bundle file with a bit of a hack.
@@ -298,11 +299,20 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                 }
 
                 snprintf(signame, PATH_MAX, "%s.sig", pathname);
-                // Use the absolute path, libarchive might do a chdir when walking a directory tree on some platforms (OS X) (And it's good practice anyway, and we already do it for everything else...)
-                snprintf(sigabsolutepath, PATH_MAX, "%s.sig", sourcepath);
-                if((sigfile = fopen(sigabsolutepath, "wb")) == NULL)
+                // Create our sigfile in a tempfile
+                // We have to make sure mkstemp's template is reset first...
+                strncpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX", PATH_MAX);
+                sigfd = mkstemp(sigabsolutepath);
+                if(sigfd == -1)
                 {
-                    fprintf(stderr, "Cannot create signature file '%s'\n", signame);
+                    fprintf(stderr, "Couldn't open temporary signature file.\n");
+                    fclose(file);
+                    goto cleanup;
+                }
+                if((sigfile = fdopen(sigfd, "wb")) == NULL)
+                {
+                    fprintf(stderr, "Cannot open temp signature file '%s' for writing\n", signame);
+                    fclose(file);
                     goto cleanup;
                 }
                 if(sign_file(file, rsa_pkey_file, sigfile) < 0)
@@ -375,7 +385,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
                         goto cleanup;
                     }
 
-                    // Fix the entry pathname to be relative, we switched to absolute paths earlier...
+                    // Fix the entry pathname, we used a tempfile...
                     archive_entry_copy_pathname(entry_sig, signame);
 
                     archive_entry_set_uid(entry_sig, 0);
