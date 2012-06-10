@@ -255,6 +255,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
             }
 
             archive_read_disk_descend(disk);
+            // Print what we're adding
+            fprintf(stderr, "a %s\n", pathname);
             r = archive_write_header(a, entry);
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
@@ -384,6 +386,8 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
 
                     // And then, write it to the archive...
                     archive_read_disk_descend(disk_sig);
+                    // Print what we're adding
+                    fprintf(stderr, "a %s\n", signame);
                     r = archive_write_header(a, entry_sig);
                     if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_write_header() for sig failed: %s\n", archive_error_string(a));

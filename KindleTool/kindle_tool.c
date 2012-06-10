@@ -434,7 +434,7 @@ int kindle_info_main(int argc, char *argv[])
     temp = tmpfile();
     if(strlen(serial_no) != SERIAL_NO_LENGTH)
     {
-        fprintf(stderr, "Serial number must be 16 digits long (no spaces). Example: %s\n", "B00XXXXXXXXXXXXX");
+        fprintf(stderr, "Serial number must be 16 digits long (no spaces). Example: %s\n", "B0NNXXXXXXXXXXXX");
         return -1;
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
