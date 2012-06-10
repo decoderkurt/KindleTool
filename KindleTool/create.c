@@ -91,7 +91,7 @@ static void excluded_callback(struct archive *a, void *_data __attribute__((unus
     archive_read_disk_descend(a);
 }
 
-int kindle_create_package_archive(const char *outname, char **filename, const int total_files, RSA *rsa_pkey_file)
+int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
     struct archive *disk;
@@ -146,7 +146,7 @@ int kindle_create_package_archive(const char *outname, char **filename, const in
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
-    archive_write_open_filename(a, outname);
+    archive_write_open_fd(a, outfd);
 
     for(i = 0; i < total_files; i++)
     {
@@ -794,13 +794,12 @@ int kindle_create_main(int argc, char *argv[])
     int input_total;
     const char *tmp_buf = NULL;
     char tarball_filename[PATH_MAX];
+    int tarball_fd = -1;
     int keep_archive;
     int skip_archive;
     int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
-    size_t len;
-    char *tmp_outname = NULL;
 
     // defaults
     output = stdout;
@@ -1065,26 +1064,10 @@ int kindle_create_main(int argc, char *argv[])
                 archive_match_free(match);
                 return -1;
             }
-            else
-            {
-                // It follows the proper naming scheme, switch from .bin to .tar.gz, using a tmp copy, because we're still gonna need our proper output name later
-                len = strlen(output_filename);
-                tmp_outname = malloc(len - 3);
-                memcpy(tmp_outname, output_filename, len - 4);
-                tmp_outname[len - 4] = 0;       // . => \0
-
-                snprintf(tarball_filename, PATH_MAX, "%s.tar.gz", tmp_outname);
-                free(tmp_outname);
-            }
 
             // Cleanup
             archive_entry_free(entry);
             archive_match_free(match);
-        }
-        else
-        {
-            // We're outputting to a non .bin file, assign a generic name to the archive
-            snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
         }
         // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output
         if((output = fopen(output_filename, "wb")) == NULL)
@@ -1095,8 +1078,6 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        // We're outputting to stdout, assign a generic name to the archive
-        snprintf(tarball_filename, PATH_MAX, "update_kindletool_%d_archive.tar.gz", getpid());
         // If we're really outputting to stdout, fix the output filename
         output_filename = strdup("standard output");
     }
@@ -1110,7 +1091,20 @@ int kindle_create_main(int argc, char *argv[])
             // NOTE: There's no real check beside the file extension...
             skip_archive = 1;
             // Use it as our tarball...
-            snprintf(tarball_filename, PATH_MAX, "%s", input_list[0]);
+            strncpy(tarball_filename, input_list[0], PATH_MAX);
+        }
+    }
+
+    // If we need to build a tarball, do it in a tempfile
+    if(!skip_archive)
+    {
+        // We need a proper mkstemp template
+        strncpy(tarball_filename, "/tmp/kindletool_create_tarball_XXXXXX", PATH_MAX);
+        tarball_fd = mkstemp(tarball_filename);
+        if(tarball_fd == -1)
+        {
+            fprintf(stderr, "Couldn't open temporary tarball file.\n");
+            goto do_error;
         }
     }
 
@@ -1118,6 +1112,8 @@ int kindle_create_main(int argc, char *argv[])
     if(fake_sign && !skip_archive)
     {
         fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
+        if(tarball_fd != -1)
+            close(tarball_fd);
         goto do_error;
     }
 
@@ -1144,13 +1140,16 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_filename, input_list, input_total, info.sign_pkey) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_total, info.sign_pkey) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked file
-            remove(tarball_filename);
+            close(tarball_fd);
+            unlink(tarball_filename);
             goto do_error;
         }
+        // Apparently, we opened it, so we need to close it ;)
+        close(tarball_fd);
     }
 
     // And finally, build our package :).
@@ -1188,7 +1187,7 @@ int kindle_create_main(int argc, char *argv[])
         free(output_filename);
     // Remove tarball, unless we asked to keep it, or we used an existent tarball as sole input
     if(!keep_archive && !skip_archive)
-        remove(tarball_filename);
+        unlink(tarball_filename);
 
     return 0;
 
