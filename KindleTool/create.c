@@ -425,6 +425,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 }
                 archive_read_close(disk_sig);
                 archive_read_free(disk_sig);
+
+                // Cleanup
+                free(signame);
             }
 
             // Delete the bundle file once we're done
@@ -437,7 +440,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             free(pathname);
             free(resolved_path);
             free(sourcepath);
-            free(signame);
         }
         archive_read_close(disk);
         archive_read_free(disk);
