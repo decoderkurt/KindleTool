@@ -524,13 +524,19 @@ int libarchive_extract(const char *filename, const char *prefix)
             if(r != ARCHIVE_OK)
                 fprintf(stderr, "copy_data() failed: %s\n", archive_error_string(ext));
             if(r < ARCHIVE_WARN)
+            {
+                free(fixed_path);
                 return(1);
+            }
         }
         r = archive_write_finish_entry(ext);
         if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
         if(r < ARCHIVE_WARN)
+        {
+            free(fixed_path);
             return(1);
+        }
         // Cleanup
         free(fixed_path);
     }
