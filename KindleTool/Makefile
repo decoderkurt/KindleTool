@@ -9,6 +9,8 @@ else
 endif
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
+# When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
+ASAN_CLFAGS="-O2 -march=native -faddress-sanitizer -fno-omit-frame-pointer -g3"
 
 # Kindle cross toolchain prefix
 CROSS_PREFIX?=arm-kindle-linux-gnueabi-
