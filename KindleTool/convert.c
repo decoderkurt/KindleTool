@@ -282,9 +282,8 @@ int kindle_convert_main(int argc, char *argv[])
     FILE *output;
     FILE *sig_output;
     const char *in_name;
-    char out_name[PATH_MAX];
-    char *tmp_outname = NULL;
-    char sig_name[PATH_MAX];
+    char *out_name = NULL;
+    char *sig_name = NULL;
     size_t len;
     struct stat st;
     int info_only;
@@ -351,11 +350,10 @@ int kindle_convert_main(int argc, char *argv[])
             if(!info_only && output != stdout) // not info only AND not stdout
             {
                 len = strlen(in_name);
-                tmp_outname = malloc(len - (3 + fake_sign));
-                memcpy(tmp_outname, in_name, len - (4 + fake_sign));
-                tmp_outname[len - (4 + fake_sign)] = 0;   // . => \0
-                snprintf(out_name, PATH_MAX, "%s.tar.gz", tmp_outname);
-                free(tmp_outname);
+                out_name = malloc(len + 1 + (3 - fake_sign));
+                memcpy(out_name, in_name, len - (4 + fake_sign));
+                out_name[len - (4 + fake_sign)] = 0;    // . => \0
+                strncat(out_name, ".tar.gz", len + (3 - fake_sign));
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
@@ -366,11 +364,10 @@ int kindle_convert_main(int argc, char *argv[])
             if(extract_sig) // we want the package sig (implies not info only)
             {
                 len = strlen(in_name);
-                tmp_outname = malloc(len - 3);
-                memcpy(tmp_outname, in_name, len - 4);
-                tmp_outname[len - 4] = 0;   // . => \0
-                snprintf(sig_name, PATH_MAX, "%s.sig", tmp_outname);
-                free(tmp_outname);
+                sig_name = malloc(len + 1);
+                memcpy(sig_name, in_name, len - 4);
+                sig_name[len - 4] = 0;  // . => \0
+                strncat(sig_name, ".sig", len);
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
@@ -387,7 +384,7 @@ int kindle_convert_main(int argc, char *argv[])
             // If we're outputting to stdout, set a dummy human readable output name
             if(!info_only && output == stdout)
             {
-                strncpy(out_name, "standard output", PATH_MAX);
+                out_name = strdup("standard output");
             }
             // Print a recap of what we're doing
             if(info_only)
@@ -415,6 +412,8 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(input);
             if(sig_output != NULL)
                 fclose(sig_output);
+            free(out_name);
+            free(sig_name);
             // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
             if(extract_sig)
             {
