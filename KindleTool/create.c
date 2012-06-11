@@ -1243,8 +1243,8 @@ do_error:
         fclose(bundlefile);
         unlink(bundle_filename);
     }
-    // Remove broken tarball, if we built one
-    if(tarball_filename != NULL && !skip_archive)
+    // Remove broken tarball, if we built one, and we didn't ask to keep it
+    if(tarball_filename != NULL && !skip_archive && !keep_archive)
         unlink(tarball_filename);
     free(tarball_filename);
     return -1;
