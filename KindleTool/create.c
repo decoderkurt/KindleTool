@@ -1076,6 +1076,9 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n", output_filename);
                 archive_entry_free(entry);
                 archive_match_free(match);
+                // Cleanup temp bundlefile
+                fclose(bundlefile);
+                unlink(bundle_filename);
                 return -1;
             }
 
