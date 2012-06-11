@@ -1226,7 +1226,7 @@ do_error:
         for(i = 0; i < input_index; i++)
             free(input_list[i]);
         free(input_list);
-        if(output == stdout && output_filename != NULL)
+        if(output == stdout)
             free(output_filename);
     }
     free(info.devices);
