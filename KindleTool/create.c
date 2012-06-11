@@ -794,15 +794,15 @@ int kindle_create_main(int argc, char *argv[])
     int i;
     int optcount = 0;
     char *output_filename = NULL;
-    char *raw_filelist;
-    char **input_list;
+    //char *raw_filelist;
+    char **input_list = NULL;
     int input_index;
     int input_total;
-    const char *tmp_buf = NULL;
+    //const char *tmp_buf = NULL;
     char bundle_filename[] = "/tmp/kindletool_create_bundlefile_XXXXXX";
     int bundle_fd = -1;
     FILE *bundlefile = NULL;
-    char tarball_filename[PATH_MAX];
+    char *tarball_filename = NULL;
     int tarball_fd = -1;
     int keep_archive;
     int skip_archive;
@@ -1012,8 +1012,10 @@ int kindle_create_main(int argc, char *argv[])
         // If we only have one input file, fake it, or things go kablooey with stdout output
         if(input_total == 1)
             input_total++;
+        /*
         raw_filelist = malloc(input_total * (PATH_MAX + 1));
         input_list = malloc(sizeof(*input_list) * input_total);
+        */
         // Iterate over non-options (the file(s) we passed)
         while(optind < argc)
         {
@@ -1027,12 +1029,17 @@ int kindle_create_main(int argc, char *argv[])
             }
             else
             {
-                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us
+                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us (Ref: http://stackoverflow.com/questions/1182534/#1182649)
+                input_list = realloc(input_list, ++input_index * sizeof(char *));
+                input_list[input_index - 1] = strdup(argv[optind++]);
+                fprintf(stderr, "sizeof(char *): %d / input_index: %d / strlen(input): %d / sizeof(input_list): %d\n", sizeof(char *), input_index, strlen(input_list[input_index - 1]), sizeof(input_list));
+                /*
                 tmp_buf = argv[optind++];
                 input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
                 strcpy(input_list[input_index], tmp_buf);
 
                 input_index++;
+                */
             }
         }
     }
@@ -1060,9 +1067,41 @@ int kindle_create_main(int argc, char *argv[])
         return -1;
     }
     // Now that it's created, append it as the last file...
+    input_list = realloc(input_list, ++input_index * sizeof(char *));
+    input_list[input_index - 1] = strdup(bundle_filename);
+    /*
     input_list[input_index] = &raw_filelist[input_index * (PATH_MAX + 1)];
     strcpy(input_list[input_index], bundle_filename);
     input_index++;
+    */
+
+    // Print mem stats
+    int fd;
+
+    if((fd = open("/proc/self/statm", O_RDONLY)) == -1)
+        return -1;
+
+    char buf[4096];
+    ssize_t nread;
+
+    while((nread = read(fd, buf, sizeof buf)) > 0)
+    {
+        ssize_t ntotalwritten = 0;
+        while(ntotalwritten < nread)
+        {
+            ssize_t nwritten = write(STDERR_FILENO, buf + ntotalwritten, nread - ntotalwritten);
+            if(nwritten < 1)
+                return -1;
+            ntotalwritten += nwritten;
+        }
+    }
+
+    if(nread != 0)
+        return -1;
+
+    if(close(fd) != 0)
+        return -1;
+
 
     // Build the package archive name based on the output name.
     // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
@@ -1116,7 +1155,7 @@ int kindle_create_main(int argc, char *argv[])
             // NOTE: There's no real check beside the file extension...
             skip_archive = 1;
             // Use it as our tarball...
-            strncpy(tarball_filename, input_list[0], PATH_MAX);
+            tarball_filename = strdup(input_list[0]);
         }
     }
 
@@ -1124,7 +1163,7 @@ int kindle_create_main(int argc, char *argv[])
     if(!skip_archive)
     {
         // We need a proper mkstemp template
-        strncpy(tarball_filename, "/tmp/kindletool_create_tarball_XXXXXX", PATH_MAX);
+        tarball_filename = strdup("/tmp/kindletool_create_tarball_XXXXXX");
         tarball_fd = mkstemp(tarball_filename);
         if(tarball_fd == -1)
         {
@@ -1208,9 +1247,18 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
 
+    for(i = 0; i < input_index; i++)
+        fprintf(stderr, "i: %d / input_list[i]: %s\n", i, input_list[i]);
+
     // Clean-up
+    /*
     free(input_list);
     free(raw_filelist);
+    */
+    for(i = 0; i < input_index; i++)
+        free(input_list[i]);
+    free(input_list);
+    free(tarball_filename);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
@@ -1229,11 +1277,17 @@ int kindle_create_main(int argc, char *argv[])
 do_error:
     if(input_total > 0)
     {
+        /*
         free(input_list);
         free(raw_filelist);
+        */
+        for(i = 0; i < input_index; i++)
+            free(input_list[i]);
+        free(input_list);
         if(output == stdout)
             free(output_filename);
     }
+    free(tarball_filename);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
