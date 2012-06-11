@@ -117,8 +117,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char *pathname = NULL;
     char *resolved_path = NULL;
     char *sourcepath = NULL;
-    char signame[PATH_MAX];
-    char sigabsolutepath[PATH_MAX];
+    size_t pathlen;
+    char *signame = NULL;
+    char sigabsolutepath[] = "/tmp/kindletool_create_sig_XXXXXX";
     int sigfd;
     char *pathnamecpy = NULL;
 
@@ -197,7 +198,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
-                pathname = resolved_path = sourcepath = NULL;
+                pathname = resolved_path = sourcepath = signame = NULL;
                 goto cleanup;
             }
 
@@ -297,10 +298,13 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     rewind(file);
                 }
 
-                snprintf(signame, PATH_MAX, "%s.sig", pathname);
+                pathlen = strlen(pathname);
+                signame = malloc(pathlen + 4 + 1);
+                strncpy(signame, pathname, pathlen);
+                strncat(signame, ".sig", 4);
                 // Create our sigfile in a tempfile
                 // We have to make sure mkstemp's template is reset first...
-                strncpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX", PATH_MAX);
+                strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
                 sigfd = mkstemp(sigabsolutepath);
                 if(sigfd == -1)
                 {
@@ -433,6 +437,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             free(pathname);
             free(resolved_path);
             free(sourcepath);
+            free(signame);
         }
         archive_read_close(disk);
         archive_read_free(disk);
@@ -455,6 +460,7 @@ cleanup:
     free(pathname);
     free(resolved_path);
     free(sourcepath);
+    free(signame);
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
     archive_entry_free(entry_sig);

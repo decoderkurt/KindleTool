@@ -353,7 +353,7 @@ int kindle_convert_main(int argc, char *argv[])
                 out_name = malloc(len + 1 + (3 - fake_sign));
                 memcpy(out_name, in_name, len - (4 + fake_sign));
                 out_name[len - (4 + fake_sign)] = 0;    // . => \0
-                strncat(out_name, ".tar.gz", len + (3 - fake_sign));
+                strncat(out_name, ".tar.gz", 7);
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
@@ -367,7 +367,7 @@ int kindle_convert_main(int argc, char *argv[])
                 sig_name = malloc(len + 1);
                 memcpy(sig_name, in_name, len - 4);
                 sig_name[len - 4] = 0;  // . => \0
-                strncat(sig_name, ".sig", len);
+                strncat(sig_name, ".sig", 4);
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
