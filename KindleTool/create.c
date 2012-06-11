@@ -300,7 +300,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
                 pathlen = strlen(pathname);
                 signame = malloc(pathlen + 4 + 1);
-                strncpy(signame, pathname, pathlen);
+                strncpy(signame, pathname, pathlen + 4 + 1);
                 strncat(signame, ".sig", 4);
                 // Create our sigfile in a tempfile
                 // We have to make sure mkstemp's template is reset first...
