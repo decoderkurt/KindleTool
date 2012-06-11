@@ -1003,9 +1003,6 @@ int kindle_create_main(int argc, char *argv[])
     {
         // Save 'real' options count
         optcount = optind;
-        // Alloc our input filelist, based on the number of non-options, minus the output
-        // Heavily *cough* 'inspired' *cough* from http://stackoverflow.com/questions/5935933/
-        // Keep an extra space for the bundlefile
         input_total = argc - optcount;
         // If we only have one input file, fake it, or things go kablooey with stdout output
         if(input_total == 1)
