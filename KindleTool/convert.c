@@ -402,11 +402,11 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
                 if(output != NULL && output != stdout)
-                    remove(out_name); // clean up our mess, if we made one
+                    unlink(out_name); // clean up our mess, if we made one
                 fail = 1;
             }
             if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
-                remove(in_name);
+                unlink(in_name);
 
             // Cleanup behind us
             if(output != NULL && output != stdout)
@@ -420,7 +420,7 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 stat(sig_name, &st);
                 if(st.st_size == 0)
-                    remove(sig_name);
+                    unlink(sig_name);
             }
 
             // If we're not the last file, throw an LF to untangle the output

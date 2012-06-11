@@ -319,7 +319,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     fprintf(stderr, "Cannot sign '%s'\n", pathname);
                     fclose(file);
                     fclose(sigfile);
-                    remove(sigabsolutepath);   // Delete empty/broken sigfile
+                    unlink(sigabsolutepath);   // Delete empty/broken sigfile
                     goto cleanup;
                 }
 
@@ -335,7 +335,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                         // Cleanup a bit before crapping out
                         fclose(file);
                         fclose(sigfile);
-                        remove(sigabsolutepath);
+                        unlink(sigabsolutepath);
                         free(pathnamecpy);
                         goto cleanup;
                     }
@@ -354,7 +354,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 if(r != ARCHIVE_OK)
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
-                    remove(sigabsolutepath);
+                    unlink(sigabsolutepath);
                     goto cleanup;
                 }
 
@@ -368,7 +368,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     if(r != ARCHIVE_OK)
                     {
                         fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
-                        remove(sigabsolutepath);
+                        unlink(sigabsolutepath);
                         goto cleanup;
                     }
                     // Get some basic entry fields from stat
@@ -380,7 +380,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                         fprintf(stderr, "archive_read_disk_entry_from_file() for sig failed: %s\n", archive_error_string(disk_sig));
                     if(r == ARCHIVE_FATAL)
                     {
-                        remove(sigabsolutepath);
+                        unlink(sigabsolutepath);
                         goto cleanup;
                     }
 
@@ -402,7 +402,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                         fprintf(stderr, "archive_write_header() for sig failed: %s\n", archive_error_string(a));
                     if(r == ARCHIVE_FATAL)
                     {
-                        remove(sigabsolutepath);
+                        unlink(sigabsolutepath);
                         goto cleanup;
                     }
                     if(r > ARCHIVE_FAILED)
@@ -417,7 +417,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                         close(fd);
                     }
                     // Delete the sigfile once we're done
-                    remove(sigabsolutepath);
+                    unlink(sigabsolutepath);
                 }
                 archive_read_close(disk_sig);
                 archive_read_free(disk_sig);
@@ -426,7 +426,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // Delete the bundle file once we're done
             if(!dirty_bundlefile)
             {
-                remove(sourcepath);
+                unlink(sourcepath);
             }
 
             // Cleanup
