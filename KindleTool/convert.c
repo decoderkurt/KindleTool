@@ -387,7 +387,7 @@ int kindle_convert_main(int argc, char *argv[])
             // If we're outputting to stdout, set a dummy human readable output name
             if(!info_only && output == stdout)
             {
-                snprintf(out_name, PATH_MAX, "standard output");
+                strncpy(out_name, "standard output", PATH_MAX);
             }
             // Print a recap of what we're doing
             if(info_only)
