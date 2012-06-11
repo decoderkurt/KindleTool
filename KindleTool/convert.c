@@ -472,7 +472,8 @@ int libarchive_extract(const char *filename, const char *prefix)
     int flags;
     int r;
     const char *path = NULL;
-    char fixed_path[PATH_MAX];
+    char *fixed_path = NULL;
+    size_t len;
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
@@ -506,11 +507,13 @@ int libarchive_extract(const char *filename, const char *prefix)
             fprintf(stderr, "archive_read_next_header() failed: %s\n", archive_error_string(a));
         if(r < ARCHIVE_WARN)
             return(1);
-        // Rewrite entry's pathname to extract in our specified directory
-        path = archive_entry_pathname(entry);
         // Print what we're extracting
+        path = archive_entry_pathname(entry);
         fprintf(stderr, "x %s\n", path);
-        snprintf(fixed_path, PATH_MAX, "%s/%s", prefix, path);
+        // Rewrite entry's pathname to extract in our specified directory
+        len = strlen(prefix) + 1 + strlen(path) + 1;
+        fixed_path = malloc(len);
+        snprintf(fixed_path, len, "%s/%s", prefix, path);
         archive_entry_copy_pathname(entry, fixed_path);
         r = archive_write_header(ext, entry);
         if(r != ARCHIVE_OK)
@@ -528,6 +531,8 @@ int libarchive_extract(const char *filename, const char *prefix)
             fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
         if(r < ARCHIVE_WARN)
             return(1);
+        // Cleanup
+        free(fixed_path);
     }
     archive_read_close(a);
     archive_read_free(a);
