@@ -1,12 +1,6 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-O0 -march=native
-# Clang doesn't like -ggdb3
-ifeq "$(CC)" "clang"
-	DEBUG_CFLAGS+=-g3
-else
-	DEBUG_CFLAGS+=-ggdb3
-endif
+DEBUG_CFLAGS=-O0 -march=native -g3
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
