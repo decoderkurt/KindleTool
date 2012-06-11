@@ -1014,7 +1014,7 @@ int kindle_create_main(int argc, char *argv[])
             if(optind == argc - 1 && input_index > 0)
             {
                 output_filename = strdup(argv[optind++]);
-                // If it's a single dash, output to stdout (like tar c)
+                // If it's a single dash, output to stdout (like tar cf -)
                 if(strcmp(output_filename, "-") == 0)
                 {
                     free(output_filename);
