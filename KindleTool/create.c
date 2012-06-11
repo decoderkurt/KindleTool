@@ -1013,10 +1013,13 @@ int kindle_create_main(int argc, char *argv[])
             // The last one will always be our output (but only check if we have at least one input file, we might really want to output to stdout)
             if(optind == argc - 1 && input_index > 0)
             {
-                output_filename = argv[optind++];
+                output_filename = strdup(argv[optind++]);
                 // If it's a single dash, output to stdout (like tar c)
                 if(strcmp(output_filename, "-") == 0)
+                {
+                    free(output_filename);
                     output_filename = NULL;
+                }
             }
             else
             {
@@ -1029,12 +1032,12 @@ int kindle_create_main(int argc, char *argv[])
     else
     {
         fprintf(stderr, "No input/output specified.\n");
-        return -1;
+        goto do_error;
     }
     if(input_total < 1)
     {
         fprintf(stderr, "You need to specify at least ONE input item in conjunction with the output file.\n");
-        return -1;
+        goto do_error;
     }
     // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
     // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
@@ -1042,12 +1045,12 @@ int kindle_create_main(int argc, char *argv[])
     if(bundle_fd == -1)
     {
         fprintf(stderr, "Couldn't open temporary file.\n");
-        return -1;
+        goto do_error;
     }
     if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
     {
         fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
-        return -1;
+        goto do_error;
     }
     // Now that it's created, append it as the last file...
     input_list = realloc(input_list, ++input_index * sizeof(char *));
@@ -1076,7 +1079,7 @@ int kindle_create_main(int argc, char *argv[])
                 // Cleanup temp bundlefile
                 fclose(bundlefile);
                 unlink(bundle_filename);
-                return -1;
+                goto do_error;
             }
 
             // Cleanup
@@ -1201,7 +1204,6 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < input_index; i++)
         free(input_list[i]);
     free(input_list);
-    free(tarball_filename);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
@@ -1214,6 +1216,7 @@ int kindle_create_main(int argc, char *argv[])
     // Remove tarball, unless we asked to keep it, or we used an existent tarball as sole input
     if(!keep_archive && !skip_archive)
         unlink(tarball_filename);
+    free(tarball_filename);
 
     return 0;
 
@@ -1223,10 +1226,9 @@ do_error:
         for(i = 0; i < input_index; i++)
             free(input_list[i]);
         free(input_list);
-        if(output == stdout)
+        if(output == stdout && output_filename != NULL)
             free(output_filename);
     }
-    free(tarball_filename);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
@@ -1241,6 +1243,10 @@ do_error:
         fclose(bundlefile);
         unlink(bundle_filename);
     }
+    // Remove broken tarball
+    if(tarball_filename != NULL)
+        unlink(tarball_filename);
+    free(tarball_filename);
     return -1;
 }
 
