@@ -177,11 +177,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin & OS X...
                 if(r == ARCHIVE_FAILED)
                 {
-                    // (Late) Cleanup
-                    free(error_string);
-                    free(error_sourcepath);
-                    free(error_desc);
-
                     // We don't have an archive entry, and no really adequate public API (AFAICT), so getting the filename is a bitch...
                     // The only thing we have acces to that knows the filepath is... the error string. So parse it :/
                     error_string = strdup(archive_error_string(disk));
@@ -193,8 +188,16 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     if(IS_SIG(error_sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
                     {
                         fprintf(stderr, "Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", error_sourcepath);
+                        // Cleanup
+                        free(error_string);
+                        free(error_sourcepath);
+                        free(error_desc);
                         continue;
                     }
+                    // Cleanup
+                    free(error_string);
+                    free(error_sourcepath);
+                    free(error_desc);
                 }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
@@ -1211,8 +1214,7 @@ int kindle_create_main(int argc, char *argv[])
     fclose(input);
     if(output != stdout)
         fclose(output);
-    else
-        free(output_filename);
+    free(output_filename);
     // Remove tarball, unless we asked to keep it, or we used an existent tarball as sole input
     if(!keep_archive && !skip_archive)
         unlink(tarball_filename);
@@ -1226,9 +1228,8 @@ do_error:
         for(i = 0; i < input_index; i++)
             free(input_list[i]);
         free(input_list);
-        if(output == stdout)
-            free(output_filename);
     }
+    free(output_filename);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);

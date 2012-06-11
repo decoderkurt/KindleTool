@@ -1,6 +1,6 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-O0 -march=native -g3
+DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -g3
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
@@ -47,6 +47,10 @@ LIBS=-larchive -lz -lcrypto
 # Needed for linking statically against OpenSSL on Linux
 #ifeq "$(OSTYPE)" "Linux"
 #	LIBS+=-ldl
+#endif
+# If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)
+#ifeq "$(OSTYPE)" "Linux"
+#	LIBS+=-ltcmalloc
 #endif
 
 ifeq "$(DEBUG)" "true"
