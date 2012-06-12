@@ -1,3 +1,6 @@
+# Ignore custom headers & libs searchpath
+includes/
+lib/
 # Ignore build output directories
 Release/
 Debug/
