@@ -1070,7 +1070,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
-    if(input_index <= 1)
+    if(input_index == 1)
     {
         if(IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
@@ -1200,7 +1200,7 @@ int kindle_create_main(int argc, char *argv[])
     return 0;
 
 do_error:
-    if(input_index > 1)
+    if(input_index > 0)
     {
         for(i = 0; i < input_index; i++)
             free(input_list[i]);
