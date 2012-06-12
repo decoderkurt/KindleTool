@@ -602,6 +602,8 @@ int kindle_extract_main(int argc, char *argv[])
     {
         fprintf(stderr, "Cannot open temp output '%s' for writing.\n", tgz_filename);
         fclose(bin_input);
+        close(tgz_fd);
+        unlink(tgz_filename);
         return -1;
     }
     // Print a recap of what we're about to do

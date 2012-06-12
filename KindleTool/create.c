@@ -319,6 +319,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, "Cannot open temp signature file '%s' for writing\n", signame);
                     fclose(file);
+                    close(sigfd);
+                    unlink(sigabsolutepath);
                     goto cleanup;
                 }
                 if(sign_file(file, rsa_pkey_file, sigfile) < 0)
@@ -1106,11 +1108,17 @@ int kindle_create_main(int argc, char *argv[])
         if(bundle_fd == -1)
         {
             fprintf(stderr, "Couldn't open temporary file.\n");
+            close(tarball_fd);
+            unlink(tarball_filename);
             goto do_error;
         }
         if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
         {
             fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
+            close(tarball_fd);
+            unlink(tarball_filename);
+            close(bundle_fd);
+            unlink(bundle_filename);
             goto do_error;
         }
         // Now that it's created, append it as the last file...
@@ -1153,8 +1161,6 @@ int kindle_create_main(int argc, char *argv[])
         }
         // Apparently, we opened it, so we need to close it ;)
         close(tarball_fd);
-        // We don't need our bundlefile anymore...
-        unlink(bundle_filename);
     }
 
     // And finally, build our package :).
