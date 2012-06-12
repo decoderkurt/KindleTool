@@ -795,11 +795,9 @@ int kindle_create_main(int argc, char *argv[])
     FILE *output;
     BIO *bio;
     int i;
-    int optcount = 0;
     char *output_filename = NULL;
     char **input_list = NULL;
-    int input_index;
-    int input_total;
+    int input_index = 0;
     char bundle_filename[] = "/tmp/kindletool_create_bundlefile_XXXXXX";
     int bundle_fd = -1;
     FILE *bundlefile = NULL;
@@ -810,12 +808,11 @@ int kindle_create_main(int argc, char *argv[])
     int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
+    struct stat st;
 
     // defaults
     output = stdout;
     input = NULL;
-    input_index = 0;
-    input_total = 0;
     keep_archive = 0;
     skip_archive = 0;
     fake_sign = 0;
@@ -1004,12 +1001,6 @@ int kindle_create_main(int argc, char *argv[])
 
     if(optind < argc)
     {
-        // Save 'real' options count
-        optcount = optind;
-        input_total = argc - optcount;
-        // If we only have one input file, fake it, or things go kablooey with stdout output
-        if(input_total == 1)
-            input_total++;
         // Iterate over non-options (the file(s) we passed)
         while(optind < argc)
         {
@@ -1037,27 +1028,6 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "No input/output specified.\n");
         goto do_error;
     }
-    if(input_total < 1)
-    {
-        fprintf(stderr, "You need to specify at least ONE input item in conjunction with the output file.\n");
-        goto do_error;
-    }
-    // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
-    // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
-    bundle_fd = mkstemp(bundle_filename);
-    if(bundle_fd == -1)
-    {
-        fprintf(stderr, "Couldn't open temporary file.\n");
-        goto do_error;
-    }
-    if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
-    {
-        fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
-        goto do_error;
-    }
-    // Now that it's created, append it as the last file...
-    input_list = realloc(input_list, ++input_index * sizeof(char *));
-    input_list[input_index - 1] = strdup(bundle_filename);
 
     // Build the package archive name based on the output name.
     // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
@@ -1079,9 +1049,6 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n", output_filename);
                 archive_entry_free(entry);
                 archive_match_free(match);
-                // Cleanup temp bundlefile
-                fclose(bundlefile);
-                unlink(bundle_filename);
                 goto do_error;
             }
 
@@ -1103,9 +1070,8 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
-    if(input_total <= 2)
+    if(input_index <= 1)
     {
-        // Yes, 2, because we'll aways at least have the bundlefile in there, and we bump input_total when outputting to stdout...
         if(IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
             // NOTE: There's no real check beside the file extension...
@@ -1126,12 +1092,23 @@ int kindle_create_main(int argc, char *argv[])
             fprintf(stderr, "Couldn't open temporary tarball file.\n");
             goto do_error;
         }
-    }
-    else
-    {
-        // We're not building a tarball, we need to cleanup our temp bundlefile ourselves
-        fclose(bundlefile);
-        unlink(bundle_filename);
+
+        // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
+        // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
+        bundle_fd = mkstemp(bundle_filename);
+        if(bundle_fd == -1)
+        {
+            fprintf(stderr, "Couldn't open temporary file.\n");
+            goto do_error;
+        }
+        if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
+        {
+            fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
+            goto do_error;
+        }
+        // Now that it's created, append it as the last file...
+        input_list = realloc(input_list, ++input_index * sizeof(char *));
+        input_list[input_index - 1] = strdup(bundle_filename);
     }
 
     // Don't try to build an unsigned package if we didn't feed a single proper tarball
@@ -1166,7 +1143,7 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_total, info.sign_pkey, bundlefile) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, bundlefile) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
@@ -1223,7 +1200,7 @@ int kindle_create_main(int argc, char *argv[])
     return 0;
 
 do_error:
-    if(input_total > 0)
+    if(input_index > 1)
     {
         for(i = 0; i < input_index; i++)
             free(input_list[i]);
@@ -1241,8 +1218,12 @@ do_error:
     // kindle_create_package_archive() has to take care of bundlefile itself, and the timing of error handling here can be tricky, so check if the fd is valid before closing it...
     if(fcntl(bundle_fd, F_GETFL) != -1 || errno != EBADF)
     {
-        fclose(bundlefile);
-        unlink(bundle_filename);
+        // Check that the file really still exists, we may end up with a valid fd pointing to a complete different file in some error paths...
+        if(stat(bundle_filename, &st) != -1 || errno != ENOENT)
+        {
+            fclose(bundlefile);
+            unlink(bundle_filename);
+        }
     }
     // Remove broken tarball, if we built one, and we didn't ask to keep it
     if(tarball_filename != NULL && !skip_archive && !keep_archive)
