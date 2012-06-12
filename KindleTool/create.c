@@ -140,6 +140,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
     archive_write_open_fd(a, outfd);
+	
+#if defined(__CYGWIN__)
+	// Ugly dummy initialization to shutup Cygwin's stupid GCC (well, technically, it's right, but, still...)
+	disk_sig = archive_read_disk_new();
+	archive_read_free(disk_sig);
+#endif
 
     for(i = 0; i < total_files; i++)
     {

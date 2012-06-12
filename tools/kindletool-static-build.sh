@@ -207,9 +207,9 @@ EOF
 	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
-	if [[ "$(whoami)" == "niluje" ]] ; then
+	if [[ "$(whoami)" == "NiLuJe" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael\"'"
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
