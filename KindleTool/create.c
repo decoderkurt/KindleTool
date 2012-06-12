@@ -810,7 +810,6 @@ int kindle_create_main(int argc, char *argv[])
     int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
-    struct stat st;
 
     // defaults
     output = stdout;
