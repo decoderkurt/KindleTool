@@ -110,6 +110,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
     int dirty_bundlefile = 1;
+    int dirty_disk = 0;
+    int dirty_disk_sig = 0;
     char *error_string = NULL;
     char *pch_error = NULL;
     char *error_sourcepath = NULL;
@@ -159,8 +161,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         if(r != ARCHIVE_OK)
         {
             fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
+            archive_read_free(disk);
             goto cleanup;
         }
+        // Hackish, flag telling the cleanup block if disk is open...
+        dirty_disk = 1;
 
         for(;;)
         {
@@ -364,8 +369,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
                     unlink(sigabsolutepath);
+                    archive_read_free(disk_sig);
                     goto cleanup;
                 }
+                // Hackish, flag telling the cleanup block if disk_sig is open...
+                dirty_disk_sig = 1;
 
                 for(;;)
                 {
@@ -430,6 +438,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 }
                 archive_read_close(disk_sig);
                 archive_read_free(disk_sig);
+                dirty_disk_sig = 0;
 
                 // Cleanup
                 free(signame);
@@ -448,6 +457,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         }
         archive_read_close(disk);
         archive_read_free(disk);
+        dirty_disk = 0;
     }
     archive_write_close(a);
     archive_write_free(a);
@@ -472,6 +482,19 @@ cleanup:
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
     archive_match_free(matching);
+    // And the big stuff...
+    if(dirty_disk_sig)
+    {
+        archive_read_close(disk_sig);
+        archive_read_free(disk_sig);
+    }
+    if(dirty_disk)
+    {
+        archive_read_close(disk);
+        archive_read_free(disk);
+    }
+    archive_write_close(a);
+    archive_write_free(a);
     return 1;
 }
 
