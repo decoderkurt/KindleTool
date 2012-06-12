@@ -482,6 +482,7 @@ int libarchive_extract(const char *filename, const char *prefix)
     const char *path = NULL;
     char *fixed_path = NULL;
     size_t len;
+    int dirty_archive = 0;
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
@@ -499,13 +500,17 @@ int libarchive_extract(const char *filename, const char *prefix)
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, flags);
     archive_write_disk_set_standard_lookup(ext);
+
     if(filename != NULL && strcmp(filename, "-") == 0)
         filename = NULL;
     if((r = archive_read_open_file(a, filename, 10240)))
     {
         fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
-        return(r);
+        archive_read_free(a);
+        goto cleanup;
     }
+    dirty_archive = 1;
+
     for(;;)
     {
         r = archive_read_next_header(a, &entry);
@@ -514,7 +519,8 @@ int libarchive_extract(const char *filename, const char *prefix)
         if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_read_next_header() failed: %s\n", archive_error_string(a));
         if(r < ARCHIVE_WARN)
-            return(1);
+            goto cleanup;
+
         // Print what we're extracting
         path = archive_entry_pathname(entry);
         fprintf(stderr, "x %s\n", path);
@@ -523,6 +529,7 @@ int libarchive_extract(const char *filename, const char *prefix)
         fixed_path = malloc(len);
         snprintf(fixed_path, len, "%s/%s", prefix, path);
         archive_entry_copy_pathname(entry, fixed_path);
+
         r = archive_write_header(ext, entry);
         if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(ext));
@@ -534,25 +541,40 @@ int libarchive_extract(const char *filename, const char *prefix)
             if(r < ARCHIVE_WARN)
             {
                 free(fixed_path);
-                return(1);
+                goto cleanup;
             }
         }
+
         r = archive_write_finish_entry(ext);
         if(r != ARCHIVE_OK)
             fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
         if(r < ARCHIVE_WARN)
         {
             free(fixed_path);
-            return(1);
+            goto cleanup;
         }
+
         // Cleanup
         free(fixed_path);
     }
     archive_read_close(a);
     archive_read_free(a);
+    //dirty_archive = 0;
     archive_write_close(ext);
     archive_write_free(ext);
-    return(0);
+
+    return 0;
+
+cleanup:
+    if(dirty_archive)
+    {
+        archive_read_close(a);
+        archive_read_free(a);
+    }
+    archive_write_close(ext);
+    archive_write_free(ext);
+
+    return 1;
 }
 
 int kindle_extract_main(int argc, char *argv[])
