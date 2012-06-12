@@ -112,10 +112,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     int dirty_bundlefile = 1;
     int dirty_disk = 0;
     int dirty_disk_sig = 0;
-    char *error_string = NULL;
-    char *pch_error = NULL;
-    char *error_sourcepath = NULL;
-    char *error_desc = NULL;
     char *pathname = NULL;
     char *resolved_path = NULL;
     char *sourcepath = NULL;
@@ -182,34 +178,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
             if(r != ARCHIVE_OK)
             {
-                // Ugly hack ahead: If we failed on a .sig file because it's not there anymore (cannot stat), just skip it, it's a byproduct of the hackish way in which we *always* regen (and then delete) signature files.
-                // So, if we already *had* a pair of file + sigfile, we regenerated sigfile, and then deleted it, but since the directory lookup is not live, it will still iterate over a non-existent sigfile: kablooey.
-                // (The easiest way to reproduce this is to extract a custom update in a directory, and the try to create one using this directory as sole input)
-                // NOTE: Huh, I can't seem to reproduce this on Linux anymore, but it definitely happens on Cygwin & OS X...
-                if(r == ARCHIVE_FAILED)
-                {
-                    // We don't have an archive entry, and no really adequate public API (AFAICT), so getting the filename is a bitch...
-                    // The only thing we have acces to that knows the filepath is... the error string. So parse it :/
-                    error_string = strdup(archive_error_string(disk));
-                    pch_error = strtok(error_string, ":");
-                    error_sourcepath = strdup(pch_error);
-                    pch_error = strtok(NULL, ":");
-                    error_desc = strdup(pch_error);
-                    // If libarchive failed to stat a .sig file, print a warning, and go on
-                    if(IS_SIG(error_sourcepath) && strcmp(error_desc, " Cannot stat") == 0)
-                    {
-                        fprintf(stderr, "Skipping original sig file '%s' to avoid duplicates, it's already been regenerated\n", error_sourcepath);
-                        // Cleanup
-                        free(error_string);
-                        free(error_sourcepath);
-                        free(error_desc);
-                        continue;
-                    }
-                    // Cleanup
-                    free(error_string);
-                    free(error_sourcepath);
-                    free(error_desc);
-                }
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
                 pathname = resolved_path = sourcepath = signame = NULL;
