@@ -1081,6 +1081,13 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
+    // Don't try to build an unsigned package if we didn't feed a single proper tarball
+    if(fake_sign && !skip_archive)
+    {
+        fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
+        goto do_error;
+    }
+
     // If we need to build a tarball, do it in a tempfile
     if(!skip_archive)
     {
@@ -1109,15 +1116,6 @@ int kindle_create_main(int argc, char *argv[])
         // Now that it's created, append it as the last file...
         input_list = realloc(input_list, ++input_index * sizeof(char *));
         input_list[input_index - 1] = strdup(bundle_filename);
-    }
-
-    // Don't try to build an unsigned package if we didn't feed a single proper tarball
-    if(fake_sign && !skip_archive)
-    {
-        fprintf(stderr, "You need to feed me a single tarball to build an unsigned package.\n");
-        if(tarball_fd != -1)
-            close(tarball_fd);
-        goto do_error;
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
@@ -1215,19 +1213,6 @@ do_error:
         fclose(input);
     if(output != NULL && output != stdout)
         fclose(output);
-    // kindle_create_package_archive() has to take care of bundlefile itself, and the timing of error handling here can be tricky, so check if the fd is valid before closing it...
-    if(fcntl(bundle_fd, F_GETFL) != -1 || errno != EBADF)
-    {
-        // Check that the file really still exists, we may end up with a valid fd pointing to a complete different file in some error paths...
-        if(stat(bundle_filename, &st) != -1 || errno != ENOENT)
-        {
-            fclose(bundlefile);
-            unlink(bundle_filename);
-        }
-    }
-    // Remove broken tarball, if we built one, and we didn't ask to keep it
-    if(tarball_filename != NULL && !skip_archive && !keep_archive)
-        unlink(tarball_filename);
     free(tarball_filename);
     return -1;
 }
