@@ -1038,7 +1038,7 @@ int kindle_create_main(int argc, char *argv[])
             match = archive_match_new();
             entry = archive_entry_new();
 
-            if(archive_match_exclude_pattern(match, "./update*\\.bin$") != ARCHIVE_OK)
+            if(archive_match_exclude_pattern(match, "./[Uu]pdate*\\.bin$") != ARCHIVE_OK)
                 fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
 
             archive_entry_copy_pathname(entry, output_filename);
