@@ -83,6 +83,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
     uint8_t padding;
     char *pkg_md5_sum;
     uint16_t num_metadata;
+    size_t meta_strlen;
     uint16_t metastring_length;
     char *metastring;
     //unsigned char **metastrings;
@@ -141,7 +142,10 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
     // Finally, get the metastrings
     for(hindex = 0; hindex < num_metadata; hindex++)
     {
-        read_size = fread(&metastring_length, sizeof(uint16_t), 1, input);
+        // Get correct meta string length because of the endianness swap...
+        read_size = fread(&((uint8_t *)&meta_strlen)[1], sizeof(uint8_t), 1, input);
+        read_size = fread(&((uint8_t *)&meta_strlen)[0], sizeof(uint8_t), 1, input);
+        metastring_length = meta_strlen;
         metastring = malloc(metastring_length);
         read_size = fread(metastring, sizeof(char), metastring_length, input);
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
