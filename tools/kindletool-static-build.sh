@@ -69,6 +69,7 @@ Build_Linux() {
 		cd ${LIBARCHIVE_DIR}
 		./configure --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
 		make
+		unset ac_cv_header_ext2fs_ext2_fs_h
 		cd ..
 	fi
 
