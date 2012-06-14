@@ -45,9 +45,9 @@ else
 endif
 LIBS=-larchive -lz -lcrypto
 # Needed for linking statically against OpenSSL on Linux
-#ifeq "$(OSTYPE)" "Linux"
-#	LIBS+=-ldl
-#endif
+ifeq "$(OSTYPE)" "Linux"
+	LIBS+=-ldl
+endif
 # If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)
 #ifeq "$(OSTYPE)" "Linux"
 #	LIBS+=-ltcmalloc
