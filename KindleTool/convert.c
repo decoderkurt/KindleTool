@@ -148,6 +148,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
         metastring_length = meta_strlen;
         metastring = malloc(metastring_length);
         read_size = fread(metastring, sizeof(char), metastring_length, input);
+        dm((unsigned char *)metastring, metastring_length);      // Deobfuscate string (FIXME: Should meta strings really be ofuscated?)
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
         free(metastring);
     }

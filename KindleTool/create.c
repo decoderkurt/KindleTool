@@ -625,7 +625,8 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         hindex += sizeof(uint8_t);
         memcpy(&header[hindex], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
         hindex += sizeof(uint8_t);
-        strncpy((char *)&header[hindex], info->metastrings[i], str_len);        // FIXME: Should this be munged?
+        md((unsigned char *)info->metastrings[i], str_len); // Obfuscate meta string (FIXME: Should this really be munged? I've never seen an update with meta strings in the wild...)
+        strncpy((char *)&header[hindex], info->metastrings[i], str_len);
         hindex += str_len;
     }
 
