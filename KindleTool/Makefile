@@ -44,7 +44,7 @@ else
 	CPPFLAGS?=-Iincludes
 endif
 LIBS=-larchive -lz -lcrypto
-# Needed for linking statically against OpenSSL on Linux
+# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
 ifeq "$(OSTYPE)" "Linux"
 	LIBS+=-ldl
 endif
