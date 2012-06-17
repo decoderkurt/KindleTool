@@ -289,7 +289,7 @@ EOF
 	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
-	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' -e '[nNiIlLuUjJeE]{6}$' > /dev/null 2>&1 ; then
+	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' > /dev/null 2>&1 ; then
 		export KT_NO_USERATHOST_TAG="true"
 		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 	fi
