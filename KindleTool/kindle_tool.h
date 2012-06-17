@@ -75,7 +75,7 @@
 
 // Version tag fallback
 #ifndef KT_VERSION
-#define KT_VERSION "v1.1-GIT"
+#define KT_VERSION "v1.2-GIT"
 #endif
 
 // user@host tag fallback
