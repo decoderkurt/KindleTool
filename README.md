@@ -84,6 +84,8 @@
 * KindleTool info &lt;**serialno**&gt;
 
 >> Get the default root password  
+>> Unless you changed your password manually, the first password shown will be the right one.  
+>> (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters.)  
 
 * KindleTool version
 

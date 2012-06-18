@@ -315,6 +315,8 @@ int kindle_print_help(const char *prog_name)
         "      \n"
         "  %s info <serialno>\n"
         "    Get the default root password\n"
+        "    Unless you changed your password manually, the first password shown will be the right one.\n"
+        "    (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters.)\n"
         "    \n"
         "  %s version\n"
         "    Show some info about this KindleTool build\n"
