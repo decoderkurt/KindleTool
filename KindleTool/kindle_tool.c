@@ -459,7 +459,7 @@ int kindle_info_main(int argc, char *argv[])
         fclose(temp);
         return -1;
     }
-    fprintf(stderr, "Root PW        %s%.*s\n", "fiona", 4, &md5[7]);
+    fprintf(stderr, "Root PW        %s%.*s        (or possibly %s%.*s)\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
     fclose(temp);
     return 0;
 }
