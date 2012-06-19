@@ -85,11 +85,8 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static void excluded_callback(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
-#if 0
-    fprintf(stderr, "Skipping original bundle/sig file '%s' to avoid duplicates/looping\n", archive_entry_pathname(entry));
-#else
+    // Skip original bundle/sig files to avoid duplicates
     fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
-#endif
     if(!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
@@ -129,8 +126,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     matching = archive_match_new();
     if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
-    // Exclude update*.dat too, to avoid ending up with multiple bundlefiles! (NOTE: Should we simply exclude *.dat ?)
-    if(archive_match_exclude_pattern(matching, "./update*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)
+    // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
+    if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
     entry = archive_entry_new();
