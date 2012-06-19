@@ -1133,15 +1133,31 @@ int kindle_create_main(int argc, char *argv[])
         if(i != info.num_devices - 1)
             fprintf(stderr, ", ");
     }
-    fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Optional: %hhu, Minor: %d, Magic 1: %d, Magic 2: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.optional, info.minor, info.magic_1, info.magic_2, info.num_meta, (info.num_meta ? " (" : "\n"));
-    // Loop over meta
-    for(i = 0; i < info.num_meta; i++)
+    // Don't print settings not applicable to our update type...
+    switch(info.version)
     {
-        fprintf(stderr, "%s", info.metastrings[i]);
-        if(i != info.num_meta - 1)
-            fprintf(stderr, "; ");
-        else
-            fprintf(stderr, ")\n");
+        case OTAUpdateV2:
+            fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                // Loop over meta
+                for(i = 0; i < info.num_meta; i++)
+                {
+                    fprintf(stderr, "%s", info.metastrings[i]);
+                    if(i != info.num_meta - 1)
+                        fprintf(stderr, "; ");
+                    else
+                        fprintf(stderr, ")\n");
+                }
+            break;
+        case OTAUpdate:
+            fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
+            break;
+        case RecoveryUpdate:
+            fprintf(stderr, ") Minor: %d, Magic 1: %d, Magic 2: %d\n", info.minor, info.magic_1, info.magic_2);
+            break;
+        case UnknownUpdate:
+        default:
+            fprintf(stderr, "Unknown update type, we shouldn't ever hit this!\n");
+            break;
     }
 
     // Create our package archive, sigfile & bundlefile included
