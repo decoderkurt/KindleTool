@@ -127,7 +127,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
     // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
-    if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)
+    if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
     entry = archive_entry_new();
@@ -1125,15 +1125,15 @@ int kindle_create_main(int argc, char *argv[])
     {
         case OTAUpdateV2:
             fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
-                // Loop over meta
-                for(i = 0; i < info.num_meta; i++)
-                {
-                    fprintf(stderr, "%s", info.metastrings[i]);
-                    if(i != info.num_meta - 1)
-                        fprintf(stderr, "; ");
-                    else
-                        fprintf(stderr, ")\n");
-                }
+            // Loop over meta
+            for(i = 0; i < info.num_meta; i++)
+            {
+                fprintf(stderr, "%s", info.metastrings[i]);
+                if(i != info.num_meta - 1)
+                    fprintf(stderr, "; ");
+                else
+                    fprintf(stderr, ")\n");
+            }
             break;
         case OTAUpdate:
             fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
