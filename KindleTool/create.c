@@ -87,6 +87,12 @@ static void excluded_callback(struct archive *a, void *_data __attribute__((unus
 {
     // Skip original bundle/sig files to avoid duplicates
     fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
+
+    // Ideally we'd be able to avoid excluding directories with this, but since we're a pathname matching callback,
+    // our entry is utterly empty *except* for the pathname, and t->descend in our archive hasn't been set yet,
+    // so we don't have any useful data to determine anything more, be it via can_descend or the entry...
+    // Cf. next_entry() @ libarchive/archive_read_disk_posix.c (~L#853)
+    // If I understand the code right, this would work if we were doing time or owner matching instead
     if(!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
