@@ -85,7 +85,11 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static void excluded_callback(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
+#if 0
     fprintf(stderr, "Skipping original bundle/sig file '%s' to avoid duplicates/looping\n", archive_entry_pathname(entry));
+#else
+    fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
+#endif
     if(!archive_read_disk_can_descend(a))
         return;
     archive_read_disk_descend(a);
@@ -121,12 +125,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     int sigfd;
     char *pathnamecpy = NULL;
 
-    // Exclude *.sig files, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
+    // Exclude *.sig files in a case insensitive way, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
     matching = archive_match_new();
-    if(archive_match_exclude_pattern(matching, "*\\.sig$") != ARCHIVE_OK)
+    if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
-    // Exclude *pdate*.dat too, to avoid ending up with multiple bundlefiles!
-    if(archive_match_exclude_pattern(matching, "*pdate*\\.dat$") != ARCHIVE_OK)
+    // Exclude update*.dat too, to avoid ending up with multiple bundlefiles! (NOTE: Should we simply exclude *.dat ?)
+    if(archive_match_exclude_pattern(matching, "./update*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)
         fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
     entry = archive_entry_new();
@@ -223,20 +227,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
-
-            // NOTE: We're already taking care of this via libarchive's pattern exclusion, but these are case insensitive, and can still catch something that might've slipped through... (But, granted, it's a bit overkill)
-            if(IS_SIG(pathname))
-            {
-                fprintf(stderr, "Hackishly skipping original sig file '%s' to avoid looping\n", pathname);
-                continue;
-            }
-
-            // Exclude bundlefiles that aren't our own, to avoid ending up with multiple bundlefiles...
-            if(IS_DAT(pathname) && dirty_bundlefile)
-            {
-                fprintf(stderr, "Hackishly skipping original bundlefile '%s' to avoid duplicates\n", pathname);
-                continue;
-            }
 
             archive_read_disk_descend(disk);
             // Print what we're adding
