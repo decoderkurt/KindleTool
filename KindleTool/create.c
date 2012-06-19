@@ -1156,7 +1156,7 @@ int kindle_create_main(int argc, char *argv[])
             break;
         case UnknownUpdate:
         default:
-            fprintf(stderr, "Unknown update type, we shouldn't ever hit this!\n");
+            fprintf(stderr, "\n\n!!!!\nUnknown update type, we shouldn't ever hit this!\n!!!!\n");
             break;
     }
 
