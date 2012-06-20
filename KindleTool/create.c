@@ -24,7 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
-    /* Taken from: http://stackoverflow.com/a/2054412/91422 */
+    // Taken from: http://stackoverflow.com/a/2054412/91422
     EVP_PKEY *pkey;
     EVP_MD_CTX ctx;
     unsigned char buffer[BUFFER_SIZE];
@@ -97,7 +97,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
     }
     else
     {
-        // Exclude *.sig files in a case insensitive way, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
+        // Exclude *.sig files in a case insensitive way, to avoid duplicates
         matching = archive_match_new();
         if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
@@ -167,7 +167,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
 // See kindle_tool.h for why we have to jump through hoops to differentiate clang from GCC...
 #if !defined(__clang__) && defined(__GNUC__) && GCC_VERSION < 40600
-    // Ugly dummy initialization to shutup stupid GCC < 4.6 (well, technically, it's right, but, still...)
+    // Ugly dummy initialization to shutup a stupid GCC < 4.6 warning
     disk_sig = archive_read_disk_new();
     archive_read_free(disk_sig);
 #endif
@@ -186,7 +186,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         // Don't apply the exclude list to our bundlefile... :)
         if(dirty_bundlefile)
         {
-            // Perform pattern matching (NOTE: We're not using archive_read_disk_set_matching because it does *pattern* matching too early to determine if we're a directory...)
+            // Perform pattern matching in a metadata filter to apply our exclude list to reguar files
+            // NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
             archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
         }
         archive_read_disk_set_standard_lookup(disk);
@@ -225,7 +226,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             archive_entry_copy_sourcepath(entry, sourcepath);
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
-            // NOTE: Err, except that we use the resolved path in sourcepath, and that's also what we use to read the file we actually put in the archive, so, err... :D
+            // NOTE: Err, except that we use the resolved path from realpath() in sourcepath, and that's also what we use to read the file we actually put in the archive, so... :D
             lstat(sourcepath, &st);
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if(r < ARCHIVE_OK)
@@ -238,7 +239,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // Fix the entry pathname of our bundlefile, right now it's a tempfile...
             if(!dirty_bundlefile)
             {
-                // We also need to fix our pathname var, since it's what used for status/error output, and more importantly, what's used to build the entry name of the sigfile
+                // We also need to fix our pathname var, since it's used for status/error output, and more importantly, to build the entry name of the sigfile
                 free(pathname);
                 pathname = strdup(INDEX_FILE_NAME);
                 archive_entry_copy_pathname(entry, pathname);
@@ -256,7 +257,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 archive_entry_set_perm(entry, 0644);
 
             archive_read_disk_descend(disk);
-            // Print what we're adding
+            // Print what we're adding, ala bsdtar
             fprintf(stderr, "a %s\n", pathname);
             r = archive_write_header(a, entry);
             if(r < ARCHIVE_OK)
@@ -404,7 +405,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
                     // And then, write it to the archive...
                     archive_read_disk_descend(disk_sig);
-                    // Print what we're adding
+                    // Print what we're adding, bsdtar style
                     fprintf(stderr, "a %s\n", signame);
                     r = archive_write_header(a, entry_sig);
                     if(r < ARCHIVE_OK)
@@ -471,7 +472,7 @@ cleanup:
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
-    // And the big stuff...
+    // The big stuff, too...
     if(dirty_disk_sig)
     {
         archive_read_close(disk_sig);
@@ -639,7 +640,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         hindex += sizeof(uint8_t);
         memcpy(&header[hindex], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
         hindex += sizeof(uint8_t);
-        md((unsigned char *)info->metastrings[i], str_len); // Obfuscate meta string (FIXME: Should this really be munged? I've never seen an update with meta strings in the wild...)
+        md((unsigned char *)info->metastrings[i], str_len); // Obfuscate meta string (FIXME: Should this really be munged? I don't have any reference, I've never seen an update with meta strings in the wild...)
         strncpy((char *)&header[hindex], info->metastrings[i], str_len);
         hindex += str_len;
     }
@@ -1032,7 +1033,7 @@ int kindle_create_main(int argc, char *argv[])
             }
             else
             {
-                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us (Ref: http://stackoverflow.com/questions/1182534/#1182649)
+                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us (Cf. http://stackoverflow.com/questions/1182534/#1182649)
                 input_list = realloc(input_list, ++input_index * sizeof(char *));
                 input_list[input_index - 1] = strdup(argv[optind++]);
             }
@@ -1044,7 +1045,6 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
 
-    // Build the package archive name based on the output name.
     // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
     if(output_filename != NULL)
     {
@@ -1094,7 +1094,7 @@ int kindle_create_main(int argc, char *argv[])
     {
         if(IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
-            // NOTE: There's no real check beside the file extension...
+            // NOTE: There's no real check besides the file extension...
             skip_archive = 1;
             // Use it as our tarball...
             tarball_filename = strdup(input_list[0]);
@@ -1193,11 +1193,11 @@ int kindle_create_main(int argc, char *argv[])
             unlink(bundle_filename);
             goto do_error;
         }
-        // Apparently, we opened it, so we need to close it ;)
+        // We opened it, we need to close it ;)
         close(tarball_fd);
     }
 
-    // And finally, build our package :).
+    // And finally, build our package :)
     if((input = fopen(tarball_filename, "rb")) == NULL)
     {
         fprintf(stderr, "Cannot read input tarball '%s'.\n", tarball_filename);

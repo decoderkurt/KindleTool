@@ -111,7 +111,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
     for(hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t))
     {
         device = *(uint16_t *)&data[hindex];
-        // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id
+        // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
         if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
         else
@@ -453,7 +453,7 @@ int kindle_convert_main(int argc, char *argv[])
         return 0;
 }
 
-/* libarchive helper funcs, more or less verbatim from the examples/doc */
+// libarchive helper funcs, more or less verbatim from the examples/doc
 int libarchive_copy_data(struct archive *ar, struct archive *aw)
 {
     int r;
@@ -489,7 +489,7 @@ int libarchive_extract(const char *filename, const char *prefix)
     size_t len;
     int dirty_archive = 0;
 
-    /* Select which attributes we want to restore. */
+    // Select which attributes we want to restore.
     flags = ARCHIVE_EXTRACT_TIME;
     // Don't preserve permissions, as most files in kindle packages will be owned by root, and if the perms are effed up, it gets annoying.
     // We could also just rewrite every entry in the archive with sane permissions, but that seems a bit overkill.
@@ -526,10 +526,10 @@ int libarchive_extract(const char *filename, const char *prefix)
         if(r < ARCHIVE_WARN)
             goto cleanup;
 
-        // Print what we're extracting
+        // Print what we're extracting, like bsdtar
         path = archive_entry_pathname(entry);
         fprintf(stderr, "x %s\n", path);
-        // Rewrite entry's pathname to extract in our specified directory
+        // Rewrite the entry's pathname to extract in the right output directory
         len = strlen(prefix) + 1 + strlen(path) + 1;
         fixed_path = malloc(len);
         snprintf(fixed_path, len, "%s/%s", prefix, path);
@@ -564,7 +564,7 @@ int libarchive_extract(const char *filename, const char *prefix)
     }
     archive_read_close(a);
     archive_read_free(a);
-    //dirty_archive = 0;
+    //dirty_archive = 0;        // Make clang's sa happy
     archive_write_close(ext);
     archive_write_free(ext);
 
@@ -617,7 +617,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
     // We always create them in /tmp, and rely on the OS implementation to handle the umask,
-    // it'll cost us less LOC that way since I don't really want to introduce a dedicated util function for tempfile handling...
+    // it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
     tgz_fd = mkstemp(tgz_filename);
     if(tgz_fd == -1)
     {

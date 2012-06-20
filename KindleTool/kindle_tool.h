@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <libgen.h>
 
-// Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3
+// Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3.0.3
 #if ARCHIVE_VERSION_NUMBER < 3000003
 #error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #endif
@@ -83,7 +83,7 @@
 #define KT_USERATHOST "someone@somewhere"
 #endif
 
-// GCC version checks... (We check !clang instead of GCC, because Clang 'helpfully' defines __GNUC__ ...)
+// GCC version checks... (We check !clang in addition to GCC, because Clang 'helpfully' defines __GNUC__ ...)
 #if !defined(__clang__) && defined(__GNUC__)
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
