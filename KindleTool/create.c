@@ -20,7 +20,7 @@
 
 #include "kindle_tool.h"
 
-static void excluded_callback(struct archive *, void *, struct archive_entry *);
+static int metadata_filter(struct archive *, void *, struct archive_entry *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -83,19 +83,39 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 }
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
-static void excluded_callback(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
+static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
-    // Skip original bundle/sig files to avoid duplicates
-    fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
+    struct archive *matching;
 
-    // Ideally we'd be able to avoid excluding directories with this, but since we're a pathname matching callback,
-    // our entry is utterly empty *except* for the pathname, and t->descend in our archive hasn't been set yet,
-    // so we don't have any useful data to determine anything more, be it via can_descend or the entry...
-    // Cf. next_entry() @ libarchive/archive_read_disk_posix.c (~L#853)
-    // If I understand the code right, this would work if we were doing time or owner matching instead
-    if(!archive_read_disk_can_descend(a))
-        return;
-    archive_read_disk_descend(a);
+    // Don't exclude directories!
+    if(archive_read_disk_can_descend(a))
+    {
+        archive_read_disk_descend(a);
+        return 1;
+    }
+    else
+    {
+        // Exclude *.sig files in a case insensitive way, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
+        matching = archive_match_new();
+        if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+        // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
+        if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+
+        if(archive_match_path_excluded(matching, entry) == 1)
+        {
+            // Skip original bundle/sig files to avoid duplicates
+            fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
+            archive_match_free(matching);
+            return 0;
+        }
+        else
+        {
+            archive_match_free(matching);
+            return 1;
+        }
+    }
 }
 
 int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file, FILE *bundlefile)
@@ -105,7 +125,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     struct archive *disk_sig;
     struct archive_entry *entry;
     struct archive_entry *entry_sig;
-    struct archive *matching;
     struct stat st;
     struct stat st_sig;
     int r;
@@ -127,14 +146,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char sigabsolutepath[] = "/tmp/kindletool_create_sig_XXXXXX";
     int sigfd;
     char *pathnamecpy = NULL;
-
-    // Exclude *.sig files in a case insensitive way, to avoid infinite loops and breakage, because we'll *always* regenerate sigfiles ourselves in a slightly hackish way
-    matching = archive_match_new();
-    if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
-        fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
-    // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
-    if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
-        fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
     entry = archive_entry_new();
     entry_sig = archive_entry_new();
@@ -164,7 +175,10 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
         // Don't apply the exclude list to our bundlefile... :)
         if(dirty_bundlefile)
-            archive_read_disk_set_matching(disk, matching, excluded_callback, NULL);
+        {
+            // Perform pattern matching (We're not using archive_read_disk_set_matching because it does *pattern* matching too early to determine if we're a directory...)
+            archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
+        }
         archive_read_disk_set_standard_lookup(disk);
 
         r = archive_read_disk_open(disk, filename[i]);
@@ -433,8 +447,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
 
-    archive_match_free(matching);
-
     return 0;
 
 cleanup:
@@ -449,7 +461,6 @@ cleanup:
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
     archive_entry_free(entry_sig);
-    archive_match_free(matching);
     // And the big stuff...
     if(dirty_disk_sig)
     {
