@@ -86,10 +86,12 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
     struct archive *matching;
+    int r;
 
     // Don't exclude directories!
     if(archive_read_disk_can_descend(a))
     {
+        // It's a directory, don't even try to perform pattern matching, just walk it
         archive_read_disk_descend(a);
         return 1;
     }
@@ -103,7 +105,13 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
 
-        if(archive_match_path_excluded(matching, entry) == 1)
+        r = archive_match_path_excluded(matching, entry);
+        if(r < 0)
+        {
+            fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(matching));
+            return 0;
+        }
+        if(r)
         {
             // Skip original bundle/sig files to avoid duplicates
             fprintf(stderr, "! %s\n", archive_entry_pathname(entry));
@@ -112,6 +120,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         }
         else
         {
+            // We're a nice, proper file, carry on ;)
             archive_match_free(matching);
             return 1;
         }
@@ -176,7 +185,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         // Don't apply the exclude list to our bundlefile... :)
         if(dirty_bundlefile)
         {
-            // Perform pattern matching (We're not using archive_read_disk_set_matching because it does *pattern* matching too early to determine if we're a directory...)
+            // Perform pattern matching (NOTE: We're not using archive_read_disk_set_matching because it does *pattern* matching too early to determine if we're a directory...)
             archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
         }
         archive_read_disk_set_standard_lookup(disk);
@@ -813,6 +822,7 @@ int kindle_create_main(int argc, char *argv[])
     int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
+    int r;
 
     // defaults
     output = stdout;
@@ -1048,8 +1058,13 @@ int kindle_create_main(int argc, char *argv[])
 
             archive_entry_copy_pathname(entry, output_filename);
 
-            if(archive_match_path_excluded(match, entry) != 1)
+            r = archive_match_path_excluded(match, entry);
+            if(r != 1)
             {
+                if(r < 0)
+                {
+                    fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(match));
+                }
                 fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n", output_filename);
                 archive_entry_free(entry);
                 archive_match_free(match);
