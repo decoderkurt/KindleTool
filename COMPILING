@@ -5,7 +5,8 @@ Basically, you'll need a working toolchain, OpenSSL, and libarchive >= 3.0.3 (wi
 If you don't want to bother, static binaries are available here: http://www.mobileread.com/forums/showpost.php?p=2074293&postcount=187
 
 To compile for Linux:
-	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev (NB: Some distro use the zlib1g name for zlib...)
+	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev
+	1.5) Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and libarchive12, NOT libarchive1
 	2) Compile using "make" in the tool's directory
 
 Fellow Gentoo users, there's a portage overlay in the gentoo folder, enjoy ;).
