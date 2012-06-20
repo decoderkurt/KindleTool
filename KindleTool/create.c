@@ -109,6 +109,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         if(r < 0)
         {
             fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(matching));
+            archive_match_free(matching);
             return 0;
         }
         if(r)
