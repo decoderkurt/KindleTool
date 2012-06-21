@@ -13,6 +13,35 @@ UNAME="$(uname -s)"
 COMPILE_BY="$(whoami | sed 's/\\/\\\\/')"
 COMPILE_HOST="$(hostname)"
 
+# On Linux, check libarchive's version via pkgconfig, to try to avoid the Debian/Ubuntu soname mess...
+if [[ "${UNAME}" == "Linux" ]] ; then
+	if pkg-config --atleast-version=3.0.3 libarchive ; then
+		HAS_PC_LIBARCHIVE="true"
+		PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
+		PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
+	else
+		HAS_PC_LIBARCHIVE="false"
+		PC_LIBARCHIVE_CPPFLAGS=""
+		PC_LIBARCHIVE_LDFLAGS=""
+		echo "**!** PkgConfig didn't find libarchive >= 3.0.3, don't be suprised if the build fails! **!**"
+	fi
+
+	# Also check the distro name, we'll use pkg-config's cflags in the Makefile in every distro out there except Gentoo,
+	# because apparently, the soname update from libarchive-2 to libarchive-3 is a huge mess on Debian/Ubuntu...
+	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default in every distro,
+	# but I only care about Gentoo (for now).
+	if [[ -f /etc/lsb-release ]] ; then
+		. /etc/lsb-release
+	else
+		if [[ -f /etc/gentoo-release ]] ; then
+			# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
+			DISTRIB_ID="Gentoo"
+		else
+			DISTRIB_ID="Unknown"
+		fi
+	fi
+fi
+
 # If we don't have git installed (Why, oh why would you do that? :D), just use the fallback
 if ! git help &>/dev/null ; then
 	echo "${FALLBACK_VER}" > VERSION
@@ -81,6 +110,12 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
 	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
 	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
+	if [[ "${UNAME}" == "Linux" ]] ; then
+		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
+		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
+		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
+		echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
+	fi
 fi
 
 # Build a proper VERSION file (PMS)

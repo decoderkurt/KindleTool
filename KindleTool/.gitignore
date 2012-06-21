@@ -9,3 +9,5 @@ Kindle/
 version-inc
 # Ignore lowercase (Linux) manpage
 kindletool.1
+# Ignore my Test directory
+Test/

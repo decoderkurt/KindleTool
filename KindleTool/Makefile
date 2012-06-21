@@ -102,6 +102,16 @@ ifndef LDFLAGS
 	endif
 endif
 
+# If we're on Linux, not on Gentoo, and pkgconfig detected libarchive >= 3.0.3, use its CPP/LDFLAGS for include & lib searchpath (Hopefully fixes the libarchive-dev vs libarchive12 mess on Debian/Ubuntu...)
+ifeq "$(OSTYPE)" "Linux"
+	ifneq "$(DISTRIB_ID)" "Gentoo"
+		ifeq "$(HAS_PC_LIBARCHIVE)" "true"
+			CPPFLAGS+=$(PC_LIBARCHIVE_CPPFLAGS)
+			LDFLAGS+=$(PC_LIBARCHIVE_LDFLAGS)
+		endif
+	endif
+endif
+
 # Let's say we want to default to building stuff that will work on OS X 10.6/10.7... If I get how this stuff works, that should do it...
 #ifeq "$(OSTYPE)" "Darwin"
 #	# Check that we don't mess with MacPorts, which defaults to the OS version... (I'm not sure MacPorts even sets it for us, since we're not using autotools...)
