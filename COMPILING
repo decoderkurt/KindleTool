@@ -6,7 +6,7 @@ If you don't want to bother, static binaries are available here: http://www.mobi
 
 To compile for Linux:
 	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev
-	1.5) Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and libarchive12, NOT libarchive1!
+	1.5) Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and libarchive12
 	2) Compile using "make" in the tool's directory
 	2.5) If GCC throws a fit about libarchive, or if it fails to link with a bunch of undefined references to archive_* symbols, your libarchive version is too old.
 		You'll have to build it manually (get the latest 3.x release from http://libarchive.github.com/).

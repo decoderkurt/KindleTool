@@ -28,9 +28,9 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
-	# Also check the distro name, we'll use pkg-config's cflags in the Makefile in every distro out there except Gentoo,
-	# because apparently, the soname update from libarchive-2 to libarchive-3 is a huge mess on Debian/Ubuntu...
-	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default in every distro,
+	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
+	# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
+	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
 	# but I only care about Gentoo (for now).
 	if [[ -f /etc/lsb-release ]] ; then
 		. /etc/lsb-release

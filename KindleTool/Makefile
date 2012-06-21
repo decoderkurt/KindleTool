@@ -102,7 +102,8 @@ ifndef LDFLAGS
 	endif
 endif
 
-# If we're on Linux, not on Gentoo, and pkgconfig detected libarchive >= 3.0.3, use its CPP/LDFLAGS for include & lib searchpath (Hopefully fixes the libarchive-dev vs libarchive12 mess on Debian/Ubuntu...)
+# If we're on Linux, not on Gentoo, and pkgconfig detected libarchive >= 3.0.3, use its CPP/LDFLAGS for include & lib searchpath
+# That should help us link against the correct libarchive version on Debian/Ubuntu, where libarchive-2 and libarchive-3 coexist with a single -dev package
 ifeq "$(OSTYPE)" "Linux"
 	ifneq "$(DISTRIB_ID)" "Gentoo"
 		ifeq "$(HAS_PC_LIBARCHIVE)" "true"
