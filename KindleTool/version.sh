@@ -31,7 +31,7 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
 	# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
 	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
-	# but I only care about Gentoo (for now).
+	# but the only distro on which the Makefile expects this to be accurate is Gentoo, so that should cover it ;).
 	if [[ -f /etc/lsb-release ]] ; then
 		. /etc/lsb-release
 	else
