@@ -1,3 +1,7 @@
+# Toplevel Makefile, all the fun stuff happens in KindleTool/Makefile ;)
+
+default: all
+
 all:
 	$(MAKE) -C KindleTool all
 

@@ -8,6 +8,7 @@ To compile for Linux:
 	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev
 	1.5) Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and libarchive12
 	2) Compile using "make" in the tool's directory
+	3) If you want to install it in /usr/local, run "make install". (I'd recommend using this through the checkinstall tool on Debian/Ubuntu).
 	2.5) If GCC throws a fit about libarchive, or if it fails to link with a bunch of undefined references to archive_* symbols, your libarchive version is too old.
 		You'll have to build it manually (get the latest 3.x release from http://libarchive.github.com/).
 		See https://github.com/NiLuJe/KindleTool/issues/1 for more details.
@@ -29,3 +30,4 @@ To compile for Windows:
 		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
 	4.2) If you want to download it via wget from the Cygwin shell, you'll have to install wget/curl, and jump through a few hoops to setup the SSL CA certs... (google is your friend).
 	5) Compile using "make" in the tool's directory
+	6) Install it by running "make install"

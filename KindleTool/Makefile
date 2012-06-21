@@ -13,12 +13,14 @@ SRCS=kindle_tool.c create.c convert.c
 
 default: all
 
-# OS & Version handling (taken from the git makefiles)
+# OS, version, pkgconfig & misc stuff handling (Heavily inspired from git's Makefiles ;))
+# It's basically our fake automated configure script, and it uses bash features, so override the default shell!
 SHELL:=/bin/bash
 version-inc:
 	@$(SHELL) ./version.sh
 -include version-inc
 
+# Try to use sane defaults for DESTDIR/PREFIX, while still playing nice with PMS
 ifndef DESTDIR
 	PREFIX:=/.
 else

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Build a make include with our version tag, from git & gcc (Heavily inspired from git's GIT-VERSION-GEN)
+# Build a make include with, among other things, our version tag, straight from git (Heavily inspired from git's GIT-VERSION-GEN)
 VER_FILE="version-inc"
 
 # Fallback version
@@ -13,7 +13,7 @@ UNAME="$(uname -s)"
 COMPILE_BY="$(whoami | sed 's/\\/\\\\/')"
 COMPILE_HOST="$(hostname)"
 
-# On Linux, check libarchive's version via pkgconfig, to try to avoid the Debian/Ubuntu soname mess...
+# On Linux, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
 if [[ "${UNAME}" == "Linux" ]] ; then
 	if pkg-config --atleast-version=3.0.3 libarchive ; then
 		HAS_PC_LIBARCHIVE="true"
@@ -56,7 +56,7 @@ if [[ -f "VERSION" ]] ; then
 elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 	# Get a properly formatted version string from our latest tag
 	#VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
-	# Or from the first commit (Provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
+	# Or from the first commit (provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
 	VER="$(git describe --match TAIL 2>/dev/null)"
 	case "$VER" in
 		v[0-9]*)
@@ -97,7 +97,7 @@ fi
 
 # Get current version from include file
 if [[ -r "${VER_FILE}" ]] ; then
-	VER_CURRENT="$(<${VER_FILE})"
+	VER_CURRENT="$(cat ${VER_FILE} | head -n 1)"
 	# Strip var assignment
 	VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 else
@@ -108,7 +108,6 @@ fi
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo >&2 "KT_VERSION = ${VER}"
 	echo "KT_VERSION = ${VER}" > ${VER_FILE}
-	#echo >&2 "OSTYPE = ${UNAME}"
 	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
 	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
 	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
