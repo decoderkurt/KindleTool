@@ -4,21 +4,17 @@
 
 EAPI="4"
 
-inherit base git-2
+inherit base vcs-snapshot
 
 MY_PN="KindleTool"
 
 DESCRIPTION="Tool for creating/extracting Kindle updates and more"
-#HOMEPAGE="https://github.com/yifanlu/${MY_PN}"
 HOMEPAGE="https://github.com/NiLuJe/${MY_PN}"
-SRC_URI=""
-
-#EGIT_REPO_URI="https://github.com/yifanlu/${MY_PN}.git"
-EGIT_REPO_URI="https://github.com/NiLuJe/${MY_PN}.git"
+SRC_URI="https://github.com/NiLuJe/${MY_PN}/tarball/v${PV} -> ${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86 ~x64-macos ~x86-macos ~x86-winnt"
+KEYWORDS="amd64 arm x86 x64-macos x86-macos x86-winnt"
 IUSE="debug"
 
 RDEPEND=""
@@ -27,8 +23,6 @@ DEPEND="${RDEPEND}
 	app-arch/libarchive[zlib]"
 
 DOCS=( "README.md" )
-
-S="${WORKDIR}/${MY_PN}"
 
 src_configure() {
 	einfo "Nothing to configure."
