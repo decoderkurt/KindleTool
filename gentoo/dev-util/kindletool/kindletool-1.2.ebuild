@@ -24,14 +24,10 @@ DEPEND="${RDEPEND}
 
 DOCS=( "README.md" )
 
-src_configure() {
-	einfo "Nothing to configure."
-}
-
 src_compile() {
 	if use debug; then
-		emake DEBUG="true" || die "failed to build ${PN}"
+		emake DEBUG="true"
 	else
-		emake || die "failed to build ${PN}"
+		emake
 	fi
 }
