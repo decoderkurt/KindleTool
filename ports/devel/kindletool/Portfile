@@ -3,7 +3,7 @@
 PortSystem 1.0
 
 name             kindletool
-version          0.5
+version          1.3
 categories       devel
 license          GPL-3+
 maintainers      niluje
