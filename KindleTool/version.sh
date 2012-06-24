@@ -11,7 +11,8 @@ UNAME="$(uname -s)"
 
 # Used to add a Linux like user@host compile-time tag
 COMPILE_BY="$(whoami | sed 's/\\/\\\\/')"
-COMPILE_HOST="$(hostname)"
+# Use short hostname, OS X defaults to fqdn...
+COMPILE_HOST="$(hostname -s)"
 
 # On Linux, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
 if [[ "${UNAME}" == "Linux" ]] ; then
