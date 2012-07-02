@@ -46,9 +46,15 @@ else
 	CPPFLAGS?=-Iincludes
 endif
 LIBS=-larchive -lz -lcrypto
-# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
+
 ifeq "$(OSTYPE)" "Linux"
-	LIBS+=-ldl
+	ifeq "$(OSTARGET)" "MinGW"
+		# Needed for linking statically against OpenSSL on MinGW.
+		LIBS+=-lgdi32
+	else
+		# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
+		LIBS+=-ldl
+	endif
 endif
 # If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)
 #ifeq "$(OSTYPE)" "Linux"
