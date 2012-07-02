@@ -590,6 +590,9 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *bin_input;
     int tgz_fd;
     FILE *tgz_output;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    int err;
+#endif
 
     // Skip command
     argv++;
@@ -618,7 +621,20 @@ int kindle_extract_main(int argc, char *argv[])
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
     // We always create them in /tmp, and rely on the OS implementation to handle the umask,
     // it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
+    // NOTE: Probably not as race-proof on MinGW, according to libarchive...
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    // Inspired from libgit2's Posix emulation layer (https://github.com/libgit2/libgit2)
+    err = _mkstemp_s(tgz_filename, strlen(tgz_filename) + 1);
+    if(err != 0)
+    {
+        fprintf(stderr, "Couldn't create temporary file template.\n");
+        fclose(bin_input);
+        return -1;
+    }
+    tgz_fd = open(tgz_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
     tgz_fd = mkstemp(tgz_filename);
+#endif
     if(tgz_fd == -1)
     {
         fprintf(stderr, "Couldn't open temporary file.\n");

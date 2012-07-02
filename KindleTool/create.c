@@ -306,7 +306,18 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 // Create our sigfile in a tempfile
                 // We have to make sure mkstemp's template is reset first...
                 strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                err = _mkstemp_s(sigabsolutepath, strlen(sigabsolutepath) + 1);
+                if(err != 0)
+                {
+                    fprintf(stderr, "Couldn't create temporary file template.\n");
+                    fclose(file);
+                    goto do_error;
+                }
+                sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
                 sigfd = mkstemp(sigabsolutepath);
+#endif
                 if(sigfd == -1)
                 {
                     fprintf(stderr, "Couldn't open temporary signature file.\n");
@@ -825,6 +836,9 @@ int kindle_create_main(int argc, char *argv[])
     struct archive_entry *entry;
     struct archive *match;
     int r;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    int err;
+#endif
 
     // defaults
     output = stdout;
@@ -1113,7 +1127,17 @@ int kindle_create_main(int argc, char *argv[])
     {
         // We need a proper mkstemp template
         tarball_filename = strdup("/tmp/kindletool_create_tarball_XXXXXX");
+#if defined(_WIN32) && !defined(__CYGWIN__)
+        err = _mkstemp_s(tarball_filename, strlen(tarball_filename) + 1);
+        if(err != 0)
+        {
+            fprintf(stderr, "Couldn't create temporary file template.\n");
+            goto do_error;
+        }
+        tarball_fd = open(tarball_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
         tarball_fd = mkstemp(tarball_filename);
+#endif
         if(tarball_fd == -1)
         {
             fprintf(stderr, "Couldn't open temporary tarball file.\n");
@@ -1122,7 +1146,19 @@ int kindle_create_main(int argc, char *argv[])
 
         // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
         // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
+#if defined(_WIN32) && !defined(__CYGWIN__)
+        err = _mkstemp_s(bundle_filename, strlen(bundle_filename) + 1);
+        if(err != 0)
+        {
+            fprintf(stderr, "Couldn't create temporary file template.\n");
+            close(tarball_fd);
+            unlink(tarball_filename);
+            goto do_error;
+        }
+        bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
         bundle_fd = mkstemp(bundle_filename);
+#endif
         if(bundle_fd == -1)
         {
             fprintf(stderr, "Couldn't open temporary file.\n");
