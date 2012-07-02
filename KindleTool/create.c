@@ -156,6 +156,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char sigabsolutepath[] = "/tmp/kindletool_create_sig_XXXXXX";
     int sigfd;
     char *pathnamecpy = NULL;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    int err;
+#endif
 
     entry = archive_entry_new();
     entry_sig = archive_entry_new();
@@ -312,7 +315,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, "Couldn't create temporary file template.\n");
                     fclose(file);
-                    goto do_error;
+                    goto cleanup;
                 }
                 sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
 #else
