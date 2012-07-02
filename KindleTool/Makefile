@@ -157,8 +157,13 @@ endif
 
 all: outdir kindletool kindletool.1
 
+ifeq "$(OSTARGET)" "MinGW"
+kindletool.exe: version-inc $(OBJS)
+	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
+else
 kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
+endif
 
 strip: all
 	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool
