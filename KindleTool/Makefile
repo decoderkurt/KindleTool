@@ -95,6 +95,12 @@ KT_CFLAGS+=-Wmissing-prototypes
 KT_CFLAGS+=-Wcast-qual
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+# Get a printf function family with GNU extensions support on MinGW...
+ifeq "$(OSTYPE)" "Linux"
+	ifeq "$(OSTARGET)" "MinGW"
+		KT_CFLAGS+=-D_GNU_SOURCE
+	endif
+endif
 KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 # Add a user@host build tag, unless explicitly forbidden
 ifndef KT_NO_USERATHOST_TAG
