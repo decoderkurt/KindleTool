@@ -227,7 +227,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
             // NOTE: Err, except that we use the resolved path from realpath() in sourcepath, and that's also what we use to read the file we actually put in the archive, so... :D
+#if defined(_WIN32) && !defined(__CYGWIN__)
+            // Use a 64-bit stat on MinGW, to avoid issues with libarchive
+            _stati64(sourcepath, &st);
+#else
             lstat(sourcepath, &st);
+#endif
             r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
             if(r < ARCHIVE_OK)
                 fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
@@ -398,7 +403,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     // Get some basic entry fields from stat
                     archive_entry_copy_sourcepath(entry_sig, sigabsolutepath);
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                    _stati64(sigabsolutepath, &st_sig);
+#else
                     lstat(sigabsolutepath, &st_sig);
+#endif
                     r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
                     if(r < ARCHIVE_OK)
                         fprintf(stderr, "archive_read_disk_entry_from_file() for sig failed: %s\n", archive_error_string(disk_sig));
