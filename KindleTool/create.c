@@ -245,6 +245,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             sourcepath = _fullpath(resolved_path, pathname, _MAX_PATH);
             // Make it use pretty forward slashes to make fopen() happy :)
             path_win32_to_posix(sourcepath);
+            // FIXME: Kill debug
+            sourcepath += 2;    // Kill Drive letter :?
+            fprintf(stderr, "pathname: %s | sourcepath: %s\n", pathname, sourcepath);
 #else
             sourcepath = realpath(pathname, resolved_path);
 #endif
@@ -298,7 +301,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
             if(r > ARCHIVE_FAILED)
             {
+                // FIXME: Ah, turns out that doesn't work either on MinGW ;D
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
+                fprintf(stderr, "fd %d for %s\n", fd, archive_entry_sourcepath(entry));       // FIXME: Kill debug
                 len = read(fd, buff, sizeof(buff));
                 while(len > 0)
                 {
@@ -311,10 +316,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(S_ISREG(st.st_mode))
             {
+                // FIXME: Cannot open a file already open on Windows (we get a very helpful: permission denied). But who's holding it open? We just happily open & closed the exact same file :?
                 if((file = fopen(sourcepath, "rb")) == NULL)
                 {
                     // FIXME: Remove debug
                     fprintf(stderr, "Cannot open '%s' (%s) for reading!\n", pathname, sourcepath);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                    fprintf(stderr, "Because: %s\n", strerror(errno));
+#endif
                     goto cleanup;
                 }
                 // Don't hash our bundlefile
