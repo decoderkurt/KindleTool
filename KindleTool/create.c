@@ -82,6 +82,20 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     return 0;
 }
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+static void path_win32_to_posix(char *);
+// \ => / in paths on Windows, to make fopen() happy with _fullpath() output
+static void path_win32_to_posix(char *path)
+{
+    while(*path)
+    {
+        if(*path == '\\')
+            *path = '/';
+        path++;
+    }
+}
+#endif
+
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
@@ -229,6 +243,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 #if defined(_WIN32) && !defined(__CYGWIN__)
             // Use _fullpath() instead of realpath() on MinGW
             sourcepath = _fullpath(resolved_path, pathname, _MAX_PATH);
+            // Make it use pretty forward slashes to make fopen() happy :)
+            path_win32_to_posix(sourcepath);
 #else
             sourcepath = realpath(pathname, resolved_path);
 #endif
@@ -1202,7 +1218,7 @@ int kindle_create_main(int argc, char *argv[])
             unlink(tarball_filename);
             goto do_error;
         }
-        if((bundlefile = fdopen(bundle_fd, "w+")) == NULL)
+        if((bundlefile = fdopen(bundle_fd, "wb+")) == NULL)
         {
             fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
             close(tarball_fd);

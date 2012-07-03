@@ -494,8 +494,8 @@ int main(int argc, char *argv[])
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
     // Set binary mode properly on MingW, MSVCRT craps out when freopen'ing NULL ;)
-    _setmode(fileno(stdin), _O_BINARY);
-    _setmode(fileno(stdout), _O_BINARY);
+    _setmode(_fileno(stdin), _O_BINARY);
+    _setmode(_fileno(stdout), _O_BINARY);
 #else
     if(freopen(NULL, "rb", stdin) == NULL)
     {
