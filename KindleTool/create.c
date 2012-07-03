@@ -301,7 +301,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
             if(r > ARCHIVE_FAILED)
             {
-                // FIXME: Ah, turns out that doesn't work either on MinGW ;D
+                // FIXME: Can't open a file that's still open on Windows... Will have to do this the proper way, like bsdtar... (cf. tar/write.c)
                 fd = open(archive_entry_sourcepath(entry), O_RDONLY);
                 fprintf(stderr, "fd %d for %s\n", fd, archive_entry_sourcepath(entry));       // FIXME: Kill debug
                 len = read(fd, buff, sizeof(buff));
@@ -316,7 +316,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(S_ISREG(st.st_mode))
             {
-                // FIXME: Cannot open a file already open on Windows (we get a very helpful: permission denied). But who's holding it open? We just happily open & closed the exact same file :?
+                // FIXME: Cannot open a file already open on Windows (we get a very helpful: permission denied). Still open through archive_read_disk_open... Gonna need to rethink this ;/
                 if((file = fopen(sourcepath, "rb")) == NULL)
                 {
                     // FIXME: Remove debug
