@@ -585,7 +585,12 @@ cleanup:
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    // FIXME: This is crappy, because we need Administrator rights to write in /, but tmpfile probably (according to libarchive) does the same anyway...
+    char tgz_filename[] = "/kindletool_extract_tgz_XXXXXX";
+#else
     char tgz_filename[] = "/tmp/kindletool_extract_tgz_XXXXXX";
+#endif
     char *output_dir;
     FILE *bin_input;
     int tgz_fd;

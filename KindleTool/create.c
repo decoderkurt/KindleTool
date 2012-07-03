@@ -153,7 +153,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char *sourcepath = NULL;
     size_t pathlen;
     char *signame = NULL;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    char sigabsolutepath[] = "/kindletool_create_sig_XXXXXX";
+#else
     char sigabsolutepath[] = "/tmp/kindletool_create_sig_XXXXXX";
+#endif
     int sigfd;
     char *pathnamecpy = NULL;
 
@@ -315,7 +319,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 strncat(signame, ".sig", 4);
                 // Create our sigfile in a tempfile
                 // We have to make sure mkstemp's template is reset first...
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                strcpy(sigabsolutepath, "/kindletool_create_sig_XXXXXX");
+#else
                 strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
+#endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #if defined(_MSC_VER)
                 if(_mktemp_s(sigabsolutepath, strlen(sigabsolutepath) + 1) != 0)
@@ -842,7 +850,11 @@ int kindle_create_main(int argc, char *argv[])
     char *output_filename = NULL;
     char **input_list = NULL;
     int input_index = 0;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    char bundle_filename[] = "/kindletool_create_bundlefile_XXXXXX";
+#else
     char bundle_filename[] = "/tmp/kindletool_create_bundlefile_XXXXXX";
+#endif
     int bundle_fd = -1;
     FILE *bundlefile = NULL;
     char *tarball_filename = NULL;
@@ -1140,7 +1152,11 @@ int kindle_create_main(int argc, char *argv[])
     if(!skip_archive)
     {
         // We need a proper mkstemp template
+#if defined(_WIN32) && !defined(__CYGWIN__)
+        tarball_filename = strdup("/kindletool_create_tarball_XXXXXX");
+#else
         tarball_filename = strdup("/tmp/kindletool_create_tarball_XXXXXX");
+#endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #if defined(_MSC_VER)
         if(_mktemp_s(tarball_filename, strlen(tarball_filename) + 1) != 0)
