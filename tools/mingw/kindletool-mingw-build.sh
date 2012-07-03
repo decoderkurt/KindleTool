@@ -128,10 +128,10 @@ if [[ ! -d "zlib-1.2.7" ]] ; then
 	patch -p1 < ../../../KindleTool/tools/mingw/zlib-1.2.7-mingw-makefile-fix.patch
 	make -f win32/Makefile.gcc
 	mkdir -p ../include ../bin ../lib
-	cp -v zlib1.dll ../bin
+	#cp -v zlib1.dll ../bin
 	cp -v zconf.h zlib.h ../include
 	cp -v libz.a ../lib
-	cp -v libz.dll.a ../lib
+	#cp -v libz.dll.a ../lib
 	cd ..
 fi
 
