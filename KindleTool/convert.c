@@ -626,11 +626,7 @@ int kindle_extract_main(int argc, char *argv[])
     // NOTE: Probably not as race-proof on MinGW, according to libarchive...
 #if defined(_WIN32) && !defined(__CYGWIN__)
     // Inspired from libgit2's Posix emulation layer (https://github.com/libgit2/libgit2)
-#if defined(_MSC_VER)
-    if(_mktemp_s(tgz_filename, strlen(tgz_filename) + 1) != 0)
-#else
     if(_mktemp(tgz_filename) == NULL)
-#endif
     {
         fprintf(stderr, "Couldn't create temporary file template.\n");
         fclose(bin_input);

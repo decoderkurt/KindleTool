@@ -351,11 +351,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
 #endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
-#if defined(_MSC_VER)
-                if(_mktemp_s(sigabsolutepath, strlen(sigabsolutepath) + 1) != 0)
-#else
                 if(_mktemp(sigabsolutepath) == NULL)
-#endif
                 {
                     fprintf(stderr, "Couldn't create temporary file template.\n");
                     fclose(file);
@@ -1184,11 +1180,7 @@ int kindle_create_main(int argc, char *argv[])
         tarball_filename = strdup("/tmp/kindletool_create_tarball_XXXXXX");
 #endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
-#if defined(_MSC_VER)
-        if(_mktemp_s(tarball_filename, strlen(tarball_filename) + 1) != 0)
-#else
         if(_mktemp(tarball_filename) == NULL)
-#endif
         {
             fprintf(stderr, "Couldn't create temporary file template.\n");
             goto do_error;
@@ -1206,11 +1198,7 @@ int kindle_create_main(int argc, char *argv[])
         // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
         // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
 #if defined(_WIN32) && !defined(__CYGWIN__)
-#if defined(_MSC_VER)
-        if(_mktemp_s(bundle_filename, strlen(bundle_filename) + 1) != 0)
-#else
         if(_mktemp(bundle_filename) == NULL)
-#endif
         {
             fprintf(stderr, "Couldn't create temporary file template.\n");
             close(tarball_fd);
