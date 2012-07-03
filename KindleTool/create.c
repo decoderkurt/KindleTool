@@ -253,7 +253,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     return 0;
 }
 
-int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file, FILE *bundlefile)
+int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
     struct archive *disk;
@@ -262,19 +262,15 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     struct archive_entry *entry_sig;
     struct kttar *kttar, kttar_storage;
     int r;
-    char buff[8192];
-    int len;
-    int fd;
     int i;
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
-    int dirty_bundlefile = 1;
+    int dirty_bundlefile = 0;
     int dirty_disk = 0;
+    char **to_sign_and_bundle_list = NULL;
+    int sign_and_bundle_index = 0;
     int dirty_disk_sig = 0;
-    char *pathname = NULL;
-    char *resolved_path = NULL;
-    char *sourcepath = NULL;
     size_t pathlen;
     char *signame = NULL;
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -284,6 +280,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 #endif
     int sigfd;
     char *pathnamecpy = NULL;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    char bundle_filename[] = "/kindletool_create_bun_XXXXXX";
+#else
+    char bundle_filename[] = "/tmp/kindletool_create_bun_XXXXXX";
+#endif
+    int bundle_fd = -1;
+    FILE *bundlefile = NULL;
+    struct stat st;
 
     /*
      * Use a pointer for consistency, but stack-allocated storage
@@ -320,24 +324,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     archive_read_free(disk_sig);
 #endif
 
+    // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
     {
         disk = archive_read_disk_new();
 
-        // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
-        if(i == total_files - 1)
-        {
-            fclose(bundlefile);
-            dirty_bundlefile = 0;
-        }
-
-        // Don't apply the exclude list to our bundlefile... :)
-        if(dirty_bundlefile)
-        {
-            // Perform pattern matching in a metadata filter to apply our exclude list to reguar files
-            // NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
-            archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
-        }
+        // Perform pattern matching in a metadata filter to apply our exclude list to reguar files
+        // NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
+        archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
         archive_read_disk_set_standard_lookup(disk);
 
         r = archive_read_disk_open(disk, filename[i]);
@@ -361,39 +355,10 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
                 if(r == ARCHIVE_FATAL)
                 {
-                    // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
-                    pathname = resolved_path = sourcepath = signame = NULL;
                     goto cleanup;
                 }
                 else if(r < ARCHIVE_WARN)
                     continue;
-            }
-
-            // Get some basic entry fields from stat (use the absolute path, we might be in the middle of a directory lookup)
-            // We're gonna use it after clearing entry, make a copy
-            pathname = strdup(archive_entry_pathname(entry));
-            // Get our absolute path, or weird things happen with the directory lookup...
-            resolved_path = NULL;
-#if defined(_WIN32) && !defined(__CYGWIN__)
-            // Use _fullpath() instead of realpath() on MinGW
-            sourcepath = _fullpath(resolved_path, pathname, _MAX_PATH);
-            // Make it use pretty forward slashes to make fopen() happy :)
-            path_win32_to_posix(sourcepath);
-            // FIXME: Kill debug
-            sourcepath += 2;    // Kill Drive letter :?
-            fprintf(stderr, "pathname: %s | sourcepath: %s\n", pathname, sourcepath);
-#else
-            sourcepath = realpath(pathname, resolved_path);
-#endif
-            archive_entry_copy_sourcepath(entry, sourcepath);
-
-            // Fix the entry pathname of our bundlefile, right now it's a tempfile...
-            if(!dirty_bundlefile)
-            {
-                // We also need to fix our pathname var, since it's used for status/error output, and more importantly, to build the entry name of the sigfile
-                free(pathname);
-                pathname = strdup(INDEX_FILE_NAME);
-                archive_entry_copy_pathname(entry, pathname);
             }
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -402,7 +367,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             archive_entry_set_gid(entry, 0);
             archive_entry_set_gname(entry, "root");
             // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-            if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
+            if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(archive_entry_pathname(entry)) || IS_SHELL(archive_entry_pathname(entry))))
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
@@ -413,195 +378,255 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
             archive_read_disk_descend(disk);
             // Print what we're adding, ala bsdtar
-            fprintf(stderr, "a %s\n", pathname);
+            fprintf(stderr, "a %s\n", archive_entry_pathname(entry));
 
-            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX system...
+            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
             write_file(kttar, a, disk, entry);  // FIXME: Error handling...
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(archive_entry_filetype(entry) == AE_IFREG)
             {
-                // FIXME: Cannot open a file already open on Windows (we get a very helpful: permission denied). Still open through archive_read_disk_open... Gonna need to rethink this ;/
-                if((file = fopen(sourcepath, "rb")) == NULL)
-                {
-                    // FIXME: Remove debug
-                    fprintf(stderr, "Cannot open '%s' (%s) for reading!\n", pathname, sourcepath);
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                    fprintf(stderr, "Because: %s\n", strerror(errno));
-#endif
-                    goto cleanup;
-                }
-                // Don't hash our bundlefile
-                if(dirty_bundlefile)
-                {
-                    if(md5_sum(file, md5) != 0)
-                    {
-                        fprintf(stderr, "Cannot calculate hash sum for '%s'\n", pathname);
-                        fclose(file);
-                        goto cleanup;
-                    }
-                    md5[MD5_HASH_LENGTH] = 0;
-                    rewind(file);
-                }
-
-                pathlen = strlen(pathname);
-                signame = malloc(pathlen + 4 + 1);
-                strncpy(signame, pathname, pathlen + 4 + 1);
-                strncat(signame, ".sig", 4);
-                // Create our sigfile in a tempfile
-                // We have to make sure mkstemp's template is reset first...
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                strcpy(sigabsolutepath, "/kindletool_create_sig_XXXXXX");
-#else
-                strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
-#endif
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                if(_mktemp(sigabsolutepath) == NULL)
-                {
-                    fprintf(stderr, "Couldn't create temporary file template.\n");
-                    fclose(file);
-                    goto cleanup;
-                }
-                sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
-#else
-                sigfd = mkstemp(sigabsolutepath);
-#endif
-                if(sigfd == -1)
-                {
-                    fprintf(stderr, "Couldn't open temporary signature file.\n");
-                    fclose(file);
-                    goto cleanup;
-                }
-                if((sigfile = fdopen(sigfd, "wb")) == NULL)
-                {
-                    fprintf(stderr, "Cannot open temp signature file '%s' for writing\n", signame);
-                    fclose(file);
-                    close(sigfd);
-                    unlink(sigabsolutepath);
-                    goto cleanup;
-                }
-                if(sign_file(file, rsa_pkey_file, sigfile) < 0)
-                {
-                    fprintf(stderr, "Cannot sign '%s'\n", pathname);
-                    fclose(file);
-                    fclose(sigfile);
-                    unlink(sigabsolutepath);   // Delete empty/broken sigfile
-                    goto cleanup;
-                }
-
-                // Don't add the bundlefile to itself
-                if(dirty_bundlefile)
-                {
-                    // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
-                    // Use a copy of pathname to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
-                    pathnamecpy = strdup(pathname);
-                    if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, archive_entry_size(entry) / BLOCK_SIZE, basename(pathnamecpy)) < 0)
-                    {
-                        fprintf(stderr, "Cannot write to index file.\n");
-                        // Cleanup a bit before crapping out
-                        fclose(file);
-                        fclose(sigfile);
-                        unlink(sigabsolutepath);
-                        free(pathnamecpy);
-                        goto cleanup;
-                    }
-                    free(pathnamecpy);
-                }
-
-                // Cleanup
-                fclose(file);
-                fclose(sigfile);
-
-                // And now, for the fun part! Ninja our sigfile into the archive... Ugly code duplication ahead!
-                disk_sig = archive_read_disk_new();
-
-                r = archive_read_disk_open(disk_sig, sigabsolutepath);
-                archive_read_disk_set_standard_lookup(disk_sig);
-                if(r != ARCHIVE_OK)
-                {
-                    fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
-                    unlink(sigabsolutepath);
-                    archive_read_free(disk_sig);
-                    goto cleanup;
-                }
-                // Hackish, flag telling the cleanup block if disk_sig is open...
-                dirty_disk_sig = 1;
-
-                for(;;)
-                {
-                    // First, inject a new entry, based on our sigfile :)
-                    archive_entry_clear(entry_sig);
-                    r = archive_read_next_header2(disk_sig, entry_sig);
-                    if(r == ARCHIVE_EOF)
-                        break;
-                    if(r != ARCHIVE_OK)
-                    {
-                        fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
-                        unlink(sigabsolutepath);
-                        goto cleanup;
-                    }
-                    // Get some basic entry fields from stat
-                    archive_entry_copy_sourcepath(entry_sig, sigabsolutepath);
-
-                    // Fix the entry pathname, we used a tempfile...
-                    archive_entry_copy_pathname(entry_sig, signame);
-
-                    archive_entry_set_uid(entry_sig, 0);
-                    archive_entry_set_uname(entry_sig, "root");
-                    archive_entry_set_gid(entry_sig, 0);
-                    archive_entry_set_gname(entry_sig, "root");
-                    archive_entry_set_perm(entry_sig, 0644);
-
-                    // And then, write it to the archive...
-                    archive_read_disk_descend(disk_sig);
-                    // Print what we're adding, bsdtar style
-                    fprintf(stderr, "a %s\n", signame);
-                    r = archive_write_header(a, entry_sig);
-                    if(r < ARCHIVE_OK)
-                        fprintf(stderr, "archive_write_header() for sig failed: %s\n", archive_error_string(a));
-                    if(r == ARCHIVE_FATAL)
-                    {
-                        unlink(sigabsolutepath);
-                        goto cleanup;
-                    }
-                    if(r > ARCHIVE_FAILED)
-                    {
-                        fd = open(archive_entry_sourcepath(entry_sig), O_RDONLY);
-                        len = read(fd, buff, sizeof(buff));
-                        while(len > 0)
-                        {
-                            archive_write_data(a, buff, len);
-                            len = read(fd, buff, sizeof(buff));
-                        }
-                        close(fd);
-                    }
-                    // Delete the sigfile once we're done
-                    unlink(sigabsolutepath);
-                }
-                archive_read_close(disk_sig);
-                archive_read_free(disk_sig);
-                dirty_disk_sig = 0;
-
-                // Cleanup
-                free(signame);
+                // But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
+                // Why not just do it now with the current sign_file & md5_sum implementation? Because we'd need to fopen() the input file (to sign & hash it),
+                // while it's still open through libarchive read_disk API. That's not possible on non POSIX systems.
+                // (You get a very helpful 'Permission denied' error on native Windows when opening a file that already has an fd open to it...)
+                to_sign_and_bundle_list = realloc(to_sign_and_bundle_list, ++sign_and_bundle_index * sizeof(char *));
+                to_sign_and_bundle_list[sign_and_bundle_index - 1] = strdup(archive_entry_pathname(entry));
             }
-
-            // Delete the bundle file once we're done
-            if(!dirty_bundlefile)
-            {
-                unlink(sourcepath);
-            }
-
-            // Cleanup
-            free(pathname);
-            free(resolved_path);
-            free(sourcepath);
         }
         archive_read_close(disk);
         archive_read_free(disk);
         dirty_disk = 0;
     }
+
+    // Add our bundle index to the end of the list...
+    // And we'll be creating it in a tempfile, to add to the fun...
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    if(_mktemp(bundle_filename) == NULL)
+    {
+        fprintf(stderr, "Couldn't create temporary file template.\n");
+        goto cleanup;
+    }
+    bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
+    bundle_fd = mkstemp(bundle_filename);
+#endif
+    if(bundle_fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temporary file.\n");
+        goto cleanup;
+    }
+    if((bundlefile = fdopen(bundle_fd, "wb+")) == NULL)
+    {
+        fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
+        close(bundle_fd);
+        unlink(bundle_filename);
+        goto cleanup;
+    }
+    // Now that it's created, append it as the last file...
+    to_sign_and_bundle_list = realloc(to_sign_and_bundle_list, ++sign_and_bundle_index * sizeof(char *));
+    to_sign_and_bundle_list[sign_and_bundle_index - 1] = strdup(bundle_filename);
+    // And mark it as dirty (open)
+    dirty_bundlefile = 1;
+
+    // And now loop again over the stuff we need to sign, hash & bundle...
+    for(i = 0; i <= sign_and_bundle_index; i++)
+    {
+        // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
+        if(i == sign_and_bundle_index - 1)
+        {
+            fclose(bundlefile);
+            dirty_bundlefile = 0;
+        }
+
+        // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
+        if(i == sign_and_bundle_index)
+        {
+            // It's the second time we're looping over the bundlefile, just archive it
+            // Just set the correct pathnames...
+            signame = strdup(INDEX_FILE_NAME);
+            // FIXME: Fragile, make sure sigabsolutepath & bundle_filename are always the same length...
+            strcpy(sigabsolutepath, bundle_filename);
+        }
+        else
+        {
+            // First things first, if we're not the bundlefile, we're gonna need our size for a field of the bundlefile, so get on that...
+            if(dirty_bundlefile)
+            {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+            // Always use a 64-bit stat on MinGW
+            _stati64(to_sign_and_bundle_list[i], &st);
+#else
+            // We're out of a libarchive read loop, so do a stat call ourselves
+            lstat(to_sign_and_bundle_list[i], &st);
+#endif
+            }
+
+            // Go on as usual, hash, sign & bundle :)
+            if((file = fopen(to_sign_and_bundle_list[i], "rb")) == NULL)
+            {
+                fprintf(stderr, "Cannot open '%s' for reading: %s!\n", to_sign_and_bundle_list[i], strerror(errno));
+                goto cleanup;
+            }
+            // Don't hash our bundlefile
+            if(dirty_bundlefile)
+            {
+                if(md5_sum(file, md5) != 0)
+                {
+                    fprintf(stderr, "Cannot calculate hash sum for '%s'\n", to_sign_and_bundle_list[i]);
+                    fclose(file);
+                    goto cleanup;
+                }
+                md5[MD5_HASH_LENGTH] = 0;
+                rewind(file);
+            }
+
+            // If we're the bundlefile, fix the relative path to not use the tempfile path...
+            if(!dirty_bundlefile)
+            {
+                pathlen = strlen(INDEX_FILE_NAME);
+                signame = malloc(pathlen + 4 + 1);
+                strncpy(signame, INDEX_FILE_NAME, pathlen + 4 + 1);
+                strncat(signame, ".sig", 4);
+            }
+            else
+            {
+            pathlen = strlen(to_sign_and_bundle_list[i]);
+            signame = malloc(pathlen + 4 + 1);
+            strncpy(signame, to_sign_and_bundle_list[i], pathlen + 4 + 1);
+            strncat(signame, ".sig", 4);
+            }
+            // Create our sigfile in a tempfile
+            // We have to make sure mkstemp's template is reset first...
+    #if defined(_WIN32) && !defined(__CYGWIN__)
+            strcpy(sigabsolutepath, "/kindletool_create_sig_XXXXXX");
+    #else
+            strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
+    #endif
+    #if defined(_WIN32) && !defined(__CYGWIN__)
+            if(_mktemp(sigabsolutepath) == NULL)
+            {
+                fprintf(stderr, "Couldn't create temporary file template.\n");
+                fclose(file);
+                goto cleanup;
+            }
+            sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+    #else
+            sigfd = mkstemp(sigabsolutepath);
+    #endif
+            if(sigfd == -1)
+            {
+                fprintf(stderr, "Couldn't open temporary signature file.\n");
+                fclose(file);
+                goto cleanup;
+            }
+            if((sigfile = fdopen(sigfd, "wb")) == NULL)
+            {
+                fprintf(stderr, "Cannot open temp signature file '%s' for writing\n", signame);
+                fclose(file);
+                close(sigfd);
+                unlink(sigabsolutepath);
+                goto cleanup;
+            }
+            if(sign_file(file, rsa_pkey_file, sigfile) < 0)
+            {
+                fprintf(stderr, "Cannot sign '%s'\n", to_sign_and_bundle_list[i]);
+                fclose(file);
+                fclose(sigfile);
+                unlink(sigabsolutepath);   // Delete empty/broken sigfile
+                goto cleanup;
+            }
+
+            // Don't add the bundlefile to itself
+            if(dirty_bundlefile)
+            {
+                // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
+                // Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
+                pathnamecpy = strdup(to_sign_and_bundle_list[i]);
+                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(to_sign_and_bundle_list[i]) || IS_SHELL(to_sign_and_bundle_list[i])) ? 129 : 128), md5, to_sign_and_bundle_list[i], (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
+                {
+                    fprintf(stderr, "Cannot write to index file.\n");
+                    // Cleanup a bit before crapping out
+                    fclose(file);
+                    fclose(sigfile);
+                    unlink(sigabsolutepath);
+                    free(pathnamecpy);
+                    goto cleanup;
+                }
+                free(pathnamecpy);
+            }
+
+            // Cleanup
+            fclose(file);
+            fclose(sigfile);
+        }
+
+        // And now, for the fun part! Append our sigfile to the archive... Ugly code duplication ahead!
+        disk_sig = archive_read_disk_new();
+
+        r = archive_read_disk_open(disk_sig, sigabsolutepath);
+        archive_read_disk_set_standard_lookup(disk_sig);
+        if(r != ARCHIVE_OK)
+        {
+            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
+            unlink(sigabsolutepath);
+            archive_read_free(disk_sig);
+            goto cleanup;
+        }
+        // Hackish, flag telling the cleanup block if disk_sig is open...
+        dirty_disk_sig = 1;
+
+        for(;;)
+        {
+            // First, inject a new entry, based on our sigfile :)
+            archive_entry_clear(entry_sig);
+            r = archive_read_next_header2(disk_sig, entry_sig);
+            if(r == ARCHIVE_EOF)
+                break;
+            else if(r != ARCHIVE_OK)
+            {
+                fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
+                if(r == ARCHIVE_FATAL)
+                {
+                    unlink(sigabsolutepath);
+                    goto cleanup;
+                }
+                else if(r < ARCHIVE_WARN)
+                    continue;
+            }
+
+            // Fix the entry pathname, we used a tempfile...
+            archive_entry_copy_pathname(entry_sig, signame);
+
+            archive_entry_set_uid(entry_sig, 0);
+            archive_entry_set_uname(entry_sig, "root");
+            archive_entry_set_gid(entry_sig, 0);
+            archive_entry_set_gname(entry_sig, "root");
+            archive_entry_set_perm(entry_sig, 0644);
+
+            // And then, write it to the archive...
+            archive_read_disk_descend(disk_sig);
+            // Print what we're adding, bsdtar style
+            fprintf(stderr, "a %s\n", signame);
+
+            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
+            write_file(kttar, a, disk_sig, entry_sig);  // FIXME: Error handling... (with an unlink sigabsolutepath on FATAL!)
+
+            // Delete the file once we're done, be it a signature or the bundlefile
+            unlink(sigabsolutepath);
+        }
+        archive_read_close(disk_sig);
+        archive_read_free(disk_sig);
+        dirty_disk_sig = 0;
+
+        // Cleanup
+        free(signame);
+    }
+
     free(kttar->buff);
+    for(i = 0; i < sign_and_bundle_index; i++)
+        free(to_sign_and_bundle_list[i]);
+    free(to_sign_and_bundle_list);
     archive_write_close(a);
     archive_write_free(a);
 
@@ -613,11 +638,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 cleanup:
     // Close & remove the bundlefile if we crapped out in the middle of processing
     if(dirty_bundlefile)
+    {
         fclose(bundlefile);
+        unlink(bundle_filename);
+    }
     // Free what we might have alloc'ed
-    free(pathname);
-    free(resolved_path);
-    free(sourcepath);
     free(signame);
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
@@ -634,6 +659,12 @@ cleanup:
         archive_read_free(disk);
     }
     free(kttar->buff);
+    if(sign_and_bundle_index > 0)
+    {
+        for(i = 0; i < sign_and_bundle_index; i++)
+            free(to_sign_and_bundle_list[i]);
+        free(to_sign_and_bundle_list);
+    }
     archive_write_close(a);
     archive_write_free(a);
     return 1;
@@ -965,13 +996,6 @@ int kindle_create_main(int argc, char *argv[])
     char *output_filename = NULL;
     char **input_list = NULL;
     int input_index = 0;
-#if defined(_WIN32) && !defined(__CYGWIN__)
-    char bundle_filename[] = "/kindletool_create_bundlefile_XXXXXX";
-#else
-    char bundle_filename[] = "/tmp/kindletool_create_bundlefile_XXXXXX";
-#endif
-    int bundle_fd = -1;
-    FILE *bundlefile = NULL;
     char *tarball_filename = NULL;
     int tarball_fd = -1;
     int keep_archive;
@@ -1287,40 +1311,6 @@ int kindle_create_main(int argc, char *argv[])
             fprintf(stderr, "Couldn't open temporary tarball file.\n");
             goto do_error;
         }
-
-        // Add our bundle index to the end of the list, see kindle_create_package_archive() for more details. (Granted, it's a bit hackish).
-        // And we'll be creating it in a tempfile, to add to the fun... (kindle_create_package_archive has to take care of the cleanup for us, that makes error handling here a bit iffy...)
-#if defined(_WIN32) && !defined(__CYGWIN__)
-        if(_mktemp(bundle_filename) == NULL)
-        {
-            fprintf(stderr, "Couldn't create temporary file template.\n");
-            close(tarball_fd);
-            unlink(tarball_filename);
-            goto do_error;
-        }
-        bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
-#else
-        bundle_fd = mkstemp(bundle_filename);
-#endif
-        if(bundle_fd == -1)
-        {
-            fprintf(stderr, "Couldn't open temporary file.\n");
-            close(tarball_fd);
-            unlink(tarball_filename);
-            goto do_error;
-        }
-        if((bundlefile = fdopen(bundle_fd, "wb+")) == NULL)
-        {
-            fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
-            close(tarball_fd);
-            unlink(tarball_filename);
-            close(bundle_fd);
-            unlink(bundle_filename);
-            goto do_error;
-        }
-        // Now that it's created, append it as the last file...
-        input_list = realloc(input_list, ++input_index * sizeof(char *));
-        input_list[input_index - 1] = strdup(bundle_filename);
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
@@ -1362,14 +1352,12 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, bundlefile) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
             close(tarball_fd);
             unlink(tarball_filename);
-            // The bundlefile too, which might be a bit overkill, since it may already have been deleted
-            unlink(bundle_filename);
             goto do_error;
         }
         // We opened it, we need to close it ;)
