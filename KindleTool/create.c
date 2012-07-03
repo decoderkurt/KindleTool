@@ -149,8 +149,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     struct archive *disk_sig;
     struct archive_entry *entry;
     struct archive_entry *entry_sig;
-    struct stat st;
-    struct stat st_sig;
     int r;
     char buff[8192];
     int len;
@@ -253,22 +251,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 #endif
             archive_entry_copy_sourcepath(entry, sourcepath);
 
-            // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
-            // NOTE: Err, except that we use the resolved path from realpath() in sourcepath, and that's also what we use to read the file we actually put in the archive, so... :D
-#if defined(_WIN32) && !defined(__CYGWIN__)
-            // Use a 64-bit stat on MinGW, to avoid issues with libarchive
-            _stati64(sourcepath, &st);
-#else
-            lstat(sourcepath, &st);
-#endif
-            r = archive_read_disk_entry_from_file(disk, entry, -1, &st);
-            if(r < ARCHIVE_OK)
-                fprintf(stderr, "archive_read_disk_entry_from_file() failed: %s\n", archive_error_string(disk));
-            if(r == ARCHIVE_FATAL)
-            {
-                goto cleanup;
-            }
-
             // Fix the entry pathname of our bundlefile, right now it's a tempfile...
             if(!dirty_bundlefile)
             {
@@ -284,7 +266,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             archive_entry_set_gid(entry, 0);
             archive_entry_set_gname(entry, "root");
             // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-            if(S_ISREG(st.st_mode) && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
+            if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(pathname) || IS_SHELL(pathname)))
                 archive_entry_set_perm(entry, 0755);
             else
                 archive_entry_set_perm(entry, 0644);
@@ -314,7 +296,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
-            if(S_ISREG(st.st_mode))
+            if(archive_entry_filetype(entry) == AE_IFREG)
             {
                 // FIXME: Cannot open a file already open on Windows (we get a very helpful: permission denied). Still open through archive_read_disk_open... Gonna need to rethink this ;/
                 if((file = fopen(sourcepath, "rb")) == NULL)
@@ -390,7 +372,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
                     // Use a copy of pathname to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
                     pathnamecpy = strdup(pathname);
-                    if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
+                    if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(pathname) || IS_SHELL(pathname)) ? 129 : 128), md5, pathname, archive_entry_size(entry) / BLOCK_SIZE, basename(pathnamecpy)) < 0)
                     {
                         fprintf(stderr, "Cannot write to index file.\n");
                         // Cleanup a bit before crapping out
@@ -437,20 +419,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                     }
                     // Get some basic entry fields from stat
                     archive_entry_copy_sourcepath(entry_sig, sigabsolutepath);
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                    _stati64(sigabsolutepath, &st_sig);
-#else
-                    lstat(sigabsolutepath, &st_sig);
-#endif
-                    r = archive_read_disk_entry_from_file(disk_sig, entry_sig, -1, &st_sig);
-                    if(r < ARCHIVE_OK)
-                        fprintf(stderr, "archive_read_disk_entry_from_file() for sig failed: %s\n", archive_error_string(disk_sig));
-                    if(r == ARCHIVE_FATAL)
-                    {
-                        unlink(sigabsolutepath);
-                        goto cleanup;
-                    }
 
                     // Fix the entry pathname, we used a tempfile...
                     archive_entry_copy_pathname(entry_sig, signame);
