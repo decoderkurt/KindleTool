@@ -65,6 +65,8 @@
 
 #define SERIAL_NO_LENGTH 16
 
+#define DEFAULT_BYTES_PER_BLOCK (20*512)
+
 #define IS_SCRIPT(filename) (strncasecmp(filename+(strlen(filename)-4), ".ffs", 4) == 0)
 #define IS_SHELL(filename) (strncasecmp(filename+(strlen(filename)-3), ".sh", 3) == 0)
 #define IS_SIG(filename) (strncasecmp(filename+(strlen(filename)-4), ".sig", 4) == 0)
@@ -181,6 +183,13 @@ typedef struct
     uint16_t num_meta;
     char **metastrings;
 } UpdateInformation;
+
+// This is modeled after libarchive's bsdtar...
+struct kttar
+{
+    char *buff;
+    size_t buff_size;
+};
 
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);

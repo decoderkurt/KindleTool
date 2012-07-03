@@ -21,6 +21,9 @@
 #include "kindle_tool.h"
 
 static int metadata_filter(struct archive *, void *, struct archive_entry *);
+static void write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
+static void write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
+static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -142,6 +145,114 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
     }
 }
 
+/*
+ * Write a single file (or directory or other filesystem object) to
+ * the archive.
+ */
+static void write_file(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
+{
+    write_entry(kttar, a, in_a, entry);
+}
+
+/*
+ * Write a single entry to the archive.
+ */
+static void write_entry(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
+{
+    int e;
+
+    e = archive_write_header(a, entry);
+    if(e != ARCHIVE_OK)
+    {
+        fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+    }
+
+    if(e == ARCHIVE_FATAL)
+        exit(1);        // FIXME
+
+    /*
+     * If we opened a file earlier, write it out now.  Note that
+     * the format handler might have reset the size field to zero
+     * to inform us that the archive body won't get stored.  In
+     * that case, just skip the write.
+     */
+    if(e >= ARCHIVE_WARN && archive_entry_size(entry) > 0)
+    {
+        if(copy_file_data_block(kttar, a, in_a, entry))
+            exit(1);    // FIXME
+    }
+}
+
+/* Helper function to copy file to archive. */
+static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
+{
+    size_t bytes_read;
+    ssize_t bytes_written;
+    int64_t offset, progress = 0;
+    char *null_buff = NULL;
+    const void *buff;
+    int r;
+
+    while((r = archive_read_data_block(in_a, &buff, &bytes_read, &offset)) == ARCHIVE_OK)
+    {
+        if(offset > progress)
+        {
+            int64_t sparse = offset - progress;
+            size_t ns;
+
+            if(null_buff == NULL)
+            {
+                null_buff = kttar->buff;
+                memset(null_buff, 0, kttar->buff_size);
+            }
+
+            while(sparse > 0)
+            {
+                if(sparse > (int64_t)kttar->buff_size)
+                    ns = kttar->buff_size;
+                else
+                    ns = (size_t)sparse;
+                bytes_written = archive_write_data(a, null_buff, ns);
+                if(bytes_written < 0)
+                {
+                    /* Write failed; this is bad */
+                    fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
+                    return -1;
+                }
+                if((size_t)bytes_written < ns)
+                {
+                    /* Write was truncated; warn but continue. */
+                    fprintf(stderr,"%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
+                    return 0;
+                }
+                progress += bytes_written;
+                sparse -= bytes_written;
+            }
+        }
+
+        bytes_written = archive_write_data(a, buff, bytes_read);
+        if(bytes_written < 0)
+        {
+            /* Write failed; this is bad */
+            fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
+            return -1;
+        }
+        if((size_t)bytes_written < bytes_read)
+        {
+            /* Write was truncated; warn but continue. */
+            fprintf(stderr,"%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
+            return 0;
+        }
+        progress += bytes_written;
+    }
+    if(r < ARCHIVE_WARN)
+    {
+        fprintf(stderr, "archive_read_data_block() failed: %s\n", archive_error_string(a));
+        return -1;
+    }
+    return 0;
+}
+
 int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file, FILE *bundlefile)
 {
     struct archive *a;
@@ -149,6 +260,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     struct archive *disk_sig;
     struct archive_entry *entry;
     struct archive_entry *entry_sig;
+    struct kttar *kttar, kttar_storage;
     int r;
     char buff[8192];
     int len;
@@ -172,6 +284,26 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 #endif
     int sigfd;
     char *pathnamecpy = NULL;
+
+    /*
+     * Use a pointer for consistency, but stack-allocated storage
+     * for ease of cleanup.
+    */
+    kttar = &kttar_storage;
+    memset(kttar, 0, sizeof(*kttar));
+    /* Choose a suitable copy buffer size */
+    kttar->buff_size = 64 * 1024;
+    while(kttar->buff_size < (size_t) DEFAULT_BYTES_PER_BLOCK)
+        kttar->buff_size *= 2;
+    /* Try to compensate for space we'll lose to alignment. */
+    kttar->buff_size += 16 * 1024;
+
+    /* Allocate a buffer for file data. */
+    if((kttar->buff = malloc(kttar->buff_size)) == NULL)
+    {
+        fprintf(stderr, "Cannot allocate memory for archive copy buffer\n");
+        return 1;
+    }
 
     entry = archive_entry_new();
     entry_sig = archive_entry_new();
@@ -224,13 +356,17 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             r = archive_read_next_header2(disk, entry);
             if(r == ARCHIVE_EOF)
                 break;
-
-            if(r != ARCHIVE_OK)
+            else if(r != ARCHIVE_OK)
             {
                 fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
-                // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
-                pathname = resolved_path = sourcepath = signame = NULL;
-                goto cleanup;
+                if(r == ARCHIVE_FATAL)
+                {
+                    // Avoid a double free (beginning from the second iteration, since we freed pathname & co at the end of the first iteration, but they're not allocated yet, and cleanup will try to free...)
+                    pathname = resolved_path = sourcepath = signame = NULL;
+                    goto cleanup;
+                }
+                else if(r < ARCHIVE_WARN)
+                    continue;
             }
 
             // Get some basic entry fields from stat (use the absolute path, we might be in the middle of a directory lookup)
@@ -271,29 +407,16 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             else
                 archive_entry_set_perm(entry, 0644);
 
+            /* Non-regular files get archived with zero size. */
+            if(archive_entry_filetype(entry) != AE_IFREG)
+                archive_entry_set_size(entry, 0);
+
             archive_read_disk_descend(disk);
             // Print what we're adding, ala bsdtar
             fprintf(stderr, "a %s\n", pathname);
-            r = archive_write_header(a, entry);
-            if(r < ARCHIVE_OK)
-                fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
-            if(r == ARCHIVE_FATAL)
-            {
-                goto cleanup;
-            }
-            if(r > ARCHIVE_FAILED)
-            {
-                // FIXME: Can't open a file that's still open on Windows... Will have to do this the proper way, like bsdtar... (cf. tar/write.c)
-                fd = open(archive_entry_sourcepath(entry), O_RDONLY);
-                fprintf(stderr, "fd %d for %s\n", fd, archive_entry_sourcepath(entry));       // FIXME: Kill debug
-                len = read(fd, buff, sizeof(buff));
-                while(len > 0)
-                {
-                    archive_write_data(a, buff, len);
-                    len = read(fd, buff, sizeof(buff));
-                }
-                close(fd);
-            }
+
+            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX system...
+            write_file(kttar, a, disk, entry);  // FIXME: Error handling...
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(archive_entry_filetype(entry) == AE_IFREG)
@@ -478,6 +601,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         archive_read_free(disk);
         dirty_disk = 0;
     }
+    free(kttar->buff);
     archive_write_close(a);
     archive_write_free(a);
 
@@ -509,6 +633,7 @@ cleanup:
         archive_read_close(disk);
         archive_read_free(disk);
     }
+    free(kttar->buff);
     archive_write_close(a);
     archive_write_free(a);
     return 1;
