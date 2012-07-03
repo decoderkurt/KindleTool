@@ -222,7 +222,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             pathname = strdup(archive_entry_pathname(entry));
             // Get our absolute path, or weird things happen with the directory lookup...
             resolved_path = NULL;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+            // Use _fullpath() instead of realpath() on MinGW
+            sourcepath = _fullpath(resolved_path, pathname, _MAX_PATH);
+#else
             sourcepath = realpath(pathname, resolved_path);
+#endif
             archive_entry_copy_sourcepath(entry, sourcepath);
 
             // Use lstat to handle symlinks, in case libarchive was built without HAVE_LSTAT (idea blatantly stolen from Ark)
