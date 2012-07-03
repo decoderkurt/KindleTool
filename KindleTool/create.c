@@ -313,7 +313,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             {
                 if((file = fopen(sourcepath, "rb")) == NULL)
                 {
-                    fprintf(stderr, "Cannot open '%s' for reading!\n", pathname);
+                    // FIXME: Remove debug
+                    fprintf(stderr, "Cannot open '%s' (%s) for reading!\n", pathname, sourcepath);
                     goto cleanup;
                 }
                 // Don't hash our bundlefile
