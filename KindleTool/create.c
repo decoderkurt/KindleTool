@@ -246,9 +246,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 {
     struct archive *a;
     struct archive *disk;
-    struct archive *disk_sig;
     struct archive_entry *entry;
-    struct archive_entry *entry_sig;
     struct kttar *kttar, kttar_storage;
     int r;
     int i;
@@ -259,7 +257,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     int dirty_disk = 0;
     char **to_sign_and_bundle_list = NULL;
     int sign_and_bundle_index = 0;
-    int dirty_disk_sig = 0;
     size_t pathlen;
     char *signame = NULL;
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -299,19 +296,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     }
 
     entry = archive_entry_new();
-    entry_sig = archive_entry_new();
 
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
     archive_write_open_fd(a, outfd);
-
-// See kindle_tool.h for why we have to jump through hoops to differentiate clang from GCC...
-#if !defined(__clang__) && defined(__GNUC__) && GCC_VERSION < 40600
-    // Ugly dummy initialization to shutup a stupid GCC < 4.6 warning   // FIXME: Check if we still need that
-    disk_sig = archive_read_disk_new();
-    archive_read_free(disk_sig);
-#endif
 
     // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
@@ -556,30 +545,30 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         }
 
         // And now, for the fun part! Append our sigfile to the archive... Ugly code duplication ahead!
-        disk_sig = archive_read_disk_new();
+        disk = archive_read_disk_new();
 
-        r = archive_read_disk_open(disk_sig, sigabsolutepath);
-        archive_read_disk_set_standard_lookup(disk_sig);
+        r = archive_read_disk_open(disk, sigabsolutepath);
+        archive_read_disk_set_standard_lookup(disk);
         if(r != ARCHIVE_OK)
         {
-            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk_sig));
+            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
             unlink(sigabsolutepath);
-            archive_read_free(disk_sig);
+            archive_read_free(disk);
             goto cleanup;
         }
-        // Hackish, flag telling the cleanup block if disk_sig is open...
-        dirty_disk_sig = 1;
+        // Hackish, flag telling the cleanup block if disk is open...
+        dirty_disk = 1;
 
         for(;;)
         {
             // First, inject a new entry, based on our sigfile :)
-            archive_entry_clear(entry_sig);
-            r = archive_read_next_header2(disk_sig, entry_sig);
+            archive_entry_clear(entry);
+            r = archive_read_next_header2(disk, entry);
             if(r == ARCHIVE_EOF)
                 break;
             else if(r != ARCHIVE_OK)
             {
-                fprintf(stderr, "archive_read_next_header2() for sig failed: %s", archive_error_string(disk_sig));
+                fprintf(stderr, "archive_read_next_header2() for sig failed: %s", archive_error_string(disk));
                 if(r == ARCHIVE_FATAL)
                 {
                     fprintf(stderr, " (FATAL)\n");
@@ -595,21 +584,21 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
 
             // Fix the entry pathname, we used a tempfile...
-            archive_entry_copy_pathname(entry_sig, signame);
+            archive_entry_copy_pathname(entry, signame);
 
-            archive_entry_set_uid(entry_sig, 0);
-            archive_entry_set_uname(entry_sig, "root");
-            archive_entry_set_gid(entry_sig, 0);
-            archive_entry_set_gname(entry_sig, "root");
-            archive_entry_set_perm(entry_sig, 0644);
+            archive_entry_set_uid(entry, 0);
+            archive_entry_set_uname(entry, "root");
+            archive_entry_set_gid(entry, 0);
+            archive_entry_set_gname(entry, "root");
+            archive_entry_set_perm(entry, 0644);
 
             // And then, write it to the archive...
-            archive_read_disk_descend(disk_sig);
+            archive_read_disk_descend(disk);
             // Print what we're adding, bsdtar style
             fprintf(stderr, "a %s\n", signame);
 
             // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
-            if(write_file(kttar, a, disk_sig, entry_sig) != 0)
+            if(write_file(kttar, a, disk, entry) != 0)
             {
                 // Delete temp file before crapping out
                 unlink(sigabsolutepath);
@@ -619,9 +608,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // Delete the file once we're done, be it a signature or the bundlefile
             unlink(sigabsolutepath);
         }
-        archive_read_close(disk_sig);
-        archive_read_free(disk_sig);
-        dirty_disk_sig = 0;
+        archive_read_close(disk);
+        archive_read_free(disk);
+        dirty_disk = 0;
 
         // Cleanup
         free(signame);
@@ -635,7 +624,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     archive_write_free(a);
 
     archive_entry_free(entry);
-    archive_entry_free(entry_sig);
 
     return 0;
 
@@ -650,13 +638,7 @@ cleanup:
     free(signame);
     // And what libarchive might have alloc'ed
     archive_entry_free(entry);
-    archive_entry_free(entry_sig);
     // The big stuff, too...
-    if(dirty_disk_sig)
-    {
-        archive_read_close(disk_sig);
-        archive_read_free(disk_sig);
-    }
     if(dirty_disk)
     {
         archive_read_close(disk);
