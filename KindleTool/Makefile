@@ -45,12 +45,12 @@ ifeq "$(OSTYPE)" "Darwin"
 else
 	CPPFLAGS?=-Iincludes
 endif
-LIBS=-larchive -lz -lcrypto
+LIBS=-larchive -lcrypto -lz
 
 ifeq "$(OSTYPE)" "Linux"
 	ifeq "$(OSTARGET)" "MinGW"
-		# Needed for linking statically against OpenSSL on MinGW. Also, libcrytpo needs libz, so just reorder everything.
-		LIBS:=-larchive -lcrypto -lz -lgdi32
+		# Needed for linking statically against OpenSSL on MinGW
+		LIBS+=-lgdi32
 	else
 		# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
 		LIBS+=-ldl
