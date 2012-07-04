@@ -338,9 +338,10 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 }
                 else if(r < ARCHIVE_WARN)
                 {
-                    fprintf(stderr, " (FAILED, the archive will be incomplete!)\n");
-                    // FIXME: Maybe abort on failure, too, we don't really want to end up with an incomplete archive...
-                    continue;
+                    fprintf(stderr, " (FAILED)\n");
+                    // NOTE: We don't want to end up with an incomplete archive, abort.
+                    //continue;
+                    goto cleanup;
                 }
             }
 
@@ -577,9 +578,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 }
                 else if(r < ARCHIVE_WARN)
                 {
-                    fprintf(stderr, " (FAILED, the archive will be incomplete!)\n");
-                    // FIXME: Maybe abort on failure, too, we don't really want to end up with an incomplete archive...
-                    continue;
+                    fprintf(stderr, " (FAILED)\n");
+                    // NOTE: We don't want to end up with an incomplete archive, abort.
+                    //continue;
+                    unlink(sigabsolutepath);
+                    goto cleanup;
                 }
             }
 
