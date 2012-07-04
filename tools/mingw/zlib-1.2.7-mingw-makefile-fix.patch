@@ -1,7 +1,7 @@
 diff -Nuarp zlib-1.2.7-ori/win32/Makefile.gcc zlib-1.2.7/win32/Makefile.gcc
 --- zlib-1.2.7-ori/win32/Makefile.gcc	2012-05-02 20:17:58.000000000 +0200
-+++ zlib-1.2.7/win32/Makefile.gcc	2012-07-03 00:11:58.949313987 +0200
-@@ -41,9 +41,9 @@ SHARED_MODE=0
++++ zlib-1.2.7/win32/Makefile.gcc	2012-07-04 23:19:10.747624677 +0200
+@@ -41,15 +41,15 @@ SHARED_MODE=0
  #LOC = -DASMV
  #LOC = -DDEBUG -g
  
@@ -13,3 +13,10 @@ diff -Nuarp zlib-1.2.7-ori/win32/Makefile.gcc zlib-1.2.7/win32/Makefile.gcc
  
  AS = $(CC)
  ASFLAGS = $(LOC) -Wall
+ 
+ LD = $(CC)
+-LDFLAGS = $(LOC)
++LDFLAGS = $(LOC) -Wl,-O1 -Wl,--as-needed
+ 
+ AR = $(PREFIX)ar
+ ARFLAGS = rcs

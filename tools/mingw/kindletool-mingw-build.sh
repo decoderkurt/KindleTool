@@ -211,7 +211,7 @@ EOF
 # KindleTool
 echo "* Building KindleTool . . ."
 echo ""
-cd ..
+cd ../..
 cd KindleTool/KindleTool
 rm -rf lib includes
 make clean
