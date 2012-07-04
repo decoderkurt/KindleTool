@@ -444,13 +444,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // First things first, if we're not the bundlefile, we're gonna need our size for a field of the bundlefile, so get on that...
             if(dirty_bundlefile)
             {
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                // No lstat on MinGW, so use stat instead (which should hopefully use a 64-bit off_t type...)
-                stat(to_sign_and_bundle_list[i], &st);
-#else
                 // We're out of a libarchive read loop, so do a stat call ourselves
-                lstat(to_sign_and_bundle_list[i], &st);
-#endif
+                stat(to_sign_and_bundle_list[i], &st);
             }
 
             // Go on as usual, hash, sign & bundle :)
