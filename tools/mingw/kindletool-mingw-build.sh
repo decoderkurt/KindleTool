@@ -102,7 +102,7 @@ ARCH_FLAGS="-march=i686 -mtune=i686"
 CROSS_TC="i686-w64-mingw32"
 TC_BUILD_DIR="/home/niluje/Kindle/KTool_Static/MinGW/Build_W32"
 
-export PATH="/home/niluje/x-tools/mw32/bin:${PATH}"
+export PATH="/home/niluje/x-tools/mingw32/bin:${PATH}"
 
 BASE_CFLAGS="-O2 -ffast-math ${ARCH_FLAGS} -pipe -fomit-frame-pointer"
 export CFLAGS="${BASE_CFLAGS}"
@@ -186,4 +186,51 @@ if [[ ! -d "libarchive-3.0.4" ]] ; then
 	make install
 	cd ..
 fi
+
+# Build KT packages credits
+cat > CREDITS << EOF
+* kindletool.exe: KindleTool, Copyright (C) 2011-2012  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+(https://github.com/NiLuJe/KindleTool/)
+
+  |->   zlib, Copyright (C) 1995-2012 Jean-loup Gailly and Mark Adler,
+  |   Licensed under the zlib license (http://zlib.net/zlib_license.html)
+  |   (http://zlib.net/)
+  |
+  |->   OpenSSL, Copyright (C) 1998-2011 The OpenSSL Project. SSLeay, Copyright (C) 1995-1998 Eric Young,
+  |   Licensed under an Apache-style license (http://openssl.org/source/license.html).
+  |   (http://openssl.org/)
+  |
+  |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
+  |   (http://libarchive.github.com/)
+  |
+  `->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009, 2010 by the mingw-w64 project,
+      Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/apps/trac/mingw-w64/browser/tags/v2.0.4/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
+      (http://mingw-w64.sourceforge.net/)
+EOF
+
+# KindleTool
+echo "* Building KindleTool . . ."
+echo ""
+cd ..
+cd KindleTool/KindleTool
+rm -rf lib includes
+make clean
+make mingw
+
+# Package it
+git log --stat --graph > ../../ChangeLog
+./version.sh PMS
+VER_FILE="VERSION"
+VER_CURRENT="$(<${VER_FILE})"
+REV="${VER_CURRENT%%-*}"
+cd ../..
+cp -v KindleTool/KindleTool/MinGW/kindletool.exe ./kindletool.exe
+cp -v KindleTool/README.md ./README
+# Quick! Markdown => plaintext
+sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
+mv -v KindleTool/KindleTool/VERSION ./VERSION
+# LF => CRLF...
+unix2dos CREDITS README ChangeLog
+7z a -tzip kindletool-${REV}-mingw.zip kindletool.exe CREDITS README ChangeLog VERSION
+rm -f kindletool.exe CREDITS README ChangeLog VERSION
 
