@@ -254,6 +254,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
     int dirty_bundlefile = 0;
+    int created_bundlefile = 0;
     int dirty_disk = 0;
     char **to_sign_and_bundle_list = NULL;
     int sign_and_bundle_index = 0;
@@ -410,8 +411,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     // Now that it's created, append it as the last file...
     to_sign_and_bundle_list = realloc(to_sign_and_bundle_list, ++sign_and_bundle_index * sizeof(char *));
     to_sign_and_bundle_list[sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // And mark it as dirty (open)
+    // And mark it as dirty (open), and created
     dirty_bundlefile = 1;
+    created_bundlefile = 1;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= sign_and_bundle_index; i++)
@@ -634,6 +636,14 @@ cleanup:
     {
         fclose(bundlefile);
         unlink(bundle_filename);
+    }
+    else
+    {
+        // And if was created, but it's not open anymore, remove it too (that's a short window of time, namely, when we're looping over the bundlefile itself & its sigfile)
+        if(created_bundlefile)
+        {
+            unlink(bundle_filename);
+        }
     }
     // Free what we might have alloc'ed
     free(signame);
