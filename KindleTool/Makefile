@@ -56,7 +56,7 @@ LIBS=-larchive -lcrypto -lz
 
 # Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
 ifeq "$(OSTYPE)" "Linux"
-	# Thre's no libdl on Windows ;)
+	# There's no libdl on Windows ;)
 	ifneq "$(MINGW)" "true"
 		LIBS+=-ldl
 	endif

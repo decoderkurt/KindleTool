@@ -109,7 +109,7 @@ export CFLAGS="${BASE_CFLAGS}"
 export CXXFLAGS="${BASE_CFLAGS}"
 BASE_CPPFLAGS="-I${TC_BUILD_DIR}/include"
 export CPPFLAGS="${BASE_CPPFLAGS}"
-BASE_LDFLAGS="-L${TC_BUILD_DIR}/lib"
+BASE_LDFLAGS="-L${TC_BUILD_DIR}/lib -Wl,-O1 -Wl,--as-needed"
 export LDFLAGS="${BASE_LDFLAGS}"
 
 ## Go :)
