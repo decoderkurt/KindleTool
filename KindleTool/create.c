@@ -338,13 +338,18 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 break;
             else if(r != ARCHIVE_OK)
             {
-                fprintf(stderr, "archive_read_next_header2() failed: %s\n", archive_error_string(disk));
+                fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
                 if(r == ARCHIVE_FATAL)
                 {
+                    fprintf(stderr, " (FATAL)\n");
                     goto cleanup;
                 }
                 else if(r < ARCHIVE_WARN)
+                {
+                    fprintf(stderr, " (FAILED, the archive will be incomplete!)\n");
+                    // FIXME: Maybe abort on failure, too, we don't really want to end up with an incomplete archive...
                     continue;
+                }
             }
 
             // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -575,14 +580,19 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 break;
             else if(r != ARCHIVE_OK)
             {
-                fprintf(stderr, "archive_read_next_header2() for sig failed: %s\n", archive_error_string(disk_sig));
+                fprintf(stderr, "archive_read_next_header2() for sig failed: %s", archive_error_string(disk_sig));
                 if(r == ARCHIVE_FATAL)
                 {
+                    fprintf(stderr, " (FATAL)\n");
                     unlink(sigabsolutepath);
                     goto cleanup;
                 }
                 else if(r < ARCHIVE_WARN)
+                {
+                    fprintf(stderr, " (FAILED, the archive will be incomplete!)\n");
+                    // FIXME: Maybe abort on failure, too, we don't really want to end up with an incomplete archive...
                     continue;
+                }
             }
 
             // Fix the entry pathname, we used a tempfile...
