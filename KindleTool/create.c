@@ -21,8 +21,8 @@
 #include "kindle_tool.h"
 
 static int metadata_filter(struct archive *, void *, struct archive_entry *);
-static void write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static void write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
+static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
+static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
@@ -135,15 +135,17 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
  * Write a single file (or directory or other filesystem object) to
  * the archive.
  */
-static void write_file(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
+static int write_file(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
-    write_entry(kttar, a, in_a, entry);
+    if (write_entry(kttar, a, in_a, entry) != 0)
+        return 1;
+    return 0;
 }
 
 /*
  * Write a single entry to the archive.
  */
-static void write_entry(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
+static int write_entry(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     int e;
 
@@ -154,7 +156,7 @@ static void write_entry(struct kttar *kttar, struct archive *a, struct archive *
     }
 
     if(e == ARCHIVE_FATAL)
-        exit(1);        // FIXME
+        return 1;
 
     /*
      * If we opened a file earlier, write it out now.  Note that
@@ -164,9 +166,10 @@ static void write_entry(struct kttar *kttar, struct archive *a, struct archive *
      */
     if(e >= ARCHIVE_WARN && archive_entry_size(entry) > 0)
     {
-        if(copy_file_data_block(kttar, a, in_a, entry))
-            exit(1);    // FIXME
+        if(copy_file_data_block(kttar, a, in_a, entry) != 0)
+            return 1;
     }
+    return 0;
 }
 
 /* Helper function to copy file to archive. */
@@ -372,7 +375,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             fprintf(stderr, "a %s\n", archive_entry_pathname(entry));
 
             // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
-            write_file(kttar, a, disk, entry);  // FIXME: Error handling...
+            if(write_file(kttar, a, disk, entry) != 0)
+                goto cleanup;
 
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(archive_entry_filetype(entry) == AE_IFREG)
@@ -605,7 +609,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             fprintf(stderr, "a %s\n", signame);
 
             // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
-            write_file(kttar, a, disk_sig, entry_sig);  // FIXME: Error handling... (with an unlink sigabsolutepath on FATAL!)
+            if(write_file(kttar, a, disk_sig, entry_sig) != 0)
+            {
+                // Delete temp file before crapping out
+                unlink(sigabsolutepath);
+                goto cleanup;
+            }
 
             // Delete the file once we're done, be it a signature or the bundlefile
             unlink(sigabsolutepath);
