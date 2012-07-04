@@ -5,6 +5,7 @@ lib/
 Release/
 Debug/
 Kindle/
+MinGW/
 # Ignore version tag
 version-inc
 # Ignore lowercase (Linux) manpage
