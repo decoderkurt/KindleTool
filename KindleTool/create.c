@@ -85,20 +85,6 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     return 0;
 }
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-static void path_win32_to_posix(char *);
-// \ => / in paths on Windows, to make fopen() happy with _fullpath() output
-static void path_win32_to_posix(char *path)
-{
-    while(*path)
-    {
-        if(*path == '\\')
-            *path = '/';
-        path++;
-    }
-}
-#endif
-
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
 {
