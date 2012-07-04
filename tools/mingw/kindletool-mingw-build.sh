@@ -93,8 +93,8 @@ EOF
 	nice ct-ng build
 }
 
-## I'd use this TC: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/release/ but they're actually x86_64, not i686, so, fallback to the
-## automated builds...
+## I'd use this TC: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/release/
+## but they're actually for an x86_64 Linux host, not x86, so, fallback to the automated builds on my x86 box...
 
 echo "* Setting environment up . . ."
 echo ""

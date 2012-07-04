@@ -131,20 +131,15 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
     }
 }
 
-/*
- * Write a single file (or directory or other filesystem object) to
- * the archive.
- */
+// Write a single file (or directory or other filesystem object) to the archive.
 static int write_file(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
-    if (write_entry(kttar, a, in_a, entry) != 0)
+    if(write_entry(kttar, a, in_a, entry) != 0)
         return 1;
     return 0;
 }
 
-/*
- * Write a single entry to the archive.
- */
+// Write a single entry to the archive.
 static int write_entry(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     int e;
@@ -158,12 +153,8 @@ static int write_entry(struct kttar *kttar, struct archive *a, struct archive *i
     if(e == ARCHIVE_FATAL)
         return 1;
 
-    /*
-     * If we opened a file earlier, write it out now.  Note that
-     * the format handler might have reset the size field to zero
-     * to inform us that the archive body won't get stored.  In
-     * that case, just skip the write.
-     */
+    // If we opened a file earlier, write it out now. Note that the format handler might have reset the size field to zero
+    // to inform us that the archive body won't get stored. In that case, just skip the write.
     if(e >= ARCHIVE_WARN && archive_entry_size(entry) > 0)
     {
         if(copy_file_data_block(kttar, a, in_a, entry) != 0)
@@ -172,7 +163,7 @@ static int write_entry(struct kttar *kttar, struct archive *a, struct archive *i
     return 0;
 }
 
-/* Helper function to copy file to archive. */
+// Helper function to copy file to archive.
 static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     size_t bytes_read;
@@ -204,13 +195,13 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
                 bytes_written = archive_write_data(a, null_buff, ns);
                 if(bytes_written < 0)
                 {
-                    /* Write failed; this is bad */
+                    // Write failed; this is bad
                     fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
                     return -1;
                 }
                 if((size_t)bytes_written < ns)
                 {
-                    /* Write was truncated; warn but continue. */
+                    // Write was truncated; warn but continue.
                     fprintf(stderr, "%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
                     return 0;
                 }
@@ -222,13 +213,13 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
         bytes_written = archive_write_data(a, buff, bytes_read);
         if(bytes_written < 0)
         {
-            /* Write failed; this is bad */
+            // Write failed; this is bad
             fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
             return -1;
         }
         if((size_t)bytes_written < bytes_read)
         {
-            /* Write was truncated; warn but continue. */
+            // Write was truncated; warn but continue.
             fprintf(stderr, "%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
             return 0;
         }
@@ -276,20 +267,17 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     FILE *bundlefile = NULL;
     struct stat st;
 
-    /*
-     * Use a pointer for consistency, but stack-allocated storage
-     * for ease of cleanup.
-    */
+    // Use a pointer for consistency, but stack-allocated storage for ease of cleanup.
     kttar = &kttar_storage;
     memset(kttar, 0, sizeof(*kttar));
-    /* Choose a suitable copy buffer size */
+    // Choose a suitable copy buffer size
     kttar->buff_size = 64 * 1024;
     while(kttar->buff_size < (size_t) DEFAULT_BYTES_PER_BLOCK)
         kttar->buff_size *= 2;
-    /* Try to compensate for space we'll lose to alignment. */
+    // Try to compensate for space we'll lose to alignment.
     kttar->buff_size += 16 * 1024;
 
-    /* Allocate a buffer for file data. */
+    // Allocate a buffer for file data.
     if((kttar->buff = malloc(kttar->buff_size)) == NULL)
     {
         fprintf(stderr, "Cannot allocate memory for archive copy buffer\n");
@@ -356,7 +344,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             else
                 archive_entry_set_perm(entry, 0644);
 
-            /* Non-regular files get archived with zero size. */
+            // Non-regular files get archived with zero size.
             if(archive_entry_filetype(entry) != AE_IFREG)
                 archive_entry_set_size(entry, 0);
 
