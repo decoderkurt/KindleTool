@@ -203,7 +203,7 @@ cat > CREDITS << EOF
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
   |
-  `->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009, 2010 by the mingw-w64 project,
+  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009, 2010 by the mingw-w64 project,
       Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/apps/trac/mingw-w64/browser/tags/v2.0.4/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
       (http://mingw-w64.sourceforge.net/)
 EOF
