@@ -1240,10 +1240,10 @@ int kindle_create_main(int argc, char *argv[])
             archive_entry_free(entry);
             archive_match_free(match);
         }
-        // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output
+        // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
         if((output = fopen(output_filename, "wb")) == NULL)
         {
-            fprintf(stderr, "Cannot create output '%s'.\n", output_filename);
+            fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
             goto do_error;
         }
     }
@@ -1354,15 +1354,6 @@ int kindle_create_main(int argc, char *argv[])
     {
         fprintf(stderr, "Cannot read input tarball '%s'.\n", tarball_filename);
         goto do_error;
-    }
-    // Don't try to create a file if we're outputting to stdout
-    if(output != stdout)
-    {
-        if((output = fopen(output_filename, "wb")) == NULL)
-        {
-            fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
-            goto do_error;
-        }
     }
     if(kindle_create(&info, input, output, fake_sign) < 0)
     {
