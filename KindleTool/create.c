@@ -452,6 +452,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             if((file = fopen(to_sign_and_bundle_list[i], "rb")) == NULL)
             {
                 fprintf(stderr, "Cannot open '%s' for reading: %s!\n", to_sign_and_bundle_list[i], strerror(errno));
+                // Avoid a double free (beginning from the second iteration, since we freed signame at the end of the first iteration, but it's not allocated yet, and cleanup will try to free...)
+                signame = NULL;
                 goto cleanup;
             }
             // Don't hash our bundlefile
@@ -461,6 +463,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, "Cannot calculate hash sum for '%s'\n", to_sign_and_bundle_list[i]);
                     fclose(file);
+                    // Avoid a double free, bis.
+                    signame = NULL;
                     goto cleanup;
                 }
                 md5[MD5_HASH_LENGTH] = 0;
