@@ -208,7 +208,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
                 if((size_t)bytes_written < ns)
                 {
                     /* Write was truncated; warn but continue. */
-                    fprintf(stderr,"%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
+                    fprintf(stderr, "%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
                     return 0;
                 }
                 progress += bytes_written;
@@ -226,7 +226,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
         if((size_t)bytes_written < bytes_read)
         {
             /* Write was truncated; warn but continue. */
-            fprintf(stderr,"%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
+            fprintf(stderr, "%s: Truncated write; file may have grown while being archived.\n", archive_entry_pathname(entry));
             return 0;
         }
         progress += bytes_written;
@@ -305,7 +305,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
 // See kindle_tool.h for why we have to jump through hoops to differentiate clang from GCC...
 #if !defined(__clang__) && defined(__GNUC__) && GCC_VERSION < 40600
-    // Ugly dummy initialization to shutup a stupid GCC < 4.6 warning
+    // Ugly dummy initialization to shutup a stupid GCC < 4.6 warning   // FIXME: Check if we still need that
     disk_sig = archive_read_disk_new();
     archive_read_free(disk_sig);
 #endif
@@ -440,11 +440,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             if(dirty_bundlefile)
             {
 #if defined(_WIN32) && !defined(__CYGWIN__)
-            // Always use a 64-bit stat on MinGW
-            _stati64(to_sign_and_bundle_list[i], &st);
+                // Always use a 64-bit stat on MinGW
+                _stati64(to_sign_and_bundle_list[i], &st);
 #else
-            // We're out of a libarchive read loop, so do a stat call ourselves
-            lstat(to_sign_and_bundle_list[i], &st);
+                // We're out of a libarchive read loop, so do a stat call ourselves
+                lstat(to_sign_and_bundle_list[i], &st);
 #endif
             }
 
@@ -477,19 +477,19 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
             else
             {
-            pathlen = strlen(to_sign_and_bundle_list[i]);
-            signame = malloc(pathlen + 4 + 1);
-            strncpy(signame, to_sign_and_bundle_list[i], pathlen + 4 + 1);
-            strncat(signame, ".sig", 4);
+                pathlen = strlen(to_sign_and_bundle_list[i]);
+                signame = malloc(pathlen + 4 + 1);
+                strncpy(signame, to_sign_and_bundle_list[i], pathlen + 4 + 1);
+                strncat(signame, ".sig", 4);
             }
             // Create our sigfile in a tempfile
             // We have to make sure mkstemp's template is reset first...
-    #if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
             strcpy(sigabsolutepath, "/kindletool_create_sig_XXXXXX");
-    #else
+#else
             strcpy(sigabsolutepath, "/tmp/kindletool_create_sig_XXXXXX");
-    #endif
-    #if defined(_WIN32) && !defined(__CYGWIN__)
+#endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
             if(_mktemp(sigabsolutepath) == NULL)
             {
                 fprintf(stderr, "Couldn't create temporary file template.\n");
@@ -497,9 +497,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 goto cleanup;
             }
             sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
-    #else
+#else
             sigfd = mkstemp(sigabsolutepath);
-    #endif
+#endif
             if(sigfd == -1)
             {
                 fprintf(stderr, "Couldn't open temporary signature file.\n");
