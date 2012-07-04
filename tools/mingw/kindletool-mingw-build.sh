@@ -188,7 +188,7 @@ if [[ ! -d "libarchive-3.0.4" ]] ; then
 fi
 
 # Build KT packages credits
-cat > CREDITS << EOF
+cat > ../../CREDITS << EOF
 * kindletool.exe: KindleTool, Copyright (C) 2011-2012  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
