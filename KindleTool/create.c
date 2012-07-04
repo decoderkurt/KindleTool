@@ -340,7 +340,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, " (FAILED)\n");
                     // NOTE: We don't want to end up with an incomplete archive, abort.
-                    //continue;
                     goto cleanup;
                 }
             }
@@ -580,7 +579,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 {
                     fprintf(stderr, " (FAILED)\n");
                     // NOTE: We don't want to end up with an incomplete archive, abort.
-                    //continue;
                     unlink(sigabsolutepath);
                     goto cleanup;
                 }
