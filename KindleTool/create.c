@@ -267,9 +267,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     int sigfd;
     char *pathnamecpy = NULL;
 #if defined(_WIN32) && !defined(__CYGWIN__)
-    char bundle_filename[] = "/kindletool_create_bun_XXXXXX";
+    char bundle_filename[] = "/kindletool_create_idx_XXXXXX";
 #else
-    char bundle_filename[] = "/tmp/kindletool_create_bun_XXXXXX";
+    char bundle_filename[] = "/tmp/kindletool_create_idx_XXXXXX";
 #endif
     int bundle_fd = -1;
     FILE *bundlefile = NULL;
@@ -436,7 +436,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             // It's the second time we're looping over the bundlefile, just archive it
             // Just set the correct pathnames...
             signame = strdup(INDEX_FILE_NAME);
-            // FIXME: Fragile, make sure sigabsolutepath & bundle_filename are always the same length...
+            // NOTE: Fragile, sigabsolutepath & bundle_filename needs to be of the same length...
             strcpy(sigabsolutepath, bundle_filename);
         }
         else
@@ -445,8 +445,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             if(dirty_bundlefile)
             {
 #if defined(_WIN32) && !defined(__CYGWIN__)
-                // Always use a 64-bit stat on MinGW
-                _stati64(to_sign_and_bundle_list[i], &st);
+                // No lstat on MinGW, so use stat instead (which should hopefully use a 64-bit off_t type...)
+                stat(to_sign_and_bundle_list[i], &st);
 #else
                 // We're out of a libarchive read loop, so do a stat call ourselves
                 lstat(to_sign_and_bundle_list[i], &st);
