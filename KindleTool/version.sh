@@ -23,15 +23,6 @@ case "${UNAME}" in
 	;;
 esac
 
-# Detect Linux -> mingw cross toolchains, in a crappy way
-if [[ "${UNAME}" == "Linux" ]] ; then
-	if [[ "${CC}" == *mingw* ]] ; then
-		OSTARGET="MinGW"
-	else
-		OSTARGET="${UNAME}"
-	fi
-fi
-
 # On Linux, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
 if [[ "${UNAME}" == "Linux" ]] ; then
 	if pkg-config --atleast-version=3.0.3 libarchive ; then
@@ -135,7 +126,6 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
 		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
 		echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
-		echo "OSTARGET = ${OSTARGET}" >> ${VER_FILE}
 	fi
 fi
 

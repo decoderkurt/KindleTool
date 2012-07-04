@@ -3,11 +3,18 @@ STRIP?=strip
 DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -g3
 OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
+MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
 ASAN_CLFAGS="-O2 -march=native -faddress-sanitizer -fno-omit-frame-pointer -g3"
 
-# Kindle cross toolchain prefix
-CROSS_PREFIX?=arm-kindle-linux-gnueabi-
+# Kindlecross toolchain prefix
+ifeq "$(KINDLE)" "true"
+	CROSS_PREFIX?=arm-kindle-linux-gnueabi-
+endif
+# MinGW cross toolchain prefix
+ifeq "$(MINGW)" "true"
+	CROSS_PREFIX?=i686-w64-mingw32-
+endif
 
 SRCS=kindle_tool.c create.c convert.c
 
@@ -47,14 +54,13 @@ else
 endif
 LIBS=-larchive -lcrypto -lz
 
+# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
 ifeq "$(OSTYPE)" "Linux"
-	ifeq "$(OSTARGET)" "MinGW"
-		# Needed for linking statically against OpenSSL on MinGW
-		LIBS+=-lgdi32
-	else
-		# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
-		LIBS+=-ldl
-	endif
+	LIBS+=-ldl
+endif
+# Needed for linking statically against OpenSSL on MinGW
+ifeq "$(MINGW)" "true"
+	LIBS+=-lgdi32
 endif
 # If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)
 #ifeq "$(OSTYPE)" "Linux"
@@ -72,6 +78,14 @@ endif
 ifeq "$(KINDLE)" "true"
 	OUT_DIR=Kindle
 	CFLAGS?=$(K3_CFLAGS)
+	LDFLAGS?=-Wl,-O1 -Wl,--as-needed
+	CC:=$(CROSS_PREFIX)gcc
+	STRIP:=$(CROSS_PREFIX)strip
+endif
+
+ifeq "$(MINGW)" "true"
+	OUT_DIR=MinGW
+	CFLAGS?=$(MINGW_CFLAGS)
 	LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
@@ -96,13 +110,11 @@ KT_CFLAGS+=-Wcast-qual
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...
-ifeq "$(OSTYPE)" "Linux"
-	ifeq "$(OSTARGET)" "MinGW"
-		# That's enough for MinGW
-		KT_CFLAGS+=-D_GNU_SOURCE
-		# But not for MinGW-w64...
-		KT_CFLAGS+=-D__USE_MINGW_ANSI_STDIO=1
-	endif
+ifeq "$(MINGW)" "true"
+	# That's enough for MinGW
+	KT_CFLAGS+=-D_GNU_SOURCE
+	# But not for MinGW-w64...
+	KT_CFLAGS+=-D__USE_MINGW_ANSI_STDIO=1
 endif
 KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 # Add a user@host build tag, unless explicitly forbidden
@@ -157,7 +169,7 @@ endif
 
 all: outdir kindletool kindletool.1
 
-ifeq "$(OSTARGET)" "MinGW"
+ifeq "$(MINGW)" "true"
 kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@.exe $(OBJS) $(LIBS)
 else
@@ -165,14 +177,22 @@ kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
 endif
 
+ifeq "$(MINGW)" "true"
+strip: all
+	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool.exe
+else
 strip: all
 	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool
+endif
 
 debug:
 	$(MAKE) all DEBUG=true
 
 kindle:
 	$(MAKE) strip KINDLE=true
+
+mingw:
+	$(MAKE) strip MINGW=true
 
 ifeq "$(OSTYPE)" "Linux"
 clean_man:
@@ -188,6 +208,8 @@ clean: clean_man
 	rm -rf Debug/kindletool
 	rm -rf Kindle/*.o
 	rm -rf Kindle/kindletool
+	rm -rf MinGW/*.o
+	rm -rf MinGW/kindletool.exe
 	rm -rf version-inc
 
 ifeq "$(OSTYPE)" "Linux"
@@ -207,4 +229,4 @@ install: all install_man
 	install -m 644 kindletool.1 $(MANDIR)
 
 
-.PHONY: all install install_man clean clean_man default outdir kindletool strip debug kindle
+.PHONY: all install install_man clean clean_man default outdir kindletool strip debug kindle mingw
