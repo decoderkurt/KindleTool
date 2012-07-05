@@ -24,7 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char ***, int *, char *);
+static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char ** *, int *, char *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {

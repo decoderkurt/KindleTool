@@ -94,7 +94,7 @@ EOF
 }
 
 ## I'd use this TC: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/release/
-## but they're actually for an x86_64 Linux host, not x86, so, fallback to the automated builds on my x86 box...
+## but they're actually for an x86_64 Linux host, not x86, so, fallback to the automated builds on my x86 box... (Or use http://code.google.com/p/mingw-w64-dgn/)
 
 echo "* Setting environment up . . ."
 echo ""
