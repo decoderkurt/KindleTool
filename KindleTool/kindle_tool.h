@@ -213,7 +213,6 @@ int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
 int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const int);
 int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const int);
 int kindle_convert_main(int, char **);
-int libarchive_copy_data(struct archive *, struct archive *);
 int libarchive_extract(const char *, const char *);
 int kindle_extract_main(int, char **);
 

@@ -131,7 +131,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
     }
 }
 
-// Write a single file (or directory or other filesystem object) to the archive.
+// Write a single file (or directory or other filesystem object) to the archive [from libarchive's tar/write.c].
 static int write_file(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     if(write_entry(kttar, a, in_a, entry) != 0)
@@ -139,7 +139,7 @@ static int write_file(struct kttar *kttar, struct archive *a, struct archive *in
     return 0;
 }
 
-// Write a single entry to the archive.
+// Write a single entry to the archive [from libarchive's tar/write.c].
 static int write_entry(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     int e;
@@ -163,7 +163,7 @@ static int write_entry(struct kttar *kttar, struct archive *a, struct archive *i
     return 0;
 }
 
-// Helper function to copy file to archive.
+// Helper function to copy file to archive [from libarchive's tar/write.c].
 static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct archive *in_a, struct archive_entry *entry)
 {
     size_t bytes_read;
@@ -233,6 +233,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     return 0;
 }
 
+// Archiving code inspired from libarchive tar/write.c ;).
 int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;

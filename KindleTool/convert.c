@@ -453,41 +453,16 @@ int kindle_convert_main(int argc, char *argv[])
         return 0;
 }
 
-// libarchive helper funcs, more or less verbatim from the examples/doc
-int libarchive_copy_data(struct archive *ar, struct archive *aw)
-{
-    int r;
-    const void *buff;
-    size_t size;
-    int64_t offset;
-
-    for(;;)
-    {
-        r = archive_read_data_block(ar, &buff, &size, &offset);
-        if(r == ARCHIVE_EOF)
-            return ARCHIVE_OK;
-        if(r != ARCHIVE_OK)
-            return r;
-        r = archive_write_data_block(aw, buff, size, offset);
-        if(r != ARCHIVE_OK)
-        {
-            fprintf(stderr, "archive_write_data_block() failed: %s\n", archive_error_string(aw));
-            return r;
-        }
-    }
-}
-
+// Heavily inspired from libarchive's tar/read.c ;)
 int libarchive_extract(const char *filename, const char *prefix)
 {
     struct archive *a;
-    struct archive *ext;
     struct archive_entry *entry;
     int flags;
     int r;
     const char *path = NULL;
     char *fixed_path = NULL;
     size_t len;
-    int dirty_archive = 0;
 
     // Select which attributes we want to restore.
     flags = ARCHIVE_EXTRACT_TIME;
@@ -502,9 +477,6 @@ int libarchive_extract(const char *filename, const char *prefix)
     archive_read_support_format_tar(a);
     archive_read_support_format_gnutar(a);
     archive_read_support_filter_gzip(a);
-    ext = archive_write_disk_new();
-    archive_write_disk_set_options(ext, flags);
-    archive_write_disk_set_standard_lookup(ext);
 
     if(filename != NULL && strcmp(filename, "-") == 0)
         filename = NULL;
@@ -512,9 +484,8 @@ int libarchive_extract(const char *filename, const char *prefix)
     {
         fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
         archive_read_free(a);
-        goto cleanup;
+        return 1;
     }
-    dirty_archive = 1;
 
     for(;;)
     {
@@ -535,26 +506,12 @@ int libarchive_extract(const char *filename, const char *prefix)
         snprintf(fixed_path, len, "%s/%s", prefix, path);
         archive_entry_copy_pathname(entry, fixed_path);
 
-        r = archive_write_header(ext, entry);
+        // archive_read_extract should take care of everything for us...
+        // (creating a write_disk archive, setting a standard lookup, the flags we asked for, writing our entry header & content, and destroying the write_disk archive ;))
+        r = archive_read_extract(a, entry, flags);
         if(r != ARCHIVE_OK)
-            fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(ext));
-        else if(archive_entry_size(entry) > 0)
         {
-            libarchive_copy_data(a, ext);
-            if(r != ARCHIVE_OK)
-                fprintf(stderr, "copy_data() failed: %s\n", archive_error_string(ext));
-            if(r < ARCHIVE_WARN)
-            {
-                free(fixed_path);
-                goto cleanup;
-            }
-        }
-
-        r = archive_write_finish_entry(ext);
-        if(r != ARCHIVE_OK)
-            fprintf(stderr, "archive_write_finish_entry() failed: %s\n", archive_error_string(ext));
-        if(r < ARCHIVE_WARN)
-        {
+            fprintf(stderr, "archive_read_extract() failed: %s\n", archive_error_string(a));
             free(fixed_path);
             goto cleanup;
         }
@@ -564,20 +521,12 @@ int libarchive_extract(const char *filename, const char *prefix)
     }
     archive_read_close(a);
     archive_read_free(a);
-    //dirty_archive = 0;        // Make clang's sa happy
-    archive_write_close(ext);
-    archive_write_free(ext);
 
     return 0;
 
 cleanup:
-    if(dirty_archive)
-    {
-        archive_read_close(a);
-        archive_read_free(a);
-    }
-    archive_write_close(ext);
-    archive_write_free(ext);
+    archive_read_close(a);
+    archive_read_free(a);
 
     return 1;
 }
