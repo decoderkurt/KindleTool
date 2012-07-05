@@ -24,7 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int populate_entries_from_read_disk(struct kttar *, struct archive *, struct archive *, struct archive_entry *, int, char ***, int *, char *, char *);
+static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char ***, int *, char *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -234,12 +234,36 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     return 0;
 }
 
-// Helper function to populate & write entries from a read_disk_open, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
-static int populate_entries_from_read_disk(struct kttar *kttar, struct archive *a, struct archive *disk, struct archive_entry *entry, int first_pass, char ***to_sign_and_bundle_list, int *sign_and_bundle_index, char *signame, char *sigabsolutepath)
+// Helper function to populate & write entries from a read_disk_open loop, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
+static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char ***to_sign_and_bundle_list, int *sign_and_bundle_index, char *signame)
 {
     int r;
     int tmp_index;
     char **tmp_list;
+    struct archive *disk;
+    struct archive_entry *entry;
+
+    disk = archive_read_disk_new();
+    entry = archive_entry_new();
+
+    if(first_pass)
+    {
+        // Perform pattern matching in a metadata filter to apply our exclude list to reguar files
+        // NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
+        archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
+    }
+    archive_read_disk_set_standard_lookup(disk);
+
+    r = archive_read_disk_open(disk, input_filename);
+    if(r != ARCHIVE_OK)
+    {
+        fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
+        if(!first_pass)
+            unlink(input_filename);
+        archive_read_free(disk);
+        archive_entry_free(entry);
+        return 1;
+    }
 
     for(;;)
     {
@@ -253,13 +277,13 @@ static int populate_entries_from_read_disk(struct kttar *kttar, struct archive *
             if(r == ARCHIVE_FATAL)
             {
                 fprintf(stderr, " (FATAL)\n");
-                return 1;
+                goto cleanup;
             }
             else if(r < ARCHIVE_WARN)
             {
                 fprintf(stderr, " (FAILED)\n");
                 // NOTE: We don't want to end up with an incomplete archive, abort.
-                return 1;
+                goto cleanup;
             }
         }
 
@@ -297,7 +321,7 @@ static int populate_entries_from_read_disk(struct kttar *kttar, struct archive *
 
         // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
         if(write_file(kttar, a, disk, entry) != 0)
-            return 1;
+            goto cleanup;
 
         if(first_pass)
         {
@@ -323,28 +347,35 @@ static int populate_entries_from_read_disk(struct kttar *kttar, struct archive *
         else
         {
             // Delete the file once we're done, be it a signature or the bundlefile
-            unlink(sigabsolutepath);
+            unlink(input_filename);
         }
     }
 
+    archive_read_close(disk);
+    archive_read_free(disk);
+    archive_entry_free(entry);
+
     return 0;
+
+cleanup:
+    archive_read_close(disk);
+    archive_read_free(disk);
+    archive_entry_free(entry);
+
+    return 1;
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
 int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
-    struct archive *disk;
-    struct archive_entry *entry;
     struct kttar *kttar, kttar_storage;
-    int r;
     int i;
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
     int dirty_bundlefile = 0;
     int created_bundlefile = 0;
-    int dirty_disk = 0;
     char **to_sign_and_bundle_list = NULL;
     int sign_and_bundle_index = 0;
     size_t pathlen;
@@ -382,8 +413,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         return 1;
     }
 
-    entry = archive_entry_new();
-
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
@@ -404,30 +433,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
     {
-        disk = archive_read_disk_new();
-
-        // Perform pattern matching in a metadata filter to apply our exclude list to reguar files
-        // NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
-        archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
-        archive_read_disk_set_standard_lookup(disk);
-
-        r = archive_read_disk_open(disk, filename[i]);
-        if(r != ARCHIVE_OK)
-        {
-            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
-            archive_read_free(disk);
-            goto cleanup;
-        }
-        // Hackish, flag telling the cleanup block if disk is open...
-        dirty_disk = 1;
-
         // Populate & write our entries from read_disk_open's directory walking...
-        if(populate_entries_from_read_disk(kttar, a, disk, entry, 1, &to_sign_and_bundle_list, &sign_and_bundle_index, NULL, NULL) != 0)
+        if(create_from_archive_read_disk(kttar, a, filename[i], 1, &to_sign_and_bundle_list, &sign_and_bundle_index, NULL) != 0)
             goto cleanup;
-
-        archive_read_close(disk);
-        archive_read_free(disk);
-        dirty_disk = 0;
     }
 
     // Add our bundle index to the end of the list...
@@ -593,30 +601,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         }
 
         // And now, for the fun part! Append our sigfile to the archive...
-        disk = archive_read_disk_new();
-
-        r = archive_read_disk_open(disk, sigabsolutepath);
-        archive_read_disk_set_standard_lookup(disk);
-        if(r != ARCHIVE_OK)
-        {
-            fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
-            unlink(sigabsolutepath);
-            archive_read_free(disk);
-            goto cleanup;
-        }
-        // Hackish, flag telling the cleanup block if disk is open...
-        dirty_disk = 1;
-
         // Populate & write our entries...
-        if(populate_entries_from_read_disk(kttar, a, disk, entry, 0, NULL, 0, signame, sigabsolutepath) != 0)
+        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, NULL, 0, signame) != 0)
         {
             unlink(sigabsolutepath);
             goto cleanup;
         }
-
-        archive_read_close(disk);
-        archive_read_free(disk);
-        dirty_disk = 0;
 
         // Cleanup
         free(signame);
@@ -628,8 +618,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     free(to_sign_and_bundle_list);
     archive_write_close(a);
     archive_write_free(a);
-
-    archive_entry_free(entry);
 
     return 0;
 
@@ -650,14 +638,7 @@ cleanup:
     }
     // Free what we might have alloc'ed
     free(signame);
-    // And what libarchive might have alloc'ed
-    archive_entry_free(entry);
     // The big stuff, too...
-    if(dirty_disk)
-    {
-        archive_read_close(disk);
-        archive_read_free(disk);
-    }
     free(kttar->buff);
     if(sign_and_bundle_index > 0)
     {
