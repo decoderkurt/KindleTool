@@ -24,6 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
+static int populate_entries_from_read_disk(struct kttar *, struct archive *, struct archive *, struct archive_entry *, int, char ***, int *, char *, char *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -233,6 +234,102 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     return 0;
 }
 
+// Helper function to populate & write entries from a read_disk_open, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
+static int populate_entries_from_read_disk(struct kttar *kttar, struct archive *a, struct archive *disk, struct archive_entry *entry, int first_pass, char ***to_sign_and_bundle_list, int *sign_and_bundle_index, char *signame, char *sigabsolutepath)
+{
+    int r;
+    int tmp_index;
+    char **tmp_list;
+
+    for(;;)
+    {
+        archive_entry_clear(entry);
+        r = archive_read_next_header2(disk, entry);
+        if(r == ARCHIVE_EOF)
+            break;
+        else if(r != ARCHIVE_OK)
+        {
+            fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
+            if(r == ARCHIVE_FATAL)
+            {
+                fprintf(stderr, " (FATAL)\n");
+                return 1;
+            }
+            else if(r < ARCHIVE_WARN)
+            {
+                fprintf(stderr, " (FAILED)\n");
+                // NOTE: We don't want to end up with an incomplete archive, abort.
+                return 1;
+            }
+        }
+
+        if(!first_pass)
+        {
+            // Fix the entry pathname, we used a tempfile...
+            archive_entry_copy_pathname(entry, signame);
+        }
+        // And then override a bunch of stuff (namely, uig/guid/chmod)
+        archive_entry_set_uid(entry, 0);
+        archive_entry_set_uname(entry, "root");
+        archive_entry_set_gid(entry, 0);
+        archive_entry_set_gname(entry, "root");
+
+        if(first_pass)
+        {
+            // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
+            if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(archive_entry_pathname(entry)) || IS_SHELL(archive_entry_pathname(entry))))
+                archive_entry_set_perm(entry, 0755);
+            else
+                archive_entry_set_perm(entry, 0644);
+
+            // Non-regular files get archived with zero size.
+            if(archive_entry_filetype(entry) != AE_IFREG)
+                archive_entry_set_size(entry, 0);
+        }
+        else
+        {
+            archive_entry_set_perm(entry, 0644);
+        }
+
+        archive_read_disk_descend(disk);
+        // Print what we're adding, ala bsdtar
+        fprintf(stderr, "a %s\n", archive_entry_pathname(entry));
+
+        // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
+        if(write_file(kttar, a, disk, entry) != 0)
+            return 1;
+
+        if(first_pass)
+        {
+            // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
+            if(archive_entry_filetype(entry) == AE_IFREG)
+            {
+                // Pointer fun times!
+                tmp_index = *sign_and_bundle_index;
+                tmp_list = *to_sign_and_bundle_list;
+
+                // But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
+                // Why not just do it now with the current sign_file & md5_sum implementation? Because we'd need to fopen() the input file (to sign & hash it),
+                // while it's still open through libarchive read_disk API. That's not possible on non POSIX systems.
+                // (You get a very helpful 'Permission denied' error on native Windows when opening a file that already has an fd open to it...)
+                tmp_list = realloc(tmp_list, ++tmp_index * sizeof(char *));
+                tmp_list[tmp_index - 1] = strdup(archive_entry_pathname(entry));
+
+                // Fun with pointers!
+                *sign_and_bundle_index = tmp_index;
+                *to_sign_and_bundle_list = tmp_list;
+            }
+        }
+        else
+        {
+            // Delete the file once we're done, be it a signature or the bundlefile
+            unlink(sigabsolutepath);
+        }
+    }
+
+    return 0;
+}
+
 // Archiving code inspired from libarchive tar/write.c ;).
 int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
 {
@@ -324,62 +421,10 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         // Hackish, flag telling the cleanup block if disk is open...
         dirty_disk = 1;
 
-        for(;;)
-        {
-            archive_entry_clear(entry);
-            r = archive_read_next_header2(disk, entry);
-            if(r == ARCHIVE_EOF)
-                break;
-            else if(r != ARCHIVE_OK)
-            {
-                fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
-                if(r == ARCHIVE_FATAL)
-                {
-                    fprintf(stderr, " (FATAL)\n");
-                    goto cleanup;
-                }
-                else if(r < ARCHIVE_WARN)
-                {
-                    fprintf(stderr, " (FAILED)\n");
-                    // NOTE: We don't want to end up with an incomplete archive, abort.
-                    goto cleanup;
-                }
-            }
+        // Populate & write our entries from read_disk_open's directory walking...
+        if(populate_entries_from_read_disk(kttar, a, disk, entry, 1, &to_sign_and_bundle_list, &sign_and_bundle_index, NULL, NULL) != 0)
+            goto cleanup;
 
-            // And then override a bunch of stuff (namely, uig/guid/chmod)
-            archive_entry_set_uid(entry, 0);
-            archive_entry_set_uname(entry, "root");
-            archive_entry_set_gid(entry, 0);
-            archive_entry_set_gname(entry, "root");
-            // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
-            if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(archive_entry_pathname(entry)) || IS_SHELL(archive_entry_pathname(entry))))
-                archive_entry_set_perm(entry, 0755);
-            else
-                archive_entry_set_perm(entry, 0644);
-
-            // Non-regular files get archived with zero size.
-            if(archive_entry_filetype(entry) != AE_IFREG)
-                archive_entry_set_size(entry, 0);
-
-            archive_read_disk_descend(disk);
-            // Print what we're adding, ala bsdtar
-            fprintf(stderr, "a %s\n", archive_entry_pathname(entry));
-
-            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
-            if(write_file(kttar, a, disk, entry) != 0)
-                goto cleanup;
-
-            // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
-            if(archive_entry_filetype(entry) == AE_IFREG)
-            {
-                // But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
-                // Why not just do it now with the current sign_file & md5_sum implementation? Because we'd need to fopen() the input file (to sign & hash it),
-                // while it's still open through libarchive read_disk API. That's not possible on non POSIX systems.
-                // (You get a very helpful 'Permission denied' error on native Windows when opening a file that already has an fd open to it...)
-                to_sign_and_bundle_list = realloc(to_sign_and_bundle_list, ++sign_and_bundle_index * sizeof(char *));
-                to_sign_and_bundle_list[sign_and_bundle_index - 1] = strdup(archive_entry_pathname(entry));
-            }
-        }
         archive_read_close(disk);
         archive_read_free(disk);
         dirty_disk = 0;
@@ -547,7 +592,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             fclose(sigfile);
         }
 
-        // And now, for the fun part! Append our sigfile to the archive... Ugly code duplication ahead!
+        // And now, for the fun part! Append our sigfile to the archive...
         disk = archive_read_disk_new();
 
         r = archive_read_disk_open(disk, sigabsolutepath);
@@ -562,56 +607,13 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         // Hackish, flag telling the cleanup block if disk is open...
         dirty_disk = 1;
 
-        for(;;)
+        // Populate & write our entries...
+        if(populate_entries_from_read_disk(kttar, a, disk, entry, 0, NULL, 0, signame, sigabsolutepath) != 0)
         {
-            // First, inject a new entry, based on our sigfile :)
-            archive_entry_clear(entry);
-            r = archive_read_next_header2(disk, entry);
-            if(r == ARCHIVE_EOF)
-                break;
-            else if(r != ARCHIVE_OK)
-            {
-                fprintf(stderr, "archive_read_next_header2() for sig failed: %s", archive_error_string(disk));
-                if(r == ARCHIVE_FATAL)
-                {
-                    fprintf(stderr, " (FATAL)\n");
-                    unlink(sigabsolutepath);
-                    goto cleanup;
-                }
-                else if(r < ARCHIVE_WARN)
-                {
-                    fprintf(stderr, " (FAILED)\n");
-                    // NOTE: We don't want to end up with an incomplete archive, abort.
-                    unlink(sigabsolutepath);
-                    goto cleanup;
-                }
-            }
-
-            // Fix the entry pathname, we used a tempfile...
-            archive_entry_copy_pathname(entry, signame);
-
-            archive_entry_set_uid(entry, 0);
-            archive_entry_set_uname(entry, "root");
-            archive_entry_set_gid(entry, 0);
-            archive_entry_set_gname(entry, "root");
-            archive_entry_set_perm(entry, 0644);
-
-            // And then, write it to the archive...
-            archive_read_disk_descend(disk);
-            // Print what we're adding, bsdtar style
-            fprintf(stderr, "a %s\n", signame);
-
-            // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
-            if(write_file(kttar, a, disk, entry) != 0)
-            {
-                // Delete temp file before crapping out
-                unlink(sigabsolutepath);
-                goto cleanup;
-            }
-
-            // Delete the file once we're done, be it a signature or the bundlefile
             unlink(sigabsolutepath);
+            goto cleanup;
         }
+
         archive_read_close(disk);
         archive_read_free(disk);
         dirty_disk = 0;
