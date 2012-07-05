@@ -258,8 +258,6 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
     if(r != ARCHIVE_OK)
     {
         fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
-        if(!first_pass)
-            unlink(input_filename);
         archive_read_free(disk);
         archive_entry_free(entry);
         return 1;
