@@ -421,13 +421,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
     archive_write_open_fd(a, outfd);
 
-// See kindle_tool.h for why we have to jump through hoops to differentiate clang from GCC...
-#if !defined(__clang__) && defined(__GNUC__) && GCC_VERSION < 40600
-    // Ugly dummy initialization to shutup a stupid GCC < 4.6 warning
-    disk = archive_read_disk_new();
-    archive_read_free(disk);
-#endif
-
     // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
     {
