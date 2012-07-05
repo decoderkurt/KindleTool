@@ -289,6 +289,11 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     a = archive_write_new();
     archive_write_add_filter_gzip(a);
     archive_write_set_format_gnutar(a);
+
+    // These should be the default (cf. archive_write_new @ libarchive/archive_write.c), but reset them to be on the safe side...
+    archive_write_set_bytes_per_block(a, DEFAULT_BYTES_PER_BLOCK);
+    archive_write_set_bytes_in_last_block(a, -1);
+
     archive_write_open_fd(a, outfd);
 
 // See kindle_tool.h for why we have to jump through hoops to differentiate clang from GCC...
