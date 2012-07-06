@@ -1288,9 +1288,9 @@ int kindle_create_main(int argc, char *argv[])
     {
         case OTAUpdateV2:
             if(info.target_revision == UINT64_MAX)
-                fprintf(stderr, ") Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                fprintf(stderr, "), Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
             else
-                fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
             // Loop over meta
             for(i = 0; i < info.num_meta; i++)
             {
@@ -1303,12 +1303,12 @@ int kindle_create_main(int argc, char *argv[])
             break;
         case OTAUpdate:
             if(info.target_revision == UINT32_MAX)
-                fprintf(stderr, ") Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
+                fprintf(stderr, "), Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
             else
-                fprintf(stderr, ") Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
+                fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
             break;
         case RecoveryUpdate:
-            fprintf(stderr, ") Minor: %d, Magic 1: %d, Magic 2: %d\n", info.minor, info.magic_1, info.magic_2);
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d\n", info.minor, info.magic_1, info.magic_2);
             break;
         case UnknownUpdate:
         default:
