@@ -534,7 +534,6 @@ cleanup:
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
-    // FIXME: This is crappy, because P_tmpdir is / on Win32, and we need Administrator rights to write in /, but tmpfile probably does the same anyway...
     char tgz_filename[] = P_tmpdir "/kindletool_extract_tgz_XXXXXX";
     char *output_dir;
     FILE *bin_input;
