@@ -75,8 +75,9 @@
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
-#define IDX_DIRTY 1
-#define IDX_CREATED 2
+// Bundlefile status bitmasks
+#define BUNDLE_OPEN 1
+#define BUNDLE_CREATED 2
 
 // Version tag fallback
 #ifndef KT_VERSION
