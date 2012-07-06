@@ -76,8 +76,8 @@
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
 // Bundlefile status bitmasks
-#define BUNDLE_OPEN 1
-#define BUNDLE_CREATED 2
+#define BUNDLE_OPEN 1           // 1 << 0       (bit 0)
+#define BUNDLE_CREATED 2        // 1 << 1       (bit 1)
 
 // Version tag fallback
 #ifndef KT_VERSION
