@@ -600,7 +600,7 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Print a recap of what we're about to do
-    fprintf(stderr, "Extracting update package %s to %s via %s\n", bin_filename, output_dir, tgz_filename);
+    fprintf(stderr, "Extracting update package %s to %s\n", bin_filename, output_dir);
     if(kindle_convert(bin_input, tgz_output, NULL, 0) < 0)
     {
         fprintf(stderr, "Error converting update '%s'.\n", bin_filename);
