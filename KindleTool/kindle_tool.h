@@ -77,7 +77,9 @@
 
 // Don't break tempfiles on Win32... (It doesn't like paths starting with //, but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
 #if defined(_WIN32) && !defined(__CYGWIN__)
-#define P_tmpdir ""
+#define KT_TMPDIR ""
+#else
+#define KT_TMPDIR P_tmpdir
 #endif
 
 // Bundlefile status bitmasks

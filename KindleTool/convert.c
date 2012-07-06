@@ -534,7 +534,7 @@ cleanup:
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
-    char tgz_filename[] = P_tmpdir "/kindletool_extract_tgz_XXXXXX";
+    char tgz_filename[] = KT_TMPDIR "/kindletool_extract_tgz_XXXXXX";
     char *output_dir;
     FILE *bin_input;
     int tgz_fd;
