@@ -442,12 +442,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         unlink(bundle_filename);
         goto cleanup;
     }
-    // Now that it's created, append it as the last file...
-    kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
-    kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // And mark it as dirty (open), and created
+    // Now that it's created, mark it as dirty (open), and created
     dirty_bundlefile = 1;
     created_bundlefile = 1;
+    // And append it as the last file...
+    kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
+    kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= kttar->sign_and_bundle_index; i++)
