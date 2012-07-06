@@ -534,12 +534,8 @@ cleanup:
 int kindle_extract_main(int argc, char *argv[])
 {
     char *bin_filename;
-#if defined(_WIN32) && !defined(__CYGWIN__)
-    // FIXME: This is crappy, because we need Administrator rights to write in /, but tmpfile probably (according to libarchive) does the same anyway...
-    char tgz_filename[] = "/kindletool_extract_tgz_XXXXXX";
-#else
-    char tgz_filename[] = "/tmp/kindletool_extract_tgz_XXXXXX";
-#endif
+    // FIXME: This is crappy, because P_tmpdir is / on Win32, and we need Administrator rights to write in /, but tmpfile probably does the same anyway...
+    char tgz_filename[] = P_tmpdir "/kindletool_extract_tgz_XXXXXX";
     char *output_dir;
     FILE *bin_input;
     int tgz_fd;
@@ -570,7 +566,7 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
-    // We always create them in /tmp, and rely on the OS implementation to handle the umask,
+    // We always create them in P_tmpdir (usually /tmp or /var/tmp), and rely on the OS implementation to handle the umask,
     // it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
     // NOTE: Probably not as race-proof on MinGW, according to libarchive...
 #if defined(_WIN32) && !defined(__CYGWIN__)

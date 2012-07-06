@@ -75,6 +75,13 @@
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
+// In the unlikely case that P_tmpname is undefined on a POSIX system, default to /tmp
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#ifndef P_tmpdir
+#define P_tmpdir "/tmp"
+#endif
+#endif
+
 // Bundlefile status bitmasks
 #define BUNDLE_OPEN 1           // 1 << 0       (bit 0)
 #define BUNDLE_CREATED 2        // 1 << 1       (bit 1)
