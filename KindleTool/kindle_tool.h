@@ -75,18 +75,6 @@
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-// NOTE: In case P_tmpdir is undefined on Win32, default to / (which should be the default if _POSIX anyway). This is crappy because we need Administrator rights to write in C:\, but tmpfile already uses P_tmpdir...
-#ifndef P_tmpdir
-#define P_tmpdir "/"
-#endif
-#else
-// In the unlikely case that P_tmpdir is undefined on a POSIX system, default to /tmp
-#ifndef P_tmpdir
-#define P_tmpdir "/tmp"
-#endif
-#endif
-
 // Bundlefile status bitmasks
 #define BUNDLE_OPEN 1           // 1 << 0       (bit 0)
 #define BUNDLE_CREATED 2        // 1 << 1       (bit 1)
