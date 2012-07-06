@@ -1275,10 +1275,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    if(skip_archive)
-        fprintf(stderr, "Building %s%s (%.*s) update package %s directly from %s for %hd device%s (", (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, tarball_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
-    else
-        fprintf(stderr, "Building %s%s (%.*s) update package %s for %hd device%s (", (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building %s%s (%.*s) update package %s%s%s for %hd device%s (", (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive? " directly from " : ""), (skip_archive? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
