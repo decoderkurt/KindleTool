@@ -75,6 +75,9 @@
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 
+#define IDX_DIRTY 1
+#define IDX_CREATED 2
+
 // Version tag fallback
 #ifndef KT_VERSION
 #define KT_VERSION "v1.4.0-GIT"

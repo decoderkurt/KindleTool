@@ -363,8 +363,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
-    int dirty_bundlefile = 0;
-    int created_bundlefile = 0;
+    unsigned char bundlefile_status = 0;
     size_t pathlen;
     char *signame = NULL;
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -442,9 +441,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         unlink(bundle_filename);
         goto cleanup;
     }
-    // Now that it's created, mark it as dirty (open), and created
-    dirty_bundlefile = 1;
-    created_bundlefile = 1;
+    // Now that it's created, mark it as dirty (open), and created (using a bitmask, bit 0 (1): dirty, bit 1 (2): created)
+    bundlefile_status = 1 | 2;
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
@@ -456,7 +454,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         if(i == kttar->sign_and_bundle_index - 1)
         {
             fclose(bundlefile);
-            dirty_bundlefile = 0;
+            bundlefile_status &= ~1;
         }
 
         // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
@@ -471,7 +469,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         else
         {
             // First things first, if we're not the bundlefile, we're gonna need our size for a field of the bundlefile, so get on that...
-            if(dirty_bundlefile)
+            if((bundlefile_status & 1) == 1)
             {
                 // We're out of a libarchive read loop, so do a stat call ourselves
                 stat(kttar->to_sign_and_bundle_list[i], &st);
@@ -486,7 +484,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
                 goto cleanup;
             }
             // Don't hash our bundlefile
-            if(dirty_bundlefile)
+            if((bundlefile_status & 1) == 1)
             {
                 if(md5_sum(file, md5) != 0)
                 {
@@ -501,7 +499,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
 
             // If we're the bundlefile, fix the relative path to not use the tempfile path...
-            if(!dirty_bundlefile)
+            if((bundlefile_status & 1) != 1)
             {
                 pathlen = strlen(INDEX_FILE_NAME);
                 signame = malloc(pathlen + 4 + 1);
@@ -557,7 +555,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
 
             // Don't add the bundlefile to itself
-            if(dirty_bundlefile)
+            if((bundlefile_status & 1) == 1)
             {
                 // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
                 // Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
@@ -603,7 +601,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
 cleanup:
     // Close & remove the bundlefile if we crapped out in the middle of processing
-    if(dirty_bundlefile)
+    if((bundlefile_status & 1) == 1)
     {
         fclose(bundlefile);
         unlink(bundle_filename);
@@ -611,7 +609,7 @@ cleanup:
     else
     {
         // And if was created, but it's not open anymore, remove it too (that's a short window of time, namely, when we're looping over the bundlefile itself & its sigfile)
-        if(created_bundlefile)
+        if((bundlefile_status & 2) == 2)
         {
             unlink(bundle_filename);
         }
