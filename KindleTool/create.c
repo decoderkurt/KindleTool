@@ -441,7 +441,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         unlink(bundle_filename);
         goto cleanup;
     }
-    // Now that it's created, mark it as dirty (open), and created
+    // Now that it's there, mark it as open and created
     bundlefile_status = BUNDLE_OPEN | BUNDLE_CREATED;
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
@@ -454,6 +454,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         if(i == kttar->sign_and_bundle_index - 1)
         {
             fclose(bundlefile);
+            // It's closed, remove our flag
             bundlefile_status &= ~BUNDLE_OPEN;
         }
 
