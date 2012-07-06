@@ -24,7 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char ** *, int *, char *);
+static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -235,11 +235,10 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
 }
 
 // Helper function to populate & write entries from a read_disk_open loop, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
-static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char ***to_sign_and_bundle_list, int *sign_and_bundle_index, char *signame)
+static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char *signame)
 {
     int r;
-    int tmp_index;
-    char **tmp_list;
+
     struct archive *disk;
     struct archive_entry *entry;
 
@@ -326,20 +325,12 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             // If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
             if(archive_entry_filetype(entry) == AE_IFREG)
             {
-                // Pointer fun times!
-                tmp_index = *sign_and_bundle_index;
-                tmp_list = *to_sign_and_bundle_list;
-
                 // But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
-                // Why not just do it now with the current sign_file & md5_sum implementation? Because we'd need to fopen() the input file (to sign & hash it),
-                // while it's still open through libarchive read_disk API. That's not possible on non POSIX systems.
-                // (You get a very helpful 'Permission denied' error on native Windows when opening a file that already has an fd open to it...)
-                tmp_list = realloc(tmp_list, ++tmp_index * sizeof(char *));
-                tmp_list[tmp_index - 1] = strdup(archive_entry_pathname(entry));
-
-                // Fun with pointers!
-                *sign_and_bundle_index = tmp_index;
-                *to_sign_and_bundle_list = tmp_list;
+                // We can't  just do it now with the current sign_file & md5_sum implementation because we'd need to open() the input file (to sign & hash it),
+                // while it's already open through libarchive read_disk API. That's apparently not possible on non POSIX systems.
+                // (You get a very helpful 'Permission denied' error on Windows...)
+                kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
+                kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(archive_entry_pathname(entry));
             }
         }
         else
@@ -374,8 +365,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     char md5[MD5_HASH_LENGTH + 1];
     int dirty_bundlefile = 0;
     int created_bundlefile = 0;
-    char **to_sign_and_bundle_list = NULL;
-    int sign_and_bundle_index = 0;
     size_t pathlen;
     char *signame = NULL;
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -425,7 +414,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     for(i = 0; i < total_files; i++)
     {
         // Populate & write our entries from read_disk_open's directory walking...
-        if(create_from_archive_read_disk(kttar, a, filename[i], 1, &to_sign_and_bundle_list, &sign_and_bundle_index, NULL) != 0)
+        if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL) != 0)
             goto cleanup;
     }
 
@@ -454,24 +443,24 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
         goto cleanup;
     }
     // Now that it's created, append it as the last file...
-    to_sign_and_bundle_list = realloc(to_sign_and_bundle_list, ++sign_and_bundle_index * sizeof(char *));
-    to_sign_and_bundle_list[sign_and_bundle_index - 1] = strdup(bundle_filename);
+    kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
+    kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
     // And mark it as dirty (open), and created
     dirty_bundlefile = 1;
     created_bundlefile = 1;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
-    for(i = 0; i <= sign_and_bundle_index; i++)
+    for(i = 0; i <= kttar->sign_and_bundle_index; i++)
     {
         // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
-        if(i == sign_and_bundle_index - 1)
+        if(i == kttar->sign_and_bundle_index - 1)
         {
             fclose(bundlefile);
             dirty_bundlefile = 0;
         }
 
         // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
-        if(i == sign_and_bundle_index)
+        if(i == kttar->sign_and_bundle_index)
         {
             // It's the second time we're looping over the bundlefile, just archive it
             // Just set the correct pathnames...
@@ -485,13 +474,13 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             if(dirty_bundlefile)
             {
                 // We're out of a libarchive read loop, so do a stat call ourselves
-                stat(to_sign_and_bundle_list[i], &st);
+                stat(kttar->to_sign_and_bundle_list[i], &st);
             }
 
             // Go on as usual, hash, sign & bundle :)
-            if((file = fopen(to_sign_and_bundle_list[i], "rb")) == NULL)
+            if((file = fopen(kttar->to_sign_and_bundle_list[i], "rb")) == NULL)
             {
-                fprintf(stderr, "Cannot open '%s' for reading: %s!\n", to_sign_and_bundle_list[i], strerror(errno));
+                fprintf(stderr, "Cannot open '%s' for reading: %s!\n", kttar->to_sign_and_bundle_list[i], strerror(errno));
                 // Avoid a double free (beginning from the second iteration, since we freed signame at the end of the first iteration, but it's not allocated yet, and cleanup will try to free...)
                 signame = NULL;
                 goto cleanup;
@@ -501,7 +490,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             {
                 if(md5_sum(file, md5) != 0)
                 {
-                    fprintf(stderr, "Cannot calculate hash sum for '%s'\n", to_sign_and_bundle_list[i]);
+                    fprintf(stderr, "Cannot calculate hash sum for '%s'\n", kttar->to_sign_and_bundle_list[i]);
                     fclose(file);
                     // Avoid a double free, bis.
                     signame = NULL;
@@ -521,9 +510,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
             else
             {
-                pathlen = strlen(to_sign_and_bundle_list[i]);
+                pathlen = strlen(kttar->to_sign_and_bundle_list[i]);
                 signame = malloc(pathlen + 4 + 1);
-                strncpy(signame, to_sign_and_bundle_list[i], pathlen + 4 + 1);
+                strncpy(signame, kttar->to_sign_and_bundle_list[i], pathlen + 4 + 1);
                 strncat(signame, ".sig", 4);
             }
             // Create our sigfile in a tempfile
@@ -560,7 +549,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             }
             if(sign_file(file, rsa_pkey_file, sigfile) < 0)
             {
-                fprintf(stderr, "Cannot sign '%s'\n", to_sign_and_bundle_list[i]);
+                fprintf(stderr, "Cannot sign '%s'\n", kttar->to_sign_and_bundle_list[i]);
                 fclose(file);
                 fclose(sigfile);
                 unlink(sigabsolutepath);   // Delete empty/broken sigfile
@@ -572,8 +561,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
             {
                 // The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
                 // Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
-                pathnamecpy = strdup(to_sign_and_bundle_list[i]);
-                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(to_sign_and_bundle_list[i]) || IS_SHELL(to_sign_and_bundle_list[i])) ? 129 : 128), md5, to_sign_and_bundle_list[i], (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
+                pathnamecpy = strdup(kttar->to_sign_and_bundle_list[i]);
+                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128), md5, kttar->to_sign_and_bundle_list[i], (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
                 {
                     fprintf(stderr, "Cannot write to index file.\n");
                     // Cleanup a bit before crapping out
@@ -593,7 +582,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
 
         // And now, for the fun part! Append our sigfile to the archive...
         // Populate & write our entries...
-        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, NULL, 0, signame) != 0)
+        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, signame) != 0)
         {
             unlink(sigabsolutepath);
             goto cleanup;
@@ -604,9 +593,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const int to
     }
 
     free(kttar->buff);
-    for(i = 0; i < sign_and_bundle_index; i++)
-        free(to_sign_and_bundle_list[i]);
-    free(to_sign_and_bundle_list);
+    for(i = 0; i < kttar->sign_and_bundle_index; i++)
+        free(kttar->to_sign_and_bundle_list[i]);
+    free(kttar->to_sign_and_bundle_list);
     archive_write_close(a);
     archive_write_free(a);
 
@@ -631,11 +620,11 @@ cleanup:
     free(signame);
     // The big stuff, too...
     free(kttar->buff);
-    if(sign_and_bundle_index > 0)
+    if(kttar->sign_and_bundle_index > 0)
     {
-        for(i = 0; i < sign_and_bundle_index; i++)
-            free(to_sign_and_bundle_list[i]);
-        free(to_sign_and_bundle_list);
+        for(i = 0; i < kttar->sign_and_bundle_index; i++)
+            free(kttar->to_sign_and_bundle_list[i]);
+        free(kttar->to_sign_and_bundle_list);
     }
     archive_write_close(a);
     archive_write_free(a);

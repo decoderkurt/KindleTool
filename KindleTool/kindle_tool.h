@@ -189,6 +189,8 @@ struct kttar
 {
     char *buff;
     size_t buff_size;
+    char **to_sign_and_bundle_list;
+    int sign_and_bundle_index;
 };
 
 void md(unsigned char *, size_t);
