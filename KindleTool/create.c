@@ -108,6 +108,11 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
         if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+        // Exclude *nix hidden files, too? FIXME: Enable this on OS X, to kill those stupid Finder db/extattr hidden files?
+        /*
+        if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK)
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+        */
 
         r = archive_match_path_excluded(matching, entry);
         if(r < 0)
@@ -355,11 +360,11 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
-int kindle_create_package_archive(const int outfd, char **filename, const int total_files, RSA *rsa_pkey_file)
+int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file)
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
-    int i;
+    unsigned int i;
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
@@ -618,7 +623,7 @@ cleanup:
     return 1;
 }
 
-int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
+int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     char buffer[BUFFER_SIZE];
     size_t count;
@@ -682,11 +687,11 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
     return -1;
 }
 
-int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
+int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     unsigned int header_size;
     unsigned char *header;
-    int hindex;
+    unsigned int hindex;
     int i;
     FILE *demunged_tgz;
     size_t str_len;
@@ -809,7 +814,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     return 0;
 }
 
-int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
+int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -862,7 +867,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const int fake_sign)
+int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -941,14 +946,15 @@ int kindle_create_main(int argc, char *argv[])
     FILE *output;
     BIO *bio;
     int i;
+    unsigned int ui;
     char *output_filename = NULL;
     char **input_list = NULL;
-    int input_index = 0;
+    unsigned int input_index = 0;
     char *tarball_filename = NULL;
     int tarball_fd = -1;
-    int keep_archive;
-    int skip_archive;
-    int fake_sign;
+    unsigned int keep_archive;
+    unsigned int skip_archive;
+    unsigned int fake_sign;
     struct archive_entry *entry;
     struct archive *match;
     int r;
@@ -1070,22 +1076,22 @@ int kindle_create_main(int argc, char *argv[])
                 info.target_revision = strtoull(optarg, NULL, 0);
                 break;
             case '1':
-                info.magic_1 = atoi(optarg);
+                info.magic_1 = (uint32_t) atoi(optarg);
                 break;
             case '2':
-                info.magic_2 = atoi(optarg);
+                info.magic_2 = (uint32_t) atoi(optarg);
                 break;
             case 'm':
-                info.minor = atoi(optarg);
+                info.minor = (uint32_t) atoi(optarg);
                 break;
             case 'c':
-                info.certificate_number = (CertificateNumber)atoi(optarg);
+                info.certificate_number = (CertificateNumber) atoi(optarg);
                 break;
             case 'o':
-                info.optional = (uint8_t)atoi(optarg);
+                info.optional = (uint8_t) atoi(optarg);
                 break;
             case 'r':
-                info.critical = (uint8_t)atoi(optarg);
+                info.critical = (uint8_t) atoi(optarg);
                 break;
             case 'x':
                 if(strchr(optarg, '=') == NULL) // metastring must contain =
@@ -1327,8 +1333,8 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Clean-up
-    for(i = 0; i < input_index; i++)
-        free(input_list[i]);
+    for(ui = 0; ui < input_index; ui++)
+        free(input_list[ui]);
     free(input_list);
     free(info.devices);
     for(i = 0; i < info.num_meta; i++)
@@ -1348,8 +1354,8 @@ int kindle_create_main(int argc, char *argv[])
 do_error:
     if(input_index > 0)
     {
-        for(i = 0; i < input_index; i++)
-            free(input_list[i]);
+        for(ui = 0; ui < input_index; ui++)
+            free(input_list[ui]);
         free(input_list);
     }
     free(output_filename);

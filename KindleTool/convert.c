@@ -29,7 +29,7 @@ int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const int fake_sign)
+int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -70,7 +70,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const int fake_s
     return -1; // if we get here, there has been an error
 }
 
-int kindle_convert_ota_update_v2(FILE *input, FILE *output, const int fake_sign)
+int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign)
 {
     char *data;
     unsigned int hindex;
@@ -227,7 +227,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     return 0;
 }
 
-int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const int fake_sign)
+int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
 {
     if(fread(header->data.ota_header_data, sizeof(char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
@@ -249,7 +249,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const int fake_sign)
+int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
 {
     if(fread(header->data.recovery_header_data, sizeof(char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
@@ -294,7 +294,7 @@ int kindle_convert_main(int argc, char *argv[])
     int info_only;
     int keep_ori;
     int extract_sig;
-    int fake_sign;
+    unsigned int fake_sign;
     int fail;
 
     sig_output = NULL;

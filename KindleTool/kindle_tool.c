@@ -39,7 +39,7 @@ void dm(unsigned char *bytes, size_t length)
     }
 }
 
-int munger(FILE *input, FILE *output, size_t length, const int fake_sign)
+int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sign)
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
@@ -72,7 +72,7 @@ int munger(FILE *input, FILE *output, size_t length, const int fake_sign)
     return 0;
 }
 
-int demunger(FILE *input, FILE *output, size_t length, const int fake_sign)
+int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_sign)
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
@@ -423,7 +423,7 @@ int kindle_info_main(int argc, char *argv[])
     char md5[MD5_HASH_LENGTH];
     FILE *temp;
     unsigned int i;
-    unsigned char snc_i;
+    char snc_i;
     // Skip command
     argv++;
     argc--;
