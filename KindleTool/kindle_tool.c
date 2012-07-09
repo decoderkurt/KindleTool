@@ -423,7 +423,7 @@ int kindle_info_main(int argc, char *argv[])
     char md5[MD5_HASH_LENGTH];
     FILE *temp;
     unsigned int i;
-    char snc_i;
+    unsigned char snc_i;
     // Skip command
     argv++;
     argc--;
