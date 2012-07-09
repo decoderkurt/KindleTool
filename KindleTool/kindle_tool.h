@@ -202,6 +202,7 @@ struct kttar
     size_t buff_size;
     char **to_sign_and_bundle_list;
     unsigned int sign_and_bundle_index;
+    unsigned int has_script;
 };
 
 void md(unsigned char *, size_t);

@@ -243,6 +243,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
 static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char *signame)
 {
     int r;
+    unsigned int is_exec = 0;
 
     struct archive *disk;
     struct archive_entry *entry;
@@ -304,9 +305,17 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
         {
             // If we have a regular file, and it's a script, make it executable (probably overkill, but hey :))
             if(archive_entry_filetype(entry) == AE_IFREG && (IS_SCRIPT(archive_entry_pathname(entry)) || IS_SHELL(archive_entry_pathname(entry))))
+            {
                 archive_entry_set_perm(entry, 0755);
+                // It's a script, keep track of it
+                is_exec = 1;
+                kttar->has_script = is_exec;
+            }
             else
+            {
                 archive_entry_set_perm(entry, 0644);
+                is_exec = 0;
+            }
 
             // Non-regular files get archived with zero size.
             if(archive_entry_filetype(entry) != AE_IFREG)
@@ -319,7 +328,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         archive_read_disk_descend(disk);
         // Print what we're adding, ala bsdtar
-        fprintf(stderr, "a %s\n", archive_entry_pathname(entry));
+        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec? "*" : ""));
 
         // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
         if(write_file(kttar, a, disk, entry) != 0)
@@ -368,7 +377,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     FILE *file;
     FILE *sigfile;
     char md5[MD5_HASH_LENGTH + 1];
-    unsigned char bundlefile_status = 0;
+    uint8_t bundlefile_status = 0;
     size_t pathlen;
     char *signame = NULL;
     char sigabsolutepath[] = KT_TMPDIR "/kindletool_create_sig_XXXXXX";
@@ -590,6 +599,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     free(kttar->to_sign_and_bundle_list);
     archive_write_close(a);
     archive_write_free(a);
+
+    // Print a warning if no script was detected...
+    if(!kttar->has_script)
+    {
+        fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+        fprintf(stderr, "@ No script was detected in your input, this update package won't do a thing! @\n");
+        fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+    }
 
     return 0;
 
