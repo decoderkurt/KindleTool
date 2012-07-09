@@ -328,7 +328,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         archive_read_disk_descend(disk);
         // Print what we're adding, ala bsdtar
-        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec? "*" : ""));
+        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec? "\t\t<-" : ""));
 
         // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
         if(write_file(kttar, a, disk, entry) != 0)
