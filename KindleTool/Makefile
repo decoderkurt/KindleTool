@@ -81,7 +81,6 @@ endif
 ifeq "$(KINDLE)" "true"
 	OUT_DIR=Kindle
 	CFLAGS?=$(K3_CFLAGS)
-	LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
@@ -89,7 +88,6 @@ endif
 ifeq "$(MINGW)" "true"
 	OUT_DIR=MinGW
 	CFLAGS?=$(MINGW_CFLAGS)
-	LDFLAGS?=-Wl,-O1 -Wl,--as-needed
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
