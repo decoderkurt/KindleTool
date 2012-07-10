@@ -170,14 +170,7 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-ifeq "$(OSTYPE)" "Linux"
-kindletool.1:
-	cp -af KindleTool.1 kindletool.1
-else
-kindletool.1:
-endif
-
-all: outdir kindletool kindletool.1
+all: outdir kindletool
 
 kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@$(BINEXT) $(OBJS) $(LIBS)
@@ -194,14 +187,7 @@ kindle:
 mingw:
 	$(MAKE) strip MINGW=true
 
-ifeq "$(OSTYPE)" "Linux"
-clean_man:
-	rm -rf kindletool.1
-else
-clean_man:
-endif
-
-clean: clean_man
+clean:
 	rm -rf Release/*.o
 	rm -rf Release/kindletool
 	rm -rf Debug/*.o
@@ -212,21 +198,11 @@ clean: clean_man
 	rm -rf MinGW/kindletool.exe
 	rm -rf version-inc
 
-ifeq "$(OSTYPE)" "Linux"
-install_man:
-	install -d -m 755 $(MANDIR)
-	install -m 644 kindletool.1 $(MANDIR)
-else
-install_man:
-	install -d -m 755 $(MANDIR)
-	install -m 644 KindleTool.1 $(MANDIR)
-endif
-
-install: all install_man
+install: all
 	install -d -m 755 $(BINDIR)
 	install '$(OUT_DIR)/kindletool' $(BINDIR)
 	install -d -m 755 $(MANDIR)
 	install -m 644 kindletool.1 $(MANDIR)
 
 
-.PHONY: all install install_man clean clean_man default outdir kindletool strip debug kindle mingw
+.PHONY: all install clean default outdir kindletool strip debug kindle mingw

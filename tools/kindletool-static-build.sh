@@ -317,12 +317,12 @@ EOF
 	cp -v ../KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
 	perl -pi -e 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^\* /  /g;s/\*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^([[:digit:]])\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
-	cp -v ../KindleTool/KindleTool/KindleTool.1 ./KindleTool.1
+	cp -v ../KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
 	rm -f kindletool-${REV}-osx.zip
 	# Don't store uid/gid & attr, I'm packaging this on a 3rd party's computer
-	zip -X kindletool-${REV}-osx kindletool CREDITS README KindleTool.1 ChangeLog VERSION
-	rm -f kindletool CREDITS README KindleTool.1 ChangeLog VERSION
+	zip -X kindletool-${REV}-osx kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	cd ..
 
 	## NOTE: Do we need to do a MacPorts build? (link against MacPorts libs, instead of OS X's OpenSSL 0.9.8/zlib 1.2.5?
