@@ -99,6 +99,14 @@ else
 	STRIP_OPTS:=-s
 endif
 
+# It appears that Windows is using a strange & incongruous file extension for its binaries... ;D
+ifeq "$(MINGW)" "true"
+	# Cygwin is smart enough to take care of it itself, so just check MinGW ;)
+	BINEXT:=.exe
+else
+	BINEXT:=
+endif
+
 # Use a different varname in order to support appending stuff here even when setting CFLAGS as an argument to make...
 KT_CFLAGS:=$(CFLAGS)
 KT_CFLAGS+=-pipe
@@ -171,21 +179,11 @@ endif
 
 all: outdir kindletool kindletool.1
 
-ifeq "$(MINGW)" "true"
 kindletool: version-inc $(OBJS)
-	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@.exe $(OBJS) $(LIBS)
-else
-kindletool: version-inc $(OBJS)
-	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@ $(OBJS) $(LIBS)
-endif
+	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@$(BINEXT) $(OBJS) $(LIBS)
 
-ifeq "$(MINGW)" "true"
 strip: all
-	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool.exe
-else
-strip: all
-	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool
-endif
+	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool$(BINEXT)
 
 debug:
 	$(MAKE) all DEBUG=true
