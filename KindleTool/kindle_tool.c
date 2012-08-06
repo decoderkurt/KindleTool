@@ -317,6 +317,7 @@ int kindle_print_help(const char *prog_name)
         "    Get the default root password\n"
         "    Unless you changed your password manually, the first password shown will be the right one.\n"
         "    (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters.)\n"
+        "    If you're looking for the recovery MMC export password, that's the second one.\n"
         "    \n"
         "  %s version\n"
         "    Show some info about this KindleTool build\n"
@@ -461,6 +462,8 @@ int kindle_info_main(int argc, char *argv[])
         fclose(temp);
         return -1;
     }
+    // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
+    // the recovery MMC export option expects a 9 chars password, so, provide both...
     fprintf(stderr, "Root PW        %s%.*s        (or possibly %s%.*s)\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
     fclose(temp);
     return 0;

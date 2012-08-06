@@ -86,6 +86,7 @@
 >> Get the default root password  
 >> Unless you changed your password manually, the first password shown will be the right one.  
 >> (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters.)  
+>> If you're looking for the recovery MMC export password, that's the second one.  
 
 * KindleTool version
 
