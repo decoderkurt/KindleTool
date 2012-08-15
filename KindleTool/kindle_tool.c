@@ -490,6 +490,7 @@ int main(int argc, char *argv[])
     else
     {
         // No command was given, print help and die
+        fprintf(stderr, "No command was specified!\n\n");
         kindle_print_help(prog_name);
         exit(1);
     }
@@ -532,7 +533,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "Unknown command '%s'!\n\n", cmd);
         kindle_print_help(prog_name);
-        return 1;
+        exit(1);
     }
 
     return 1;
