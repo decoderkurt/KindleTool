@@ -526,9 +526,13 @@ int main(int argc, char *argv[])
         return kindle_info_main(argc, argv);
     else if(strncmp(cmd, "version", 7) == 0)
         return kindle_print_version(prog_name);
+    else if(strncmp(cmd, "help", 4) == 0 || strncmp(cmd, "-help", 5) == 0 || strncmp(cmd, "-h", 2) == 0 || strncmp(cmd, "-?", 2) == 0 || strncmp(cmd, "/?", 2) == 0 || strncmp(cmd, "/h", 2) == 0 || strncmp(cmd, "/help", 2) == 0)
+        return kindle_print_help(prog_name);
     else
     {
-        return kindle_print_help(prog_name);
+        fprintf(stderr, "Unknown command '%s'!\n\n", cmd);
+        kindle_print_help(prog_name);
+        return 1;
     }
 
     return 1;
