@@ -163,7 +163,11 @@ if [[ ! -d "openssl-1.0.1c" ]] ; then
 	chmod a+rx gentoo.config
 	sed -i '1s,^:$,#!/usr/bin/perl,' Configure
 	#unset CROSS_COMPILE
-	./Configure mingw -DL_ENDIAN ${BASE_CFLAGS} -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib --prefix=${TC_BUILD_DIR} --openssldir=${TC_BUILD_DIR}/etc/ssl no-shared threads
+	# Aim for a minimal build, we only need MD5, RSA & SHA support...
+	# Can't disable hmac & aes/rjindael or make depend dies...
+	# Can't disable srtp/tls, or the build fails...
+	# Can't disable lhash, asn1, x509, cmac, pkcs7, bn, x509v3 & pkcs12 or linking KindleTool fails...
+	./Configure mingw -DL_ENDIAN ${BASE_CFLAGS} -fno-strict-aliasing no-bf no-camellia no-cast no-cms no-des no-dh no-dsa no-ec no-ecdh no-ecdsa no-idea no-gost no-jpake no-krb5 no-md2 no-md4 no-mdc2 no-ocsp no-rc2 no-rc4 no-rc5 no-ripemd no-srp no-whrlpool no-zlib no-ssl no-stack no-pqueue no-store no-ts no-ui no-txt_db no-comp no-conf no-modes no-pem --prefix=${TC_BUILD_DIR} --openssldir=${TC_BUILD_DIR}/etc/ssl no-shared threads
 	grep '^CFLAG=' Makefile | LC_ALL=C sed -e 's:^CFLAG=::' -e 's:-ffast-math ::g' -e 's:-fomit-frame-pointer ::g' -e 's:-O[0-9] ::g' -e 's:-march=[-a-z0-9]* ::g' -e 's:-mcpu=[-a-z0-9]* ::g' -e 's:-m[a-z0-9]* ::g' > x-compile-tmp
 	CFLAG="$(< x-compile-tmp)"
 	sed -i -e "/^CFLAG/s:=.*:=${CFLAG} ${CFLAGS}:" -e "/^SHARED_LDFLAGS=/s:$: ${LDFLAGS}:" Makefile
@@ -184,7 +188,7 @@ if [[ ! -d "libarchive-3.0.4" ]] ; then
 	fi
 	tar -xvzf ./libarchive-3.0.4.tar.gz
 	cd libarchive-3.0.4
-	./configure --prefix=${TC_BUILD_DIR} --host=${CROSS_TC} --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
+	./configure --prefix=${TC_BUILD_DIR} --host=${CROSS_TC} --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
 	make -j2
 	make install
 	cd ..
