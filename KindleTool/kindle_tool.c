@@ -230,9 +230,9 @@ RSA *get_default_key(void)
             fprintf(stderr, "Error loading RSA Private Key File\n");
             return NULL;
         }
+        // Don't leak our BIO
+        BIO_free(bio);
     }
-    // Don't leak our BIO
-    BIO_free(bio);
     return rsa_pkey;
 }
 
