@@ -83,6 +83,11 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 
     free(sig);
     EVP_PKEY_free(pkey);
+    // Don't leak our context
+    EVP_MD_CTX_cleanup(&ctx);
+    // OpenSSL cleanup, to make valgrind happy.
+    //EVP_cleanup();
+    //CRYPTO_cleanup_all_ex_data();
     return 0;
 }
 

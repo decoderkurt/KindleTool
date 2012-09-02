@@ -231,6 +231,8 @@ RSA *get_default_key(void)
             return NULL;
         }
     }
+    // Don't leak our BIO (and make valgrind happy)
+    BIO_free(bio);
     return rsa_pkey;
 }
 
