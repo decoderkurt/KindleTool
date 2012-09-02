@@ -8,7 +8,8 @@ MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer
 ASAN_CLFAGS="-O2 -march=native -faddress-sanitizer -fno-omit-frame-pointer -g3"
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
-# The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314)
+# The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
+# and only happens when using the NSS compat stuff (which happened to be the default on my system...)
 # Same thing for OpenSSL's uninitialized stuff when built without PURIFY (cf. OpenSSL's FAQ)
 # Another thing that I don't remember that's fixed in libarchive git (will be in 3.0.5)
 
