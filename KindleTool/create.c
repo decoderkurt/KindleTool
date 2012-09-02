@@ -85,9 +85,6 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     EVP_PKEY_free(pkey);
     // Don't leak our context
     EVP_MD_CTX_cleanup(&ctx);
-    // OpenSSL cleanup, to make valgrind happy.
-    //EVP_cleanup();
-    //CRYPTO_cleanup_all_ex_data();
     return 0;
 }
 
@@ -1082,6 +1079,7 @@ int kindle_create_main(int argc, char *argv[])
                     fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
                     goto do_error;
                 }
+                BIO_free(bio);
                 break;
             case 'b':
                 strncpy(info.magic_number, optarg, 4);
@@ -1362,6 +1360,7 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
+    RSA_free(info.sign_pkey);
     fclose(input);
     if(output != stdout)
         fclose(output);
@@ -1370,6 +1369,8 @@ int kindle_create_main(int argc, char *argv[])
     if(!keep_archive && !skip_archive)
         unlink(tarball_filename);
     free(tarball_filename);
+    // And OpenSSL cleanup, to make valgrind happy.
+    CRYPTO_cleanup_all_ex_data();
 
     return 0;
 
@@ -1385,11 +1386,13 @@ do_error:
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
+    RSA_free(info.sign_pkey);
     if(input != NULL)
         fclose(input);
     if(output != NULL && output != stdout)
         fclose(output);
     free(tarball_filename);
+    CRYPTO_cleanup_all_ex_data();
     return -1;
 }
 
