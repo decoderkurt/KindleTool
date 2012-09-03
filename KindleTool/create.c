@@ -309,7 +309,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             {
                 // Print what we're stripping, ala GNU tar...
                 fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", archive_entry_pathname(entry));
-                // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
+                // Just skip it, we don't need a redundant and explicit root directory entry in our tarball...
                 archive_read_disk_descend(disk);
                 continue;
             }
@@ -407,6 +407,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
     return 0;
 
 cleanup:
+    free(original_path);
     archive_read_close(disk);
     archive_read_free(disk);
     archive_entry_free(entry);
@@ -510,14 +511,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // No need to tweak the bundlefile, but we need this to be sane, so set it.
+    // No need to tweak the bundlefile pathname, but we need this to be sane, so set it.
     kttar->sign_pointer_index_list = realloc(kttar->sign_pointer_index_list, kttar->sign_and_bundle_index * sizeof(unsigned int));
     kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = 0;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= kttar->sign_and_bundle_index; i++)
     {
-        // Check if we tweaked the path name for this file in the first pass...
+        // Check if we tweaked the pathname for this file in the first pass...
         // We loop over the bundlefile twice, don't blow up on the second pass...
         if(i != kttar->sign_and_bundle_index && kttar->sign_pointer_index_list[i] != 0)
         {
