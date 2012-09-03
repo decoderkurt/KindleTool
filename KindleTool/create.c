@@ -316,7 +316,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             else
             {
                 original_path = strdup(archive_entry_pathname(entry));
-                // NOTE: This probably isn't very robust. Try to handle a trailing path separator properly... (No need to handle MinGW, it already spectacularly fails to handle this case ^^)
+                // Try to handle a trailing path separator properly... NOTE: This probably isn't very robust. And No need to handle MinGW, it already spectacularly fails to handle this case ^^
                 if(original_path[kttar->pointer_index] == '/')
                 {
                     // We found a path separator, skip it, too
