@@ -203,7 +203,7 @@ struct kttar
     char **tweaked_to_sign_and_bundle_list;
     unsigned int sign_and_bundle_index;
     unsigned int has_script;
-    unsigned int pointer_index;
+    unsigned int tweak_pointer_index;
 };
 
 void md(unsigned char *, size_t);

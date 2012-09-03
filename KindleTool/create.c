@@ -302,11 +302,11 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
         else
         {
             // Tweak the pathname if we were asked to behave like Yifan's KindleTool...
-            if(kttar->pointer_index != 0)
+            if(kttar->tweak_pointer_index != 0)
             {
                 // Handle the 'root' source directory itself..
                 // NOTE: We check that strlen <= pointer_index because libarchive strips trailing path separators in the entry pathname, but we might have passed one on the CL, so pointer_index might be larger than strlen ;)
-                if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->pointer_index)
+                if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->tweak_pointer_index)
                 {
                     // Print what we're stripping, ala GNU tar...
                     fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", archive_entry_pathname(entry));
@@ -318,14 +318,14 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 {
                     original_path = strdup(archive_entry_pathname(entry));
                     // Try to handle a trailing path separator properly... NOTE: This probably isn't very robust. And No need to handle MinGW, it already spectacularly fails to handle this case ^^
-                    if(original_path[kttar->pointer_index] == '/')
+                    if(original_path[kttar->tweak_pointer_index] == '/')
                     {
                         // We found a path separator, skip it, too
-                        tweaked_path = original_path + (kttar->pointer_index + 1);
+                        tweaked_path = original_path + (kttar->tweak_pointer_index + 1);
                     }
                     else
                     {
-                        tweaked_path = original_path + kttar->pointer_index;
+                        tweaked_path = original_path + kttar->tweak_pointer_index;
                     }
                     archive_entry_copy_pathname(entry, tweaked_path);
                 }
@@ -384,7 +384,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 // And do the same with our tweaked pathname for legacy mode...
                 kttar->tweaked_to_sign_and_bundle_list = realloc(kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char *));
                 // Use the correct paths if we tweaked the entry pathname...
-                if(kttar->pointer_index != 0)
+                if(kttar->tweak_pointer_index != 0)
                 {
                     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
                     kttar->tweaked_to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(tweaked_path);
@@ -402,6 +402,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             unlink(input_filename);
         }
         free(original_path);
+        tweaked_path = NULL;
     }
 
     archive_read_close(disk);
@@ -412,6 +413,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
 cleanup:
     free(original_path);
+    tweaked_path = NULL;
     archive_read_close(disk);
     archive_read_free(disk);
     archive_entry_free(entry);
@@ -470,14 +472,14 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     for(i = 0; i < total_files; i++)
     {
         // Don't tweak entries pathname by default
-        kttar->pointer_index = 0;
+        kttar->tweak_pointer_index = 0;
         // Check if we want to behave like Yifan's KindleTool
         if(legacy)
         {
             stat(filename[i], &st);
             if(S_ISDIR(st.st_mode))
             {
-                kttar->pointer_index = strlen(filename[i]);
+                kttar->tweak_pointer_index = strlen(filename[i]);
             }
         }
 
