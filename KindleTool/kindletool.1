@@ -16,7 +16,7 @@ Creates a Kindle update package
 .br
 You should be able to throw a mix of files & directories as input without trouble.
 .br
-Just keep in mind that if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!
+Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!
 .br
 If input is a single tarball
 .RI ( .tgz " or " .tar.gz )
@@ -138,6 +138,13 @@ Keep the intermediate archive.
 .TP
 .BR \-u ", " \-\-unsigned
 Build an unsigned package.
+.TP
+.BR \-C ", " \-\-legacy
+Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:
+.br
+every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths
+.br
+relative to the path passed on the commandline, like if we had chdir'ed into it.
 .SS convert
 .IR Syntax :
 .RB [ options "] <" input >...

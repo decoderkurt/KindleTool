@@ -31,7 +31,7 @@
 
 >> Creates a Kindle update package  
 >> You should be able to throw a mix of files &amp; directories as input without trouble.  
->> Just keep in mind that if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
+>> Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
 >> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
 >> Output should be a file with the extension ".bin", if it is not provided, or if it's a single dash, output to stdout.  
 >> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.  
@@ -79,6 +79,9 @@
                                       Format of metastring must be: key=value
 		-a, --archive               Keep the intermediate archive.
 		-u, --unsigned              Build an unsigned package.
+		-C, --legacy                Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:
+                                      every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths
+                                      relative to the path passed on the commandline, like if we had chdir'ed into it.
 
 
 * KindleTool info &lt;**serialno**&gt;

@@ -424,7 +424,7 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
-int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file)
+int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file, const unsigned int legacy)
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
@@ -473,17 +473,18 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
     {
+        // Don't tweak entries pathname by default
+        kttar->pointer_index = 0;
         // Check if we want to behave like Yifan's KindleTool
-        // TODO: Check switch
-        stat(filename[i], &st);
-        if(S_ISDIR(st.st_mode))
+        if(legacy)
         {
-            kttar->pointer_index = strlen(filename[i]);
+            stat(filename[i], &st);
+            if(S_ISDIR(st.st_mode))
+            {
+                kttar->pointer_index = strlen(filename[i]);
+            }
         }
-        else
-        {
-            kttar->pointer_index = 0;
-        }
+
         // Populate & write our entries from read_disk_open's directory walking...
         if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL) != 0)
             goto cleanup;
@@ -1036,7 +1037,8 @@ int kindle_create_main(int argc, char *argv[])
         { "crit", required_argument, NULL, 'r' },
         { "meta", required_argument, NULL, 'x' },
         { "archive", no_argument, NULL, 'a' },
-        { "unsigned", no_argument, NULL, 'u' }
+        { "unsigned", no_argument, NULL, 'u' },
+        { "legacy", no_argument, NULL, 'C' }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
@@ -1052,6 +1054,7 @@ int kindle_create_main(int argc, char *argv[])
     unsigned int keep_archive;
     unsigned int skip_archive;
     unsigned int fake_sign;
+    unsigned int legacy;
     struct archive_entry *entry;
     struct archive *match;
     int r;
@@ -1062,6 +1065,7 @@ int kindle_create_main(int argc, char *argv[])
     keep_archive = 0;
     skip_archive = 0;
     fake_sign = 0;
+    legacy = 0;
 
     // Skip command
     argv++;
@@ -1096,7 +1100,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:au", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:auC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -1211,6 +1215,9 @@ int kindle_create_main(int argc, char *argv[])
             case 'u':
                 fake_sign = 1;
                 break;
+            case 'C':
+                legacy = 1;
+                break;
             default:
                 fprintf(stderr, "Unknown option code 0%o\n", opt);
                 break;
@@ -1244,6 +1251,11 @@ int kindle_create_main(int argc, char *argv[])
         {
             strncpy(info.magic_number, "FB02", 4);
         }
+    }
+    // If we don't actually build an archive, legacy mode makes no sense
+    if(skip_archive)
+    {
+        legacy = 0;
     }
 
     if(optind < argc)
@@ -1362,7 +1374,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s%s (%.*s) update package %s%s%s for %hd device%s (", (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive? " directly from " : ""), (skip_archive? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for %hd device%s (", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive? " directly from " : ""), (skip_archive? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
@@ -1406,7 +1418,7 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
