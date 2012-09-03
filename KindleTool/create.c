@@ -246,6 +246,8 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 {
     int r;
     unsigned int is_exec = 0;
+    char *original_path = NULL;
+    char *tweaked_path = NULL;
 
     struct archive *disk;
     struct archive_entry *entry;
@@ -292,10 +294,51 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             }
         }
 
+        // TODO: Tweak the entry pathname to kill the path passed as an arg, to make it look like it's the root of the archive, like if we cd'ed into it,
+        // to behave like Yifan's kindletool.
+        // * Via a switch
+        // * Make sure we don't mess the to_sign_and_bundle_list
+        // * Use a position to move the path pointer up to, based on the path strlen?
+        // * Save it for the to_sign_and_bundle_list, too...
+        // * Check if isdir via stat *before* archive_read_disk_open to not blow up on MinGW
+        // * Store this stuff in kttar
         if(!first_pass)
         {
             // Fix the entry pathname, we used a tempfile...
             archive_entry_copy_pathname(entry, signame);
+
+            // Tweak the pathname if we tweaked it in the first pass...
+            if(kttar->pointer_index != 0)
+            {
+                original_path = strdup(archive_entry_pathname(entry));
+                tweaked_path = original_path + (kttar->pointer_index + 1);
+                archive_entry_copy_pathname(entry, tweaked_path);
+                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
+                free(original_path);    // FIXME: Free me later, maybe? (If I decide to tweak the status print to show the transform inline...)
+            }
+        }
+        else
+        {
+            // Tweak the pathname if we were asked to behave like Yifan's KindleTool...
+            if(kttar->pointer_index != 0)
+            {
+                // Handle the 'root' source directory itself...
+                if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) == kttar->pointer_index)
+                {
+                    fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
+                    archive_entry_copy_pathname(entry, ".");    // FIXME: Not pretty/broken? Just skip this entry?
+                    // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
+                    archive_read_disk_descend(disk);
+                    continue;
+                }
+                else
+                {
+                    original_path = strdup(archive_entry_pathname(entry));
+                    tweaked_path = original_path + (kttar->pointer_index + 1);
+                    archive_entry_copy_pathname(entry, tweaked_path);
+                    fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
+                }
+            }
         }
         // And then override a bunch of stuff (namely, uig/guid/chmod)
         archive_entry_set_uid(entry, 0);
@@ -346,7 +389,19 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 // while it's already open through libarchive read_disk API. That's apparently not possible on non POSIX systems.
                 // (You get a very helpful 'Permission denied' error on Windows...)
                 kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
-                kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(archive_entry_pathname(entry));
+                kttar->sign_pointer_index_list = realloc(kttar->sign_pointer_index_list, kttar->sign_and_bundle_index * sizeof(unsigned int));
+                // Use the correct path if we tweaked the entry pathname...
+                if(kttar->pointer_index != 0)
+                {
+                    kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
+                    free(original_path);
+                    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = kttar->pointer_index;    // FIXME: free me!
+                }
+                else
+                {
+                    kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(archive_entry_pathname(entry));
+                    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = 0;
+                }
             }
         }
         else
@@ -420,6 +475,17 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // Loop over our input file/directories...
     for(i = 0; i < total_files; i++)
     {
+        // Check if we want to behave like Yifan's KindleTool
+        // TODO: Check switch
+        stat(filename[i], &st);
+        if(S_ISDIR(st.st_mode))
+        {
+            kttar->pointer_index = strlen(filename[i]);
+        }
+        else
+        {
+            kttar->pointer_index = 0;
+        }
         // Populate & write our entries from read_disk_open's directory walking...
         if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL) != 0)
             goto cleanup;
@@ -454,10 +520,24 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
+    // No need to tweak the bundlefile, but we expect this to be sane, so set it.
+    kttar->sign_pointer_index_list = realloc(kttar->sign_pointer_index_list, kttar->sign_and_bundle_index * sizeof(unsigned int));
+    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = 0;
+    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index] = 0;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= kttar->sign_and_bundle_index; i++)
     {
+        // Check if we tweaked the path name for this file in the first pass...
+        if(kttar->sign_pointer_index_list[i] != 0)
+        {
+            kttar->pointer_index = kttar->sign_pointer_index_list[i];
+        }
+        else
+        {
+            kttar->pointer_index = 0;
+        }
+
         // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
         if(i == kttar->sign_and_bundle_index - 1)
         {

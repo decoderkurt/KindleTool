@@ -23,7 +23,6 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <getopt.h>
 #include <archive.h>
@@ -203,6 +202,8 @@ struct kttar
     char **to_sign_and_bundle_list;
     unsigned int sign_and_bundle_index;
     unsigned int has_script;
+    unsigned int pointer_index;
+    unsigned int *sign_pointer_index_list;
 };
 
 void md(unsigned char *, size_t);
