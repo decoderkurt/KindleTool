@@ -296,7 +296,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         if(!first_pass)
         {
-            // Fix the entry pathname, we used a tempfile...
+            // Fix the entry pathname, we used a tempfile... (If we're in legacy mode, signame has already been set to the tweaked path ;))
             archive_entry_copy_pathname(entry, signame);
         }
         else
@@ -383,7 +383,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
                 // And do the same with our tweaked pathname for legacy mode...
                 kttar->tweaked_to_sign_and_bundle_list = realloc(kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char *));
-                // Use the correct path if we tweaked the entry pathname...
+                // Use the correct paths if we tweaked the entry pathname...
                 if(kttar->pointer_index != 0)
                 {
                     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
@@ -515,7 +515,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // We'll never tweak the bundlefile pathname, but we need this to be sane for the cleanup, so set it
+    // We'll never tweak the bundlefile pathname, but we need this to be sane, so set it
     kttar->tweaked_to_sign_and_bundle_list = realloc(kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char *));
     kttar->tweaked_to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
 
