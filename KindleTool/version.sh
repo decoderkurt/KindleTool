@@ -65,9 +65,9 @@ if [[ -f "VERSION" ]] ; then
 	VER="$(< VERSION)"
 elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 	# Get a properly formatted version string from our latest tag
-	#VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
+	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	# Or from the first commit (provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
-	VER="$(git describe --match TAIL 2>/dev/null)"
+	#VER="$(git describe --match TAIL 2>/dev/null)"
 	case "$VER" in
 		v[0-9]*)
 			# Check if our working directory is dirty
