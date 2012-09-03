@@ -362,7 +362,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         archive_read_disk_descend(disk);
         // Print what we're adding, ala bsdtar
-        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec? "\t\t<-" : ""));
+        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec ? "\t\t<-" : ""));
 
         // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
         if(write_file(kttar, a, disk, entry) != 0)
@@ -1394,7 +1394,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for %hd device%s (", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive? " directly from " : ""), (skip_archive? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
+    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for %hd device%s (", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
     // Loop over devices
     for(i = 0; i < info.num_devices; i++)
     {
