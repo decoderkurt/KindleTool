@@ -525,7 +525,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
             bundlefile_status &= ~BUNDLE_OPEN;
         }
 
-        // We loop over the bundlefile twice, don't blow up on it...
+        // Don't tweak entries pathname by default
+        kttar->pointer_index = 0;
+        // We'll never have to tweak the bundlefile pathname...
         if((bundlefile_status & BUNDLE_OPEN) == BUNDLE_OPEN)
         {
             // Check if we tweaked the pathname for this file in the first pass...
@@ -533,15 +535,6 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
             {
                 kttar->pointer_index = kttar->sign_pointer_index_list[i];
             }
-            else
-            {
-                kttar->pointer_index = 0;
-            }
-        }
-        else
-        {
-            // We'll never have to tweak the bundlefile pathname...
-            kttar->pointer_index = 0;
         }
 
         // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
