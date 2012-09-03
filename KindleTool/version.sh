@@ -75,6 +75,8 @@ elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 			[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
 			# - => .
 			#VER=${VER//-/.}
+			# - => ., but only the first (rev since tag)
+			VER=${VER/-/.}
 		;;
 		TAIL*)
 			git update-index -q --refresh
