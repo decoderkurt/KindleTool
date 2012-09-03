@@ -248,6 +248,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
     unsigned int is_exec = 0;
     char *original_path = NULL;
     char *tweaked_path = NULL;
+    char *stripped_path = NULL;
 
     struct archive *disk;
     struct archive_entry *entry;
@@ -304,12 +305,16 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
         if(kttar->pointer_index != 0)
         {
             // Handle the 'root' source directory itself... (FWIW, this should only happen in the first pass)
-            fprintf(stderr, "strlen(archive_entry_pathname(entry)) = %d VS. %d\n", strlen(archive_entry_pathname(entry)), kttar->pointer_index);  // TODO: DEBUG
+            //fprintf(stderr, "strlen(archive_entry_pathname(entry)) = %d VS. %d\n", strlen(archive_entry_pathname(entry)), kttar->pointer_index);  // TODO: DEBUG
             // NOTE: We check the the strlen <= because there's no ending path separator in the entry pathname, but we might have passed one on the CL, so pointer_inder might be larger than strlen ;)
             if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->pointer_index)
             {
-                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
-                archive_entry_copy_pathname(entry, ".");    // FIXME: Not pretty/broken? Just skip this entry?
+                //fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
+                // Print what we're stripping, like GNU tar...
+                stripped_path = strdup(archive_entry_pathname(entry));
+                stripped_path[kttar->pointer_index] = '\0';
+                fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", stripped_path);
+                free(stripped_path);
                 // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
                 archive_read_disk_descend(disk);
                 continue;
@@ -317,8 +322,8 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             else
             {
                 original_path = strdup(archive_entry_pathname(entry));
-                // NOTE: This isn't very robust. Handle the path separator...
-                fprintf(stderr, "original_path[kttar->pointer_index] = %c @ %d\n", original_path[kttar->pointer_index], kttar->pointer_index);  // TODO: DEBUG
+                // NOTE: This robably isn't very robust. Try to handle the path separator properly...
+                //fprintf(stderr, "original_path[kttar->pointer_index] = %c @ %d\n", original_path[kttar->pointer_index], kttar->pointer_index);  // TODO: DEBUG
                 // FIXME: Do we need to check '\' too for MinGW?
                 if(original_path[kttar->pointer_index] == '/')
                 {
@@ -330,7 +335,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                     tweaked_path = original_path + kttar->pointer_index;
                 }
                 archive_entry_copy_pathname(entry, tweaked_path);
-                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
+                //fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
             }
         }
         // And then override a bunch of stuff (namely, uig/guid/chmod)
