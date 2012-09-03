@@ -513,24 +513,10 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // No need to tweak the bundlefile pathname, but we need this to be sane, so set it.
-    kttar->sign_pointer_index_list = realloc(kttar->sign_pointer_index_list, kttar->sign_and_bundle_index * sizeof(unsigned int));
-    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = 0;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= kttar->sign_and_bundle_index; i++)
     {
-        // Check if we tweaked the pathname for this file in the first pass...
-        // We loop over the bundlefile twice, don't blow up on the second pass...
-        if(i != kttar->sign_and_bundle_index && kttar->sign_pointer_index_list[i] != 0)
-        {
-            kttar->pointer_index = kttar->sign_pointer_index_list[i];
-        }
-        else
-        {
-            kttar->pointer_index = 0;
-        }
-
         // Dirty hack ahoy. If we're the last file in our list, that means we're the bundlefile, close our fd
         if(i == kttar->sign_and_bundle_index - 1)
         {
@@ -538,6 +524,27 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
             // It's closed, remove our flag
             bundlefile_status &= ~BUNDLE_OPEN;
         }
+
+        // We loop over the bundlefile twice, don't blow up on it...
+        if((bundlefile_status & BUNDLE_OPEN) == BUNDLE_OPEN)
+        {
+            // Check if we tweaked the pathname for this file in the first pass...
+            fprintf(stderr, "kttar->sign_pointer_index_list[i] = %d @ %d (max: %d)\n", kttar->sign_pointer_index_list[i], i, kttar->sign_and_bundle_index);
+            if(kttar->sign_pointer_index_list[i] != 0)
+            {
+                kttar->pointer_index = kttar->sign_pointer_index_list[i];
+            }
+            else
+            {
+                kttar->pointer_index = 0;
+            }
+        }
+        else
+        {
+            // We'll never have to tweak the bundlefile pathname...
+            kttar->pointer_index = 0;
+        }
+        fprintf(stderr, "kttar->pointer_index = %d\n", kttar->pointer_index);
 
         // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
         if(i == kttar->sign_and_bundle_index)
