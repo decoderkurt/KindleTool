@@ -248,7 +248,6 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
     unsigned int is_exec = 0;
     char *original_path = NULL;
     char *tweaked_path = NULL;
-    char *stripped_path = NULL;
 
     struct archive *disk;
     struct archive_entry *entry;
@@ -305,16 +304,10 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
         if(kttar->pointer_index != 0)
         {
             // Handle the 'root' source directory itself... (FWIW, this should only happen in the first pass)
-            //fprintf(stderr, "strlen(archive_entry_pathname(entry)) = %d VS. %d\n", strlen(archive_entry_pathname(entry)), kttar->pointer_index);  // TODO: DEBUG
             // NOTE: We check the the strlen <= because there's no ending path separator in the entry pathname, but we might have passed one on the CL, so pointer_inder might be larger than strlen ;)
             if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->pointer_index)
             {
-                //fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
-                // Print what we're stripping, like GNU tar...
-                stripped_path = strdup(archive_entry_pathname(entry));
-                stripped_path[kttar->pointer_index] = '\0';
-                fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", stripped_path);
-                free(stripped_path);
+                fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", archive_entry_pathname(entry));
                 // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
                 archive_read_disk_descend(disk);
                 continue;
@@ -323,7 +316,6 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             {
                 original_path = strdup(archive_entry_pathname(entry));
                 // NOTE: This robably isn't very robust. Try to handle the path separator properly...
-                //fprintf(stderr, "original_path[kttar->pointer_index] = %c @ %d\n", original_path[kttar->pointer_index], kttar->pointer_index);  // TODO: DEBUG
                 // FIXME: Do we need to check '\' too for MinGW?
                 if(original_path[kttar->pointer_index] == '/')
                 {
@@ -335,7 +327,6 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                     tweaked_path = original_path + kttar->pointer_index;
                 }
                 archive_entry_copy_pathname(entry, tweaked_path);
-                //fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
             }
         }
         // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -392,7 +383,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 if(kttar->pointer_index != 0)
                 {
                     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
-                    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = kttar->pointer_index;    // FIXME: free me!
+                    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = kttar->pointer_index;
                 }
                 else
                 {
@@ -519,10 +510,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // No need to tweak the bundlefile, but we expect this to be sane, so set it.
+    // No need to tweak the bundlefile, but we need this to be sane, so set it.
     kttar->sign_pointer_index_list = realloc(kttar->sign_pointer_index_list, kttar->sign_and_bundle_index * sizeof(unsigned int));
     kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = 0;
-    kttar->sign_pointer_index_list[kttar->sign_and_bundle_index] = 0;
 
     // And now loop again over the stuff we need to sign, hash & bundle...
     for(i = 0; i <= kttar->sign_and_bundle_index; i++)
@@ -678,6 +668,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     for(i = 0; i < kttar->sign_and_bundle_index; i++)
         free(kttar->to_sign_and_bundle_list[i]);
     free(kttar->to_sign_and_bundle_list);
+    free(kttar->sign_pointer_index_list);
     archive_write_close(a);
     archive_write_free(a);
 
@@ -716,6 +707,7 @@ cleanup:
             free(kttar->to_sign_and_bundle_list[i]);
         free(kttar->to_sign_and_bundle_list);
     }
+    free(kttar->sign_pointer_index_list);
     archive_write_close(a);
     archive_write_free(a);
     return 1;
