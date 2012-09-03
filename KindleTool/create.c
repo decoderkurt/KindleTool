@@ -294,50 +294,43 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             }
         }
 
-        // TODO: Tweak the entry pathname to kill the path passed as an arg, to make it look like it's the root of the archive, like if we cd'ed into it,
-        // to behave like Yifan's kindletool.
-        // * Via a switch
-        // * Make sure we don't mess the to_sign_and_bundle_list
-        // * Use a position to move the path pointer up to, based on the path strlen?
-        // * Save it for the to_sign_and_bundle_list, too...
-        // * Check if isdir via stat *before* archive_read_disk_open to not blow up on MinGW
-        // * Store this stuff in kttar
         if(!first_pass)
         {
             // Fix the entry pathname, we used a tempfile...
             archive_entry_copy_pathname(entry, signame);
+        }
 
-            // Tweak the pathname if we tweaked it in the first pass...
-            if(kttar->pointer_index != 0)
+        // Tweak the pathname if we were asked to behave like Yifan's KindleTool...
+        if(kttar->pointer_index != 0)
+        {
+            // Handle the 'root' source directory itself... (FWIW, this should only happen in the first pass)
+            fprintf(stderr, "strlen(archive_entry_pathname(entry)) = %d VS. %d\n", strlen(archive_entry_pathname(entry)), kttar->pointer_index);  // TODO: DEBUG
+            // NOTE: We check the the strlen <= because there's no ending path separator in the entry pathname, but we might have passed one on the CL, so pointer_inder might be larger than strlen ;)
+            if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->pointer_index)
+            {
+                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
+                archive_entry_copy_pathname(entry, ".");    // FIXME: Not pretty/broken? Just skip this entry?
+                // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
+                archive_read_disk_descend(disk);
+                continue;
+            }
+            else
             {
                 original_path = strdup(archive_entry_pathname(entry));
-                tweaked_path = original_path + (kttar->pointer_index + 1);
-                archive_entry_copy_pathname(entry, tweaked_path);
-                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
-                free(original_path);    // FIXME: Free me later, maybe? (If I decide to tweak the status print to show the transform inline...)
-            }
-        }
-        else
-        {
-            // Tweak the pathname if we were asked to behave like Yifan's KindleTool...
-            if(kttar->pointer_index != 0)
-            {
-                // Handle the 'root' source directory itself...
-                if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) == kttar->pointer_index)
+                // NOTE: This isn't very robust. Handle the path separator...
+                fprintf(stderr, "original_path[kttar->pointer_index] = %c @ %d\n", original_path[kttar->pointer_index], kttar->pointer_index);  // TODO: DEBUG
+                // FIXME: Do we need to check '\' too for MinGW?
+                if(original_path[kttar->pointer_index] == '/')
                 {
-                    fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, archive_entry_pathname(entry), ".");  // TODO: DEBUG
-                    archive_entry_copy_pathname(entry, ".");    // FIXME: Not pretty/broken? Just skip this entry?
-                    // Just skip it, we don't need a redundant and explicit root directory entry in out tarball...
-                    archive_read_disk_descend(disk);
-                    continue;
+                    // We found a path separator, skip it, too
+                    tweaked_path = original_path + (kttar->pointer_index + 1);
                 }
                 else
                 {
-                    original_path = strdup(archive_entry_pathname(entry));
-                    tweaked_path = original_path + (kttar->pointer_index + 1);
-                    archive_entry_copy_pathname(entry, tweaked_path);
-                    fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
+                    tweaked_path = original_path + kttar->pointer_index;
                 }
+                archive_entry_copy_pathname(entry, tweaked_path);
+                fprintf(stderr, "Moving the entry pathname pointer up %d chars (%s -> %s)\n", kttar->pointer_index, original_path, archive_entry_pathname(entry));  // TODO: DEBUG
             }
         }
         // And then override a bunch of stuff (namely, uig/guid/chmod)
@@ -394,7 +387,6 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 if(kttar->pointer_index != 0)
                 {
                     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
-                    free(original_path);
                     kttar->sign_pointer_index_list[kttar->sign_and_bundle_index - 1] = kttar->pointer_index;    // FIXME: free me!
                 }
                 else
@@ -409,6 +401,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             // Delete the file once we're done, be it a signature or the bundlefile
             unlink(input_filename);
         }
+        free(original_path);
     }
 
     archive_read_close(disk);
