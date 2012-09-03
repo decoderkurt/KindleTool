@@ -304,7 +304,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
         if(kttar->pointer_index != 0)
         {
             // Handle the 'root' source directory itself... (FWIW, this should only happen in the first pass)
-            // NOTE: We check the the strlen <= because there's no ending path separator in the entry pathname, but we might have passed one on the CL, so pointer_inder might be larger than strlen ;)
+            // NOTE: We check that strlen <= pointer_index because libarchive strips trailing path separators in the entry pathname, but we might have passed one on the CL, so pointer_index might be larger than strlen ;)
             if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->pointer_index)
             {
                 // Print what we're stripping, ala GNU tar...
