@@ -102,7 +102,7 @@ endif
 ifeq "$(OSTYPE)" "Darwin"
 	STRIP_OPTS:=
 else
-	STRIP_OPTS:=-s
+	STRIP_OPTS:=--strip-unneeded
 endif
 
 # It appears that Windows is using a strange & incongruous file extension for its binaries... ;D
