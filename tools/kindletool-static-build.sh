@@ -329,7 +329,7 @@ EOF
 	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
 	rm -f kindletool-${REV}-osx.zip
 	# Don't store uid/gid & attr, I'm packaging this on a 3rd party's computer
-	zip -X kindletool-${REV}-osx kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	zip -X kindletool-${REV}-osx.zip kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	cd ..
 
