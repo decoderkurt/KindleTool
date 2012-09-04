@@ -120,9 +120,9 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the -dirty flag?
-	#REV="${VER_CURRENT%%-*}"
-	REV="${VER_CURRENT}"
+	# Strips the git commit
+	REV="${VER_CURRENT%%-*}"
+	#REV="${VER_CURRENT}"
 	cd ../..
 	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v KindleTool/README.md ./README
@@ -153,9 +153,9 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the -dirty flag?
-	#REV="${VER_CURRENT%%-*}"
-	REV="${VER_CURRENT}"
+	# Strips the git commit
+	REV="${VER_CURRENT%%-*}"
+	#REV="${VER_CURRENT}"
 	cd ../..
 	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v KindleTool/README.md ./README
@@ -233,9 +233,9 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the -dirty flag?
-	#REV="${VER_CURRENT%%-*}"
-	REV="${VER_CURRENT}"
+	# Strips the git commit
+	REV="${VER_CURRENT%%-*}"
+	#REV="${VER_CURRENT}"
 	cd ../..
 	cp -v KindleTool/KindleTool/Release/kindletool.exe ./kindletool.exe
 	cp -v KindleTool/README.md ./README
@@ -316,9 +316,9 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the -dirty flag?
-	#REV="${VER_CURRENT%%-*}"
-	REV="${VER_CURRENT}"
+	# Strips the git commit
+	REV="${VER_CURRENT%%-*}"
+	#REV="${VER_CURRENT}"
 	cd ../..
 	cd Release
 	cp -v ../KindleTool/KindleTool/Release/kindletool ./kindletool
