@@ -112,7 +112,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
         // Exclude *nix hidden files, too?
         // NOTE: The ARCHIVE_READDISK_MAC_COPYFILE flag for read_disk is disabled by default, so we should already be creating 'sane' archives on OS X, without the crazy ._* acl/xattr files ;)
-        // On the other hand, If the user passed us a self-built tarball, we can't do anything about it. OS X users: export COPYFILE_DISABLE=1 is your friend!
+        // On the other hand, if the user passed us a self-built tarball, we can't do anything about it. OS X users: export COPYFILE_DISABLE=1 is your friend!
         /*
         if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
