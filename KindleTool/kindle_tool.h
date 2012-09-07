@@ -133,6 +133,8 @@ typedef enum
     Kindle5TouchWifi = 0x11,
     Kindle5TouchWifi3GEurope = 0x10,
     Kindle5TouchUnknown = 0x12,
+    KindlePaperWhiteWifi3G = 0x13,
+    KindlePaperWhiteWifi = 0x14,
     KindleUnknown = 0x00
 } Device;
 
