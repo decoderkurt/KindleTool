@@ -53,7 +53,8 @@
 		-d, --device k3w            Kindle 3 Wifi
 		-d, --device k3g            Kindle 3 Wifi+3G
 		-d, --device k3gb           Kindle 3 Wifi+3G Europe
-		-d, --device k4             Kindle 4 (No Touch)
+		-d, --device k4             Kindle 4 (No Touch) Silver (2011)
+		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)

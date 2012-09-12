@@ -127,7 +127,7 @@ const char *convert_device_id(Device dev)
         case Kindle3Wifi3GEurope:
             return "Kindle 3 Wifi+3G Europe";
         case Kindle4NonTouch:
-            return "Kindle 4 Non-Touch";
+            return "Kindle 4 Non-Touch Silver (2011)";
         case Kindle5TouchWifi:
             return "Kindle 5 Touch Wifi";
         case Kindle5TouchWifi3G:
@@ -136,6 +136,8 @@ const char *convert_device_id(Device dev)
             return "Kindle 5 Touch Wifi+3G Europe";
         case Kindle5TouchUnknown:
             return "Kindle 5 Touch ??Unknown??";
+        case Kindle4NonTouchBlack:
+            return "Kindle 4 Non-Touch Black (2012)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -288,7 +290,8 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k3w            Kindle 3 Wifi\n"
         "      -d, --device k3g            Kindle 3 Wifi+3G\n"
         "      -d, --device k3gb           Kindle 3 Wifi+3G Europe\n"
-        "      -d, --device k4             Kindle 4 (No Touch)\n"
+        "      -d, --device k4             Kindle 4 (No Touch) Silver (2011)\n"
+        "      -d, --device k4b            Kindle 4 (No Touch) Black (2012)\n"
         "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
         "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)\n"
