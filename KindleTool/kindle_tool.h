@@ -128,7 +128,7 @@ typedef enum
     Kindle3Wifi = 0x08,
     Kindle3Wifi3G = 0x06,
     Kindle3Wifi3GEurope = 0x0A,
-    Kindle4NonTouch = 0x0E,
+    Kindle4NonTouch = 0x0E,             // Kindle 4 with the silver bezel, released fall 2011
     Kindle5TouchWifi3G = 0x0F,
     Kindle5TouchWifi = 0x11,
     Kindle5TouchWifi3GEurope = 0x10,
@@ -137,6 +137,7 @@ typedef enum
     // That's why they're not plugged into anything for now. (That, and the fact that they might also be using a newer package magic number/format).
     KindlePaperWhiteWifi3G = 0x13,
     KindlePaperWhiteWifi = 0x14,
+    Kindle4NonTouchBlack = 0x23,        // Kindle 4 with the black bezel, released fall 2012
     KindleUnknown = 0x00
 } Device;
 
