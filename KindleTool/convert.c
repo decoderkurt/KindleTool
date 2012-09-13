@@ -129,7 +129,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     fprintf(stderr, "Critical       %hhu\n", critical);
     padding = *(uint8_t *)&data[hindex];        // Print the (garbage?) padding byte found in official updates...
     hindex += sizeof(uint8_t);
-    fprintf(stderr, "Padding Byte   %hhu (%02X)\n", padding, padding);
+    fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", padding, padding);
     pkg_md5_sum = &data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
@@ -240,7 +240,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
     fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
     fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
-    fprintf(stderr, "Padding Byte   %hhu (%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);
+    fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);
 
     if(output == NULL)
     {
