@@ -240,6 +240,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
     fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
     fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
+    fprintf(stderr, "Padding Byte   %hhu (%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);
 
     if(output == NULL)
     {
