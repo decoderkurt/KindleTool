@@ -135,8 +135,8 @@ typedef enum
     Kindle5TouchUnknown = 0x12,
     // Here be dragons, every device code for the new devices is a semi-blind guess for now, and the names will probably change, depending on which FW version they ship with.
     // That's why they're not plugged into anything for now. (That, and the fact that they might also be using a newer package magic number/format).
-    KindlePaperWhiteWifi3G = 0x13,
-    KindlePaperWhiteWifi = 0x14,
+    KindlePaperWhiteWifi3G = 0x1B,
+    KindlePaperWhiteWifi = 0x24,
     Kindle4NonTouchBlack = 0x23,        // Kindle 4 with the black bezel, released fall 2012
     KindleUnknown = 0x00
 } Device;
