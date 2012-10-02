@@ -59,6 +59,8 @@
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)
 		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)
+		-d, --device kpw            Kindle PaperWhite Wifi
+		-d, --device kpwg           Kindle PaperWhite Wifi+3G
 
 	Options:
 		All the following options are optional and advanced.
