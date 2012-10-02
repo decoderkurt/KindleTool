@@ -1131,6 +1131,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
                     strncpy(info.magic_number, "FC04", 4);
                 }
+                // Hmm, all the K5 official updates I saw were still using FC04...
                 else if(strcmp(optarg, "k5w") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi;
