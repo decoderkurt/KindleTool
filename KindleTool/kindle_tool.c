@@ -138,6 +138,10 @@ const char *convert_device_id(Device dev)
             return "Kindle 5 Touch ??Unknown??";
         case Kindle4NonTouchBlack:
             return "Kindle 4 Non-Touch Black (2012)";
+        case KindlePaperWhiteWifi:
+            return "Kindle PaperWhite Wifi";
+        case KindlePaperWhiteWifi3G:
+            return "Kindle PaperWhite Wifi+3G";
         case KindleUnknown:
         default:
             return "Unknown";
