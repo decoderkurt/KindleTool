@@ -524,21 +524,22 @@ int kindle_convert_main(int argc, char *argv[])
                 unlink(in_name);
 
             // Cleanup behind us
+            if(!info_only)
+                free(out_name);
             if(output != NULL && output != stdout)
                 fclose(output);
             if(input != NULL)
                 fclose(input);
             if(sig_output != NULL)
                 fclose(sig_output);
-            free(out_name);
             // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
             if(extract_sig)
             {
                 stat(sig_name, &st);
                 if(st.st_size == 0)
                     unlink(sig_name);
+                free(sig_name);
             }
-            free(sig_name);
 
             // If we're not the last file, throw an LF to untangle the output
             if(optind < argc)
