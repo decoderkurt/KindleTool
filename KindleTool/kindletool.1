@@ -100,12 +100,12 @@ Lowest version of device that package supports. Default is
 .IR 0 .
 .TP
 .BR \-t ", " \-\-tgtrev " uint"
-.B OTA
+.BR OTA " and " "Recovery V2"
 updates only. Target revision.
 .B OTA V1
 uses
 .IR uint ,
-.B OTA V2
+.BR "OTA V2" " and " "Recovery V2"
 uses
 .IR ulong .
 .br
@@ -249,6 +249,6 @@ Currently, even though OTA V2 supports updates that run on multiple devices,
 .br
 it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
 .br
-The platform handling for recovery V2 & recovery FB02 with header rev 2
+The platform handling for Recovery V2 & Recovery FB02 with header rev 2
 .br
 was mostly pulled out of thin air, don't expect it to actually work ;)

@@ -304,7 +304,7 @@ int kindle_print_help(const char *prog_name)
         "      recovery2                   Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer.\n"
         "    \n"
         "    Devices:\n"
-        "      OTA V1 & recovery packages only support one device. OTA V2 & recovery V2 packages can support multiple devices.\n"
+        "      OTA V1 & Recovery packages only support one device. OTA V2 & Recovery V2 packages can support multiple devices.\n"
         "      \n"
         "      -d, --device k1             Kindle 1\n"
         "      -d, --device k2             Kindle 2 US\n"
@@ -338,9 +338,9 @@ int kindle_print_help(const char *prog_name)
         "                                    FB01, FB02 = recovery; FB03 = recovery2; FC02, FD03 = ota; FC04, FD04, FL01 = ota2\n"
         "      -s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
         "                                    Lowest version of device that package supports. Default is 0.\n"
-        "      -t, --tgtrev <ulong|uint>   OTA updates only. Target revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
+        "      -t, --tgtrev <ulong|uint>   OTA & Recovery V2 updates only. Target revision. OTA V1 uses uint, OTA V2 & Recovery V2 uses ulong.\n"
         "                                    Highest version of device that package supports. Default is ulong/uint max value.\n"
-        "      -h, --hdrrev <uint>         Recovery V2 & recovery FB02 updates only. Header Revision. Default is 0.\n"
+        "      -h, --hdrrev <uint>         Recovery V2 & Recovery FB02 updates only. Header Revision. Default is 0.\n"
         "      -1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.\n"
         "      -2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.\n"
         "      -m, --minor <uint>          Recovery updates only. Minor number. Default is 0.\n"
@@ -371,7 +371,7 @@ int kindle_print_help(const char *prog_name)
         "notices:\n"
         "  1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
         "  2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).\n"
-        "  3)  The platform handling for recovery V2 & recovery FB02 with header rev 2 was mostly pulled out of thin air, don't expect it to actually work ;).\n"
+        "  3)  The platform handling for Recovery V2 & Recovery FB02 with header rev 2 was mostly pulled out of thin air, don't expect it to actually work ;).\n"
         , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
     return 0;
 }

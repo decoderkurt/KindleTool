@@ -43,7 +43,7 @@
 		recovery2                   Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer
 
 	Devices:
-		OTA V1 & recovery packages only support one device. OTA V2 & recovery V2 packages can support multiple devices.
+		OTA V1 & Recovery packages only support one device. OTA V2 & Recovery V2 packages can support multiple devices.
 
 		-d, --device k1             Kindle 1
 		-d, --device k2             Kindle 2 US
@@ -64,7 +64,7 @@
 		-d, --device kpwg           Kindle PaperWhite Wifi+3G
 
 	Platforms:
-		Recovery V2 & recovery FB02 with header rev 2 updates only. Use a single platform per package.
+		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.
 
 		-p, --platform yoshi        Yoshi (mostly devices shipped on FW 2.x)
 		-p, --platform shasta       Shasta (mostly devices shipped on FW 3.x)
@@ -77,9 +77,9 @@
                                       FB01, FB02 = recovery; FB03 = recovery2; FC02, FD03 = ota; FC04, FD04, FL01 = ota2
 		-s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.
                                       Lowest version of device that package supports. Default is 0.
-		-t, --tgtrev <ulong|uint>   OTA updates only. Target revision. OTA V1 uses uint, OTA V2 uses ulong.
+		-t, --tgtrev <ulong|uint>   OTA & Recovery V2 updates only. Target revision. OTA V1 uses uint, OTA V2 & Recovery V2 uses ulong.
                                       Highest version of device that package supports. Default is ulong/uint max value.
-		-h, --hdrrev <uint>         Recovery V2 & recovery FB02 updates only. Header Revision. Default is 0.
+		-h, --hdrrev <uint>         Recovery V2 & Recovery FB02 updates only. Header Revision. Default is 0.
 		-1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.
 		-2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.
 		-m, --minor <uint>          Recovery updates only. Minor number. Default is 0.
@@ -114,6 +114,6 @@
 ### notices:
 1. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
 2. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
-3. The platform handling for recovery V2 & recovery FB02 with header rev 2 was mostly pulled out of thin air, don't expect it to actually work ;).
+3. The platform handling for Recovery V2 & Recovery FB02 with header rev 2 was mostly pulled out of thin air, don't expect it to actually work ;).
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-space off; replace-trailing-space-save off;
