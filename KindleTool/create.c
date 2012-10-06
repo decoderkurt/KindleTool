@@ -774,6 +774,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
         case RecoveryUpdate:
             return kindle_create_recovery(info, input_tgz, output, fake_sign);
             break;
+        case RecoveryUpdateV2:
+            return kindle_create_recovery_v2(info, input_tgz, output, fake_sign);
+            break;
         case UnknownUpdate:
         default:
             fprintf(stderr, "Unknown update type.\n");
@@ -1038,6 +1041,103 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     return munger(input_tgz, output, 0, fake_sign);
 }
 
+int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+{
+    unsigned int header_size;
+    unsigned char *header;
+    unsigned int hindex;
+    int i;
+    FILE *demunged_tgz;
+    unsigned char recovery_num_devices;
+
+    demunged_tgz = NULL;
+
+    // Its total size is fixed, but some stuff inside are variable/padded...
+    header_size = MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE;
+    header = malloc(header_size);
+    hindex = 0;
+    // So set everything to 0 first...
+    memset(header, 0, header_size);
+
+    strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
+    hindex += MAGIC_NUMBER_LENGTH;
+    hindex += sizeof(uint32_t); // Padding
+    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // target
+    hindex += sizeof(uint64_t);
+
+    // Even if we asked for a fake package, the Kindle still expects a proper package...
+    // Sum a temp deobfuscated tarball to fake it ;)
+    if(fake_sign)
+    {
+        if((demunged_tgz = tmpfile()) == NULL)
+        {
+            fprintf(stderr, "Error opening temp file.\n");
+            return -1;
+        }
+        demunger(input_tgz, demunged_tgz, 0, 0);
+        rewind(input_tgz);
+        rewind(demunged_tgz);
+        if(md5_sum(demunged_tgz, (char *)&header[hindex]) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of fake package.\n");
+            free(header);
+            return -1;
+        }
+        fclose(demunged_tgz);
+    }
+    else
+    {
+        if(md5_sum(input_tgz, (char *)&header[hindex]) < 0) // md5 hash
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            free(header);
+            return -1;
+        }
+        rewind(input_tgz); // reset input for later reading
+    }
+
+    md(&header[hindex], MD5_HASH_LENGTH); // obfuscate md5 hash
+    hindex += MD5_HASH_LENGTH;
+
+    memcpy(&header[hindex], &info->magic_1, sizeof(uint32_t));          // magic 1
+    hindex += sizeof(uint32_t);
+    memcpy(&header[hindex], &info->magic_2, sizeof(uint32_t));          // magic 2
+    hindex += sizeof(uint32_t);
+    memcpy(&header[hindex], &info->minor, sizeof(uint32_t));            // minor
+    hindex += sizeof(uint32_t);
+    memcpy(&header[hindex], &info->platform, sizeof(uint32_t));         // platform
+    hindex += sizeof(uint32_t);
+    memcpy(&header[hindex], &info->header_rev, sizeof(uint32_t));       // header rev
+    hindex += sizeof(uint32_t);
+    memcpy(&header[hindex], &info->devices[0], sizeof(uint32_t));       // device
+    hindex += sizeof(uint32_t);
+
+    hindex += sizeof(uint32_t); // Padding
+    hindex += sizeof(uint16_t); // ... Padding
+    hindex += sizeof(uint8_t);  // And more weird padding
+    recovery_num_devices = (uint8_t)info->num_devices;  // u16 to u8...
+    memcpy(&header[hindex], &recovery_num_devices, sizeof(uint8_t));    // device count
+    hindex += sizeof(uint8_t);
+
+    for(i = 0; i < info->num_devices; i++)
+    {
+        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t));   // device
+        hindex += sizeof(uint16_t);
+    }
+
+    // now, we write the header to the file
+    if(fwrite(header, sizeof(char), header_size, output) < header_size)
+    {
+        fprintf(stderr, "Error writing update header.\n");
+        free(header);
+        return -1;
+    }
+
+    // write the actual update
+    free(header);
+    return munger(input_tgz, output, 0, fake_sign);
+}
+
 int kindle_create_main(int argc, char *argv[])
 {
     int opt;
@@ -1062,7 +1162,7 @@ int kindle_create_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { "legacy", no_argument, NULL, 'C' }
     };
-    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
     FILE *output;
     BIO *bio;
@@ -1285,12 +1385,12 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
     // validation
-    if(info.num_devices < 1 || (info.version != OTAUpdateV2 && info.num_devices > 1))
+    if(info.num_devices < 1 || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
     {
-        fprintf(stderr, "Invalid number of supported devices, %d, for this update type.\n", info.num_devices);
+        fprintf(stderr, "Invalid number of supported devices, %d, for this update type: %s.\n", info.num_devices, convert_bundle_version(info.version));
         goto do_error;
     }
-    if(info.version != OTAUpdateV2 && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
+    if((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
     {
         fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
         goto do_error;

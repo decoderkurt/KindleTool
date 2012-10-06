@@ -222,7 +222,6 @@ typedef struct
     uint16_t num_devices;
     Device *devices;
     Platform platform;
-    unsigned char recovery_num_devices;
     uint32_t header_rev;
     CertificateNumber certificate_number;
     unsigned char optional;
@@ -276,6 +275,7 @@ int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const unsig
 int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
 int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const unsigned int);
+int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_main(int, char **);
 
 #endif
