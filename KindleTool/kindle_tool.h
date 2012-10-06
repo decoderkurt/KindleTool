@@ -152,7 +152,7 @@ typedef enum
 typedef enum
 {
     Luigi = 0x4C,       // L
-    Shasta = 0x53,      // S, report as Luigi
+    Shasta = 0x53,      // S, report as Luigi?
     Yoshi = 0x59,       // Y
     Undefined = 0x00
 } Platform;             // This stuff is a *complete* shot in the dark...

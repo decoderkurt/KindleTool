@@ -66,9 +66,9 @@
 	Platforms:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.
 
-		-p, --platform yoshi        Yoshi (mostly devices shipped on FW 2.x)
+		-p, --platform luigi        Luigi (mostly devices shipped on FW 2.x)
 		-p, --platform shasta       Shasta (mostly devices shipped on FW 3.x)
-		-p, --platform luigi        Luigi (mostly devices shipped on FW 5.x)
+		-p, --platform yoshi        Yoshi (mostly devices shipped on FW 5.x)
 
 	Options:
 		All the following options are optional and advanced.
