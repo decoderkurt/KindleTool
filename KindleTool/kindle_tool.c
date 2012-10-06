@@ -148,6 +148,22 @@ const char *convert_device_id(Device dev)
     }
 }
 
+const char *convert_platform_id(Platform plat)
+{
+    switch(plat)
+    {
+        case Luigi:
+            return "Luigi";
+        case Shasta:
+            return "Shasta";
+        case Yoshi:
+            return "Yoshi";
+        case Undefined:
+        default:
+            return "Undefined";
+    }
+}
+
 const char *convert_bundle_version(BundleVersion bundlev)
 {
     switch(bundlev)

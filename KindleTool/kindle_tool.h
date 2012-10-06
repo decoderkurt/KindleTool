@@ -149,6 +149,14 @@ typedef enum
     KindleUnknown = 0x00
 } Device;
 
+typedef enum
+{
+    Luigi = 0x4C,       // L
+    Shasta = 0x53,       // S, report as Luigi
+    Yoshi = 0x59,       // Y
+    Undefined = 0x00
+} Platform;     // This stuff is a *complete* shot in the dark...
+
 typedef struct
 {
     CertificateNumber certificate_number;
@@ -171,8 +179,8 @@ typedef struct
     uint32_t magic_1;
     uint32_t magic_2;
     uint32_t minor;
-    uint32_t platform;
-    uint32_t hdr_rev;
+    uint32_t legacy_platform_id;
+    uint32_t header_rev;
     uint32_t device;
 } RecoveryUpdateHeader;
 
@@ -202,6 +210,10 @@ typedef struct
     uint32_t minor;
     uint16_t num_devices;
     Device *devices;
+    Device *legacy_platform_id;
+    Platform *platform_id;
+    unsigned char recovery_num_devices;
+    uint32_t header_rev;
     CertificateNumber certificate_number;
     unsigned char optional;
     unsigned char critical;
@@ -226,6 +238,7 @@ void dm(unsigned char *, size_t);
 int munger(FILE *, FILE *, size_t, const unsigned int);
 int demunger(FILE *, FILE *, size_t, const unsigned int);
 const char *convert_device_id(Device);
+const char *convert_platform_id(Platform);
 const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);
