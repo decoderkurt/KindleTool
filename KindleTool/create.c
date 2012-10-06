@@ -1113,6 +1113,8 @@ int kindle_create_main(int argc, char *argv[])
     {
         info.version = RecoveryUpdateV2;
         strncpy(info.magic_number, "FB03", 4);
+        // Do we really want to default to header rev V2 here?
+        info.header_rev = 2;
     }
     else if(strncmp(argv[0], "recovery", 8) == 0)
     {
@@ -1319,6 +1321,26 @@ int kindle_create_main(int argc, char *argv[])
             strncpy(info.magic_number, "FB03", 4);
         }
     }
+    // We need a platform id & header rev for recovery2
+    if(info.version == RecoveryUpdateV2)
+    {
+        if(!info.platform)
+        {
+            fprintf(stderr, "You need to set a platform for this update type\n");
+            goto do_error;
+        }
+        // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
+    }
+    // We need a platform id for recovery FB02 V2
+    if(info.version == RecoveryUpdate)
+    {
+        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
+        {
+            fprintf(stderr, "You need to set a platform for this update type\n");
+            goto do_error;
+        }
+    }
+
     // If we don't actually build an archive, legacy mode makes no sense
     if(skip_archive)
     {
