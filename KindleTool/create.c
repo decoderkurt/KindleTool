@@ -975,14 +975,14 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 
     memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
 
+    strncpy(header.magic_number, info->magic_number, 4); // magic number
+    header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
+    header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
+    header.data.recovery_update.minor = (uint32_t)info->minor; // minor
+
     // Handle FB02 with a V2 Header Rev. Different length, but still fixed...
     if(info->header_rev == 2)
     {
-        strncpy(header.magic_number, info->magic_number, 4); // magic number
-        header.data.recovery_h2_update.magic_1 = (uint32_t)info->magic_1; // magic 1
-        header.data.recovery_h2_update.magic_2 = (uint32_t)info->magic_2; // magic 2
-        header.data.recovery_h2_update.minor = (uint32_t)info->minor; // minor
-
         // Expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
@@ -990,11 +990,6 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     }
     else
     {
-        strncpy(header.magic_number, info->magic_number, 4); // magic number
-        header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
-        header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
-        header.data.recovery_update.minor = (uint32_t)info->minor; // minor
-
         // Assume what we did before was okay, and put a device id in there...
         header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
     }
@@ -1026,10 +1021,6 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         rewind(input_tgz); // rewind input
     }
     md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
-
-    // Don't forget the MD5 sum, even with header rev 2 ;).
-    if(info->header_rev == 2)
-        strncpy(header.data.recovery_h2_update.md5_sum, header.data.recovery_update.md5_sum, MD5_HASH_LENGTH);
 
     // write header to output
     if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
