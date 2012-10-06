@@ -179,10 +179,20 @@ typedef struct
     uint32_t magic_1;
     uint32_t magic_2;
     uint32_t minor;
-    uint32_t legacy_platform_id;
-    uint32_t header_rev;
     uint32_t device;
 } RecoveryUpdateHeader;
+
+typedef struct
+{
+    unsigned char unused[12];
+    char md5_sum[MD5_HASH_LENGTH];
+    uint32_t magic_1;
+    uint32_t magic_2;
+    uint32_t minor;
+    uint32_t platform_id;
+    uint32_t header_rev;
+    uint32_t device;
+} RecoveryH2UpdateHeader;       // FB02 with V2 Header, not FB03
 
 typedef struct
 {
@@ -191,6 +201,7 @@ typedef struct
     {
         OTAUpdateHeader ota_update;
         RecoveryUpdateHeader recovery_update;
+        RecoveryH2UpdateHeader recovery_h2_update;
         UpdateSignatureHeader signature;
         unsigned char ota_header_data[OTA_UPDATE_BLOCK_SIZE];
         unsigned char signature_header_data[UPDATE_SIGNATURE_BLOCK_SIZE];
