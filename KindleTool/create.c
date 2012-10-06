@@ -1589,7 +1589,7 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
             break;
         case RecoveryUpdate:
-            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d\n", info.minor, info.magic_1, info.magic_2);
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
                 fprintf(stderr, ", Header Rev: %llu, Platform: %s\n", (long long) info.header_rev, convert_platform_id(info.platform));
             else
