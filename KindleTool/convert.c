@@ -36,7 +36,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     // Zero init to make Valgrind happy
     // (it considers a variable to be uninitialized if any variable or memory location used in its calculation was uninitialized,
     // and we effectiveley only initialize the first MAGIC_NUMBER_LENGTH bytes of header with kindle_read_bundle_header, so it shouts at us
-    // later during the header.magic_number printf ;)).
+    // later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
     memset(&header, 0, sizeof(UpdateHeader));
     if(kindle_read_bundle_header(&header, input) < 0)
     {
