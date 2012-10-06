@@ -62,6 +62,10 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             fprintf(stderr, "Bundle Type    %s\n", "Recovery");
             return kindle_convert_recovery(&header, input, output, fake_sign);
             break;
+        case RecoveryUpdateV2:
+            fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
+            return kindle_convert_recovery_v2(input, output, fake_sign);
+            break;
         case UnknownUpdate:
         default:
             fprintf(stderr, "Unknown update bundle version!\n");
@@ -280,6 +284,95 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
         return 0;
     }
 
+    return demunger(input, output, 0, fake_sign);
+}
+
+int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign)
+{
+    char *data;
+    unsigned int hindex;
+    uint64_t target_revision;
+    char *pkg_md5_sum;
+    uint32_t magic_1;
+    uint32_t magic_2;
+    uint32_t minor;
+    uint32_t platform;
+    uint32_t header_rev;
+    uint32_t device;
+    uint8_t num_devices;
+    unsigned int i;
+    //uint16_t *devices;
+    size_t read_size __attribute__((unused));
+
+    // Its size is set, there's just some wonky padding involved. Read it all!
+    data = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(char));
+    read_size = fread(data, sizeof(char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+    hindex = 0;
+
+    hindex += sizeof(uint32_t); // Padding
+    target_revision = *(uint64_t *)&data[hindex];
+    hindex += sizeof(uint64_t);
+    fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
+    pkg_md5_sum = &data[hindex];
+    dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
+    hindex += MD5_HASH_LENGTH;
+    fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
+    magic_1 = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    fprintf(stderr, "Magic 1        %d\n", magic_1);
+    magic_2 = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    fprintf(stderr, "Magic 2        %d\n", magic_2);
+    minor = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    fprintf(stderr, "Minor          %d\n", minor);
+    platform = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    // Slightly hackish way to detect unknown platforms...
+    if(strcmp(convert_platform_id(platform), "Undefined") == 0)
+        fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
+    else
+        fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
+    header_rev = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    fprintf(stderr, "Header Rev     %d\n", header_rev);
+    device = *(uint32_t *)&data[hindex];
+    hindex += sizeof(uint32_t);
+    // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
+    if(strcmp(convert_device_id(device), "Unknown") == 0)
+        fprintf(stderr, "Main Device    Unknown (0x%02X)\n", device);
+    else
+        fprintf(stderr, "Main Device    %s\n", convert_device_id(device));
+    hindex += sizeof(uint32_t); // Padding
+    hindex += sizeof(uint16_t); // ... Padding
+    hindex += sizeof(uint8_t);  // And more weird padding
+    num_devices = *(uint8_t *)&data[hindex];
+    hindex += sizeof(uint8_t);
+    fprintf(stderr, "Devices        %hd\n", num_devices);
+    for(i = 0; i < num_devices; i++)
+    {
+        device = *(uint16_t *)&data[hindex];
+        // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
+        if(strcmp(convert_device_id(device), "Unknown") == 0)
+            fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
+        else
+            fprintf(stderr, "Device         %s\n", convert_device_id(device));
+        hindex += sizeof(uint16_t);
+    }
+    free(data);
+
+    if(ferror(input) != 0)
+    {
+        fprintf(stderr, "Cannot read update correctly.\n");
+        return -1;
+    }
+
+    if(output == NULL)
+    {
+        return 0;
+    }
+
+    // Now we can decrypt the data
     return demunger(input, output, 0, fake_sign);
 }
 

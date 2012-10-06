@@ -135,7 +135,7 @@ typedef enum
     Kindle5TouchWifi3GEurope = 0x10,
     Kindle5TouchUnknown = 0x12,
     Kindle4NonTouchBlack = 0x23,        // Kindle 4 with the black bezel, released fall 2012
-    KindlePaperWhiteWifi = 0x24,       // Kindle Paperwhite (black bezel), released fall 2012 on FW 5.2.0
+    KindlePaperWhiteWifi = 0x24,        // Kindle Paperwhite (black bezel), released fall 2012 on FW 5.2.0
     KindlePaperWhiteWifi3G = 0x1B,
     /*
     ValidUnknown = 0x13,
@@ -152,10 +152,10 @@ typedef enum
 typedef enum
 {
     Luigi = 0x4C,       // L
-    Shasta = 0x53,       // S, report as Luigi
+    Shasta = 0x53,      // S, report as Luigi
     Yoshi = 0x59,       // Y
     Undefined = 0x00
-} Platform;     // This stuff is a *complete* shot in the dark...
+} Platform;             // This stuff is a *complete* shot in the dark...
 
 typedef struct
 {
@@ -264,6 +264,7 @@ int kindle_convert_ota_update_v2(FILE *, FILE *, const unsigned int);
 int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
 int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const unsigned int);
 int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const unsigned int);
+int kindle_convert_recovery_v2(FILE *, FILE *, const unsigned int);
 int kindle_convert_main(int, char **);
 int libarchive_extract(const char *, const char *);
 int kindle_extract_main(int, char **);
