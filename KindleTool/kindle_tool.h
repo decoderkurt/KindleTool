@@ -189,7 +189,7 @@ typedef struct
     uint32_t magic_1;
     uint32_t magic_2;
     uint32_t minor;
-    uint32_t platform_id;
+    uint32_t platform;
     uint32_t header_rev;
     uint32_t device;
 } RecoveryH2UpdateHeader;       // FB02 with V2 Header, not FB03
@@ -221,7 +221,7 @@ typedef struct
     uint32_t minor;
     uint16_t num_devices;
     Device *devices;
-    Platform platform_id;
+    Platform platform;
     unsigned char recovery_num_devices;
     uint32_t header_rev;
     CertificateNumber certificate_number;

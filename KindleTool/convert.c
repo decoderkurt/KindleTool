@@ -262,7 +262,18 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     fprintf(stderr, "Magic 1        %d\n", header->data.recovery_update.magic_1);
     fprintf(stderr, "Magic 2        %d\n", header->data.recovery_update.magic_2);
     fprintf(stderr, "Minor          %d\n", header->data.recovery_update.minor);
-    fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_update.device));
+
+    // Handle V2 header rev...
+    if(header->data.recovery_h2_update.header_rev == 2)
+    {
+        fprintf(stderr, "Header Rev     %d\n", header->data.recovery_h2_update.header_rev);
+        fprintf(stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
+        fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_h2_update.device));
+    }
+    else
+    {
+        fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_update.device));
+    }
 
     if(output == NULL)
     {

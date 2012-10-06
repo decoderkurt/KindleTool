@@ -980,7 +980,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         header.data.recovery_h2_update.minor = (uint32_t)info->minor; // minor
 
         // Expects some new stuff that I'm not too sure about... Here be dragons.
-        header.data.recovery_h2_update.platform_id = (uint32_t)info->platform_id;
+        header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
         header.data.recovery_h2_update.device = (uint32_t)info->devices[0];
     }
@@ -1200,11 +1200,11 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case 'p':
                 if(strcmp(optarg, "luigi") == 0)
-                    info.platform_id = Luigi;
+                    info.platform = Luigi;
                 else if(strcmp(optarg, "shasta") == 0)
-                    info.platform_id = Shasta;
+                    info.platform = Shasta;
                 else if(strcmp(optarg, "yoshi") == 0)
-                    info.platform_id = Yoshi;
+                    info.platform = Yoshi;
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);
@@ -1474,10 +1474,10 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
             break;
         case RecoveryUpdate:
-            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform_id));
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform));
             break;
         case RecoveryUpdateV2:
-            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform_id));
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform));
             break;
         case UnknownUpdate:
         default:
