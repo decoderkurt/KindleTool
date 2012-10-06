@@ -87,7 +87,8 @@ is one of
 .I ota2
 .TP
 .BR \-s ", " \-\-srcrev " uint"
-OTA updates only. Source revision.
+.BR OTA " updates "
+only. Source revision.
 .B OTA V1
 uses
 .IR uint ,
@@ -99,7 +100,8 @@ Lowest version of device that package supports. Default is
 .IR 0 .
 .TP
 .BR \-t ", " \-\-tgtrev " uint"
-OTA updates only. Target revision.
+.BR OTA " updates "
+only. Target revision.
 .B OTA V1
 uses
 .IR uint ,
@@ -117,19 +119,23 @@ Header Revision. Default is
 .IR 0 .
 .TP
 .BR \-1 ", " \-\-magic1 " uint"
-Recovery updates only. Magic number 1. Default is
+.BR Recovery " updates "
+only. Magic number 1. Default is
 .IR 0 .
 .TP
 .BR \-2 ", " \-\-magic2 " uint"
-Recovery updates only. Magic number 2. Default is
+.BR Recovery " updates "
+only. Magic number 2. Default is
 .IR 0 .
 .TP
 .BR \-m ", " \-\-minor " uint"
-Recovery updates only. Minor number. Default is
+.BR Recovery " updates "
+only. Minor number. Default is
 .IR 0 .
 .TP
 .BR \-c ", " \-\-cert " ushort"
-OTA V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is
+.BR "OTA V2" " updates "
+only. The number of the certificate to use (found in /etc/uks on device). Default is
 .IR 0 .
 .br
 .BR 0 " = "
@@ -140,15 +146,18 @@ OTA V2 updates only. The number of the certificate to use (found in /etc/uks on 
 .I pubprodkey02.pem
 .TP
 .BR \-o ", " \-\-opt " uchar"
-OTA V1 updates only. One byte optional data expressed as a number. Default is
+.BR "OTA V1" " updates "
+only. One byte optional data expressed as a number. Default is
 .IR 0 .
 .TP
 .BR \-r ", " \-\-crit " uchar"
-OTA V2 updates only. One byte optional data expressed as a number. Default is
+.BR "OTA V2" " updates "
+only. One byte optional data expressed as a number. Default is
 .IR 0 .
 .TP
 .BR \-x ", " \-\-meta " str"
-OTA V2 updates only. An optional string to add. This parameter can then be specified multiple times.
+.BR "OTA V2" " updates "
+only. An optional string to add. This parameter can then be specified multiple times.
 .br
 Format of metastring must be:
 .BR key = \fIvalue
