@@ -330,7 +330,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown platforms...
     if(strcmp(convert_platform_id(platform), "Undefined") == 0)
-        fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
+        fprintf(stderr, "Platform       Unknown (0x%02X [%c])\n", platform, platform);
     else
         fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
     header_rev = *(uint32_t *)&data[hindex];
@@ -352,7 +352,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     for(i = 0; i < num_devices; i++)
     {
         device = *(uint16_t *)&data[hindex];
-        // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
+        // Slightly hackish way to detect unknown devices...
         if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
         else

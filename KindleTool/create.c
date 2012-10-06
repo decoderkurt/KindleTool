@@ -1387,12 +1387,12 @@ int kindle_create_main(int argc, char *argv[])
     // validation
     if(info.num_devices < 1 || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
     {
-        fprintf(stderr, "Invalid number of supported devices, %d, for this update type: %s.\n", info.num_devices, convert_bundle_version(info.version));
+        fprintf(stderr, "Invalid number of supported devices (%d) for this update type (%s).\n", info.num_devices, convert_bundle_version(info.version));
         goto do_error;
     }
     if((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
     {
-        fprintf(stderr, "Source/target revision for this update type cannot exceed %u\n", UINT32_MAX);
+        fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
         goto do_error;
     }
     // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
