@@ -33,6 +33,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
 {
     UpdateHeader header;
     BundleVersion bundle_version;
+    memset(&header, 0, sizeof(UpdateHeader));   // Zero init to make Valgrind happy
     if(kindle_read_bundle_header(&header, input) < 0)
     {
         fprintf(stderr, "Cannot read input file.\n");
