@@ -160,6 +160,8 @@ const char *convert_bundle_version(BundleVersion bundlev)
             return "OTA V1";
         case RecoveryUpdate:
             return "Recovery";
+        case RecoveryUpdateV2:
+            return "Recovery V2";
         case UnknownUpdate:
         default:
             return "Unknown";
@@ -170,6 +172,8 @@ BundleVersion get_bundle_version(char magic_number[4])
 {
     if(!strncmp(magic_number, "FB02", 4) || !strncmp(magic_number, "FB01", 4))
         return RecoveryUpdate;
+    else if(!strncmp(magic_number, "FB03", 4))
+        return RecoveryUpdateV2;
     else if(!strncmp(magic_number, "FC02", 4) || !strncmp(magic_number, "FD03", 4))
         return OTAUpdate;
     else if(!strncmp(magic_number, "FC04", 4) || !strncmp(magic_number, "FD04", 4) || !strncmp(magic_number, "FL01", 4))

@@ -106,6 +106,7 @@ typedef enum
     OTAUpdateV2,
     OTAUpdate,
     RecoveryUpdate,
+    RecoveryUpdateV2,
     UnknownUpdate = -1
 } BundleVersion;
 
@@ -161,6 +162,8 @@ typedef struct
     uint32_t magic_1;
     uint32_t magic_2;
     uint32_t minor;
+    uint32_t platform;
+    uint32_t hdr_rev;
     uint32_t device;
 } RecoveryUpdateHeader;
 
