@@ -974,7 +974,20 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
     header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
     header.data.recovery_update.minor = (uint32_t)info->minor; // minor
-    header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
+
+    // Handle FB02 with a V2 Header Rev...
+    if(info->header_rev == 2)
+    {
+        // Expects some new stuff that I'm not too sure about... Here be dragons.
+        header.data.recovery_update.legacy_platform_id = (uint32_t)info->platform_id;
+        header.data.recovery_update.header_rev = (uint32_t)info->header_rev;
+        header.data.recovery_update.device = (uint32_t)info->devices[0];
+    }
+    else
+    {
+        // Assume what we did before was okay, and put a device id in there...
+        header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
+    }
 
     if(fake_sign)
     {
@@ -1029,6 +1042,8 @@ int kindle_create_main(int argc, char *argv[])
         { "magic1", required_argument, NULL, '1' },
         { "magic2", required_argument, NULL, '2' },
         { "minor", required_argument, NULL, 'm' },
+        { "platform", required_argument, NULL, 'p' },
+        { "hdrrev", required_argument, NULL, 'h' },
         { "cert", required_argument, NULL, 'c' },
         { "opt", required_argument, NULL, 'o' },
         { "crit", required_argument, NULL, 'r' },
@@ -1037,7 +1052,7 @@ int kindle_create_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { "legacy", no_argument, NULL, 'C' }
     };
-    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
     FILE *output;
     BIO *bio;
@@ -1084,6 +1099,11 @@ int kindle_create_main(int argc, char *argv[])
         strncpy(info.magic_number, "FC02", 4);
         info.target_revision = UINT32_MAX;
     }
+    else if(strncmp(argv[0], "recovery2", 9) == 0)
+    {
+        info.version = RecoveryUpdateV2;
+        strncpy(info.magic_number, "FB03", 4);
+    }
     else if(strncmp(argv[0], "recovery", 8) == 0)
     {
         info.version = RecoveryUpdate;
@@ -1097,7 +1117,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:c:o:r:x:auC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:h:c:o:r:x:auC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -1167,6 +1187,22 @@ int kindle_create_main(int argc, char *argv[])
                     fprintf(stderr, "Unknown device %s.\n", optarg);
                     goto do_error;
                 }
+                break;
+            case 'p':
+                if(strcmp(optarg, "luigi") == 0)
+                    info.platform_id = Luigi;
+                else if(strcmp(optarg, "shasta") == 0)
+                    info.platform_id = Shasta;
+                else if(strcmp(optarg, "yoshi") == 0)
+                    info.platform_id = Yoshi;
+                else
+                {
+                    fprintf(stderr, "Unknown platform %s.\n", optarg);
+                    goto do_error;
+                }
+                break;
+            case 'h':
+                info.header_rev = (uint32_t) atoi(optarg);
                 break;
             case 'k':
                 if((bio = BIO_new_file(optarg, "rb")) == NULL || PEM_read_bio_RSAPrivateKey(bio, &info.sign_pkey, NULL, NULL) == NULL)
@@ -1263,6 +1299,14 @@ int kindle_create_main(int argc, char *argv[])
         if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
         {
             strncpy(info.magic_number, "FB02", 4);
+        }
+    }
+    // Same thing with recovery updates v2
+    if(info.version == RecoveryUpdateV2)
+    {
+        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FB03", 4) != 0))
+        {
+            strncpy(info.magic_number, "FB03", 4);
         }
     }
     // If we don't actually build an archive, legacy mode makes no sense
@@ -1420,7 +1464,10 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
             break;
         case RecoveryUpdate:
-            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d\n", info.minor, info.magic_1, info.magic_2);
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform_id));
+            break;
+        case RecoveryUpdateV2:
+            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform_id));
             break;
         case UnknownUpdate:
         default:

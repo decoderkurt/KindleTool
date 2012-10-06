@@ -210,8 +210,7 @@ typedef struct
     uint32_t minor;
     uint16_t num_devices;
     Device *devices;
-    Device *legacy_platform_id;
-    Platform *platform_id;
+    Platform platform_id;
     unsigned char recovery_num_devices;
     uint32_t header_rev;
     CertificateNumber certificate_number;
