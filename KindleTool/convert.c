@@ -348,7 +348,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     hindex += sizeof(uint8_t);  // And more weird padding
     num_devices = *(uint8_t *)&data[hindex];
     hindex += sizeof(uint8_t);
-    fprintf(stderr, "Devices        %hd\n", num_devices);
+    fprintf(stderr, "Devices        %hhd\n", num_devices);
     for(i = 0; i < num_devices; i++)
     {
         device = *(uint16_t *)&data[hindex];

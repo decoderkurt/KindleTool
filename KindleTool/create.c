@@ -833,6 +833,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         if((demunged_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
+            free(header);
             return -1;
         }
         demunger(input_tgz, demunged_tgz, 0, 0);
@@ -1072,6 +1073,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
         if((demunged_tgz = tmpfile()) == NULL)
         {
             fprintf(stderr, "Error opening temp file.\n");
+            free(header);
             return -1;
         }
         demunger(input_tgz, demunged_tgz, 0, 0);
