@@ -1277,12 +1277,12 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
                     strncpy(info.magic_number, "FD04", 4);
                 }
-                else if(strcmp(optarg, "kpw") == 0)
+                else if(strcmp(optarg, "pw") == 0 || strcmp(optarg, "kpw") == 0)
                 {
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi;
                     strncpy(info.magic_number, "FD04", 4);
                 }
-                else if(strcmp(optarg, "kpwg") == 0)
+                else if(strcmp(optarg, "pwg") == 0 || strcmp(optarg, "kpwg") == 0)
                 {
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
