@@ -13,7 +13,7 @@ ASAN_CLFAGS="-O2 -march=native -faddress-sanitizer -fno-omit-frame-pointer -g3"
 # Same thing for OpenSSL's uninitialized stuff when built without PURIFY (cf. OpenSSL's FAQ)
 # Another thing that I don't remember that's fixed in libarchive git (will be in 3.0.5)
 
-# Kindlecross toolchain prefix
+# Kindle cross toolchain prefix
 ifeq "$(KINDLE)" "true"
 	CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 endif
