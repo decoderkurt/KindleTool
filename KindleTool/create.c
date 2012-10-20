@@ -774,6 +774,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
         case RecoveryUpdate:
             return kindle_create_recovery(info, input_tgz, output, fake_sign);
             break;
+        // FIXME: RecoveryUpdateV2 & RecoveryUpdate FB02 w/ hrev 2 might need to be wrapped in a SP01...
         case RecoveryUpdateV2:
             return kindle_create_recovery_v2(info, input_tgz, output, fake_sign);
             break;
