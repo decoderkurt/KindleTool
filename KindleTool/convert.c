@@ -591,7 +591,7 @@ int libarchive_extract(const char *filename, const char *prefix)
 
     if(filename != NULL && strcmp(filename, "-") == 0)
         filename = NULL;
-    if((r = archive_read_open_file(a, filename, 10240)))
+    if((r = archive_read_open_filename(a, filename, 10240)))
     {
         fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
         archive_read_free(a);
