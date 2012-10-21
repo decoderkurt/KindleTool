@@ -52,8 +52,16 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     switch(bundle_version)
     {
         case OTAUpdateV2:
-            fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-            return kindle_convert_ota_update_v2(input, output, fake_sign); // no absolute size, so no struct to pass
+            if(unwrap_only)
+            {
+                fprintf(stderr, "Nothing to unwrap!\n");
+                return 0;
+            }
+            else
+            {
+                fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
+                return kindle_convert_ota_update_v2(input, output, fake_sign); // no absolute size, so no struct to pass
+            }
             break;
         case UpdateSignature:
             if(kindle_convert_signature(&header, input, sig_output) < 0)
@@ -81,16 +89,40 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             }
             break;
         case OTAUpdate:
-            fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
-            return kindle_convert_ota_update(&header, input, output, fake_sign);
+            if(unwrap_only)
+            {
+                fprintf(stderr, "Nothing to unwrap!\n");
+                return 0;
+            }
+            else
+            {
+                fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
+                return kindle_convert_ota_update(&header, input, output, fake_sign);
+            }
             break;
         case RecoveryUpdate:
-            fprintf(stderr, "Bundle Type    %s\n", "Recovery");
-            return kindle_convert_recovery(&header, input, output, fake_sign);
+            if(unwrap_only)
+            {
+                fprintf(stderr, "Nothing to unwrap!\n");
+                return 0;
+            }
+            else
+            {
+                fprintf(stderr, "Bundle Type    %s\n", "Recovery");
+                return kindle_convert_recovery(&header, input, output, fake_sign);
+            }
             break;
         case RecoveryUpdateV2:
-            fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
-            return kindle_convert_recovery_v2(input, output, fake_sign);
+            if(unwrap_only)
+            {
+                fprintf(stderr, "Nothing to unwrap!\n");
+                return 0;
+            }
+            else
+            {
+                fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
+                return kindle_convert_recovery_v2(input, output, fake_sign);
+            }
             break;
         case UnknownUpdate:
         default:
