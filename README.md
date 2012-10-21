@@ -22,6 +22,7 @@
 		-s, --sig                   OTA V2 updates only. Extract the package signature.
 		-k, --keep                  Don't delete the input package.
 		-u, --unsigned              Assume input is an unsigned package
+		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header
 
 * KindleTool extract &lt;**input**&gt; &lt;**output**&gt;
 

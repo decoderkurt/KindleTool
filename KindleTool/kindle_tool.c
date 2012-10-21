@@ -285,6 +285,7 @@ int kindle_print_help(const char *prog_name)
         "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
         "      -k, --keep                  Don't delete the input package.\n"
         "      -u, --unsigned              Assume input is an unsigned package.\n"
+        "      -w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header\n"
         "      \n"
         "  %s extract <input> <output>\n"
         "    Extracts a Kindle update package to a directory\n"
