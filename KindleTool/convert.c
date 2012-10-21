@@ -80,11 +80,11 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
                         return -1;
                     }
                 }
+                // NOTE: We don't handle unwrapping nested UpdateSignature
                 return 0;
             }
             else
             {
-                // NOTE: We don't handle nested UpdateSignature
                 return kindle_convert(input, output, sig_output, fake_sign, 0, NULL);
             }
             break;
