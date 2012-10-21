@@ -29,7 +29,7 @@ int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign)
+int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -38,6 +38,10 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     // and we effectiveley only initialize the first MAGIC_NUMBER_LENGTH bytes of header with kindle_read_bundle_header, so it shouts at us
     // later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
     memset(&header, 0, sizeof(UpdateHeader));
+
+    char buffer[BUFFER_SIZE];
+    size_t count;
+
     if(kindle_read_bundle_header(&header, input) < 0)
     {
         fprintf(stderr, "Cannot read input file.\n");
@@ -57,7 +61,24 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
                 fprintf(stderr, "Cannot extract signature file!\n");
                 return -1;
             }
-            return kindle_convert(input, output, sig_output, fake_sign);
+            // If we asked to simply unwrap the package, just write our unwrapped package ;).
+            if(unwrap_only)
+            {
+                while((count = fread(buffer, sizeof(char), BUFFER_SIZE, input)) > 0)
+                {
+                    if(fwrite(buffer, sizeof(char), count, unwrap_output) < count)
+                    {
+                        fprintf(stderr, "Error writing unwrapped update to output.\n");
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+            else
+            {
+                // NOTE: We don't handle nested UpdateSignature
+                return kindle_convert(input, output, sig_output, fake_sign, 0, NULL);
+            }
             break;
         case OTAUpdate:
             fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
@@ -391,30 +412,36 @@ int kindle_convert_main(int argc, char *argv[])
         { "info", no_argument, NULL, 'i' },
         { "keep", no_argument, NULL, 'k' },
         { "sig", no_argument, NULL, 's' },
-        { "unsigned", no_argument, NULL, 'u' }
+        { "unsigned", no_argument, NULL, 'u' },
+        { "unwrap", no_argument, NULL, 'w' }
     };
     FILE *input;
     FILE *output;
     FILE *sig_output;
+    FILE *unwrap_output;
     const char *in_name;
     char *out_name = NULL;
     char *sig_name = NULL;
+    char *unwrapped_name = NULL;
     size_t len;
     struct stat st;
     int info_only;
     int keep_ori;
     int extract_sig;
     unsigned int fake_sign;
+    unsigned int unwrap_only;
     int fail;
 
     sig_output = NULL;
+    unwrap_output = NULL;
     output = NULL;
     info_only = 0;
     keep_ori = 0;
     extract_sig = 0;
     fake_sign = 0;
+    unwrap_only = 0;
     fail = 1;
-    while((opt = getopt_long(argc, argv, "icksu", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -433,20 +460,32 @@ int kindle_convert_main(int argc, char *argv[])
             case 'u':
                 fake_sign = 1;
                 break;
+            case 'w':
+                unwrap_only = 1;
+                break;
             default:
                 fprintf(stderr, "Unknown option code 0%o\n", opt);
                 break;
         }
     }
-    // Don't try to output to stdout or extract the package sig if we asked for info only
+    // Don't try to output to stdout or extract/unwrap the package sig if we asked for info only
     if(info_only)
     {
         output = NULL;
         extract_sig = 0;
+        unwrap_only = 0;
     }
-    // Don't try to extract the signature of an unsiged package
+    // Don't try to extract or unwrap the signature of an unsiged package
     if(fake_sign)
+    {
         extract_sig = 0;
+        unwrap_only = 0;
+    }
+    // Don't try to output anywhere if we only want to unwrap the package
+    if(unwrap_only)
+    {
+        output = NULL;
+    }
 
     if(optind < argc)
     {
@@ -494,6 +533,23 @@ int kindle_convert_main(int argc, char *argv[])
                     continue;   // It's fatal, go away
                 }
             }
+            if(unwrap_only)     // we want an unwrapped package (implies not info only)
+            {
+                len = strlen(in_name);
+                unwrapped_name = malloc(len + 10 + 1);
+                memcpy(unwrapped_name, in_name, len - 4);
+                unwrapped_name[len - 4] = 0;  // . => \0
+                strncat(unwrapped_name, "_unwrapped.bin", 4);
+                if((unwrap_output = fopen(unwrapped_name, "wb")) == NULL)
+                {
+                    fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
+                    fail = 1;
+                    if(!info_only && output != stdout)
+                        free(out_name);
+                    free(unwrapped_name);
+                    continue;   // It's fatal, go away
+                }
+            }
             if((input = fopen(in_name, "rb")) == NULL)
             {
                 fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
@@ -514,11 +570,15 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Checking %supdate package %s\n", (fake_sign ? "fake " : ""), in_name);
             }
+            else if(unwrap_only)
+            {
+                fprintf(stderr, "Unwrapping update package %s to %s\n", in_name, unwrapped_name);
+            }
             else
             {
                 fprintf(stderr, "Converting %supdate package %s to %s (%s, %s)\n", (fake_sign ? "fake " : ""), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
             }
-            if(kindle_convert(input, output, sig_output, fake_sign) < 0)
+            if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output) < 0)
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
                 if(output != NULL && output != stdout)
@@ -537,6 +597,8 @@ int kindle_convert_main(int argc, char *argv[])
                 fclose(input);
             if(sig_output != NULL)
                 fclose(sig_output);
+            if(unwrap_output != NULL)
+                fclose(unwrap_output);
             // Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
             if(extract_sig)
             {
@@ -544,6 +606,14 @@ int kindle_convert_main(int argc, char *argv[])
                 if(st.st_size == 0)
                     unlink(sig_name);
                 free(sig_name);
+            }
+            // Same thing for unwrapped packages...
+            if(unwrap_only)
+            {
+                stat(unwrapped_name, &st);
+                if(st.st_size == 0)
+                    unlink(unwrapped_name);
+                free(unwrapped_name);
             }
 
             // If we're not the last file, throw an LF to untangle the output
@@ -707,7 +777,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     // Print a recap of what we're about to do
     fprintf(stderr, "Extracting update package %s to %s\n", bin_filename, output_dir);
-    if(kindle_convert(bin_input, tgz_output, NULL, 0) < 0)
+    if(kindle_convert(bin_input, tgz_output, NULL, 0, 0, NULL) < 0)
     {
         fprintf(stderr, "Error converting update '%s'.\n", bin_filename);
         fclose(bin_input);

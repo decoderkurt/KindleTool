@@ -259,7 +259,7 @@ int kindle_obfuscate_main(int, char **);
 int kindle_info_main(int, char **);
 
 int kindle_read_bundle_header(UpdateHeader *, FILE *);
-int kindle_convert(FILE *, FILE *, FILE *, const unsigned int);
+int kindle_convert(FILE *, FILE *, FILE *, const unsigned int, const unsigned int, FILE *);
 int kindle_convert_ota_update_v2(FILE *, FILE *, const unsigned int);
 int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
 int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const unsigned int);
