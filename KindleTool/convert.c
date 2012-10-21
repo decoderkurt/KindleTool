@@ -533,7 +533,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fail = 1;
                 continue;   // It's fatal, go away
             }
-            if(!info_only && output != stdout) // not info only AND not stdout
+            if(!info_only && !unwrap_only && output != stdout) // not info only, not unwrap only AND not stdout
             {
                 len = strlen(in_name);
                 out_name = malloc(len + 1 + (3 - fake_sign));
@@ -576,8 +576,6 @@ int kindle_convert_main(int argc, char *argv[])
                 {
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
                     fail = 1;
-                    if(!info_only && output != stdout)
-                        free(out_name);
                     free(unwrapped_name);
                     continue;   // It's fatal, go away
                 }
@@ -586,7 +584,7 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
                 fail = 1;
-                if(!info_only && output != stdout)
+                if(!info_only && !unwrap_only && output != stdout)
                     free(out_name);
                 if(extract_sig)
                     free(sig_name);
@@ -621,7 +619,7 @@ int kindle_convert_main(int argc, char *argv[])
                 unlink(in_name);
 
             // Cleanup behind us
-            if(!info_only)
+            if(!info_only && !unwrap_only)
                 free(out_name);
             if(output != NULL && output != stdout)
                 fclose(output);
