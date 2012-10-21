@@ -539,7 +539,7 @@ int kindle_convert_main(int argc, char *argv[])
                 unwrapped_name = malloc(len + 10 + 1);
                 memcpy(unwrapped_name, in_name, len - 4);
                 unwrapped_name[len - 4] = 0;  // . => \0
-                strncat(unwrapped_name, "_unwrapped.bin", 4);
+                strncat(unwrapped_name, "_unwrapped.bin", 14);
                 if((unwrap_output = fopen(unwrapped_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
