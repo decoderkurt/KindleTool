@@ -127,7 +127,7 @@ EOF
 	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
+	sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-linux-${ARCH}-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
@@ -160,7 +160,7 @@ EOF
 	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
+	sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	tar -cvzf kindletool-${REV}-linux-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
@@ -240,7 +240,7 @@ EOF
 	cp -v KindleTool/KindleTool/Release/kindletool.exe ./kindletool.exe
 	cp -v KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	sed -si 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
+	sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	# LF => CRLF...
 	unix2dos CREDITS README ChangeLog
@@ -324,7 +324,7 @@ EOF
 	cp -v ../KindleTool/KindleTool/Release/kindletool ./kindletool
 	cp -v ../KindleTool/README.md ./README
 	# Quick! Markdown => plaintext
-	perl -pi -e 's/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^\* /  /g;s/\*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^([[:digit:]])\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
+	perl -pi -e 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^\* /  /g;s/\*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^([[:digit:]])\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
 	cp -v ../KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
 	rm -f kindletool-${REV}-osx.zip
