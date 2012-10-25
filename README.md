@@ -1,18 +1,18 @@
 # KindleTool
 ## usage:
-* KindleTool md [ &lt;**input**&gt; ] [ &lt;**output**&gt; ]
+* KindleTool md [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
 
 >> Obfuscates data using Amazon's update algorithm.  
 >> If no input is provided, input from stdin  
 >> If no output is provided, output to stdout  
 
-* KindleTool dm [ &lt;**input**&gt; ] [ &lt;**output**&gt; ]
+* KindleTool dm [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
 
 >> Deobfuscates data using Amazon's update algorithm.  
 >> If no input is provided, input from stdin  
 >> If no output is provided, output to stdout  
 
-* KindleTool convert [*options*] &lt;**input**&gt;...
+* KindleTool convert [<i>options</i>] &lt;<b>input</b>&gt;...
 
 >> Converts a Kindle update package to a gzipped TAR file, and delete input  
 
@@ -24,11 +24,11 @@
 		-u, --unsigned              Assume input is an unsigned package
 		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header
 
-* KindleTool extract &lt;**input**&gt; &lt;**output**&gt;
+* KindleTool extract &lt;<b>input</b>&gt; &lt;<b>output</b>&gt;
 
 >> Extracts a Kindle update package to a directory  
 
-* KindleTool create &lt;**type**&gt; &lt;**devices**&gt; [*options*] &lt;**dir**|**file**&gt;... [ &lt;**output**&gt; ]
+* KindleTool create &lt;<b>type</b>&gt; &lt;<b>devices</b>&gt; [<i>options</i>] &lt;<b>dir</b>|<b>file</b>&gt;... [ &lt;<b>output</b>&gt; ]
 
 >> Creates a Kindle update package  
 >> You should be able to throw a mix of files &amp; directories as input without trouble.  
@@ -97,7 +97,7 @@
                                       relative to the path passed on the commandline, like if we had chdir'ed into it.
 
 
-* KindleTool info &lt;**serialno**&gt;
+* KindleTool info &lt;<b>serialno</b>&gt;
 
 >> Get the default root password  
 >> Unless you changed your password manually, the first password shown will be the right one.  
