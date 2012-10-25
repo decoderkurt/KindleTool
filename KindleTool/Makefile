@@ -137,6 +137,10 @@ KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 ifndef KT_NO_USERATHOST_TAG
 	KT_CFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
 endif
+# Play with valid unknown device codes in debug builds...
+ifeq "$(DEBUG)" "true"
+	KT_CFLAGS+=-DKT_UNKNOWN_DEVID
+endif
 
 ifndef LDFLAGS
 	ifeq "$(OSTYPE)" "Darwin"

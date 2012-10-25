@@ -1376,6 +1376,24 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
                     strncpy(info.magic_number, "FD04", 4);
                 }
+#ifdef KT_UNKNOWN_DEVID
+                else if(strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0)
+                {
+                    strncpy(info.magic_number, "FD04", 4);      // Meh?
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x13;
+                    // Not particularly pretty...
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x16;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x1C;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x1F;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x20;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x21;
+                }
+#endif
                 else
                 {
                     fprintf(stderr, "Unknown device %s.\n", optarg);
