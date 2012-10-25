@@ -59,10 +59,11 @@
 		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
-		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)
+		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe
 		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)
 		-d, --device pw             Kindle PaperWhite Wifi
 		-d, --device pwg            Kindle PaperWhite Wifi+3G
+		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
 
 	Platforms:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.

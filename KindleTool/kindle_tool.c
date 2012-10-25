@@ -142,6 +142,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite Wifi";
         case KindlePaperWhiteWifi3G:
             return "Kindle PaperWhite Wifi+3G";
+        case KindlePaperWhiteWifi3GEurope:
+            return "Kindle PaperWhite Wifi+3G Europe";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -320,10 +322,11 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k4b            Kindle 4 (No Touch) Black (2012)\n"
         "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
-        "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe (Spain, at least)\n"
+        "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe\n"
         "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)\n"
         "      -d, --device pw             Kindle PaperWhite Wifi\n"
         "      -d, --device pwg            Kindle PaperWhite Wifi+3G\n"
+        "      -d, --device pwgb           Kindle PaperWhite Wifi+3G Europe\n"
         "      \n"
         "    Platforms:\n"
         "      Recovery V2 & recovery FB02 with header rev 2 updates only. Use a single platform per package.\n"

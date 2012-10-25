@@ -1371,6 +1371,11 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
                 }
+                else if(strcmp(optarg, "pwgb") == 0 || strcmp(optarg, "kpwgb") == 0)
+                {
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
+                    strncpy(info.magic_number, "FD04", 4);
+                }
                 else
                 {
                     fprintf(stderr, "Unknown device %s.\n", optarg);
