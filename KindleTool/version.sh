@@ -4,7 +4,7 @@
 VER_FILE="version-inc"
 
 # Fallback version
-FALLBACK_VER="v1.5.3-GIT"
+FALLBACK_VER="v1.5.4-GIT"
 
 # Apparently, bsdmake hates me, so, get uname's output from here
 UNAME="$(uname -s)"
