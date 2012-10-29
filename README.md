@@ -57,6 +57,7 @@
 		-d, --device k3gb           Kindle 3 Wifi+3G Europe
 		-d, --device k4             Kindle 4 (No Touch) Silver (2011)
 		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
+		-d, --device kindle4        Alias for k4 & k4b
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe
@@ -64,6 +65,9 @@
 		-d, --device pw             Kindle PaperWhite Wifi
 		-d, --device pwg            Kindle PaperWhite Wifi+3G
 		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
+		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb
+		-d, --device touch          Alias for k5w, k5g & k5gb
+		-d, --device paperwhite     Alias for pw, pwg & pwgb
 
 	Platforms:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.

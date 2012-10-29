@@ -1340,6 +1340,14 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
                     strncpy(info.magic_number, "FC04", 4);
                 }
+                // Glue both of them in a kindle4 alias
+                else if(strcmp(optarg, "kindle4") == 0)
+                {
+                    strncpy(info.magic_number, "FC04", 4);
+                    info.devices[info.num_devices - 1] = Kindle4NonTouch;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
+                }
                 // Hmm, all the K5 official updates I saw were still using FC04...
                 else if(strcmp(optarg, "k5w") == 0)
                 {
@@ -1375,6 +1383,50 @@ int kindle_create_main(int argc, char *argv[])
                 {
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
                     strncpy(info.magic_number, "FD04", 4);
+                }
+                // Glue all of these in a kindle5 alias
+                else if(strcmp(optarg, "kindle5") == 0)
+                {
+                    strncpy(info.magic_number, "FD04", 4);
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3G;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3GEurope;
+#ifdef KT_UNKNOWN_DEVID
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
+#endif
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
+                }
+                // Glue all the Touch models in a touch alias
+                else if(strcmp(optarg, "touch") == 0)
+                {
+                    strncpy(info.magic_number, "FD04", 4);
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3G;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchWifi3GEurope;
+#ifdef KT_UNKNOWN_DEVID
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
+#endif
+                }
+                // Glue all the PaperWhite models in a paperwhite alias
+                else if(strcmp(optarg, "paperwhite") == 0)
+                {
+                    strncpy(info.magic_number, "FD04", 4);
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
                 }
 #ifdef KT_UNKNOWN_DEVID
                 else if(strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0)
