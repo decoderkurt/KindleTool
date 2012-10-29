@@ -11,6 +11,7 @@ ARCH="$(uname -m)"
 ## Linux!
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
+	unset CPPFLAGS	# Let the Makefile take care of it ;).
 	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
