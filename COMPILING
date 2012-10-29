@@ -11,7 +11,7 @@ To compile for Linux:
 	3) If you want to install it in /usr/local, run "make install". (I'd recommend using this through the checkinstall tool on Debian/Ubuntu).
 	2.5) If GCC throws a fit about libarchive, or if it fails to link with a bunch of undefined references to archive_* symbols, your libarchive version is too old.
 		You'll have to build it manually (get the latest 3.x release from http://libarchive.github.com/).
-		See https://github.com/NiLuJe/KindleTool/issues/1 for more details.
+		See https://github.com/NiLuJe/KindleTool/issues/1 for more details. Or try using the simple-linux-static-build.sh script in the tools folder.
 
 Fellow Gentoo users, there's a portage overlay in the gentoo folder, enjoy ;).
 
