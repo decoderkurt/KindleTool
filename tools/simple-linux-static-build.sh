@@ -12,7 +12,7 @@ ARCH="$(uname -m)"
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
 	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
-	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
+	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 	LIBARCHIVE_DIR="libarchive-3.0.4"
