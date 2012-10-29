@@ -11,13 +11,8 @@ ARCH="$(uname -m)"
 ## Linux!
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
-	if [[ "${ARCH}" == "x86_64" ]] ; then
-		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-		export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-	else
-		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-		export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-	fi
+	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
+	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 	LIBARCHIVE_DIR="libarchive-3.0.4"
