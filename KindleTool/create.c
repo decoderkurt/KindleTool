@@ -350,6 +350,12 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 is_exec = 1;
                 kttar->has_script = is_exec;
             }
+            // If we have a directory, make it searchable...
+            else if(archive_entry_filetype(entry) == AE_IFDIR)
+            {
+                archive_entry_set_perm(entry, 0755);
+                is_exec = 0;
+            }
             else
             {
                 archive_entry_set_perm(entry, 0644);
