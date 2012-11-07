@@ -155,7 +155,7 @@ typedef enum
     Shasta = 0x53,      // S, report as Luigi?
     Yoshi = 0x59,       // Y
     Undefined = 0x00
-} Platform;             // This stuff is a *complete* shot in the dark... And, is, indeed, wrong, according to the 5.3.0 update ;D.
+} Platform;             // This stuff is a *complete* shot in the dark... FIXME: And, is, indeed, wrong, according to the 5.3.0 update ;D. (TODO: Hdr rev 0 on FB03, Platform 0x06 for PW, no devvice codes/main device code on FB03)
 
 typedef struct
 {
