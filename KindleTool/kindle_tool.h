@@ -155,7 +155,7 @@ typedef enum
     Shasta = 0x53,      // S, report as Luigi?
     Yoshi = 0x59,       // Y
     Undefined = 0x00
-} Platform;             // This stuff is a *complete* shot in the dark...
+} Platform;             // This stuff is a *complete* shot in the dark... And, is, indeed, wrong, according to the 5.3.0 update ;D.
 
 typedef struct
 {
