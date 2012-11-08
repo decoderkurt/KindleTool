@@ -24,7 +24,7 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *);
+static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
 
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
@@ -244,7 +244,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
 }
 
 // Helper function to populate & write entries from a read_disk_open loop, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
-static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char *signame)
+static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char *signame, const unsigned int real_blocksize)
 {
     int r;
     unsigned int is_exec = 0;
@@ -352,8 +352,8 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 kttar->has_script = is_exec;
                 is_kernel = 0;
             }
-            // If we have a regular file, and it's a kernel, keep track of it
-            else if(archive_entry_filetype(entry) == AE_IFREG && IS_UIMAGE(archive_entry_pathname(entry)))
+            // If we have a regular file, and it's a kernel, and we're a recovery update, keep track of it
+            else if(archive_entry_filetype(entry) == AE_IFREG && real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(archive_entry_pathname(entry)))
             {
                 archive_entry_set_perm(entry, 0644);
                 is_exec = 0;
@@ -504,7 +504,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
         }
 
         // Populate & write our entries from read_disk_open's directory walking...
-        if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL) != 0)
+        if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL, real_blocksize) != 0)
             goto cleanup;
     }
 
@@ -653,7 +653,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 // Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
                 // And we're using the tweaked pathname in case we're in legacy mode ;)
                 pathnamecpy = strdup(kttar->to_sign_and_bundle_list[i]);
-                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128)), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / real_blocksize, basename(pathnamecpy)) < 0)
+                // Only flag kernels in recovery update...
+                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128)), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / real_blocksize, basename(pathnamecpy)) < 0)
                 {
                     fprintf(stderr, "Cannot write to index file.\n");
                     // Cleanup a bit before crapping out
@@ -673,7 +674,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 
         // And now, for the fun part! Append our sigfile to the archive...
         // Populate & write our entries...
-        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, signame) != 0)
+        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, signame, real_blocksize) != 0)
         {
             unlink(sigabsolutepath);
             goto cleanup;
