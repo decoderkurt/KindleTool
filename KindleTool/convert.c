@@ -330,7 +330,11 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     {
         fprintf(stderr, "Header Rev     %d\n", header->data.recovery_h2_update.header_rev);
         fprintf(stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
-        fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_h2_update.device));
+        // V2 possibly allows to rely entirely on the platform...
+        if(strcmp(convert_device_id(header->data.recovery_h2_update.device), "Unknown") == 0)
+            fprintf(stderr, "Device         None (0x%02X)\n", header->data.recovery_h2_update.device);
+        else
+            fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_h2_update.device));
     }
     else
     {

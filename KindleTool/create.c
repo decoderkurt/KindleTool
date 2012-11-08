@@ -1553,8 +1553,8 @@ int kindle_create_main(int argc, char *argv[])
                 break;
         }
     }
-    // validation
-    if(info.num_devices < 1 || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
+    // Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
+    if((info.num_devices < 1 && (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
     {
         fprintf(stderr, "Invalid number of supported devices (%d) for this update type (%s).\n", info.num_devices, convert_bundle_version(info.version));
         goto do_error;
@@ -1564,7 +1564,6 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
         goto do_error;
     }
-    // TODO: Only allow no devices for Recovery V2 & FB02 V2
     // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
     if(info.version == OTAUpdate)
     {
