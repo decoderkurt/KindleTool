@@ -248,6 +248,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 {
     int r;
     unsigned int is_exec = 0;
+    unsigned int is_kernel = 0;
     char *original_path = NULL;
     char *tweaked_path = NULL;
 
@@ -349,17 +350,28 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 // It's a script, keep track of it
                 is_exec = 1;
                 kttar->has_script = is_exec;
+                is_kernel = 0;
+            }
+            // If we have a regular file, and it's a kernel, keep track of it
+            else if(archive_entry_filetype(entry) == AE_IFREG && IS_UIMAGE(archive_entry_pathname(entry)))
+            {
+                archive_entry_set_perm(entry, 0644);
+                is_exec = 0;
+                // It's a kernel, keep track of it
+                is_kernel = 1;
             }
             // If we have a directory, make it searchable...
             else if(archive_entry_filetype(entry) == AE_IFDIR)
             {
                 archive_entry_set_perm(entry, 0755);
                 is_exec = 0;
+                is_kernel = 0;
             }
             else
             {
                 archive_entry_set_perm(entry, 0644);
                 is_exec = 0;
+                is_kernel = 0;
             }
 
             // Non-regular files get archived with zero size.
@@ -373,7 +385,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         archive_read_disk_descend(disk);
         // Print what we're adding, ala bsdtar
-        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_exec ? "\t\t<-" : ""));
+        fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_kernel ? "\t\t|<" : (is_exec ? "\t\t<-" : "")));
 
         // Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
         if(write_file(kttar, a, disk, entry) != 0)
@@ -430,7 +442,7 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
-int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file, const unsigned int legacy)
+int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
@@ -641,7 +653,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 // Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
                 // And we're using the tweaked pathname in case we're in legacy mode ;)
                 pathnamecpy = strdup(kttar->to_sign_and_bundle_list[i]);
-                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / BLOCK_SIZE, basename(pathnamecpy)) < 0)
+                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128)), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / real_blocksize, basename(pathnamecpy)) < 0)
                 {
                     fprintf(stderr, "Cannot write to index file.\n");
                     // Cleanup a bit before crapping out
@@ -1260,6 +1272,7 @@ int kindle_create_main(int argc, char *argv[])
     unsigned int skip_archive;
     unsigned int fake_sign;
     unsigned int legacy;
+    unsigned int real_blocksize;
     struct archive_entry *entry;
     struct archive *match;
     int r;
@@ -1285,17 +1298,20 @@ int kindle_create_main(int argc, char *argv[])
     if(strncmp(argv[0], "ota2", 4) == 0)
     {
         info.version = OTAUpdateV2;
+        real_blocksize = BLOCK_SIZE;
     }
     else if(strncmp(argv[0], "ota", 3) == 0)
     {
         info.version = OTAUpdate;
         strncpy(info.magic_number, "FC02", 4);
         info.target_revision = UINT32_MAX;
+        real_blocksize = BLOCK_SIZE;
     }
     else if(strncmp(argv[0], "recovery2", 9) == 0)
     {
         info.version = RecoveryUpdateV2;
         strncpy(info.magic_number, "FB03", 4);
+        real_blocksize = RECOVERY_BLOCK_SIZE;
         // FB03 is at header_rev 0, don't force it to 2
     }
     else if(strncmp(argv[0], "recovery", 8) == 0)
@@ -1303,6 +1319,7 @@ int kindle_create_main(int argc, char *argv[])
         info.version = RecoveryUpdate;
         strncpy(info.magic_number, "FB02", 4);
         info.target_revision = UINT32_MAX;
+        real_blocksize = RECOVERY_BLOCK_SIZE;
     }
     else
     {
@@ -1454,7 +1471,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "none") == 0)
                 {
                     info.devices[info.num_devices - 1] = KindleUnknown;
-                    // Meaning no devices either, reset num_devices ;).
+                    // We *really* meani no devices, so reset num_devices ;).
                     info.num_devices = 0;
                 }
                 else
@@ -1797,7 +1814,7 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy, real_blocksize) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files

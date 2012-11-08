@@ -46,6 +46,7 @@
 
 #define BUFFER_SIZE 1024
 #define BLOCK_SIZE 64
+#define RECOVERY_BLOCK_SIZE 131072
 
 #define MAGIC_NUMBER_LENGTH 4
 #define MD5_HASH_LENGTH 32
@@ -73,6 +74,7 @@
 #define IS_TGZ(filename) (strncasecmp(filename+(strlen(filename)-4), ".tgz", 4) == 0)
 #define IS_TARBALL(filename) (strncasecmp(filename+(strlen(filename)-7), ".tar.gz", 7) == 0)
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
+#define IS_UIMAGE(filename) (strncmp(filename+(strlen(filename)-6), "uImage", 6) == 0)
 
 // Don't break tempfiles on Win32... (It doesn't like paths starting with //, but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -146,7 +148,6 @@ typedef enum
     ValidKindleUnknown_0x20 = 0x20,
     ValidKindleUnknown_0x21 = 0x21,
 #endif
-    // Allow to set 0 == None for Recovery...
     KindleUnknown = 0x00
 } Device;
 
@@ -274,7 +275,7 @@ int libarchive_extract(const char *, const char *);
 int kindle_extract_main(int, char **);
 
 int sign_file(FILE *, RSA *, FILE *);
-int kindle_create_package_archive(const int, char **, const unsigned int, RSA *, const unsigned int);
+int kindle_create_package_archive(const int, char **, const unsigned int, RSA *, const unsigned int, const unsigned int);
 int kindle_create(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
