@@ -68,13 +68,17 @@
 		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg & pwgb
+		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only)
 
 	Platforms:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.
 
+		-p, --platform mario        Mario (mostly devices shipped on FW 1.x) [Deprecated]
 		-p, --platform luigi        Luigi (mostly devices shipped on FW 2.x)
-		-p, --platform shasta       Shasta (mostly devices shipped on FW 3.x)
-		-p, --platform yoshi        Yoshi (mostly devices shipped on FW 5.x)
+		-p, --platform banjo        Banjo (devices shipped on FW 3.x?)
+		-p, --platform yoshi        Yoshi (mostly devices shipped on FW <= 5.1)
+		-p, --platform yoshime-p    Yoshime (Prototype)
+		-p, --platform yoshime      Yoshime (mostly devices shipped on FW >= 5.2)
 
 	Options:
 		All the following options are optional and advanced.

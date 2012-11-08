@@ -1472,7 +1472,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.platform = Banjo;
                 else if(strcmp(optarg, "yoshi") == 0)
                     info.platform = Yoshi;
-                else if(strcmp(optarg, "yoshime-proto") == 0)
+                else if(strcmp(optarg, "yoshime-proto") == 0 || strcmp(optarg, "yoshime-p") == 0)
                     info.platform = YoshimeProto;
                 else if(strcmp(optarg, "yoshime") == 0)
                     info.platform = Yoshime;
