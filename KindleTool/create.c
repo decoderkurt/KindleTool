@@ -1472,7 +1472,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "none") == 0)
                 {
                     info.devices[info.num_devices - 1] = KindleUnknown;
-                    // We *really* meani no devices, so reset num_devices ;).
+                    // We *really* mean no devices, so reset num_devices ;).
                     info.num_devices = 0;
                 }
                 else
