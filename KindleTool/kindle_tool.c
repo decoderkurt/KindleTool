@@ -168,15 +168,21 @@ const char *convert_platform_id(Platform plat)
 {
     switch(plat)
     {
+        case MarioDeprecated:
+            return "Mario (Deprecated)";
         case Luigi:
             return "Luigi";
-        case Shasta:
-            return "Shasta";
+        case Banjo:
+            return "Banjo";
         case Yoshi:
             return "Yoshi";
-        case Undefined:
+        case YoshimeProto:
+            return "Yoshime (Prototype)";
+        case Yoshime:
+            return "Yoshime";
+        case Unspecified:
         default:
-            return "Undefined";
+            return "Unspecified";
     }
 }
 

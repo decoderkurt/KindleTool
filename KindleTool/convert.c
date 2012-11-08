@@ -387,8 +387,8 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     platform = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown platforms...
-    if(strcmp(convert_platform_id(platform), "Undefined") == 0)
-        fprintf(stderr, "Platform       Unknown (0x%02X [%c])\n", platform, platform);
+    if(strcmp(convert_platform_id(platform), "Unspecified") == 0)
+        fprintf(stderr, "Platform       Unspecified (0x%02X [%c])\n", platform, platform);
     else
         fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
     header_rev = *(uint32_t *)&data[hindex];
@@ -396,9 +396,9 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     fprintf(stderr, "Header Rev     %d\n", header_rev);
     device = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
-    // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
+    // NOTE: Recovery V2 allows to skip the device check, so assume none instead of unknown ;).
     if(strcmp(convert_device_id(device), "Unknown") == 0)
-        fprintf(stderr, "Main Device    Unknown (0x%02X)\n", device);
+        fprintf(stderr, "Main Device    None (0x%02X)\n", device);
     else
         fprintf(stderr, "Main Device    %s\n", convert_device_id(device));
     hindex += sizeof(uint32_t); // Padding

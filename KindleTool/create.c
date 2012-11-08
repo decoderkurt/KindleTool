@@ -1296,8 +1296,7 @@ int kindle_create_main(int argc, char *argv[])
     {
         info.version = RecoveryUpdateV2;
         strncpy(info.magic_number, "FB03", 4);
-        // Do we really want to default to header rev V2 here?
-        info.header_rev = 2;
+        // FB03 is at header_rev 0, don't force it to 2
     }
     else if(strncmp(argv[0], "recovery", 8) == 0)
     {
@@ -1452,6 +1451,12 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = ValidKindleUnknown_0x21;
                 }
 #endif
+                else if(strcmp(optarg, "none") == 0)
+                {
+                    info.devices[info.num_devices - 1] = KindleUnknown;
+                    // Meaning no devices either, reset num_devices ;).
+                    info.num_devices = 0;
+                }
                 else
                 {
                     fprintf(stderr, "Unknown device %s.\n", optarg);
@@ -1459,12 +1464,18 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 break;
             case 'p':
-                if(strcmp(optarg, "luigi") == 0)
+                if(strcmp(optarg, "mario") == 0)
+                    info.platform = MarioDeprecated;
+                else if(strcmp(optarg, "luigi") == 0)
                     info.platform = Luigi;
-                else if(strcmp(optarg, "shasta") == 0)
-                    info.platform = Shasta;
+                else if(strcmp(optarg, "banjo") == 0)
+                    info.platform = Banjo;
                 else if(strcmp(optarg, "yoshi") == 0)
                     info.platform = Yoshi;
+                else if(strcmp(optarg, "yoshime-proto") == 0)
+                    info.platform = YoshimeProto;
+                else if(strcmp(optarg, "yoshime") == 0)
+                    info.platform = Yoshime;
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);
@@ -1553,6 +1564,7 @@ int kindle_create_main(int argc, char *argv[])
         fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
         goto do_error;
     }
+    // TODO: Only allow no devices for Recovery V2 & FB02 V2
     // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
     if(info.version == OTAUpdate)
     {

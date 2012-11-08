@@ -146,16 +146,20 @@ typedef enum
     ValidKindleUnknown_0x20 = 0x20,
     ValidKindleUnknown_0x21 = 0x21,
 #endif
+    // Allow to set 0 == None for Recovery...
     KindleUnknown = 0x00
 } Device;
 
 typedef enum
 {
-    Luigi = 0x4C,       // L
-    Shasta = 0x53,      // S, report as Luigi?
-    Yoshi = 0x59,       // Y
-    Undefined = 0x00
-} Platform;             // This stuff is a *complete* shot in the dark... FIXME: And, is, indeed, wrong, according to the 5.3.0 update ;D. (TODO: Hdr rev 0 on FB03, Platform 0x06 for PW, no devvice codes/main device code on FB03)
+    MarioDeprecated = 0x01,
+    Luigi = 0x02,
+    Banjo = 0x03,
+    Yoshi = 0x04,
+    YoshimeProto = 0x05,
+    Yoshime = 0x06,
+    Unspecified = 0x00
+} Platform;             // This stuff is mostly based on guesswork...
 
 typedef struct
 {
