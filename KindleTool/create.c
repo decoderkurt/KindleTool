@@ -1731,23 +1731,33 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
-    // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for %hd device%s (", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""), info.num_devices, (info.num_devices > 1 ? "s" : ""));
-    // Loop over devices
-    for(i = 0; i < info.num_devices; i++)
+    // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building (FIXME: Handle num_devices == 0 [no specific device])
+    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""));
+    // If we have specific device IDs, list them
+    if(info.num_devices > 0)
     {
-        fprintf(stderr, "%s", convert_device_id(info.devices[i]));
-        if(i != info.num_devices - 1)
-            fprintf(stderr, ", ");
+        fprintf(stderr, " %hd device%s (",  info.num_devices, (info.num_devices > 1 ? "s" : ""));
+        // Loop over devices
+        for(i = 0; i < info.num_devices; i++)
+        {
+            fprintf(stderr, "%s", convert_device_id(info.devices[i]));
+            if(i != info.num_devices - 1)
+                fprintf(stderr, ", ");
+        }
+        fprintf(stderr, "),");
+    }
+    else
+    {
+        fprintf(stderr, " no specific device,");
     }
     // Don't print settings not applicable to our update type...
     switch(info.version)
     {
         case OTAUpdateV2:
             if(info.target_revision == UINT64_MAX)
-                fprintf(stderr, "), Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
             else
-                fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
             // Loop over meta
             for(i = 0; i < info.num_meta; i++)
             {
@@ -1760,12 +1770,12 @@ int kindle_create_main(int argc, char *argv[])
             break;
         case OTAUpdate:
             if(info.target_revision == UINT32_MAX)
-                fprintf(stderr, "), Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
+                fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
             else
-                fprintf(stderr, "), Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
+                fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
             break;
         case RecoveryUpdate:
-            fprintf(stderr, "), Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
+            fprintf(stderr, " Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
                 fprintf(stderr, ", Header Rev: %llu, Platform: %s\n", (long long) info.header_rev, convert_platform_id(info.platform));
             else
@@ -1773,9 +1783,9 @@ int kindle_create_main(int argc, char *argv[])
             break;
         case RecoveryUpdateV2:
             if(info.target_revision == UINT64_MAX)
-                fprintf(stderr, "), Target OTA: MAX");
+                fprintf(stderr, " Target OTA: MAX");
             else
-                fprintf(stderr, "), Target OTA: %llu", (long long) info.target_revision);
+                fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
             fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform));
             break;
         case UnknownUpdate:
