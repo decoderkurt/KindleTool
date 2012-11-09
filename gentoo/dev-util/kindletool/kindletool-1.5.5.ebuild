@@ -9,8 +9,8 @@ inherit base vcs-snapshot
 MY_PN="KindleTool"
 
 DESCRIPTION="Tool for creating/extracting Kindle updates and more"
-HOMEPAGE="https://github.com/NiLuJe/${MY_PN}"
-SRC_URI="https://github.com/NiLuJe/${MY_PN}/tarball/v${PV} -> ${P}.tar.gz"
+HOMEPAGE="https://github.com/NiLuJe/KindleTool/"
+SRC_URI="https://github.com/NiLuJe/${MY_PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
