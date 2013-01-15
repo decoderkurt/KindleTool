@@ -144,6 +144,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite Wifi+3G";
         case KindlePaperWhiteWifi3GEurope:
             return "Kindle PaperWhite Wifi+3G Europe";
+        case KindlePaperWhiteWifi3GJapan:
+            return "Kindle PaperWhite Wifi+3G Japan";
 #ifdef KT_UNKNOWN_DEVID
         case ValidKindleUnknown_0x13:
             return "Unknown Kindle (B013)";
@@ -151,8 +153,6 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (B016)";
         case ValidKindleUnknown_0x1C:
             return "Unknown Kindle (B01C)";
-        case ValidKindleUnknown_0x1F:
-            return "Unknown Kindle (B01F)";
         case ValidKindleUnknown_0x20:
             return "Unknown Kindle (B020)";
         case ValidKindleUnknown_0x21:
