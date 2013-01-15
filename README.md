@@ -65,6 +65,7 @@
 		-d, --device pw             Kindle PaperWhite Wifi
 		-d, --device pwg            Kindle PaperWhite Wifi+3G
 		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
+		-d, --device pwgj           Kindle PaperWhite Wifi+3G Japan
 		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg & pwgb

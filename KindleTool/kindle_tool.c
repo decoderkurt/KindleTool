@@ -348,6 +348,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device pw             Kindle PaperWhite Wifi\n"
         "      -d, --device pwg            Kindle PaperWhite Wifi+3G\n"
         "      -d, --device pwgb           Kindle PaperWhite Wifi+3G Europe\n"
+        "      -d, --device pwgj           Kindle PaperWhite Wifi+3G Japan\n"
         "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg & pwgb\n"
