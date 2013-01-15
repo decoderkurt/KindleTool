@@ -24,6 +24,8 @@ DEPEND="${RDEPEND}
 
 DOCS=( "README.md" )
 
+RESTRICT="nomirror"
+
 src_compile() {
 	if use debug; then
 		emake DEBUG="true"
