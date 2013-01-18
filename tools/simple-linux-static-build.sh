@@ -16,7 +16,8 @@ Build_Linux() {
 	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_DIR="libarchive-3.0.4"
+	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
 	git pull
@@ -30,7 +31,7 @@ Build_Linux() {
 		echo ""
 		export ac_cv_header_ext2fs_ext2_fs_h=0
 		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "https://github.com/downloads/libarchive/libarchive/${LIBARCHIVE_DIR}.tar.gz"
+			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}

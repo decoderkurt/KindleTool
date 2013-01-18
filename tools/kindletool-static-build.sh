@@ -16,7 +16,8 @@ Build_Linux() {
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 	OPENSSL_DIR="openssl-0.9.8x"
-	LIBARCHIVE_DIR="libarchive-3.0.4"
+	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
 	git pull
@@ -63,7 +64,7 @@ Build_Linux() {
 		export ac_cv_header_ext2fs_ext2_fs_h=0
 		export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "https://github.com/downloads/libarchive/libarchive/${LIBARCHIVE_DIR}.tar.gz"
+			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
@@ -174,7 +175,8 @@ Build_Cygwin() {
 	export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_DIR="libarchive-3.0.4"
+	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
 	git pull
@@ -187,7 +189,7 @@ Build_Cygwin() {
 		echo "* Building ${LIBARCHIVE_DIR} . . ."
 		echo ""
 		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "https://github.com/downloads/libarchive/libarchive/${LIBARCHIVE_DIR}.tar.gz"
+			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
@@ -257,7 +259,8 @@ Build_OSX() {
 	export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
 	export LDFLAGS=""
 
-	LIBARCHIVE_DIR="libarchive-3.0.4"
+	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
 	git pull
@@ -270,7 +273,7 @@ Build_OSX() {
 		echo "* Building ${LIBARCHIVE_DIR} . . ."
 		echo ""
 		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			curl -L "https://github.com/downloads/libarchive/libarchive/${LIBARCHIVE_DIR}.tar.gz" -o "./${LIBARCHIVE_DIR}.tar.gz"
+			curl -L "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz" -o "./${LIBARCHIVE_DIR}.tar.gz"
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
