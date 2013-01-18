@@ -180,16 +180,19 @@ if [[ ! -d "openssl-1.0.1c" ]] ; then
 	cd ..
 fi
 
-if [[ ! -d "libarchive-3.1.1" ]] ; then
-	echo "* Building libarchive-3.1.1 . . ."
+LIBARCHIVE_VER="3.1.1"
+LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
+
+if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+	echo "* Building ${LIBARCHIVE_DIR} . . ."
 	echo ""
 	export CFLAGS="${BASE_CFLAGS}"
 	export CXXFLAGS="${BASE_CFLAGS}"
-	if [[ ! -f "./libarchive-3.1.1.tar.gz" ]] ; then
-		wget -O "./libarchive-3.1.1.tar.gz" "http://github.com/libarchive/libarchive/archive/v3.1.1.tar.gz"
+	if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
+		wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
 	fi
-	tar -xvzf ./libarchive-3.1.1.tar.gz
-	cd libarchive-3.1.1
+	tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
+	cd ${LIBARCHIVE_DIR}
 	./configure --prefix=${TC_BUILD_DIR} --host=${CROSS_TC} --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
 	make -j2
 	make install
