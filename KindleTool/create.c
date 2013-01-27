@@ -1402,6 +1402,11 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
                     strncpy(info.magic_number, "FD04", 4);
                 }
+                else if(strcmp(optarg, "pwgc") == 0 || strcmp(optarg, "kpwgc") == 0)
+                {
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GCanada;
+                    strncpy(info.magic_number, "FD04", 4);
+                }
                 else if(strcmp(optarg, "pwgb") == 0 || strcmp(optarg, "kpwgb") == 0)
                 {
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
@@ -1430,6 +1435,8 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GCanada;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GJapan;
@@ -1456,6 +1463,8 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3G;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GCanada;
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GEurope;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = KindlePaperWhiteWifi3GJapan;
@@ -1468,8 +1477,6 @@ int kindle_create_main(int argc, char *argv[])
                     // Not particularly pretty...
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = ValidKindleUnknown_0x16;
-                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
-                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x1C;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = ValidKindleUnknown_0x20;
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));

@@ -64,6 +64,7 @@
 		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)
 		-d, --device pw             Kindle PaperWhite Wifi
 		-d, --device pwg            Kindle PaperWhite Wifi+3G
+		-d, --device pwgc           Kindle PaperWhite Wifi+3G Canada
 		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
 		-d, --device pwgj           Kindle PaperWhite Wifi+3G Japan
 		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb

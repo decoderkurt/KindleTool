@@ -142,6 +142,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite Wifi";
         case KindlePaperWhiteWifi3G:
             return "Kindle PaperWhite Wifi+3G";
+        case KindlePaperWhiteWifi3GCanada:
+            return "Kindle PaperWhite Wifi+3G Canada";
         case KindlePaperWhiteWifi3GEurope:
             return "Kindle PaperWhite Wifi+3G Europe";
         case KindlePaperWhiteWifi3GJapan:
@@ -151,8 +153,6 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (B013)";
         case ValidKindleUnknown_0x16:
             return "Unknown Kindle (B016)";
-        case ValidKindleUnknown_0x1C:
-            return "Unknown Kindle (B01C)";
         case ValidKindleUnknown_0x20:
             return "Unknown Kindle (B020)";
         case ValidKindleUnknown_0x21:
@@ -347,6 +347,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)\n"
         "      -d, --device pw             Kindle PaperWhite Wifi\n"
         "      -d, --device pwg            Kindle PaperWhite Wifi+3G\n"
+        "      -d, --device pwgc           Kindle PaperWhite Wifi+3G Canada\n"
         "      -d, --device pwgb           Kindle PaperWhite Wifi+3G Europe\n"
         "      -d, --device pwgj           Kindle PaperWhite Wifi+3G Japan\n"
         "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb\n"
