@@ -193,6 +193,7 @@ if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 	fi
 	tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 	cd ${LIBARCHIVE_DIR}
+	./build/autogen.sh
 	./configure --prefix=${TC_BUILD_DIR} --host=${CROSS_TC} --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
 	make -j2
 	make install
