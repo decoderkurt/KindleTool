@@ -5,7 +5,7 @@ OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
 MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
-ASAN_CLFAGS="-O2 -march=native -faddress-sanitizer -fno-omit-frame-pointer -g3"
+ASAN_CLFAGS="-O1 -fno-optimize-sibling-calls -fno-omit-frame-pointer -Weverything -Wno-disabled-macro-expansion -march=native -fsanitize=address -g3"
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
