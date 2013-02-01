@@ -67,7 +67,7 @@
 		-d, --device pwgc           Kindle PaperWhite Wifi+3G Canada
 		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
 		-d, --device pwgj           Kindle PaperWhite Wifi+3G Japan
-		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg & pwgb
+		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb & pwgj
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg & pwgb
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only)
