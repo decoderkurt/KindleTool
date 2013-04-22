@@ -180,7 +180,7 @@ if [[ ! -d "openssl-1.0.1c" ]] ; then
 	cd ..
 fi
 
-LIBARCHIVE_VER="3.1.1"
+LIBARCHIVE_VER="3.1.2"
 LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then

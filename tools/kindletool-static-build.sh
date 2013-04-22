@@ -16,7 +16,7 @@ Build_Linux() {
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 	OPENSSL_DIR="openssl-0.9.8x"
-	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -176,7 +176,7 @@ Build_Cygwin() {
 	export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -261,7 +261,7 @@ Build_OSX() {
 	export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
 	export LDFLAGS=""
 
-	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date

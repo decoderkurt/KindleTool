@@ -16,7 +16,7 @@ Build_Linux() {
 	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_VER="3.1.1"
+	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
