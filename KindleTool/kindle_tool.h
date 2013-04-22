@@ -142,10 +142,10 @@ typedef enum
     KindlePaperWhiteWifi3GCanada = 0x1C,
     KindlePaperWhiteWifi3GEurope = 0x1D,
     KindlePaperWhiteWifi3GJapan = 0x1F,
+    KindlePaperWhiteWifi3GBrazil = 0x20,
 #ifdef KT_UNKNOWN_DEVID
     ValidKindleUnknown_0x13 = 0x13,
     ValidKindleUnknown_0x16 = 0x16,
-    ValidKindleUnknown_0x20 = 0x20,
     ValidKindleUnknown_0x21 = 0x21,
 #endif
     KindleUnknown = 0x00
