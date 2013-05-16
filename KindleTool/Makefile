@@ -11,7 +11,6 @@ ASAN_CLFAGS="-O1 -fno-optimize-sibling-calls -fno-omit-frame-pointer -Weverythin
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
 # and only happens when using the NSS compat stuff (which happened to be the default on my system...)
 # Same thing for OpenSSL's uninitialized stuff when built without PURIFY (cf. OpenSSL's FAQ)
-# Another thing that I don't remember that's fixed in libarchive git (will be in 3.0.5)
 
 # Kindle cross toolchain prefix
 ifeq "$(KINDLE)" "true"
