@@ -907,11 +907,11 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     hindex = 0;
     strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
     hindex += MAGIC_NUMBER_LENGTH;
-    memcpy(&header[hindex], &info->source_revision, sizeof(uint64_t)); // source
+    memcpy(&header[hindex], &info->source_revision, sizeof(uint64_t)); // Source
     hindex += sizeof(uint64_t);
-    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // target
+    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // Target
     hindex += sizeof(uint64_t);
-    memcpy(&header[hindex], &info->num_devices, sizeof(uint16_t)); // device count
+    memcpy(&header[hindex], &info->num_devices, sizeof(uint16_t)); // Device count
     hindex += sizeof(uint16_t);
 
     // Next, we write the devices
@@ -919,14 +919,14 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     header = realloc(header, header_size);
     for(i = 0; i < info->num_devices; i++)
     {
-        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t)); // device
+        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t)); // Device
         hindex += sizeof(uint16_t);
     }
 
     // Part two of the set sized data
     header_size += OTA_UPDATE_V2_PART_2_BLOCK_SIZE;
     header = realloc(header, header_size);
-    memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // critical
+    memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // Critical
     hindex += sizeof(uint8_t);
     memset(&header[hindex], 0, sizeof(uint8_t)); // 1 byte padding
     hindex += sizeof(uint8_t);
@@ -965,7 +965,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 
     md(&header[hindex], MD5_HASH_LENGTH); // Obfuscate md5 hash
     hindex += MD5_HASH_LENGTH;
-    memcpy(&header[hindex], &info->num_meta, sizeof(uint16_t)); // num meta, cannot be casted
+    memcpy(&header[hindex], &info->num_meta, sizeof(uint16_t)); // num_meta, cannot be casted
     hindex += sizeof(uint16_t);
 
     // Next, we write the meta strings
@@ -1159,7 +1159,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
     hindex += MAGIC_NUMBER_LENGTH;
     hindex += sizeof(uint32_t); // Padding
-    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // target
+    memcpy(&header[hindex], &info->target_revision, sizeof(uint64_t)); // Target
     hindex += sizeof(uint64_t);
 
     // Even if we asked for a fake package, the Kindle still expects a proper package...
@@ -1568,7 +1568,7 @@ int kindle_create_main(int argc, char *argv[])
                 info.critical = (uint8_t) atoi(optarg);
                 break;
             case 'x':
-                if(strchr(optarg, '=') == NULL) // metastring must contain =
+                if(strchr(optarg, '=') == NULL) // A metastring must contain an '=' character (remember, it's a key=value pair ;))
                 {
                     fprintf(stderr, "Invalid metastring. Format: key=value, input: %s\n", optarg);
                     goto do_error;
