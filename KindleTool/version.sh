@@ -33,9 +33,9 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		HAS_PC_LIBARCHIVE="false"
 		PC_LIBARCHIVE_CPPFLAGS=""
 		PC_LIBARCHIVE_LDFLAGS=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
 	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
