@@ -1698,10 +1698,14 @@ int kindle_create_main(int argc, char *argv[])
             entry = archive_entry_new();
 
             // Recovery updates must be lowercase!
-            if(info.version == RecoveryUpdate && info.version == RecoveryUpdateV2)
+            if(info.version == RecoveryUpdate || info.version == RecoveryUpdateV2)
+            {
                 valid_update_file_pattern = strdup("./update*\\.bin$");
+            }
             else
+            {
                 valid_update_file_pattern = strdup("./[Uu]pdate*\\.bin$");
+            }
             if(archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
                 fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
             free(valid_update_file_pattern);
