@@ -135,7 +135,7 @@ const char *convert_device_id(Device dev)
         case Kindle5TouchWifi3GEurope:
             return "Kindle 5 Touch Wifi+3G Europe";
         case Kindle5TouchUnknown:
-            return "Kindle 5 Touch ??Unknown??";
+            return "Kindle 5 Touch (Unknown Variant)";
         case Kindle4NonTouchBlack:
             return "Kindle 4 Non-Touch Black (2012)";
         case KindlePaperWhiteWifi:
@@ -228,7 +228,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     size_t bytes_read;
     MD5_CTX md5;
     unsigned char output[MD5_DIGEST_LENGTH];
-    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds trailing null, we do not want that!
+    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds a trailing null, we do not want that!
     int i;
 
     MD5_Init(&md5);
@@ -246,7 +246,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     {
         sprintf(output_string_temp + (i * 2), "%02x", output[i]);
     }
-    memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // remove the trailing null. any better way to do this?
+    memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // Remove the trailing null. Any better way to do this?
     return 0;
 }
 
@@ -299,7 +299,7 @@ int kindle_print_help(const char *prog_name)
         "    If no output is provided, output to stdout\n"
         "    \n"
         "  %s convert [options] <input>...\n"
-        "    Converts a Kindle update package to a gzipped TAR file, and delete input\n"
+        "    Converts a Kindle update package to a gzipped tar archive file, and delete input\n"
         "    \n"
         "    Options:\n"
         "      -c, --stdout                Write to standard output, keeping original files unchanged\n"
@@ -316,7 +316,7 @@ int kindle_print_help(const char *prog_name)
         "    Creates a Kindle update package\n"
         "    You should be able to throw a mix of files & directories as input without trouble.\n"
         "    Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!\n"
-        "    If input is a single tarball (\".tgz\" or \".tar.gz\") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.\n"
+        "    If input is a single gzipped tarball (\".tgz\" or \".tar.gz\") file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.\n"
         "    Output should be a file with the extension \".bin\", if it is not provided, or if it's a single dash, output to stdout.\n"
         "    In case of OTA updates, all files with the extension \".ffs\" or \".sh\" will be treated as update scripts.\n"
         "    \n"
@@ -344,7 +344,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
         "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe\n"
-        "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)\n"
+        "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown Variant (4th device code found in Touch official updates)\n"
         "      -d, --device pw             Kindle PaperWhite Wifi\n"
         "      -d, --device pwg            Kindle PaperWhite Wifi+3G\n"
         "      -d, --device pwgc           Kindle PaperWhite Wifi+3G Canada\n"
@@ -520,13 +520,13 @@ int kindle_info_main(int argc, char *argv[])
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
-        snc_i = serial_no[i];   // Ugly workaround to shutup a Cywgin GCC warning
+        snc_i = serial_no[i];   // Ugly workaround to silence a Cywgin GCC warning
         if(islower(snc_i))
         {
             serial_no[i] = toupper(snc_i);
         }
     }
-    // find root password
+    // Find root password
     if(fprintf(temp, "%s\n", serial_no) < SERIAL_NO_LENGTH)
     {
         fprintf(stderr, "Cannot write serial to temporary file.\n");
@@ -553,7 +553,7 @@ int main(int argc, char *argv[])
     const char *cmd;
 
     prog_name = argv[0];
-    // discard program name for easier parsing
+    // Discard program name for easier parsing
     argv++;
     argc--;
 

@@ -14,7 +14,7 @@
 
 * KindleTool convert [<i>options</i>] &lt;<b>input</b>&gt;...
 
->> Converts a Kindle update package to a gzipped TAR file, and delete input  
+>> Converts a Kindle update package to a gzipped tar archive file, and delete input
 
 	Options:
 		-c, --stdout                Write to standard output, keeping original files unchanged
@@ -33,7 +33,7 @@
 >> Creates a Kindle update package  
 >> You should be able to throw a mix of files &amp; directories as input without trouble.  
 >> Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
->> If input is a single tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
+>> If input is a single gzipped tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.
 >> Output should be a file with the extension ".bin", if it is not provided, or if it's a single dash, output to stdout.  
 >> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.  
 
@@ -61,7 +61,7 @@
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe
-		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown (4th device code found in Touch official updates)
+		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown Variant (4th device code found in Touch official updates)
 		-d, --device pw             Kindle PaperWhite Wifi
 		-d, --device pwg            Kindle PaperWhite Wifi+3G
 		-d, --device pwgc           Kindle PaperWhite Wifi+3G Canada

@@ -18,7 +18,7 @@ You should be able to throw a mix of files & directories as input without troubl
 .br
 Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!
 .br
-If input is a single tarball
+If input is a single gzipped tarball
 .RI ( .tgz " or " .tar.gz )
 file, we assume it is properly packaged (bundlefile & sigfile), and will only convert it to an update.
 .br
@@ -178,7 +178,7 @@ relative to the path passed on the commandline, like if we had chdir'ed into it.
 .IR Syntax :
 .RB [ options "] <" input >...
 .RS
-Converts a Kindle update package to a gzipped TAR file, and delete input.
+Converts a Kindle update package to a gzipped tar archive file, and delete input.
 .RE
 .TP
 .BR \-c ", " \-\-stdout

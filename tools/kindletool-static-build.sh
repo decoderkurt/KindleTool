@@ -75,7 +75,7 @@ Build_Linux() {
 		cd ..
 	fi
 
-	# Build KT packages credits
+	# Build KT package credits
 	cat > CREDITS << EOF
 * kindletool:
 
@@ -122,7 +122,7 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the git commit
+	# Strip the git commit
 	REV="${VER_CURRENT%%-*}"
 	#REV="${VER_CURRENT}"
 	cd ../..
@@ -155,7 +155,7 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the git commit
+	# Strip the git commit
 	REV="${VER_CURRENT%%-*}"
 	#REV="${VER_CURRENT}"
 	cd ../..
@@ -201,7 +201,7 @@ Build_Cygwin() {
 		cd ..
 	fi
 
-	# Build KT packages credits
+	# Build KT package credits
 	cat > CREDITS << EOF
 * kindletool.exe:
 
@@ -237,7 +237,7 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the git commit
+	# Strip the git commit
 	REV="${VER_CURRENT%%-*}"
 	#REV="${VER_CURRENT}"
 	cd ../..
@@ -285,7 +285,7 @@ Build_OSX() {
 		cd ..
 	fi
 
-	# Build KT packages credits
+	# Build KT package credits
 	mkdir -p Release
 	cat > Release/CREDITS << EOF
 * kindletool:
@@ -322,7 +322,7 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the git commit
+	# Strip the git commit
 	REV="${VER_CURRENT%%-*}"
 	#REV="${VER_CURRENT}"
 	cd ../..

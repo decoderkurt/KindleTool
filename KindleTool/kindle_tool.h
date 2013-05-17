@@ -39,7 +39,7 @@
 #include <unistd.h>
 #include <libgen.h>
 
-// Die slightly more gracefully than spewing a whole lot of warnings & errors if we're not building against at least libarchive 3.0.3
+// Die in a slightly more graceful manner than by spewing a whole lot of warnings & errors if we're not building against at least libarchive 3.0.3
 #if ARCHIVE_VERSION_NUMBER < 3000003
 #error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #endif
@@ -76,7 +76,7 @@
 #define IS_DAT(filename) (strncasecmp(filename+(strlen(filename)-4), ".dat", 4) == 0)
 #define IS_UIMAGE(filename) (strncmp(filename+(strlen(filename)-6), "uImage", 6) == 0)
 
-// Don't break tempfiles on Win32... (It doesn't like paths starting with //, but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
+// Don't break tempfiles on Win32... (it doesn't like paths starting with // because that means an 'extended' path (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define KT_TMPDIR ""
 #else
@@ -131,12 +131,12 @@ typedef enum
     Kindle3Wifi = 0x08,
     Kindle3Wifi3G = 0x06,
     Kindle3Wifi3GEurope = 0x0A,
-    Kindle4NonTouch = 0x0E,             // Kindle 4 with the silver bezel, released fall 2011
+    Kindle4NonTouch = 0x0E,             // Kindle 4 with a silver bezel, released fall 2011
     Kindle5TouchWifi3G = 0x0F,
     Kindle5TouchWifi = 0x11,
     Kindle5TouchWifi3GEurope = 0x10,
     Kindle5TouchUnknown = 0x12,
-    Kindle4NonTouchBlack = 0x23,        // Kindle 4 with the black bezel, released fall 2012
+    Kindle4NonTouchBlack = 0x23,        // Kindle 4 with a black bezel, released fall 2012
     KindlePaperWhiteWifi = 0x24,        // Kindle Paperwhite (black bezel), released fall 2012 on FW 5.2.0
     KindlePaperWhiteWifi3G = 0x1B,
     KindlePaperWhiteWifi3GCanada = 0x1C,

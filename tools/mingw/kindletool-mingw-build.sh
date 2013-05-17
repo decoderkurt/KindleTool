@@ -200,7 +200,7 @@ if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 	cd ..
 fi
 
-# Build KT packages credits
+# Build KT package credits
 cat > ../../CREDITS << EOF
 * kindletool.exe: KindleTool, Copyright (C) 2011-2013  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
@@ -235,7 +235,7 @@ git log --stat --graph > ../../ChangeLog
 ./version.sh PMS
 VER_FILE="VERSION"
 VER_CURRENT="$(<${VER_FILE})"
-# Strips the git commit
+# Strip the git commit
 REV="${VER_CURRENT%%-*}"
 #REV="${VER_CURRENT}"
 cd ../..

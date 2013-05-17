@@ -108,7 +108,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
         // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
-        if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exlude "./update*\\.[Dd][Aa][Tt]$" instead
+        if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exclude "./update*\\.[Dd][Aa][Tt]$" instead
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
         // Exclude *nix hidden files, too?
         // NOTE: The ARCHIVE_READDISK_MAC_COPYFILE flag for read_disk is disabled by default, so we should already be creating 'sane' archives on OS X, without the crazy ._* acl/xattr files ;)
@@ -299,7 +299,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
 
         if(!first_pass)
         {
-            // Fix the entry pathname, we used a tempfile... (If we're in legacy mode, signame has already been set to the tweaked path ;))
+            // Fix the entry pathname, we used a tempfile... (if we're in legacy mode, signame has already been set to the tweaked path ;))
             archive_entry_copy_pathname(entry, signame);
         }
         else
@@ -320,7 +320,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 else
                 {
                     original_path = strdup(archive_entry_pathname(entry));
-                    // Try to handle a trailing path separator properly... NOTE: This probably isn't very robust. And No need to handle MinGW, it already spectacularly fails to handle this case ^^
+                    // Try to handle a trailing path separator properly... NOTE: This probably isn't very robust. Also, no need to handle MinGW, it already spectacularly fails to handle this case ^^
                     if(original_path[kttar->tweak_pointer_index] == '/')
                     {
                         // We found a path separator, skip it, too
@@ -397,8 +397,8 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             if(archive_entry_filetype(entry) == AE_IFREG)
             {
                 // But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
-                // We can't  just do it now with the current sign_file & md5_sum implementation because we'd need to open() the input file (to sign & hash it),
-                // while it's already open through libarchive read_disk API. That's apparently not possible on non POSIX systems.
+                // We can't just do it now with the current sign_file & md5_sum implementation because we'd need to open() the input file (to sign & hash it),
+                // while it's already open through libarchive's read_disk API. That's apparently not possible on non POSIX systems.
                 // (You get a very helpful 'Permission denied' error on Windows...)
                 kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
                 // And do the same with our tweaked pathname for legacy mode...
@@ -488,7 +488,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 
     archive_write_open_fd(a, outfd);
 
-    // Loop over our input file/directories...
+    // Loop over our input files/directories...
     for(i = 0; i < total_files; i++)
     {
         // Don't tweak entries pathname by default
@@ -537,7 +537,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // And append it as the last file...
     kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char *));
     kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
-    // We'll never tweak the bundlefile pathname, but we need this to be sane, so set it
+    // We'll never tweak the bundlefile pathname, but we rely on this being sane & consistent, so set it
     kttar->tweaked_to_sign_and_bundle_list = realloc(kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char *));
     kttar->tweaked_to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
 
@@ -654,6 +654,8 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 // And we're using the tweaked pathname in case we're in legacy mode ;)
                 pathnamecpy = strdup(kttar->to_sign_and_bundle_list[i]);
                 // Only flag kernels in recovery update...
+                // FWIW, the format is as follows: file_type_id md5sum file_name blocksize file_display_name
+                // where the id is 1 for kernel images (in recovery updates only), 129 for install scripts, and 128 for assets, and the blocksize is based on the file size relative to the update type blocksize.
                 if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128)), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / real_blocksize, basename(pathnamecpy)) < 0)
                 {
                     fprintf(stderr, "Cannot write to index file.\n");
@@ -751,22 +753,22 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                 fprintf(stderr, "Error opening temp file.\n");
                 return -1;
             }
-            if(kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0) // create the update
+            if(kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0) // Create the update
             {
                 fprintf(stderr, "Error creating update package.\n");
                 fclose(temp);
                 return -1;
             }
-            rewind(temp); // rewind the file before reading back
+            rewind(temp); // Rewind the file before reading back
             if(!fake_sign)
             {
-                if(kindle_create_signature(info, temp, output) < 0) // write the signature (unless we asked for an unsigned package)
+                if(kindle_create_signature(info, temp, output) < 0) // Write the signature (unless we asked for an unsigned package)
                 {
                     fprintf(stderr, "Error signing update package.\n");
                     fclose(temp);
                     return -1;
                 }
-                rewind(temp); // rewind the file before writing it to output
+                rewind(temp); // Rewind the file before writing it to output
             }
             // write the update
             while((count = fread(buffer, sizeof(char), BUFFER_SIZE, temp)) > 0)
@@ -899,7 +901,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 
     demunged_tgz = NULL;
 
-    // first part of the set sized data
+    // First part of the set sized data
     header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
     header = malloc(header_size);
     hindex = 0;
@@ -912,7 +914,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     memcpy(&header[hindex], &info->num_devices, sizeof(uint16_t)); // device count
     hindex += sizeof(uint16_t);
 
-    // next, we write the devices
+    // Next, we write the devices
     header_size += info->num_devices * sizeof(uint16_t);
     header = realloc(header, header_size);
     for(i = 0; i < info->num_devices; i++)
@@ -921,7 +923,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         hindex += sizeof(uint16_t);
     }
 
-    // part two of the set sized data
+    // Part two of the set sized data
     header_size += OTA_UPDATE_V2_PART_2_BLOCK_SIZE;
     header = realloc(header, header_size);
     memcpy(&header[hindex], &info->critical, sizeof(uint8_t)); // critical
@@ -958,21 +960,21 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
             free(header);
             return -1;
         }
-        rewind(input_tgz); // reset input for later reading
+        rewind(input_tgz); // Reset input for later reading
     }
 
-    md(&header[hindex], MD5_HASH_LENGTH); // obfuscate md5 hash
+    md(&header[hindex], MD5_HASH_LENGTH); // Obfuscate md5 hash
     hindex += MD5_HASH_LENGTH;
     memcpy(&header[hindex], &info->num_meta, sizeof(uint16_t)); // num meta, cannot be casted
     hindex += sizeof(uint16_t);
 
-    // next, we write the meta strings
+    // Next, we write the meta strings
     for(i = 0; i < info->num_meta; i++)
     {
         str_len = strlen(info->metastrings[i]);
         header_size += str_len + sizeof(uint16_t);
         header = realloc(header, header_size);
-        // string length: little endian -> big endian
+        // String length: little endian -> big endian
         memcpy(&header[hindex], &((uint8_t *)&str_len)[1], sizeof(uint8_t));
         hindex += sizeof(uint8_t);
         memcpy(&header[hindex], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
@@ -982,7 +984,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         hindex += str_len;
     }
 
-    // now, we write the header to the file
+    // Now, we write the header to the file
     if(fwrite(header, sizeof(char), header_size, output) < header_size)
     {
         fprintf(stderr, "Error writing update header.\n");
@@ -990,24 +992,24 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         return -1;
     }
 
-    // write the actual update
+    // Write the actual update
     free(header);
     return munger(input_tgz, output, 0, fake_sign);
 }
 
 int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *output)
 {
-    UpdateHeader header; // header to write
+    UpdateHeader header; // Header to write
 
-    memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
-    strncpy(header.magic_number, "SP01", 4); // write magic number
+    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
+    strncpy(header.magic_number, "SP01", 4); // Write magic number
     header.data.signature.certificate_number = (uint32_t)info->certificate_number; // 4 byte certificate number
     if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
     }
-    // write signature to output
+    // Write signature to output
     if(sign_file(input_bin, info->sign_pkey, output) < 0)
     {
         fprintf(stderr, "Error signing update package.\n");
@@ -1023,12 +1025,12 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
 
     obfuscated_tgz = NULL;
 
-    memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
-    strncpy(header.magic_number, info->magic_number, 4); // magic number
-    header.data.ota_update.source_revision = (uint32_t)info->source_revision; // source
-    header.data.ota_update.target_revision = (uint32_t)info->target_revision; // target
-    header.data.ota_update.device = (uint16_t)info->devices[0]; // device
-    header.data.ota_update.optional = (unsigned char)info->optional; // optional
+    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
+    strncpy(header.magic_number, info->magic_number, 4); // Magic number
+    header.data.ota_update.source_revision = (uint32_t)info->source_revision; // Source
+    header.data.ota_update.target_revision = (uint32_t)info->target_revision; // Target
+    header.data.ota_update.device = (uint16_t)info->devices[0]; // Device
+    header.data.ota_update.optional = (unsigned char)info->optional; // Optional
 
     if(fake_sign)
     {
@@ -1054,18 +1056,18 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
             fprintf(stderr, "Error calculating MD5 of input tgz.\n");
             return -1;
         }
-        rewind(input_tgz); // rewind input
+        rewind(input_tgz); // Rewind input
     }
-    md((unsigned char *)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
+    md((unsigned char *)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // Obfuscate md5 hash
 
-    // write header to output
+    // Write header to output
     if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
     }
 
-    // write package to output
+    // Write package to output
     return munger(input_tgz, output, 0, fake_sign);
 }
 
@@ -1076,17 +1078,17 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 
     obfuscated_tgz = NULL;
 
-    memset(&header, 0, sizeof(UpdateHeader)); // set them to zero
+    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
 
-    strncpy(header.magic_number, info->magic_number, 4); // magic number
-    header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // magic 1
-    header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // magic 2
-    header.data.recovery_update.minor = (uint32_t)info->minor; // minor
+    strncpy(header.magic_number, info->magic_number, 4); // Magic number
+    header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // Magic 1
+    header.data.recovery_update.magic_2 = (uint32_t)info->magic_2; // Magic 2
+    header.data.recovery_update.minor = (uint32_t)info->minor; // Minor
 
     // Handle FB02 with a V2 Header Rev. Different length, but still fixed...
     if(info->header_rev == 2)
     {
-        // Expects some new stuff that I'm not too sure about... Here be dragons.
+        // NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
         header.data.recovery_h2_update.device = (uint32_t)info->devices[0];
@@ -1094,7 +1096,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     else
     {
         // Assume what we did before was okay, and put a device id in there...
-        header.data.recovery_update.device = (uint32_t)info->devices[0]; // device
+        header.data.recovery_update.device = (uint32_t)info->devices[0]; // Device
     }
 
     if(fake_sign)
@@ -1121,18 +1123,18 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
             fprintf(stderr, "Error calculating MD5 of input tgz.\n");
             return -1;
         }
-        rewind(input_tgz); // rewind input
+        rewind(input_tgz); // Rewind input
     }
-    md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // obfuscate md5 hash
+    md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // Obfuscate md5 hash
 
-    // write header to output
+    // Write header to output
     if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
     }
 
-    // write package to output
+    // Write package to output
     return munger(input_tgz, output, 0, fake_sign);
 }
 
@@ -1189,39 +1191,39 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
             free(header);
             return -1;
         }
-        rewind(input_tgz); // reset input for later reading
+        rewind(input_tgz); // Reset input for later reading
     }
 
-    md(&header[hindex], MD5_HASH_LENGTH); // obfuscate md5 hash
+    md(&header[hindex], MD5_HASH_LENGTH); // Obfuscate md5 hash
     hindex += MD5_HASH_LENGTH;
 
-    memcpy(&header[hindex], &info->magic_1, sizeof(uint32_t));          // magic 1
+    memcpy(&header[hindex], &info->magic_1, sizeof(uint32_t));          // Magic 1
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->magic_2, sizeof(uint32_t));          // magic 2
+    memcpy(&header[hindex], &info->magic_2, sizeof(uint32_t));          // Magic 2
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->minor, sizeof(uint32_t));            // minor
+    memcpy(&header[hindex], &info->minor, sizeof(uint32_t));            // Minor
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->platform, sizeof(uint32_t));         // platform
+    memcpy(&header[hindex], &info->platform, sizeof(uint32_t));         // Platform
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->header_rev, sizeof(uint32_t));       // header rev
+    memcpy(&header[hindex], &info->header_rev, sizeof(uint32_t));       // Header rev
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->devices[0], sizeof(uint32_t));       // device
+    memcpy(&header[hindex], &info->devices[0], sizeof(uint32_t));       // Device
     hindex += sizeof(uint32_t);
 
     hindex += sizeof(uint32_t); // Padding
     hindex += sizeof(uint16_t); // ... Padding
     hindex += sizeof(uint8_t);  // And more weird padding
     recovery_num_devices = (uint8_t)info->num_devices;  // u16 to u8...
-    memcpy(&header[hindex], &recovery_num_devices, sizeof(uint8_t));    // device count
+    memcpy(&header[hindex], &recovery_num_devices, sizeof(uint8_t));    // Device count
     hindex += sizeof(uint8_t);
 
     for(i = 0; i < info->num_devices; i++)
     {
-        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t));   // device
+        memcpy(&header[hindex], &info->devices[i], sizeof(uint16_t));   // Device
         hindex += sizeof(uint16_t);
     }
 
-    // now, we write the header to the file
+    // Now, we write the header to the file
     if(fwrite(header, sizeof(char), header_size, output) < header_size)
     {
         fprintf(stderr, "Error writing update header.\n");
@@ -1229,7 +1231,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
         return -1;
     }
 
-    // write the actual update
+    // Write the actual update
     free(header);
     return munger(input_tgz, output, 0, fake_sign);
 }
@@ -1268,6 +1270,7 @@ int kindle_create_main(int argc, char *argv[])
     char **input_list = NULL;
     unsigned int input_index = 0;
     char *tarball_filename = NULL;
+    char *valid_update_file_pattern = NULL;
     int tarball_fd = -1;
     unsigned int keep_archive;
     unsigned int skip_archive;
@@ -1278,7 +1281,7 @@ int kindle_create_main(int argc, char *argv[])
     struct archive *match;
     int r;
 
-    // defaults
+    // Defaults
     output = stdout;
     input = NULL;
     keep_archive = 0;
@@ -1290,7 +1293,7 @@ int kindle_create_main(int argc, char *argv[])
     argv++;
     argc--;
 
-    // update type
+    // Update type
     if(argc < 1)
     {
         fprintf(stderr, "Not enough arguments.\n");
@@ -1328,7 +1331,7 @@ int kindle_create_main(int argc, char *argv[])
         return -1;
     }
 
-    // arguments
+    // Arguments
     while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:h:c:o:r:x:auC", opts, &opt_index)) != -1)
     {
         switch(opt)
@@ -1371,7 +1374,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
                 }
-                // Hmm, all the K5 official updates I saw were still using FC04...
+                // NOTE: Hmm, all the K5 official updates I saw were still using FC04... That said, keep using FD04 like Yifan, that seems to have been working pretty well for us so far ;).
                 else if(strcmp(optarg, "k5w") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi;
@@ -1673,7 +1676,7 @@ int kindle_create_main(int argc, char *argv[])
             }
             else
             {
-                // Build a list of all our input files/dir, libarchive will do most of the heavy lifting for us (Cf. http://stackoverflow.com/questions/1182534/#1182649)
+                // Build a list of all our input files/dirs, libarchive will do most of the heavy lifting for us (Cf. http://stackoverflow.com/questions/1182534/#1182649)
                 input_list = realloc(input_list, ++input_index * sizeof(char *));
                 input_list[input_index - 1] = strdup(argv[optind++]);
             }
@@ -1694,8 +1697,14 @@ int kindle_create_main(int argc, char *argv[])
             match = archive_match_new();
             entry = archive_entry_new();
 
-            if(archive_match_exclude_pattern(match, "./[Uu]pdate*\\.bin$") != ARCHIVE_OK)
+            // Recovery updates must be lowercase!
+            if(info.version == RecoveryUpdate && info.version == RecoveryUpdateV2)
+                valid_update_file_pattern = strdup("./update*\\.bin$");
+            else
+                valid_update_file_pattern = strdup("./[Uu]pdate*\\.bin$");
+            if(archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
                 fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
+            free(valid_update_file_pattern);
 
             archive_entry_copy_pathname(entry, output_filename);
 
@@ -1770,7 +1779,7 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
-    // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building (FIXME: Handle num_devices == 0 [no specific device])
+    // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
     fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""));
     // If we have specific device IDs, list them
     if(info.num_devices > 0)
@@ -1860,7 +1869,7 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
 
-    // Clean-up
+    // Cleanup
     for(ui = 0; ui < input_index; ui++)
         free(input_list[ui]);
     free(input_list);

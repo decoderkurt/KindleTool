@@ -34,7 +34,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     UpdateHeader header;
     BundleVersion bundle_version;
     // Zero init to make Valgrind happy
-    // (it considers a variable to be uninitialized if any variable or memory location used in its calculation was uninitialized,
+    // (it considers a variable to be uninitialized if any variable or memory location used in its calculation were uninitialized,
     // and we effectiveley only initialize the first MAGIC_NUMBER_LENGTH bytes of header with kindle_read_bundle_header, so it shouts at us
     // later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
     memset(&header, 0, sizeof(UpdateHeader));
@@ -60,7 +60,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             else
             {
                 fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-                return kindle_convert_ota_update_v2(input, output, fake_sign); // no absolute size, so no struct to pass
+                return kindle_convert_ota_update_v2(input, output, fake_sign); // No absolute size, so no struct to pass
             }
             break;
         case UpdateSignature:
@@ -129,7 +129,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             fprintf(stderr, "Unknown update bundle version!\n");
             break;
     }
-    return -1; // if we get here, there has been an error
+    return -1; // If we get here, there has been an error
 }
 
 int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign)
@@ -537,7 +537,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fail = 1;
                 continue;   // It's fatal, go away
             }
-            if(!info_only && !unwrap_only && output != stdout) // not info only, not unwrap only AND not stdout
+            if(!info_only && !unwrap_only && output != stdout) // Not info only, not unwrap only AND not stdout
             {
                 len = strlen(in_name);
                 out_name = malloc(len + 1 + (3 - fake_sign));
@@ -552,7 +552,7 @@ int kindle_convert_main(int argc, char *argv[])
                     continue;   // It's fatal, go away
                 }
             }
-            if(extract_sig) // we want the package sig (implies not info only)
+            if(extract_sig) // We want the package sig (implies not info only)
             {
                 len = strlen(in_name);
                 sig_name = malloc(len + 1);
@@ -569,7 +569,7 @@ int kindle_convert_main(int argc, char *argv[])
                     continue;   // It's fatal, go away
                 }
             }
-            if(unwrap_only)     // we want an unwrapped package (implies not info only)
+            if(unwrap_only)     // We want an unwrapped package (implies not info only)
             {
                 len = strlen(in_name);
                 unwrapped_name = malloc(len + 10 + 1);
@@ -616,13 +616,13 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Error converting update '%s'.\n", in_name);
                 if(output != NULL && output != stdout)
-                    unlink(out_name); // clean up our mess, if we made one
+                    unlink(out_name); // Clean up our mess, if we made one
                 fail = 1;
             }
-            if(output != stdout && !info_only && !keep_ori && !fail) // if output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
+            if(output != stdout && !info_only && !keep_ori && !fail) // If output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
                 unlink(in_name);
 
-            // Cleanup behind us
+            // Clean up behind us
             if(!info_only && !unwrap_only)
                 free(out_name);
             if(output != NULL && output != stdout)

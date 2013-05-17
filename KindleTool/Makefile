@@ -25,7 +25,7 @@ SRCS=kindle_tool.c create.c convert.c
 
 default: all
 
-# OS, version, pkgconfig & misc stuff handling (Heavily inspired from git's Makefiles ;))
+# OS, version, pkgconfig & misc stuff handling (heavily inspired from git's Makefiles ;))
 # It's basically our fake automated configure script, and it uses bash features, so override the default shell!
 SHELL:=/bin/bash
 version-inc:
@@ -40,7 +40,7 @@ else
 		# Play nice with MacPorts
 		PREFIX:=/opt/local
 	else
-		# Play nice with Linux PMS
+		# Should play nice with various Linux PMS, specifically non-prefixed Portage/Paludis setups
 		PREFIX:=/usr
 	endif
 endif
@@ -59,7 +59,7 @@ else
 endif
 LIBS=-larchive -lcrypto -lz
 
-# Needed for linking statically against OpenSSL on Linux, and as-needed takes care of it when building dynamically, so it doesn't hurt ;).
+# Needed for linking statically against OpenSSL on Linux, and as as-needed takes care of it when building dynamically, it doesn't hurt to keep it set in both cases ;).
 ifeq "$(OSTYPE)" "Linux"
 	# There's no libdl on Windows ;)
 	ifneq "$(MINGW)" "true"

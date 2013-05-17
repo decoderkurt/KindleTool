@@ -42,7 +42,7 @@ Build_Linux() {
 		cd ..
 	fi
 
-	# Build KT packages credits
+	# Build KT package credits
 	cat > CREDITS << EOF
 * kindletool:
 
@@ -72,7 +72,7 @@ EOF
 	./version.sh PMS
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
-	# Strips the git commit
+	# Strip the git commit
 	REV="${VER_CURRENT%%-*}"
 	#REV="${VER_CURRENT}"
 	cd ../..
