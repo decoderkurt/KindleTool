@@ -195,6 +195,7 @@ Build_Cygwin() {
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
+		# FIXME: Switch to Cmake, and build against OpenSSL, wincrypto headers are all wonky in the latest Cygwin packages...
 		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
 		make
 		make install
