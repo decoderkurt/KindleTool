@@ -223,13 +223,11 @@ EOF
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
-	mv -v /usr/lib/libarchive.a{,.disabled}
 	mv -v /usr/lib/libarchive.dll.a{,.disabled}
 	mv -v /usr/bin/cygarchive-14.dll{,.disabled}
 	make clean
 	make strip
 	## Restore dynamic libraries...
-	mv -v /usr/lib/libarchive.a{,.disabled}
 	mv -v /usr/lib/libarchive.dll.a{.disabled,}
 	mv -v /usr/bin/cygarchive-14.dll{.disabled,}
 
