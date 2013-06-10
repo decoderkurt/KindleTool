@@ -196,7 +196,7 @@ Build_Cygwin() {
 		cd ${LIBARCHIVE_DIR}
 		# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 		# Switch to cmake, which will properly use OpenSSL on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-		cmake -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_OPENSSL=ON
+		cmake -DCMAKE_INSTALL_PREFIX="/usr" -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_OPENSSL=ON
 		make
 		make install
 		cd ..
