@@ -194,9 +194,9 @@ Build_Cygwin() {
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
-		./build/autogen.sh
-		# FIXME: The crypto stuff breaks horribly with the current Cygwin packages...
-		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
+		# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
+		# Switch to cmake, which will properly use OpenSSL on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
+		cmake -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_OPENSSL=ON
 		make
 		make install
 		cd ..
