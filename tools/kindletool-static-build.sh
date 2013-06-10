@@ -196,7 +196,7 @@ Build_Cygwin() {
 		cd ${LIBARCHIVE_DIR}
 		# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 		# Switch to cmake, which will properly use OpenSSL on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-		cmake -DCMAKE_INSTALL_PREFIX="/usr" -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_OPENSSL=ON
+		cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_OPENSSL=ON
 		make
 		make install
 		cd ..
@@ -223,15 +223,15 @@ EOF
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
-	mv -v /usr/lib/libarchive.la{,.disabled}
+	mv -v /usr/lib/libarchive.a{,.disabled}
 	mv -v /usr/lib/libarchive.dll.a{,.disabled}
-	mv -v /usr/bin/cygarchive-12.dll{,.disabled}
+	mv -v /usr/bin/cygarchive-14.dll{,.disabled}
 	make clean
 	make strip
 	## Restore dynamic libraries...
-	mv -v /usr/lib/libarchive.la{.disabled,}
+	mv -v /usr/lib/libarchive.a{,.disabled}
 	mv -v /usr/lib/libarchive.dll.a{.disabled,}
-	mv -v /usr/bin/cygarchive-12.dll{.disabled,}
+	mv -v /usr/bin/cygarchive-14.dll{.disabled,}
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
