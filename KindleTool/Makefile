@@ -1,11 +1,12 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -g3
-OPT_CFLAGS=-O2 -fomit-frame-pointer -march=native
-K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE
-MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer
+DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
+# FIXME: For debug builds, start using -Og instead of -O0 ASAP (GCC 4.8 only, IIRC)
+OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
+K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE
+MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
-ASAN_CLFAGS="-O1 -fno-optimize-sibling-calls -fno-omit-frame-pointer -Weverything -Wno-disabled-macro-expansion -march=native -fsanitize=address -g3"
+ASAN_CLFAGS="-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3"
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
@@ -112,9 +113,7 @@ else
 	BINEXT:=
 endif
 
-# Use a different varname in order to support appending stuff here even when setting CFLAGS as an argument to make...
-KT_CFLAGS:=$(CFLAGS)
-KT_CFLAGS+=-pipe
+# NOTE: All the KT_ prefixed *FLAGS are stuff that we *always* want set, no matter what the user does.
 # Moar warnings!
 KT_CFLAGS+=-Wall -Wformat -Wformat-security
 KT_CFLAGS+=-Wextra -Wunused
@@ -123,22 +122,22 @@ KT_CFLAGS+=-Wmissing-prototypes
 KT_CFLAGS+=-Wcast-qual
 #KT_CFLAGS+=-Wconversion
 # libarchive is always built with large files support, do the same to avoid issues.
-KT_CFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...
 ifeq "$(MINGW)" "true"
 	# That's enough for MinGW
-	KT_CFLAGS+=-D_GNU_SOURCE
+	KT_CPPFLAGS+=-D_GNU_SOURCE
 	# But not for MinGW-w64...
-	KT_CFLAGS+=-D__USE_MINGW_ANSI_STDIO=1
+	KT_CPPFLAGS+=-D__USE_MINGW_ANSI_STDIO=1
 endif
-KT_CFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
+KT_CPPFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 # Add a user@host build tag, unless explicitly forbidden
 ifndef KT_NO_USERATHOST_TAG
-	KT_CFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
+	KT_CPPFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
 endif
 # Play with valid unknown device codes in debug builds...
 ifeq "$(DEBUG)" "true"
-	KT_CFLAGS+=-DKT_UNKNOWN_DEVID
+	KT_CPPFLAGS+=-DKT_UNKNOWN_DEVID
 endif
 
 ifndef LDFLAGS
@@ -174,7 +173,7 @@ endif
 OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
 
 $(OUT_DIR)/%.o: %.c
-	$(CC) $(CPPFLAGS) $(KT_CFLAGS) -o $@ -c $<
+	$(CC) $(CPPFLAGS) $(KT_CPPFLAGS) $(CFLAGS) $(KT_CFLAGS) -o $@ -c $<
 
 outdir:
 	mkdir -p $(OUT_DIR)
@@ -182,7 +181,7 @@ outdir:
 all: outdir kindletool
 
 kindletool: version-inc $(OBJS)
-	$(CC) $(CPPFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@$(BINEXT) $(OBJS) $(LIBS)
+	$(CC) $(CPPFLAGS) $(KT_CPPFLAGS) $(CFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@$(BINEXT) $(OBJS) $(LIBS)
 
 strip: all
 	$(STRIP) $(STRIP_OPTS) $(OUT_DIR)/kindletool$(BINEXT)
