@@ -15,7 +15,7 @@ Build_Linux() {
 	fi
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	OPENSSL_DIR="openssl-0.9.8x"
+	OPENSSL_DIR="openssl-0.9.8y"
 	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
@@ -43,6 +43,7 @@ Build_Linux() {
 		cp /usr/portage/dev-libs/openssl/files/gentoo.config-0.9.8 gentoo.config
 		chmod a+rx gentoo.config
 		sed -i '1s,^:$,#!/usr/bin/perl,' Configure
+		sed -i '/^"debug-ben-debug-64"/d' Configure
 		sed -i '/^"debug-steve/d' Configure
 		if [[ "${ARCH}" == "x86_64" ]] ; then
 			./Configure linux-generic64 -DL_ENDIAN -O2 -march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
