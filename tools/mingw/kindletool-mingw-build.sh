@@ -138,25 +138,25 @@ if [[ ! -d "zlib-1.2.7" ]] ; then
 	cd ..
 fi
 
-if [[ ! -d "openssl-1.0.1c" ]] ; then
+if [[ ! -d "openssl-1.0.1e" ]] ; then
 	echo "* Building OpenSSL 1 . . ."
 	echo ""
-	if [[ ! -f "./openssl-1.0.1c.tar.gz" ]] ; then
-		wget -O "./openssl-1.0.1c.tar.gz" "http://www.openssl.org/source/openssl-1.0.1c.tar.gz"
+	if [[ ! -f "./openssl-1.0.1e.tar.gz" ]] ; then
+		wget -O "./openssl-1.0.1e.tar.gz" "http://www.openssl.org/source/openssl-1.0.1e.tar.gz"
 	fi
-	tar -xvzf ./openssl-1.0.1c.tar.gz
-	cd openssl-1.0.1c
+	tar -xvzf ./openssl-1.0.1e.tar.gz
+	cd openssl-1.0.1e
 	export CROSS_COMPILE="${CROSS_TC}-"
 	export CFLAGS="${CPPFLAGS} ${BASE_CFLAGS} -fno-strict-aliasing"
 	export CXXFLAGS="${BASE_CFLAGS} -fno-strict-aliasing"
 	rm -f Makefile
 	patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0a-ldflags.patch
-	patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0d-fbsd-amd64.patch
 	patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0d-windres.patch
 	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0h-pkg-config.patch
 	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-parallel-build.patch
 	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-x32.patch
-	#patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-ipv6.patch	# Not MingW friendly
+	#patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-ipv6.patch	# Not MingW friendly
+	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-bad-mac-aes-ni.patch
 	sed -i -e '/DIRS/s: fips : :g' -e '/^MANSUFFIX/s:=.*:=ssl:' -e "/^MAKEDEPPROG/s:=.*:=${CROSS_TC}-gcc:" -e '/^install:/s:install_docs::' Makefile.org
 	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
 	cp /usr/portage/dev-libs/openssl/files/gentoo.config-1.0.0 gentoo.config
