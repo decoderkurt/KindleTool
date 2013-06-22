@@ -120,14 +120,14 @@ export LDFLAGS="${BASE_LDFLAGS}"
 mkdir -p "${TC_BUILD_DIR}"
 cd "${TC_BUILD_DIR}"
 
-if [[ ! -d "zlib-1.2.7" ]] ; then
+if [[ ! -d "zlib-1.2.8" ]] ; then
 	echo "* Building zlib . . ."
 	echo ""
-	if [[ ! -f "./zlib127.zip" ]] ; then
-		wget -O "zlib127.zip" "http://zlib.net/zlib127.zip"
+	if [[ ! -f "./zlib128.zip" ]] ; then
+		wget -O "zlib128.zip" "http://zlib.net/zlib128.zip"
 	fi
-	unzip ./zlib127.zip
-	cd zlib-1.2.7
+	unzip ./zlib128.zip
+	cd zlib-1.2.8
 	patch -p1 < ../../../KindleTool/tools/mingw/zlib-1.2.7-mingw-makefile-fix.patch
 	make -f win32/Makefile.gcc
 	mkdir -p ../include ../bin ../lib
