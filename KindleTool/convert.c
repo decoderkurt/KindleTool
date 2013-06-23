@@ -39,7 +39,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     // later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
     memset(&header, 0, sizeof(UpdateHeader));
 
-    char unsigned buffer[BUFFER_SIZE];
+    unsigned char buffer[BUFFER_SIZE];
     size_t count;
 
     if(kindle_read_bundle_header(&header, input) < 0)
