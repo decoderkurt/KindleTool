@@ -1004,7 +1004,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
     strncpy(header.magic_number, "SP01", 4); // Write magic number
     header.data.signature.certificate_number = (uint32_t)info->certificate_number; // 4 byte certificate number
-    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
+    if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
@@ -1061,7 +1061,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     md((unsigned char *)header.data.ota_update.md5_sum, MD5_HASH_LENGTH); // Obfuscate md5 hash
 
     // Write header to output
-    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE)
+    if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;
@@ -1128,7 +1128,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     md((unsigned char *)header.data.recovery_update.md5_sum, MD5_HASH_LENGTH); // Obfuscate md5 hash
 
     // Write header to output
-    if(fwrite(&header, sizeof(char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
+    if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Error writing update header.\n");
         return -1;

@@ -22,7 +22,7 @@
 
 int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
 {
-    if(fread(header, sizeof(char), MAGIC_NUMBER_LENGTH, input) < 1 || ferror(input) != 0)
+    if(fread(header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH, input) < 1 || ferror(input) != 0)
     {
         return -1;
     }
