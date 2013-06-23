@@ -39,7 +39,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     // later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
     memset(&header, 0, sizeof(UpdateHeader));
 
-    char buffer[BUFFER_SIZE];
+    char unsigned buffer[BUFFER_SIZE];
     size_t count;
 
     if(kindle_read_bundle_header(&header, input) < 0)
@@ -72,9 +72,9 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             // If we asked to simply unwrap the package, just write our unwrapped package ;).
             if(unwrap_only)
             {
-                while((count = fread(buffer, sizeof(char), BUFFER_SIZE, input)) > 0)
+                while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
                 {
-                    if(fwrite(buffer, sizeof(char), count, unwrap_output) < count)
+                    if(fwrite(buffer, sizeof(unsigned char), count, unwrap_output) < count)
                     {
                         fprintf(stderr, "Error writing unwrapped update to output.\n");
                         return -1;
@@ -134,7 +134,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
 
 int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign)
 {
-    char *data;
+    unsigned char *data;
     unsigned int hindex;
     uint64_t source_revision;
     uint64_t target_revision;
@@ -152,8 +152,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     size_t read_size __attribute__((unused));
 
     // First read the set block size and determine how much to resize
-    data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(char));
-    read_size = fread(data, sizeof(char), OTA_UPDATE_V2_BLOCK_SIZE, input);
+    data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(unsigned char));
+    read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
     hindex = 0;
 
     source_revision = *(uint64_t *)&data[hindex];
@@ -182,8 +182,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     free(data);
 
     // Now get second part of set sized data
-    data = malloc(OTA_UPDATE_V2_PART_2_BLOCK_SIZE * sizeof(char));
-    read_size = fread(data, sizeof(char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
+    data = malloc(OTA_UPDATE_V2_PART_2_BLOCK_SIZE * sizeof(unsigned char));
+    read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     hindex = 0;
 
     critical = *(uint8_t *)&data[hindex];       // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
@@ -192,7 +192,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     padding = *(uint8_t *)&data[hindex];        // Print the (garbage?) padding byte found in official updates...
     hindex += sizeof(uint8_t);
     fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", padding, padding);
-    pkg_md5_sum = &data[hindex];
+    pkg_md5_sum = (char *)&data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
@@ -237,7 +237,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     size_t seek;
     unsigned char *signature;
 
-    if(fread(header->data.signature_header_data, sizeof(char), UPDATE_SIGNATURE_BLOCK_SIZE, input) < UPDATE_SIGNATURE_BLOCK_SIZE)
+    if(fread(header->data.signature_header_data, sizeof(unsigned char), UPDATE_SIGNATURE_BLOCK_SIZE, input) < UPDATE_SIGNATURE_BLOCK_SIZE)
     {
         fprintf(stderr, "Cannot read signature header.\n");
         return -1;
@@ -272,13 +272,13 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     else
     {
         signature = malloc(seek);
-        if(fread(signature, sizeof(char), seek, input) < seek)
+        if(fread(signature, sizeof(unsigned char), seek, input) < seek)
         {
             fprintf(stderr, "Cannot read signature!\n");
             free(signature);
             return -1;
         }
-        if(fwrite(signature, sizeof(char), seek, output) < seek)
+        if(fwrite(signature, sizeof(unsigned char), seek, output) < seek)
         {
             fprintf(stderr, "Cannot write signature file!\n");
             free(signature);
@@ -291,7 +291,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
 
 int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
 {
-    if(fread(header->data.ota_header_data, sizeof(char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
+    if(fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Cannot read OTA header.\n");
         return -1;
@@ -314,7 +314,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
 
 int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
 {
-    if(fread(header->data.recovery_header_data, sizeof(char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
+    if(fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
         fprintf(stderr, "Cannot read recovery update header.\n");
         return -1;
@@ -351,7 +351,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
 
 int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign)
 {
-    char *data;
+    unsigned char *data;
     unsigned int hindex;
     uint64_t target_revision;
     char *pkg_md5_sum;
@@ -367,15 +367,15 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     size_t read_size __attribute__((unused));
 
     // Its size is set, there's just some wonky padding involved. Read it all!
-    data = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(char));
-    read_size = fread(data, sizeof(char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+    data = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
+    read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
     hindex = 0;
 
     hindex += sizeof(uint32_t); // Padding
     target_revision = *(uint64_t *)&data[hindex];
     hindex += sizeof(uint64_t);
     fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
-    pkg_md5_sum = &data[hindex];
+    pkg_md5_sum = (char *)&data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);

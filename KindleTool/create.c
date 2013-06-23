@@ -49,7 +49,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
         EVP_PKEY_free(pkey);
         return -3;
     }
-    while((len = fread(buffer, sizeof(char), BUFFER_SIZE, in_file)) > 0)
+    while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
         if(!EVP_SignUpdate(&ctx, buffer, len))
         {
@@ -73,7 +73,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
         return -6;
     }
 
-    if(fwrite(sig, sizeof(char), siglen, sigout_file) < siglen)
+    if(fwrite(sig, sizeof(unsigned char), siglen, sigout_file) < siglen)
     {
         fprintf(stderr, "Error writing signature file.\n");
         free(sig);
@@ -179,7 +179,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     size_t bytes_read;
     ssize_t bytes_written;
     int64_t offset, progress = 0;
-    char *null_buff = NULL;
+    unsigned char *null_buff = NULL;
     const void *buff;
     int r;
 
@@ -741,7 +741,7 @@ cleanup:
 
 int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
-    char buffer[BUFFER_SIZE];
+    unsigned char buffer[BUFFER_SIZE];
     size_t count;
     FILE *temp;
 
@@ -771,9 +771,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                 rewind(temp); // Rewind the file before writing it to output
             }
             // write the update
-            while((count = fread(buffer, sizeof(char), BUFFER_SIZE, temp)) > 0)
+            while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0)
             {
-                if(fwrite(buffer, sizeof(char), count, output) < count)
+                if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                 {
                     fprintf(stderr, "Error writing update to output.\n");
                     fclose(temp);
@@ -818,9 +818,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                     }
                     rewind(temp);
                 }
-                while((count = fread(buffer, sizeof(char), BUFFER_SIZE, temp)) > 0)
+                while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0)
                 {
-                    if(fwrite(buffer, sizeof(char), count, output) < count)
+                    if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                     {
                         fprintf(stderr, "Error writing update to output.\n");
                         fclose(temp);
@@ -864,9 +864,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                 }
                 rewind(temp);
             }
-            while((count = fread(buffer, sizeof(char), BUFFER_SIZE, temp)) > 0)
+            while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0)
             {
-                if(fwrite(buffer, sizeof(char), count, output) < count)
+                if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                 {
                     fprintf(stderr, "Error writing update to output.\n");
                     fclose(temp);
@@ -985,7 +985,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     }
 
     // Now, we write the header to the file
-    if(fwrite(header, sizeof(char), header_size, output) < header_size)
+    if(fwrite(header, sizeof(unsigned char), header_size, output) < header_size)
     {
         fprintf(stderr, "Error writing update header.\n");
         free(header);
@@ -1224,7 +1224,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     }
 
     // Now, we write the header to the file
-    if(fwrite(header, sizeof(char), header_size, output) < header_size)
+    if(fwrite(header, sizeof(unsigned char), header_size, output) < header_size)
     {
         fprintf(stderr, "Error writing update header.\n");
         free(header);

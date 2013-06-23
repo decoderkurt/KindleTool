@@ -45,12 +45,12 @@ int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sig
     size_t bytes_read;
     size_t bytes_written;
 
-    while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
+    while((bytes_read = fread(bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
     {
         // Don't munge if we asked for a fake package
         if(!fake_sign)
             md(bytes, bytes_read);
-        bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
+        bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
         if(ferror(output) != 0)
         {
             fprintf(stderr, "Error munging, cannot write to output.\n");
@@ -77,12 +77,12 @@ int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_s
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
     size_t bytes_written;
-    while((bytes_read = fread(bytes, sizeof(char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
+    while((bytes_read = fread(bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
     {
         // Don't demunge if we supplied a fake package
         if(!fake_sign)
             dm(bytes, bytes_read);
-        bytes_written = fwrite(bytes, sizeof(char), bytes_read, output);
+        bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
         if(ferror(output) != 0)
         {
             fprintf(stderr, "Error demunging, cannot write to output.\n");
@@ -232,7 +232,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     int i;
 
     MD5_Init(&md5);
-    while((bytes_read = fread(bytes, sizeof(char), BUFFER_SIZE, input)) > 0)
+    while((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
     {
         MD5_Update(&md5, bytes, bytes_read);
     }

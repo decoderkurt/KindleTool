@@ -238,7 +238,7 @@ typedef struct
 // This is modeled after libarchive's bsdtar...
 struct kttar
 {
-    char *buff;
+    unsigned char *buff;
     size_t buff_size;
     char **to_sign_and_bundle_list;
     char **tweaked_to_sign_and_bundle_list;
