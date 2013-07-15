@@ -63,7 +63,7 @@ fi
 # Otherwise, and if we have a proper git repo, use git!
 if [[ -f "VERSION" ]] ; then
 	VER="$(< VERSION)"
-elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
+elif [[ -z "${VER}" && -d "../${GIT_DIR:-.git}" || -f "../.git" ]] ; then
 	# Get a properly formatted version string from our latest tag
 	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	# Or from the first commit (provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
@@ -92,7 +92,7 @@ elif [[ -z "${VER}" && -d "../.git" || -f ".git" ]] ; then
 			# Strip the first char (r)
 			REV="${REV:1}"
 			# Fake our rev number
-			FREV="$(( REV + 1))"
+			FREV="$(( REV + 1 ))"
 			# NOTE: In our case, another cheap way to get this commit count would be via $(git rev-list HEAD | wc -l)
 			# Switch the rev number in our final output
 			VER="${VER/r${REV}/r${FREV}}"
