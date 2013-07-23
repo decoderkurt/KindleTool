@@ -117,7 +117,6 @@ typedef enum
     CertificateDeveloper = 0x00,
     Certificate1K = 0x01,
     Certificate2K = 0x02,
-    /* CertificateNR = 0x??, */         // FIXME: Figure out what those _NR things stand for...
     CertificateUnknown = 0xFF
 } CertificateNumber;
 
@@ -154,22 +153,20 @@ typedef enum
 
 typedef enum
 {
-    Unspecified = 0x00,
+    Plat_Unspecified = 0x00,
     MarioDeprecated = 0x01,
     Luigi = 0x02,
     Banjo = 0x03,
     Yoshi = 0x04,
     YoshimeProto = 0x05,
-    Yoshime = 0x06,
-    NR = 0x07                   // FIXME: :?
+    Yoshime = 0x06
 } Platform;
 
 typedef enum
 {
-    Unspecified = 0x00,         // Used on the PW
+    Board_Unspecified = 0x00,         // Used on the PW
     Tequila = 0x03,             // Kindle 4
-    Whitney = 0x05,             // Kindle Touch
-    NR = 0x06                   // FIXME: :?
+    Whitney = 0x05             // Kindle Touch
 } Board;
 
 typedef struct

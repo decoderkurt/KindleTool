@@ -180,10 +180,8 @@ const char *convert_platform_id(Platform plat)
             return "Yoshime (Prototype)";
         case Yoshime:
             return "Yoshime";
-        case Unspecified:
+        case Plat_Unspecified:
             return "Unspecified";
-        /* case NR:
-            return "NR"; */
         default:
             return "Unknown";
     }
@@ -193,14 +191,12 @@ const char *convert_board_id(Board board)
 {
     switch(board)
     {
-        case Unspecified:
+        case Board_Unspecified:
             return "Unspecified";
         case Tequila:
             return "Tequila";
         case Whitney:
             return "Whitney";
-        /* case NR:
-            return "NR"; */
         default:
             return "Unknown";
     }
