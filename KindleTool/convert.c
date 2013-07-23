@@ -247,15 +247,15 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     switch(cert_num)
     {
         case CertificateDeveloper:
-            cert_name = "pubdevkey01.pem";
+            cert_name = "pubdevkey01.pem (Developer)";
             seek = CERTIFICATE_DEV_SIZE;
             break;
         case Certificate1K:
-            cert_name = "pubprodkey01.pem";
+            cert_name = "pubprodkey01.pem (Official 1K)";
             seek = CERTIFICATE_1K_SIZE;
             break;
         case Certificate2K:
-            cert_name = "pubprodkey02.pem";
+            cert_name = "pubprodkey02.pem (Official 2K)";
             seek = CERTIFICATE_2K_SIZE;
             break;
         case CertificateUnknown:
