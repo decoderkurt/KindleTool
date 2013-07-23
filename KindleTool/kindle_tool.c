@@ -179,7 +179,7 @@ const char *convert_platform_id(Platform plat)
         case YoshimeProto:
             return "Yoshime (Prototype)";
         case Yoshime:
-            return "Yoshime";
+            return "Yoshime (Yoshime3)";
         case Plat_Unspecified:
             return "Unspecified";
         default:
@@ -380,7 +380,7 @@ int kindle_print_help(const char *prog_name)
         "      -p, --platform banjo        Banjo (devices shipped on FW 3.x?)\n"
         "      -p, --platform yoshi        Yoshi (mostly devices shipped on FW <= 5.1)\n"
         "      -p, --platform yoshime-p    Yoshime (Prototype)\n"
-        "      -p, --platform yoshime      Yoshime (mostly devices shipped on FW >= 5.2)\n"
+        "      -p, --platform yoshime      Yoshime (Also known as Yoshime3, mostly devices shipped on FW >= 5.2)\n"
         "      \n"
         "    Options:\n"
         "      All the following options are optional and advanced.\n"

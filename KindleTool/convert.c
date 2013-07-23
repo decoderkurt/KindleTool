@@ -402,7 +402,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     board = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown boards (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
-    if(strcmp(convert_device_id(board), "Unknown") == 0)
+    if(strcmp(convert_board_id(board), "Unknown") == 0)
         fprintf(stderr, "Board          %s (0x%02X)\n", convert_board_id(board), board);
     else
         fprintf(stderr, "Board          %s\n", convert_board_id(board));

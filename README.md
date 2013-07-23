@@ -81,7 +81,7 @@
 		-p, --platform banjo        Banjo (devices shipped on FW 3.x?)
 		-p, --platform yoshi        Yoshi (mostly devices shipped on FW <= 5.1)
 		-p, --platform yoshime-p    Yoshime (Prototype)
-		-p, --platform yoshime      Yoshime (mostly devices shipped on FW >= 5.2)
+		-p, --platform yoshime      Yoshime (Also known as Yoshime3, mostly devices shipped on FW >= 5.2)
 
 	Options:
 		All the following options are optional and advanced.
