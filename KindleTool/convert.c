@@ -360,7 +360,8 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     uint32_t minor;
     uint32_t platform;
     uint32_t header_rev;
-    uint32_t device;
+    uint32_t board;
+    uint16_t device;
     uint8_t num_devices;
     unsigned int i;
     //uint16_t *devices;
@@ -398,18 +399,13 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     header_rev = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
     fprintf(stderr, "Header Rev     %d\n", header_rev);
-    device = *(uint32_t *)&data[hindex];
+    board = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
-    // NOTE: Recovery V2 allows to skip the device check, so assume none instead of unknown ;).
-    if(strcmp(convert_device_id(device), "Unknown") == 0)
-    {
-        fprintf(stderr, "Board          %s  OR  Main Device    None (0x%02X)\n", convert_board_id(device), device);
-    }
+    // Slightly hackish way to detect unknown boards (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
+    if(strcmp(convert_device_id(board), "Unknown") == 0)
+        fprintf(stderr, "Board          %s (0x%02X)\n", convert_board_id(board), board);
     else
-    {
-        // FIXME: But for some reason, the Touch 5.3.7 update has this set anyway, and it doesn't match our usual IDs... (0x05 for a Touch? BoardID?)
-        fprintf(stderr, "Board          %s  OR  Main Device    %s ?! (0x%02X)\n", convert_board_id(device), convert_device_id(device), device);
-    }
+        fprintf(stderr, "Board          %s\n", convert_board_id(board));
     hindex += sizeof(uint32_t); // Padding
     hindex += sizeof(uint16_t); // ... Padding
     hindex += sizeof(uint8_t);  // And more weird padding
