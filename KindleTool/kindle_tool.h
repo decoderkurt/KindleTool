@@ -162,6 +162,13 @@ typedef enum
     Unspecified = 0x00
 } Platform;             // This stuff is mostly based on guesswork...
 
+// Here be dragons! Absolute shot in the dark!
+typedef enum
+{
+    Whitney = 0x05,     // Kindle Touch
+    Celeste = 0x00      // Kindle PaperWhite
+} Board;
+
 typedef struct
 {
     CertificateNumber certificate_number;
@@ -253,6 +260,7 @@ int munger(FILE *, FILE *, size_t, const unsigned int);
 int demunger(FILE *, FILE *, size_t, const unsigned int);
 const char *convert_device_id(Device);
 const char *convert_platform_id(Platform);
+const char *convert_board_id(Board);
 const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);

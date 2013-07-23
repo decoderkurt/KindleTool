@@ -403,12 +403,12 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     // NOTE: Recovery V2 allows to skip the device check, so assume none instead of unknown ;).
     if(strcmp(convert_device_id(device), "Unknown") == 0)
     {
-        fprintf(stderr, "Main Device    None (0x%02X)\n", device);
+        fprintf(stderr, "Board          %s  OR  Main Device    None (0x%02X)\n", convert_board_id(device), device);
     }
     else
     {
         // FIXME: But for some reason, the Touch 5.3.7 update has this set anyway, and it doesn't match our usual IDs... (0x05 for a Touch? BoardID?)
-        fprintf(stderr, "Main Device    %s ?! (0x%02X)\n", convert_device_id(device), device);
+        fprintf(stderr, "Board          %s  OR  Main Device    %s ?! (0x%02X)\n", convert_board_id(device), convert_device_id(device), device);
     }
     hindex += sizeof(uint32_t); // Padding
     hindex += sizeof(uint16_t); // ... Padding

@@ -186,6 +186,19 @@ const char *convert_platform_id(Platform plat)
     }
 }
 
+const char *convert_board_id(Board board)
+{
+    switch(board)
+    {
+        case Whitney:
+            return "Whitney";
+        case Celeste:
+            return "Celeste";
+        default:
+            return "Unknown";
+    }
+}
+
 const char *convert_bundle_version(BundleVersion bundlev)
 {
     switch(bundlev)
