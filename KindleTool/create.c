@@ -1374,7 +1374,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                     info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
                 }
-                // NOTE: Hmm, all the K5 official updates I saw were still using FC04... That said, keep using FD04 like Yifan, that seems to have been working pretty well for us so far ;).
+                // NOTE: Magic number switch to 'versionless' update types here...
                 else if(strcmp(optarg, "k5w") == 0)
                 {
                     info.devices[info.num_devices - 1] = Kindle5TouchWifi;
