@@ -391,8 +391,8 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     platform = *(uint32_t *)&data[hindex];
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown platforms...
-    if(strcmp(convert_platform_id(platform), "Unspecified") == 0)
-        fprintf(stderr, "Platform       Unspecified (0x%02X [%c])\n", platform, platform);
+    if(strcmp(convert_platform_id(platform), "Unknown") == 0)
+        fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
     else
         fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
     header_rev = *(uint32_t *)&data[hindex];
