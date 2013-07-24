@@ -203,7 +203,7 @@ typedef struct
     uint32_t minor;
     uint32_t platform;
     uint32_t header_rev;
-    uint32_t device;
+    uint32_t board;
 } RecoveryH2UpdateHeader;       // FB02 with V2 Header, not FB03
 
 typedef struct

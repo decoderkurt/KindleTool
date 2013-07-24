@@ -1091,8 +1091,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         // NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
-        // FIXME: Board or device?
-        header.data.recovery_h2_update.device = (uint32_t)info->devices[0];
+        header.data.recovery_h2_update.board = (uint32_t)info->board;
     }
     else
     {
