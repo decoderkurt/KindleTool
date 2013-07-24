@@ -238,6 +238,27 @@ BundleVersion get_bundle_version(char magic_number[4])
         return UnknownUpdate;
 }
 
+const char *convert_magic_number(char magic_number[4])
+{
+    if(!strncmp(magic_number, "FB02", 4))
+        return "(Fullbin [signed])";    // /mnt/us/update-full.bin
+    else if(!strncmp(magic_number, "FB03", 4))
+        return "(Fullbin [OTA, fwo])";  // /mnt/us/update-%lld-fwo.bin
+    else if(!strncmp(magic_number, "FB", 2))
+        return "(Fullbin)";
+    else if(!strncmp(magic_number, "FC", 2))
+        return "(OTA)";                 // /mnt/us/Update_%lld_%lld.bin
+    else if(!strncmp(magic_number, "FD", 2))
+        return "(Versionless, vls)";    // /mnt/us/Update_VLS_%lld.bin
+    else if(!strncmp(magic_number, "FL", 2))
+        return "(Language, lang)";      // /mnt/us/Update_LANG_%s.bin
+    else if(!strncmp(magic_number, "SP", 2))
+        return "(Signing Envelope)";
+    else
+        return "Unknown";
+}
+
+
 int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 {
     unsigned char bytes[BUFFER_SIZE];

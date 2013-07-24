@@ -47,7 +47,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
         fprintf(stderr, "Cannot read input file.\n");
         return -1;
     }
-    fprintf(stderr, "Bundle         %.*s\n", MAGIC_NUMBER_LENGTH, header.magic_number);
+    fprintf(stderr, "Bundle         %.*s %s\n", MAGIC_NUMBER_LENGTH, header.magic_number, convert_magic_number(header.magic_number));
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
     {

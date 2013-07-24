@@ -264,6 +264,7 @@ const char *convert_platform_id(Platform);
 const char *convert_board_id(Board);
 const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
+const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
 RSA *get_default_key(void);
 int kindle_print_help(const char *);
