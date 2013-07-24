@@ -83,6 +83,13 @@
 		-p, --platform yoshime-p    Yoshime (Prototype)
 		-p, --platform yoshime      Yoshime (Also known as Yoshime3, mostly devices shipped on FW >= 5.2)
 
+	Boards:
+		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.
+
+		-B, --board unspecified     Don't target a specific board, skip the device check
+		-B, --board tequila         Tequila (Kindle 4)
+		-B, --board whitney         Whitney (Kindle Touch)
+
 	Options:
 		All the following options are optional and advanced.
 		-k, --key <file>            PEM file containing RSA private key to sign update. Default is popular jailbreak key.

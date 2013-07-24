@@ -1,4 +1,4 @@
-.TH KINDLETOOL 1 04/23/13 Linux KindleTool
+.TH KINDLETOOL 1 07/24/13 Linux KindleTool
 .SH NAME
 KindleTool \- creates/extracts Kindle updates and more
 .SH SYNOPSIS
@@ -68,6 +68,16 @@ Use a single platform per package.
 .I platform
 is one of
 .BR mario ", " luigi ", " banjo ", " yoshi ", " yoshime-p " or " yoshime .
+.TP
+.BI \-B ", " \-\-board " board"
+Set the target board.
+.br
+.BR "Recovery FB02" " with " "header rev 2" " and " "Recovery V2" " only."
+Use a single board per package.
+.br
+.I board
+is one of
+.BR unspecified ", " tequila " or " whitney .
 .TP
 .BR \-k ", " \-\-key " file"
 PEM file containing RSA private key to sign update. Default is popular jailbreak key.
