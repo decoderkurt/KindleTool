@@ -164,9 +164,9 @@ typedef enum
 
 typedef enum
 {
-    Board_Unspecified = 0x00,         // Used on the PW
+    Board_Unspecified = 0x00,   // Used on the PW
     Tequila = 0x03,             // Kindle 4
-    Whitney = 0x05             // Kindle Touch
+    Whitney = 0x05              // Kindle Touch
 } Board;
 
 typedef struct
@@ -234,6 +234,7 @@ typedef struct
     uint16_t num_devices;
     Device *devices;
     Platform platform;
+    Board board;
     uint32_t header_rev;
     CertificateNumber certificate_number;
     unsigned char optional;

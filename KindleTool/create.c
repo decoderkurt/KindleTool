@@ -1091,6 +1091,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         // NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
+        // FIXME: Board or device?
         header.data.recovery_h2_update.device = (uint32_t)info->devices[0];
     }
     else
@@ -1207,7 +1208,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     hindex += sizeof(uint32_t);
     memcpy(&header[hindex], &info->header_rev, sizeof(uint32_t));       // Header rev
     hindex += sizeof(uint32_t);
-    memcpy(&header[hindex], &info->devices[0], sizeof(uint32_t));       // Device
+    memcpy(&header[hindex], &info->board, sizeof(uint32_t));            // Board
     hindex += sizeof(uint32_t);
 
     hindex += sizeof(uint32_t); // Padding
@@ -1260,7 +1261,7 @@ int kindle_create_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { "legacy", no_argument, NULL, 'C' }
     };
-    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
     FILE *output;
     BIO *bio;
@@ -1332,7 +1333,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:h:c:o:r:x:auC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -1521,6 +1522,19 @@ int kindle_create_main(int argc, char *argv[])
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);
+                    goto do_error;
+                }
+                break;
+            case 'B':
+                if(strcmp(optarg, "unspecified") == 0)
+                    info.board = Board_Unspecified;
+                else if(strcmp(optarg, "tequila") == 0)
+                    info.board = Tequila;
+                else if(strcmp(optarg, "whitney") == 0)
+                    info.board = Whitney;
+                else
+                {
+                    fprintf(stderr, "Unknown board %s.\n", optarg);
                     goto do_error;
                 }
                 break;
@@ -1829,7 +1843,7 @@ int kindle_create_main(int argc, char *argv[])
         case RecoveryUpdate:
             fprintf(stderr, " Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
-                fprintf(stderr, ", Header Rev: %llu, Platform: %s\n", (long long) info.header_rev, convert_platform_id(info.platform));
+                fprintf(stderr, ", Header Rev: %llu, Platform: %s, Board: %s\n", (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
             else
                 fprintf(stderr, "\n");
             break;
@@ -1838,7 +1852,7 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, " Target OTA: MAX");
             else
                 fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
-            fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform));
+            fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
             break;
         case UnknownUpdate:
         default:
