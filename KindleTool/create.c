@@ -1632,8 +1632,8 @@ int kindle_create_main(int argc, char *argv[])
     // Same thing with recovery updates
     if(info.version == RecoveryUpdate)
     {
-        // Don't blow up if we haven't set the device for FB02.2
-        if(((info.num_devices < 1 && info.header_rev == 2) || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
+        // It's called FB02.2 for a reason... Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
+        if((info.header_rev == 2 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
         {
             strncpy(info.magic_number, "FB02", 4);
         }
