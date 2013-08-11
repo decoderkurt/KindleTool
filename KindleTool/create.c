@@ -1091,7 +1091,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         // NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
-        header.data.recovery_h2_update.board = (uint32_t)info->board;
+        header.data.recovery_h2_update.board = (uint32_t)info->board;   // FIXME: Namely, this. Board or device?
     }
     else
     {
@@ -1632,7 +1632,8 @@ int kindle_create_main(int argc, char *argv[])
     // Same thing with recovery updates
     if(info.version == RecoveryUpdate)
     {
-        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
+        // Don't blow up if we haven't set the device for FB02.2
+        if(((info.num_devices < 1 && info.header_rev == 2) || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
         {
             strncpy(info.magic_number, "FB02", 4);
         }
@@ -1640,12 +1641,14 @@ int kindle_create_main(int argc, char *argv[])
     // Same thing with recovery updates v2
     if(info.version == RecoveryUpdateV2)
     {
-        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FB03", 4) != 0))
+        // Don't blow up if we haven't set the device, defaults to none
+        if((info.num_devices < 1 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB03", 4) != 0))
         {
+            // NOTE: This effectively prevents us from setting a custom magic number.
             strncpy(info.magic_number, "FB03", 4);
         }
     }
-    // We need a platform id & header rev for recovery2
+    // We need a platform id, board id (& header rev?) for recovery2
     if(info.version == RecoveryUpdateV2)
     {
         if(!info.platform)
@@ -1653,14 +1656,24 @@ int kindle_create_main(int argc, char *argv[])
             fprintf(stderr, "You need to set a platform for this update type\n");
             goto do_error;
         }
+        if(!info.board)
+        {
+            fprintf(stderr, "You need to set a board for this update type\n");
+            goto do_error;
+        }
         // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
     }
-    // We need a platform id for recovery FB02 V2
+    // We need a platform id & board id for recovery FB02 V2
     if(info.version == RecoveryUpdate)
     {
         if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
         {
             fprintf(stderr, "You need to set a platform for this update type\n");
+            goto do_error;
+        }
+        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.board)
+        {
+            fprintf(stderr, "You need to set a board for this update type\n");
             goto do_error;
         }
     }
