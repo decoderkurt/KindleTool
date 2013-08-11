@@ -64,7 +64,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
         EVP_PKEY_free(pkey);
         return -5;
     }
-    sig = malloc((unsigned int)EVP_PKEY_size(pkey));
+    sig = malloc((size_t)EVP_PKEY_size(pkey));
     if(!EVP_SignFinal(&ctx, sig, &siglen, pkey))
     {
         fprintf(stderr, "EVP_SignFinal: failed.\n");
