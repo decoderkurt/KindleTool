@@ -1641,7 +1641,7 @@ int kindle_create_main(int argc, char *argv[])
     // Same thing with recovery updates v2
     if(info.version == RecoveryUpdateV2)
     {
-        // Don't blow up if we haven't set the device, defaults to none
+        // Don't blow up if we haven't set the device, it defaults to none/null
         if((info.num_devices < 1 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB03", 4) != 0))
         {
             // NOTE: This effectively prevents us from setting a custom magic number.
@@ -1675,6 +1675,16 @@ int kindle_create_main(int argc, char *argv[])
         {
             fprintf(stderr, "You need to set a board for this update type\n");
             goto do_error;
+        }
+    }
+    // Right now, we don't use device at all for FB02.2, so reset it to none to have a consistent recap... FIXME?
+    if(info.version == RecoveryUpdate)
+    {
+        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && info.num_devices > 0)
+        {
+            info.num_devices = 0;
+            info.devices = realloc(info.devices, sizeof(Device));
+            info.devices[info.num_devices] = KindleUnknown;
         }
     }
 
