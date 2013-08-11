@@ -93,7 +93,7 @@
 	Options:
 		All the following options are optional and advanced.
 		-k, --key <file>            PEM file containing RSA private key to sign update. Default is popular jailbreak key.
-		-b, --bundle <type>         Manually specify package magic number. May override "type", if it makes sense. Valid bundle versions:
+		-b, --bundle <type>         Manually specify package magic number. May override the value dictated by "type", if it makes sense. Valid bundle versions:
                                       FB01, FB02 = recovery; FB03 = recovery2; FC02, FD03 = ota; FC04, FD04, FL01 = ota2
 		-s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.
                                       Lowest version of device that package supports. Default is 0.

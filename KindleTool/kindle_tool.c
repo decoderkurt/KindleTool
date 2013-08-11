@@ -413,7 +413,7 @@ int kindle_print_help(const char *prog_name)
         "    Options:\n"
         "      All the following options are optional and advanced.\n"
         "      -k, --key <file>            PEM file containing RSA private key to sign update. Default is popular jailbreak key.\n"
-        "      -b, --bundle <type>         Manually specify package magic number. May override \"type\", if it makes sense. Valid bundle versions:\n"
+        "      -b, --bundle <type>         Manually specify package magic number. May override the value dictated by \"type\", if it makes sense. Valid bundle versions:\n"
         "                                    FB01, FB02 = recovery; FB03 = recovery2; FC02, FD03 = ota; FC04, FD04, FL01 = ota2\n"
         "      -s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.\n"
         "                                    Lowest version of device that package supports. Default is 0.\n"
