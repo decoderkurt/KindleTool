@@ -147,7 +147,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     uint16_t num_metadata;
     size_t meta_strlen;
     uint16_t metastring_length;
-    unsigned char *metastring;
+    char *metastring;
     //unsigned char **metastrings;
     size_t read_size __attribute__((unused));
 
@@ -209,8 +209,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
         read_size = fread(&((uint8_t *)&meta_strlen)[0], sizeof(uint8_t), 1, input);
         metastring_length = (uint16_t)meta_strlen;
         metastring = malloc(metastring_length);
-        read_size = fread(metastring, sizeof(unsigned char), metastring_length, input);
-        dm(metastring, metastring_length);      // Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
+        read_size = fread(metastring, sizeof(char), metastring_length, input);
+        dm((unsigned char *)metastring, metastring_length);      // Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
         free(metastring);
     }
