@@ -147,7 +147,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     uint16_t num_metadata;
     size_t meta_strlen;
     uint16_t metastring_length;
-    char *metastring;
+    unsigned char *metastring;
     //unsigned char **metastrings;
     size_t read_size __attribute__((unused));
 
@@ -207,10 +207,10 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
         // Get correct meta string length because of the endianness swap...
         read_size = fread(&((uint8_t *)&meta_strlen)[1], sizeof(uint8_t), 1, input);
         read_size = fread(&((uint8_t *)&meta_strlen)[0], sizeof(uint8_t), 1, input);
-        metastring_length = meta_strlen;
+        metastring_length = (uint16_t)meta_strlen;
         metastring = malloc(metastring_length);
-        read_size = fread(metastring, sizeof(char), metastring_length, input);
-        dm((unsigned char *)metastring, metastring_length);      // Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
+        read_size = fread(metastring, sizeof(unsigned char), metastring_length, input);
+        dm(metastring, metastring_length);      // Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
         fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
         free(metastring);
     }
@@ -267,7 +267,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     fprintf(stderr, "Cert file      %s\n", cert_name);
     if(output == NULL)
     {
-        return fseek(input, seek, SEEK_CUR);
+        return fseeko(input, seek, SEEK_CUR);
     }
     else
     {

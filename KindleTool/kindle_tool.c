@@ -25,7 +25,7 @@ void md(unsigned char *bytes, size_t length)
     unsigned int i;
     for(i = 0; i < length; i++)
     {
-        bytes[i] = ((bytes[i] >> 4 | bytes[i] << 4) & 0xFF) ^ 0x7A;
+        bytes[i] = (unsigned char)((bytes[i] >> 4 | bytes[i] << 4) & 0xFF) ^ 0x7A;
     }
 }
 
@@ -35,7 +35,7 @@ void dm(unsigned char *bytes, size_t length)
     for(i = 0; i < length; i++)
     {
         bytes[i] = (bytes[i] ^ 0x7A);
-        bytes[i] = (bytes[i] >> 4 | bytes[i] << 4) & 0xFF;
+        bytes[i] = (unsigned char)(bytes[i] >> 4 | bytes[i] << 4) & 0xFF;
     }
 }
 
@@ -546,7 +546,6 @@ int kindle_info_main(int argc, char *argv[])
     char md5[MD5_HASH_LENGTH];
     FILE *temp;
     unsigned int i;
-    unsigned char snc_i;
     // Skip command
     argv++;
     argc--;
@@ -564,10 +563,9 @@ int kindle_info_main(int argc, char *argv[])
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
-        snc_i = serial_no[i];   // Ugly workaround to silence a Cywgin GCC warning
-        if(islower(snc_i))
+        if(islower(serial_no[i]))
         {
-            serial_no[i] = toupper(snc_i);
+            serial_no[i] = (char)toupper(serial_no[i]);
         }
     }
     // Find root password

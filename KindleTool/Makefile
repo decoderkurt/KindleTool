@@ -120,7 +120,7 @@ KT_CFLAGS+=-Wextra -Wunused
 KT_CFLAGS+=-Wshadow
 KT_CFLAGS+=-Wmissing-prototypes
 KT_CFLAGS+=-Wcast-qual
-#KT_CFLAGS+=-Wconversion
+KT_CFLAGS+=-Wconversion
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...

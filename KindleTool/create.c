@@ -64,7 +64,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
         EVP_PKEY_free(pkey);
         return -5;
     }
-    sig = malloc(EVP_PKEY_size(pkey));
+    sig = malloc((unsigned int)EVP_PKEY_size(pkey));
     if(!EVP_SignFinal(&ctx, sig, &siglen, pkey))
     {
         fprintf(stderr, "EVP_SignFinal: failed.\n");
@@ -549,7 +549,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
         {
             fclose(bundlefile);
             // It's closed, remove our flag
-            bundlefile_status &= ~BUNDLE_OPEN;
+            bundlefile_status &= (uint8_t)~BUNDLE_OPEN;
         }
 
         // Dirty hack, the return. We loop twice on the bundlefile, once to sign it, and once to archive it...
