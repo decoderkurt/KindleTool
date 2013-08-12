@@ -1337,8 +1337,9 @@ int kindle_create_main(int argc, char *argv[])
         switch(opt)
         {
             case 'd':
-                // TODO: Don't prealloc for aliases
-                info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
+                // The aliases handle their memory allocation on their own, in one shot.
+                if(strcmp(optarg, "kindle4") != 0 && strcmp(optarg, "kindle5") != 0 && strcmp(optarg, "touch") != 0 && strcmp(optarg, "paperwhite") != 0 && strcmp(optarg, "unknown") != 0 && strcmp(optarg, "datamined") != 0)
+                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
                 if(strcmp(optarg, "k1") == 0)
                     info.devices[info.num_devices - 1] = Kindle1;
                 else if(strcmp(optarg, "k2") == 0)
@@ -1371,9 +1372,10 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "kindle4") == 0)
                 {
                     strncpy(info.magic_number, "FC04", 4);
-                    info.devices[info.num_devices - 1] = Kindle4NonTouch;
-                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
-                    info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
+                    unsigned int num_aliased_devices = 2;
+                    info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    info.devices[info.num_devices++] = Kindle4NonTouch;
+                    info.devices[info.num_devices++] = Kindle4NonTouchBlack;
                 }
                 // NOTE: Magic number switch to 'versionless' update types here...
                 else if(strcmp(optarg, "k5w") == 0)
@@ -1430,43 +1432,47 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    info.devices[info.num_devices - 1] = Kindle5TouchWifi;
-
-                    info.devices = realloc(info.devices, (uint16_t)(info.num_devices + 8) * sizeof(Device));    // NOTE: Don't forget to increment the magic number...
+                    unsigned int num_aliased_devices = 9;
+#ifdef KT_UNKNOWN_DEVID
+                    num_aliased_devices++;
+#endif
+                    info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    info.devices[info.num_devices++] = Kindle5TouchWifi;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3G;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3GEurope;
+#ifdef KT_UNKNOWN_DEVID
+                    info.devices[info.num_devices++] = Kindle5TouchUnknown;
+#endif
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3G;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GCanada;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GJapan;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GBrazil;
-#ifdef KT_UNKNOWN_DEVID
-                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
-                    info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
-#endif
                 }
                 // Glue all the Touch models in a touch alias
                 else if(strcmp(optarg, "touch") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    info.devices[info.num_devices - 1] = Kindle5TouchWifi;
-
-                    info.devices = realloc(info.devices, (uint16_t)(info.num_devices + 2) * sizeof(Device));
+                    unsigned int num_aliased_devices = 3;
+#ifdef KT_UNKNOWN_DEVID
+                    num_aliased_devices++;
+#endif
+                    info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    info.devices[info.num_devices++] = Kindle5TouchWifi;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3G;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3GEurope;
 #ifdef KT_UNKNOWN_DEVID
-                    info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
-                    info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
+                    info.devices[info.num_devices++] = Kindle5TouchUnknown;
 #endif
                 }
                 // Glue all the PaperWhite models in a paperwhite alias
                 else if(strcmp(optarg, "paperwhite") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    info.devices[info.num_devices - 1] = KindlePaperWhiteWifi;
-
-                    info.devices = realloc(info.devices, (uint16_t)(info.num_devices + 5) * sizeof(Device));
+                    unsigned int num_aliased_devices = 6;
+                    info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    info.devices[info.num_devices++] = KindlePaperWhiteWifi;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3G;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GCanada;
                     info.devices[info.num_devices++] = KindlePaperWhiteWifi3GEurope;
@@ -1477,9 +1483,9 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);      // Meh?
-                    info.devices[info.num_devices - 1] = ValidKindleUnknown_0x13;
-
-                    info.devices = realloc(info.devices, (uint16_t)(info.num_devices + 2) * sizeof(Device));
+                    unsigned int num_aliased_devices = 3;
+                    info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x13;
                     info.devices[info.num_devices++] = ValidKindleUnknown_0x16;
                     info.devices[info.num_devices++] = ValidKindleUnknown_0x21;
                 }
