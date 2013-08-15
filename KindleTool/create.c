@@ -975,11 +975,14 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
         header_size += str_len + sizeof(uint16_t);
         header = realloc(header, header_size);
         // String length: little endian -> big endian
+        // FIXME: While otaup expects this endianness switch, it would seem that otacheck doesn't, and chokes with an headerTooShortInMetadataField error as soon as we pass more than one metastring...
+        //        If we don't switch the endianness, otacheck passes, but otaup chokes... >_<"
         memcpy(&header[hindex], &((uint8_t *)&str_len)[1], sizeof(uint8_t));
         hindex += sizeof(uint8_t);
         memcpy(&header[hindex], &((uint8_t *)&str_len)[0], sizeof(uint8_t));
         hindex += sizeof(uint8_t);
-        md((unsigned char *)info->metastrings[i], str_len); // Obfuscate meta string (FIXME: Should this really be munged? I don't have any reference, I've never seen an update with meta strings in the wild...)
+        md((unsigned char *)info->metastrings[i], str_len); // Obfuscate meta string
+        // FIXME: Should this really be munged? Following otaup would point to yes, but I've never seen an update with meta strings in the wild, and the aforementionned issue with the string length doesn't help...
         strncpy((char *)&header[hindex], info->metastrings[i], str_len);
         hindex += str_len;
     }
