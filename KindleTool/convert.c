@@ -135,7 +135,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
 int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign)
 {
     unsigned char *data;
-    unsigned int hindex;
+    uint64_t hindex;
     uint64_t source_revision;
     uint64_t target_revision;
     uint16_t num_devices;
@@ -351,7 +351,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
 int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign)
 {
     unsigned char *data;
-    unsigned int hindex;
+    uint64_t hindex;
     uint64_t target_revision;
     char *pkg_md5_sum;
     uint32_t magic_1;

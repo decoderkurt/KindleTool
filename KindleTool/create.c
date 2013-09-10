@@ -892,9 +892,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
 
 int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
-    unsigned int header_size;
+    size_t header_size;
     unsigned char *header;
-    unsigned int hindex;
+    uint64_t hindex;
     int i;
     FILE *demunged_tgz;
     size_t str_len;
@@ -1143,9 +1143,9 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 
 int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
-    unsigned int header_size;
+    size_t header_size;
     unsigned char *header;
-    unsigned int hindex;
+    uint64_t hindex;
     int i;
     FILE *demunged_tgz;
     unsigned char recovery_num_devices;
