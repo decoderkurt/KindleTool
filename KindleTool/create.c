@@ -894,7 +894,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
 {
     size_t header_size;
     unsigned char *header;
-    uint64_t hindex;
+    size_t hindex;
     int i;
     FILE *demunged_tgz;
     size_t str_len;
@@ -1145,7 +1145,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
 {
     size_t header_size;
     unsigned char *header;
-    uint64_t hindex;
+    size_t hindex;
     int i;
     FILE *demunged_tgz;
     unsigned char recovery_num_devices;
