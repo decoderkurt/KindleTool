@@ -563,9 +563,9 @@ int kindle_info_main(int argc, char *argv[])
     }
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
-        if(islower(serial_no[i]))
+        if(islower((int)serial_no[i]))
         {
-            serial_no[i] = (char)toupper(serial_no[i]);
+            serial_no[i] = (char)toupper((int)serial_no[i]);
         }
     }
     // Find root password
