@@ -267,7 +267,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     fprintf(stderr, "Cert file      %s\n", cert_name);
     if(output == NULL)
     {
-        return fseeko(input, seek, SEEK_CUR);
+        return fseeko(input, (off_t)seek, SEEK_CUR);
     }
     else
     {
