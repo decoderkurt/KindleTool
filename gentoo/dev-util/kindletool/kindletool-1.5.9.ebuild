@@ -24,7 +24,7 @@ DEPEND="${RDEPEND}
 
 DOCS=( "README.md" )
 
-RESTRICT="nomirror"
+RESTRICT="mirror"
 
 src_compile() {
 	if use debug; then
