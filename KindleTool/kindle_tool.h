@@ -137,12 +137,13 @@ typedef enum
     Kindle5TouchWifi3GEurope = 0x10,
     Kindle5TouchUnknown = 0x12,
     Kindle4NonTouchBlack = 0x23,        // Kindle 4 with a black bezel, released fall 2012
-    KindlePaperWhiteWifi = 0x24,        // Kindle Paperwhite (black bezel), released fall 2012 on FW 5.2.0
+    KindlePaperWhiteWifi = 0x24,        // Kindle PaperWhite (black bezel), released fall 2012 on FW 5.2.0
     KindlePaperWhiteWifi3G = 0x1B,
     KindlePaperWhiteWifi3GCanada = 0x1C,
     KindlePaperWhiteWifi3GEurope = 0x1D,
     KindlePaperWhiteWifi3GJapan = 0x1F,
     KindlePaperWhiteWifi3GBrazil = 0x20,
+    KindlePaperWhite2Wifi = 0xD4,       // Kindle PaperWhite (black bezel), released fall 2013 on FW 5.4.0
 #ifdef KT_UNKNOWN_DEVID
     ValidKindleUnknown_0x13 = 0x13,
     ValidKindleUnknown_0x16 = 0x16,

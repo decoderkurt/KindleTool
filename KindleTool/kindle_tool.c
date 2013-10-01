@@ -150,6 +150,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite Wifi+3G Japan";
         case KindlePaperWhiteWifi3GBrazil:
             return "Kindle PaperWhite Wifi+3G Brazil";
+        case KindlePaperWhite2Wifi:
+            return "Kindle PaperWhite 2 (2013) Wifi";
 #ifdef KT_UNKNOWN_DEVID
         case ValidKindleUnknown_0x13:
             return "Unknown Kindle (B013)";
@@ -388,9 +390,11 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device pwgb           Kindle PaperWhite Wifi+3G Europe\n"
         "      -d, --device pwgj           Kindle PaperWhite Wifi+3G Japan\n"
         "      -d, --device pwgbr          Kindle PaperWhite Wifi+3G Brazil\n"
-        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
+        "      -d, --device pw2            Kindle PaperWhite 2 (2013) Wifi\n"
+        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr & pw2\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
+        "      -d, --device paperwhite2    Alias for pw2\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default)\n"
         "      \n"
         "    Platforms:\n"
