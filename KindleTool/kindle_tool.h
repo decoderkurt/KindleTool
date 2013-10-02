@@ -171,6 +171,7 @@ typedef enum
     Whitney = 0x05              // Kindle Touch
     /*
     Celeste = 0xFF,             // PW
+    Icewine = 0xEE,             // Dev/Proto?
     Pinot = 0xFF                // PW2
     */
 } Board;
