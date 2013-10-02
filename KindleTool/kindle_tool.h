@@ -161,6 +161,9 @@ typedef enum
     Yoshi = 0x04,
     YoshimeProto = 0x05,
     Yoshime = 0x06
+    /*
+    Wario = 0xFF
+    */
 } Platform;
 
 typedef enum
@@ -168,6 +171,10 @@ typedef enum
     Board_Unspecified = 0x00,   // Used on the PW
     Tequila = 0x03,             // Kindle 4
     Whitney = 0x05              // Kindle Touch
+    /*
+    Celeste = 0xFF,             // PW
+    Pinot = 0xFF                // PW2
+    */
 } Board;
 
 typedef struct
