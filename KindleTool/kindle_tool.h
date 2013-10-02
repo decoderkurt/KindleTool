@@ -160,10 +160,8 @@ typedef enum
     Banjo = 0x03,
     Yoshi = 0x04,
     YoshimeProto = 0x05,
-    Yoshime = 0x06
-    /*
-    Wario = 0xFF
-    */
+    Yoshime = 0x06,
+    Wario = 0x07
 } Platform;
 
 typedef enum

@@ -1529,6 +1529,8 @@ int kindle_create_main(int argc, char *argv[])
                     info.platform = YoshimeProto;
                 else if(strcmp(optarg, "yoshime") == 0)
                     info.platform = Yoshime;
+                else if(strcmp(optarg, "wario") == 0)
+                    info.platform = Wario;
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);
