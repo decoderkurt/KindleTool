@@ -551,6 +551,8 @@ int kindle_info_main(int argc, char *argv[])
 {
     char *serial_no;
     char md5[MD5_HASH_LENGTH];
+    char device_code[2];
+    Device device;
     FILE *temp;
     unsigned int i;
     // Skip command
@@ -591,7 +593,14 @@ int kindle_info_main(int argc, char *argv[])
     }
     // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
     // the recovery MMC export option expects a 9 chars password, so, provide both...
-    fprintf(stderr, "Root PW        %s%.*s        (or possibly %s%.*s)\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
+
+    // Handle the PW2 passwords while we're at it... Thanks to npoland for this one ;).
+    snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
+    device = strtol(device_code, NULL, 16);
+    if (device == KindlePaperWhite2Wifi)
+        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
+    else
+        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
     fclose(temp);
     return 0;
 }
