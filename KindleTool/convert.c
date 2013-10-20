@@ -329,7 +329,12 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     if(header->data.recovery_h2_update.header_rev == 2)
     {
         fprintf(stderr, "Header Rev     %d\n", header->data.recovery_h2_update.header_rev);
-        fprintf(stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
+        // Slightly ugly way to detect unknown platforms...
+        if(strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0)
+            fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
+        else
+            fprintf(stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
+        // Same shtick for unknown boards...
         if(strcmp(convert_board_id(header->data.recovery_h2_update.board), "Unknown") == 0)
             fprintf(stderr, "Board          Unknown (0x%02X)\n", header->data.recovery_h2_update.board);
         else
