@@ -557,13 +557,24 @@ int kindle_convert_main(int argc, char *argv[])
                     continue;   // It's fatal, go away
                 }
             }
-            if(extract_sig) // We want the package sig (implies not info only)
+            if(extract_sig) // We want the payload sig (implies not info only)
             {
                 len = strlen(in_name);
-                sig_name = malloc(len + 1);
-                memcpy(sig_name, in_name, len - 4);
-                sig_name[len - 4] = 0;  // . => \0
-                strncat(sig_name, ".sig", 4);
+                /* Hackishly handle data.stgz... */
+                if(IS_STGZ(in_name))
+                {
+                    sig_name = malloc(len + 1);
+                    memcpy(sig_name, in_name, len - 5);
+                    sig_name[len - 5] = 0;  // . => \0
+                    strncat(sig_name, ".psig", 5);
+                }
+                else
+                {
+                    sig_name = malloc(len + 2);
+                    memcpy(sig_name, in_name, len - 4);
+                    sig_name[len - 4] = 0;  // . => \0
+                    strncat(sig_name, ".psig", 5);
+                }
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);

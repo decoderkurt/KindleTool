@@ -19,7 +19,7 @@
 	Options:
 		-c, --stdout                Write to standard output, keeping original files unchanged
 		-i, --info                  Just print the package information, no conversion done
-		-s, --sig                   OTA V2 updates only. Extract the package signature.
+		-s, --sig                   OTA V2 updates only. Extract the payload signature.
 		-k, --keep                  Don't delete the input package.
 		-u, --unsigned              Assume input is an unsigned package
 		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header

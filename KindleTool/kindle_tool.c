@@ -345,7 +345,7 @@ int kindle_print_help(const char *prog_name)
         "    Options:\n"
         "      -c, --stdout                Write to standard output, keeping original files unchanged\n"
         "      -i, --info                  Just print the package information, no conversion done\n"
-        "      -s, --sig                   OTA V2 updates only. Extract the package signature.\n"
+        "      -s, --sig                   OTA V2 updates only. Extract the payload signature.\n"
         "      -k, --keep                  Don't delete the input package.\n"
         "      -u, --unsigned              Assume input is an unsigned package.\n"
         "      -w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header\n"
