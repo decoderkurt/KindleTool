@@ -577,10 +577,21 @@ int kindle_convert_main(int argc, char *argv[])
             if(unwrap_only)     // We want an unwrapped package (implies not info only)
             {
                 len = strlen(in_name);
-                unwrapped_name = malloc(len + 10 + 1);
-                memcpy(unwrapped_name, in_name, len - 4);
-                unwrapped_name[len - 4] = 0;  // . => \0
-                strncat(unwrapped_name, "_unwrapped.bin", 14);
+                /* Hackishly handle data.stgz... */
+                if(IS_STGZ(in_name))
+                {
+                    unwrapped_name = malloc(len + 9 + 1);
+                    memcpy(unwrapped_name, in_name, len - 5);
+                    unwrapped_name[len - 5] = 0;  // . => \0
+                    strncat(unwrapped_name, "_unwrapped.tgz", 14);
+                }
+                else
+                {
+                    unwrapped_name = malloc(len + 10 + 1);
+                    memcpy(unwrapped_name, in_name, len - 4);
+                    unwrapped_name[len - 4] = 0;  // . => \0
+                    strncat(unwrapped_name, "_unwrapped.bin", 14);
+                }
                 if((unwrap_output = fopen(unwrapped_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
