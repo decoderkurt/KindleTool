@@ -536,7 +536,7 @@ int kindle_convert_main(int argc, char *argv[])
             fail = 0;
             in_name = argv[optind++];
             // Check that a valid package input properly ends in .bin, unless we just want to parse the header
-            if(!fake_sign && !info_only && !IS_BIN(in_name))
+            if(!unwrap_only && !fake_sign && !info_only && !IS_BIN(in_name))
             {
                 fprintf(stderr, "The input file must be a '.bin' update package.\n");
                 fail = 1;
