@@ -34,20 +34,20 @@ will be treated as update scripts.
 .RB < ota | ota2 | recovery | recovery2 | sig >
 Set the update type.
 .br
-.B OTA V1
-update package. Works on Kindle 3 and older.
+.B OTA V1.
+OTA update package. Works on Kindle 3 and older.
 .br
-.B OTA V2
-signed update package. Works on Kindle 4 and newer.
+.B OTA V2.
+Signed OTA V2 update package. Works on Kindle 4 and newer.
 .br
-.B Recovery
-package for restoring partitions.
+.B Recovery.
+Recovery package for restoring partitions.
 .br
-.B Recovery V2
+.B Recovery V2.
 Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer.
 .br
 .B Signature envelope.
-Use this to build a signed userdata package with the -U switch (FW >= 5.1 only).
+Use this to build a signed userdata package with the -U switch (FW >= 5.1 only, but device agnostic).
 .TP
 .BI \-d ", " \-\-device " device"
 Set the target device(s).
