@@ -1906,7 +1906,7 @@ int kindle_create_main(int argc, char *argv[])
     // Again, a signed userdata package is the ugly duckling...
     if(userdata_only)
     {
-        fprintf(stderr, "Building signed userdata package %s directly from %s\n", output_filename, tarball_filename);
+        fprintf(stderr, "Building userdata package %s directly from %s (signed with cert %d)\n", output_filename, tarball_filename, info.certificate_number);
     }
     else
     {
@@ -1933,9 +1933,9 @@ int kindle_create_main(int argc, char *argv[])
         {
             case OTAUpdateV2:
                 if(info.target_revision == UINT64_MAX)
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : "\n"));
                 else
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : "\n"));
                 // Loop over meta
                 for(i = 0; i < info.num_meta; i++)
                 {
@@ -1964,7 +1964,7 @@ int kindle_create_main(int argc, char *argv[])
                     fprintf(stderr, " Target OTA: MAX");
                 else
                     fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
-                fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
+                fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Cert: %d, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, info.certificate_number, convert_platform_id(info.platform), convert_board_id(info.board));
                 break;
             case UnknownUpdate:
             default:
