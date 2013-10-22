@@ -368,7 +368,7 @@ int kindle_print_help(const char *prog_name)
         "      ota2                        OTA V2 signed update package. Works on Kindle 4 and newer.\n"
         "      recovery                    Recovery package for restoring partitions.\n"
         "      recovery2                   Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer.\n"
-        "      sig                         Signed userdata package. FW >= 5.1 only. Use with the -U switch.\n"
+        "      sig                         Signature envelope. Use this to build a signed userdata package with the -U switch (FW >= 5.1 only).\n"
         "    \n"
         "    Devices:\n"
         "      OTA V1 & Recovery packages only support one device. OTA V2 & Recovery V2 packages can support multiple devices.\n"

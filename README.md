@@ -42,7 +42,7 @@
 		ota2                        OTA V2 signed update package. Works on Kindle 4 and newer.
 		recovery                    Recovery package for restoring partitions.
 		recovery2                   Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer
-		sig                         Signed userdata package. FW >= 5.1 only. Use with the -U switch.
+		sig                         Signature envelope. Use this to build a signed userdata package with the -U switch (FW >= 5.1 only).
 
 	Devices:
 		OTA V1 & Recovery packages only support one device. OTA V2 & Recovery V2 packages can support multiple devices.
