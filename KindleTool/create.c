@@ -1670,14 +1670,21 @@ int kindle_create_main(int argc, char *argv[])
     // Signed userdata packages are very peculiar, handle them on their own...
     if(userdata_only)
     {
-        // We had to specifiy it earlier, so this is mostly to mirror what was done when we chose the 'sig' update type.
-        info.version = UpdateSignature;
-        // For reference only, since we only support converting an existing tarball, we don't really care about that...
-        //strncpy(info.magic_number, "SP01", 4);
-        //real_blocksize = BLOCK_SIZE;
+        // Needs to be a signed package
+        if(info.version != UpdateSignature)
+        {
+            fprintf(stderr, "Invalid update type (%s) for an userdata package.\n", convert_bundle_version(info.version));
+            goto do_error;
+        }
     }
     else
     {
+        // Musn't be *only* a sig envelope...
+        if(info.version == UpdateSignature)
+        {
+            fprintf(stderr, "Invalid update type (%s) for an update package.\n", convert_bundle_version(info.version));
+            goto do_error;
+        }
         // Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
         if((info.num_devices < 1 && (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
         {
