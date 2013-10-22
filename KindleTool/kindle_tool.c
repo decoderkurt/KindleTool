@@ -152,6 +152,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite Wifi+3G Brazil";
         case KindlePaperWhite2Wifi:
             return "Kindle PaperWhite 2 (2013) Wifi";
+        case KindlePaperWhite2WifiJapan:
+            return "Kindle PaperWhite 2 (2013) Wifi Japan";
 #ifdef KT_UNKNOWN_DEVID
         case ValidKindleUnknown_0x13:
             return "Unknown Kindle (B013)";
@@ -393,10 +395,11 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device pwgj           Kindle PaperWhite Wifi+3G Japan\n"
         "      -d, --device pwgbr          Kindle PaperWhite Wifi+3G Brazil\n"
         "      -d, --device pw2            Kindle PaperWhite 2 (2013) Wifi\n"
-        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr & pw2\n"
+        "      -d, --device pw2j           Kindle PaperWhite 2 (2013) Wifi Japan\n"
+        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2 & pw2j\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
-        "      -d, --device paperwhite2    Alias for pw2\n"
+        "      -d, --device paperwhite2    Alias for pw2 & pw2j\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default)\n"
         "      \n"
         "    Platforms:\n"
@@ -597,7 +600,7 @@ int kindle_info_main(int argc, char *argv[])
     // Handle the PW2 passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = strtol(device_code, NULL, 16);
-    if (device == KindlePaperWhite2Wifi)
+    if (device == KindlePaperWhite2Wifi || device == KindlePaperWhite2WifiJapan)
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
     else
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
