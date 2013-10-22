@@ -882,6 +882,31 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             fclose(temp);
             return 0;
             break;
+        case UpdateSignature:
+            // NOTE: Should only be reached when building a signed userdata package
+            // We only need to sign the input tarball...
+            if(kindle_create_signature(info, input_tgz, output) < 0)
+            {
+                fprintf(stderr, "Error signing userdata package.\n");
+                return -1;
+            }
+            rewind(input_tgz);
+            // ...And then simply append the input tarball as-is
+            while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input_tgz)) > 0)
+            {
+                if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
+                {
+                    fprintf(stderr, "Error appending userdata tarball to output.\n");
+                    return -1;
+                }
+            }
+            if(ferror(input_tgz) != 0)
+            {
+                fprintf(stderr, "Error reading original userdata tarball update.\n");
+                return -1;
+            }
+            return 0;
+            break;
         case UnknownUpdate:
         default:
             fprintf(stderr, "Unknown update type.\n");
@@ -1094,7 +1119,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
         // NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
         header.data.recovery_h2_update.platform = (uint32_t)info->platform;
         header.data.recovery_h2_update.header_rev = (uint32_t)info->header_rev;
-        header.data.recovery_h2_update.board = (uint32_t)info->board;   // FIXME: Namely, this. Board or device?
+        header.data.recovery_h2_update.board = (uint32_t)info->board;
     }
     else
     {
@@ -1261,6 +1286,7 @@ int kindle_create_main(int argc, char *argv[])
         { "meta", required_argument, NULL, 'x' },
         { "archive", no_argument, NULL, 'a' },
         { "unsigned", no_argument, NULL, 'u' },
+        { "userdata", no_argument, NULL, 'U' },
         { "legacy", no_argument, NULL, 'C' }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
@@ -1278,6 +1304,7 @@ int kindle_create_main(int argc, char *argv[])
     unsigned int keep_archive;
     unsigned int skip_archive;
     unsigned int fake_sign;
+    unsigned int userdata_only;
     unsigned int legacy;
     unsigned int real_blocksize;
     struct archive_entry *entry;
@@ -1290,6 +1317,7 @@ int kindle_create_main(int argc, char *argv[])
     keep_archive = 0;
     skip_archive = 0;
     fake_sign = 0;
+    userdata_only = 0;
     legacy = 0;
 
     // Skip command
@@ -1328,6 +1356,13 @@ int kindle_create_main(int argc, char *argv[])
         info.target_revision = UINT32_MAX;
         real_blocksize = RECOVERY_BLOCK_SIZE;
     }
+    else if(strncmp(argv[0], "sig", 3) == 0)
+    {
+        info.version = UpdateSignature;
+        // For reference only, since we only support converting an existing tarball, we don't really care about that...
+        //strncpy(info.magic_number, "SP01", 4);
+        //real_blocksize = BLOCK_SIZE;
+    }
     else
     {
         fprintf(stderr, "Invalid update type.\n");
@@ -1335,7 +1370,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:aUdC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -1620,6 +1655,9 @@ int kindle_create_main(int argc, char *argv[])
             case 'u':
                 fake_sign = 1;
                 break;
+            case 'U':
+                userdata_only = 1;
+                break;
             case 'C':
                 legacy = 1;
                 break;
@@ -1628,82 +1666,95 @@ int kindle_create_main(int argc, char *argv[])
                 break;
         }
     }
-    // Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
-    if((info.num_devices < 1 && (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
+
+    // Signed userdata packages are very peculiar, handle them on their own...
+    if(userdata_only)
     {
-        fprintf(stderr, "Invalid number of supported devices (%d) for this update type (%s).\n", info.num_devices, convert_bundle_version(info.version));
-        goto do_error;
+        // We had to specifiy it earlier, so this is mostly to mirror what was done when we chose the 'sig' update type.
+        info.version = UpdateSignature;
+        // For reference only, since we only support converting an existing tarball, we don't really care about that...
+        //strncpy(info.magic_number, "SP01", 4);
+        //real_blocksize = BLOCK_SIZE;
     }
-    if((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
+    else
     {
-        fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
-        goto do_error;
-    }
-    // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
-    if(info.version == OTAUpdate)
-    {
-        // OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
-        if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FC02", 4) != 0 && strncmp(info.magic_number, "FD03", 4) != 0))
+        // Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
+        if((info.num_devices < 1 && (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) || ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1))
         {
-            // FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5, so fix it silently.
-            strncpy(info.magic_number, "FC02", 4);
-        }
-    }
-    // Same thing with recovery updates
-    if(info.version == RecoveryUpdate)
-    {
-        // It's called FB02.2 for a reason... Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
-        if((info.header_rev == 2 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
-        {
-            strncpy(info.magic_number, "FB02", 4);
-        }
-    }
-    // Same thing with recovery updates v2
-    if(info.version == RecoveryUpdateV2)
-    {
-        // Don't blow up if we haven't set the device, it defaults to none/null
-        if((info.num_devices < 1 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB03", 4) != 0))
-        {
-            // NOTE: This effectively prevents us from setting a custom magic number.
-            strncpy(info.magic_number, "FB03", 4);
-        }
-    }
-    // We need a platform id, board id (& header rev?) for recovery2
-    if(info.version == RecoveryUpdateV2)
-    {
-        if(!info.platform)
-        {
-            fprintf(stderr, "You need to set a platform for this update type\n");
+            fprintf(stderr, "Invalid number of supported devices (%d) for this update type (%s).\n", info.num_devices, convert_bundle_version(info.version));
             goto do_error;
         }
-        if(!info.board)
+        if((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
         {
-            fprintf(stderr, "You need to set a board for this update type\n");
+            fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
             goto do_error;
         }
-        // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
-    }
-    // We need a platform id & board id for recovery FB02 V2
-    if(info.version == RecoveryUpdate)
-    {
-        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
+        // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
+        if(info.version == OTAUpdate)
         {
-            fprintf(stderr, "You need to set a platform for this update type\n");
-            goto do_error;
+            // OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
+            if(info.devices[0] > Kindle3Wifi3GEurope && (strncmp(info.magic_number, "FC02", 4) != 0 && strncmp(info.magic_number, "FD03", 4) != 0))
+            {
+                // FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5, so fix it silently.
+                strncpy(info.magic_number, "FC02", 4);
+            }
         }
-        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.board)
+        // Same thing with recovery updates
+        if(info.version == RecoveryUpdate)
         {
-            fprintf(stderr, "You need to set a board for this update type\n");
-            goto do_error;
+            // It's called FB02.2 for a reason... Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
+            if((info.header_rev == 2 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB01", 4) != 0 && strncmp(info.magic_number, "FB02", 4) != 0))
+            {
+                strncpy(info.magic_number, "FB02", 4);
+            }
         }
-    }
-    // Right now, we don't use device at all for FB02.2, so reset it to none to have a consistent recap... FIXME?
-    if(info.version == RecoveryUpdate)
-    {
-        if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && info.num_devices > 0)
+        // Same thing with recovery updates v2
+        if(info.version == RecoveryUpdateV2)
         {
-            info.num_devices = 0;
-            info.devices[info.num_devices] = KindleUnknown;
+            // Don't blow up if we haven't set the device, it defaults to none/null
+            if((info.num_devices < 1 || info.devices[0] > Kindle3Wifi3GEurope) && (strncmp(info.magic_number, "FB03", 4) != 0))
+            {
+                // NOTE: This effectively prevents us from setting a custom magic number.
+                strncpy(info.magic_number, "FB03", 4);
+            }
+        }
+        // We need a platform id, board id (& header rev?) for recovery2
+        if(info.version == RecoveryUpdateV2)
+        {
+            if(!info.platform)
+            {
+                fprintf(stderr, "You need to set a platform for this update type\n");
+                goto do_error;
+            }
+            if(!info.board)
+            {
+                fprintf(stderr, "You need to set a board for this update type\n");
+                goto do_error;
+            }
+            // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
+        }
+        // We need a platform id & board id for recovery FB02 V2
+        if(info.version == RecoveryUpdate)
+        {
+            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
+            {
+                fprintf(stderr, "You need to set a platform for this update type\n");
+                goto do_error;
+            }
+            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.board)
+            {
+                fprintf(stderr, "You need to set a board for this update type\n");
+                goto do_error;
+            }
+        }
+        // Right now, we don't use device at all for FB02.2, so reset it to none to have a consistent recap... FIXME?
+        if(info.version == RecoveryUpdate)
+        {
+            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && info.num_devices > 0)
+            {
+                info.num_devices = 0;
+                info.devices[info.num_devices] = KindleUnknown;
+            }
         }
     }
 
@@ -1746,12 +1797,17 @@ int kindle_create_main(int argc, char *argv[])
     // While we're at it, check that our output name follows the proper naming scheme when creating a valid update package
     if(output_filename != NULL)
     {
-        if(!fake_sign)
-        {
-            // Use libarchive's pattern matching, because it handles ./ in a smart way
-            match = archive_match_new();
-            entry = archive_entry_new();
+        // Use libarchive's pattern matching, because it handles ./ in a smart way
+        match = archive_match_new();
+        entry = archive_entry_new();
 
+        // Handle signed & fake userdata packages...
+        if(fake_sign || userdata_only)
+        {
+            valid_update_file_pattern = strdup("./data\\.stgz$");
+        }
+        else
+        {
             // Recovery updates must be lowercase!
             if(info.version == RecoveryUpdate || info.version == RecoveryUpdateV2)
             {
@@ -1761,29 +1817,30 @@ int kindle_create_main(int argc, char *argv[])
             {
                 valid_update_file_pattern = strdup("./[Uu]pdate*\\.bin$");
             }
-            if(archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
-                fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
-            free(valid_update_file_pattern);
+        }
+        if(archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
+        free(valid_update_file_pattern);
 
-            archive_entry_copy_pathname(entry, output_filename);
+        archive_entry_copy_pathname(entry, output_filename);
 
-            r = archive_match_path_excluded(match, entry);
-            if(r != 1)
+        r = archive_match_path_excluded(match, entry);
+        if(r != 1)
+        {
+            if(r < 0)
             {
-                if(r < 0)
-                {
-                    fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(match));
-                }
-                fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (update*.bin) in order to be picked up by the Kindle.\n", output_filename);
-                archive_entry_free(entry);
-                archive_match_free(match);
-                goto do_error;
+                fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(match));
             }
-
-            // Cleanup
+            fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (%s) in order to be picked up by the Kindle.\n", output_filename, (fake_sign || userdata_only) ? "data.stgz" : "update*.bin");
             archive_entry_free(entry);
             archive_match_free(match);
+            goto do_error;
         }
+
+        // Cleanup
+        archive_entry_free(entry);
+        archive_match_free(match);
+
         // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
         if((output = fopen(output_filename, "wb")) == NULL)
         {
@@ -1816,6 +1873,13 @@ int kindle_create_main(int argc, char *argv[])
         goto do_error;
     }
 
+    // Same thing when building a signed userdata package
+    if(userdata_only && !skip_archive)
+    {
+        fprintf(stderr, "You need to feed me a single tarball to build a signed userdata package.\n");
+        goto do_error;
+    }
+
     // If we need to build a tarball, do it in a tempfile
     if(!skip_archive)
     {
@@ -1839,66 +1903,74 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Recap (to stderr, in order not to mess stuff up if we output to stdout) what we're building
-    fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""));
-    // If we have specific device IDs, list them
-    if(info.num_devices > 0)
+    // Again, a signed userdata package is the ugly duckling...
+    if(userdata_only)
     {
-        fprintf(stderr, " %hd device%s (",  info.num_devices, (info.num_devices > 1 ? "s" : ""));
-        // Loop over devices
-        for(i = 0; i < info.num_devices; i++)
-        {
-            fprintf(stderr, "%s", convert_device_id(info.devices[i]));
-            if(i != info.num_devices - 1)
-                fprintf(stderr, ", ");
-        }
-        fprintf(stderr, "),");
+        fprintf(stderr, "Building signed userdata package %s directly from %s\n", output_filename, tarball_filename);
     }
     else
     {
-        fprintf(stderr, " no specific device,");
-    }
-    // Don't print settings not applicable to our update type...
-    switch(info.version)
-    {
-        case OTAUpdateV2:
-            if(info.target_revision == UINT64_MAX)
-                fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
-            else
-                fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
-            // Loop over meta
-            for(i = 0; i < info.num_meta; i++)
+        fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""));
+        // If we have specific device IDs, list them
+        if(info.num_devices > 0)
+        {
+            fprintf(stderr, " %hd device%s (",  info.num_devices, (info.num_devices > 1 ? "s" : ""));
+            // Loop over devices
+            for(i = 0; i < info.num_devices; i++)
             {
-                fprintf(stderr, "%s", info.metastrings[i]);
-                if(i != info.num_meta - 1)
-                    fprintf(stderr, "; ");
-                else
-                    fprintf(stderr, ")\n");
+                fprintf(stderr, "%s", convert_device_id(info.devices[i]));
+                if(i != info.num_devices - 1)
+                    fprintf(stderr, ", ");
             }
-            break;
-        case OTAUpdate:
-            if(info.target_revision == UINT32_MAX)
-                fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
-            else
-                fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
-            break;
-        case RecoveryUpdate:
-            fprintf(stderr, " Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
-            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
-                fprintf(stderr, ", Header Rev: %llu, Platform: %s, Board: %s\n", (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
-            else
-                fprintf(stderr, "\n");
-            break;
-        case RecoveryUpdateV2:
-            if(info.target_revision == UINT64_MAX)
-                fprintf(stderr, " Target OTA: MAX");
-            else
-                fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
-            fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
-            break;
-        case UnknownUpdate:
-        default:
-            fprintf(stderr, "\n\n!!!!\nUnknown update type, we shouldn't ever hit this!\n!!!!\n");
-            break;
+            fprintf(stderr, "),");
+        }
+        else
+        {
+            fprintf(stderr, " no specific device,");
+        }
+        // Don't print settings not applicable to our update type...
+        switch(info.version)
+        {
+            case OTAUpdateV2:
+                if(info.target_revision == UINT64_MAX)
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                else
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.num_meta, (info.num_meta ? " (" : "\n"));
+                // Loop over meta
+                for(i = 0; i < info.num_meta; i++)
+                {
+                    fprintf(stderr, "%s", info.metastrings[i]);
+                    if(i != info.num_meta - 1)
+                        fprintf(stderr, "; ");
+                    else
+                        fprintf(stderr, ")\n");
+                }
+                break;
+            case OTAUpdate:
+                if(info.target_revision == UINT32_MAX)
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
+                else
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
+                break;
+            case RecoveryUpdate:
+                fprintf(stderr, " Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
+                if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
+                    fprintf(stderr, ", Header Rev: %llu, Platform: %s, Board: %s\n", (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
+                else
+                    fprintf(stderr, "\n");
+                break;
+            case RecoveryUpdateV2:
+                if(info.target_revision == UINT64_MAX)
+                    fprintf(stderr, " Target OTA: MAX");
+                else
+                    fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
+                fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
+                break;
+            case UnknownUpdate:
+            default:
+                fprintf(stderr, "\n\n!!!!\nUnknown update type, we shouldn't ever hit this!\n!!!!\n");
+                break;
+        }
     }
 
     // Create our package archive, sigfile & bundlefile included
