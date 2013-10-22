@@ -1361,7 +1361,7 @@ int kindle_create_main(int argc, char *argv[])
         info.version = UpdateSignature;
         // For reference only, since we only support converting an existing tarball, we don't really care about that...
         //strncpy(info.magic_number, "SP01", 4);
-        //real_blocksize = BLOCK_SIZE;
+        real_blocksize = BLOCK_SIZE;
     }
     else
     {
