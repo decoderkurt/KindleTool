@@ -54,7 +54,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
         fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1], (unsigned)(unsigned char)header.magic_number[2], (unsigned)(unsigned char)header.magic_number[3], MAGIC_NUMBER_LENGTH, header.magic_number);
     }
     else
-        fprintf(stderr, "Bundle         %.*s%s%s\n", MAGIC_NUMBER_LENGTH, header.magic_number, (strlen(header.magic_number) < 4 ? "": " "), convert_magic_number(header.magic_number));
+        fprintf(stderr, "Bundle         %.*s%s%s\n", MAGIC_NUMBER_LENGTH, header.magic_number, (strlen(header.magic_number) < 4 ? "" : " "), convert_magic_number(header.magic_number));
                                                                                                 // ^ cheap trick to avoid an extra space due to the unprintable GZIP magic number
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
@@ -593,7 +593,7 @@ int kindle_convert_main(int argc, char *argv[])
             if(extract_sig) // We want the payload sig (implies not info only)
             {
                 len = strlen(in_name);
-                sig_name = malloc(len + 1 + (1 - ext_offset) );
+                sig_name = malloc(len + 1 + (1 - ext_offset));
                 memcpy(sig_name, in_name, len - (4 + ext_offset));
                 sig_name[len - (4 + ext_offset)] = 0;  // . => \0
                 strncat(sig_name, ".psig", 5);
