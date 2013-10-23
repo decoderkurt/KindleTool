@@ -55,6 +55,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     }
     else
         fprintf(stderr, "Bundle         %.*s%s%s\n", MAGIC_NUMBER_LENGTH, header.magic_number, (strlen(header.magic_number) < 4 ? "": " "), convert_magic_number(header.magic_number));
+                                                                                                // ^ cheap trick to avoid an extra space due to the unprintable GZIP magic number
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
     {
