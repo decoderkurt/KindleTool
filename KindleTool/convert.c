@@ -51,10 +51,10 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     if(strcmp(convert_magic_number(header.magic_number), "Unknown") == 0)
     {
         // Cf. http://stackoverflow.com/questions/3555791
-        fprintf(stderr, "Bundle         Unknown (%X%X)\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1]);
+        fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1], (unsigned)(unsigned char)header.magic_number[2], (unsigned)(unsigned char)header.magic_number[3], MAGIC_NUMBER_LENGTH, header.magic_number);
     }
     else
-        fprintf(stderr, "Bundle         %.*s %s\n", MAGIC_NUMBER_LENGTH, header.magic_number, convert_magic_number(header.magic_number));
+        fprintf(stderr, "Bundle         %.*s%s%s\n", MAGIC_NUMBER_LENGTH, header.magic_number, (strlen(header.magic_number) < 4 ? "": " "), convert_magic_number(header.magic_number));
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
     {
@@ -130,6 +130,22 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
                 fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
                 return kindle_convert_recovery_v2(input, output, fake_sign);
             }
+            break;
+        case UserDataPackage:
+            // It's a straight unmunged tarball, and we aren't only asking for info, just rip it out ;).
+            if(output != NULL)
+            {
+                while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
+                {
+                    if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
+                    {
+                        fprintf(stderr, "Error writing userdata tarball to output.\n");
+                        return -1;
+                    }
+                }
+            }
+            // Usually, nothing more to do...
+            return 0;
             break;
         case UnknownUpdate:
         default:
@@ -478,6 +494,7 @@ int kindle_convert_main(int argc, char *argv[])
     int extract_sig;
     unsigned int fake_sign;
     unsigned int unwrap_only;
+    unsigned int ext_offset;
     int fail;
 
     sig_output = NULL;
@@ -488,6 +505,7 @@ int kindle_convert_main(int argc, char *argv[])
     extract_sig = 0;
     fake_sign = 0;
     unwrap_only = 0;
+    ext_offset = 0;
     fail = 1;
     while((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1)
     {
@@ -542,19 +560,24 @@ int kindle_convert_main(int argc, char *argv[])
         {
             fail = 0;
             in_name = argv[optind++];
-            // Check that a valid package input properly ends in .bin, unless we just want to parse the header
-            if(!unwrap_only && !fake_sign && !info_only && !IS_BIN(in_name))
+            // Check that a valid package input properly ends in .bin or .stgz, unless we just want to parse the header
+            if(!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name)))
             {
-                fprintf(stderr, "The input file must be a '.bin' update package.\n");
+                fprintf(stderr, "The input file must be a '.bin' update package or a '.stgz' userdata package.\n");
                 fail = 1;
                 continue;   // It's fatal, go away
             }
+            // Set the appropriate file extension offset...
+            if(IS_STGZ(in_name))
+                ext_offset = 1;
+            else
+                ext_offset = 0;
             if(!info_only && !unwrap_only && output != stdout) // Not info only, not unwrap only AND not stdout
             {
                 len = strlen(in_name);
-                out_name = malloc(len + 1 + (3 - fake_sign));
-                memcpy(out_name, in_name, len - (4 + fake_sign));
-                out_name[len - (4 + fake_sign)] = 0;    // . => \0
+                out_name = malloc(len + 1 + (3 - ext_offset));
+                memcpy(out_name, in_name, len - (4 + ext_offset));
+                out_name[len - (4 + ext_offset)] = 0;    // . => \0
                 strncat(out_name, ".tar.gz", 7);
                 if((output = fopen(out_name, "wb")) == NULL)
                 {

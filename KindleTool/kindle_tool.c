@@ -240,6 +240,8 @@ BundleVersion get_bundle_version(char magic_number[4])
         return OTAUpdateV2;
     else if(!strncmp(magic_number, "SP01", 4))
         return UpdateSignature;
+    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", 4))       // GZIP magic number
+        return UserDataPackage;
     else
         return UnknownUpdate;
 }
@@ -260,6 +262,8 @@ const char *convert_magic_number(char magic_number[4])
         return "(Language [lang])";             // /mnt/us/Update_LANG_%s.bin
     else if(!strncmp(magic_number, "SP", 2))
         return "(Signing Envelope)";
+    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", 4))
+        return "(Userdata tarball)";
     else
         return "Unknown";
 }
@@ -441,7 +445,7 @@ int kindle_print_help(const char *prog_name)
         "      -x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple \"--meta\" options supported.\n"
         "                                    Format of metastring must be: key=value\n"
         "      -a, --archive               Keep the intermediate archive.\n"
-        "      -u, --unsigned              Build an unsigned package.\n"
+        "      -u, --unsigned              Build an unsigned & mangled userdata package.\n"
         "      -U, --userdata              Build an userdata package (can only be used with the sig update type).\n"
         "      -C, --legacy                Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:\n"
         "                                    every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths\n"

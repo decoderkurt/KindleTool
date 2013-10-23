@@ -115,7 +115,7 @@
 		-x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple "--meta" options supported.
                                       Format of metastring must be: key=value
 		-a, --archive               Keep the intermediate archive.
-		-u, --unsigned              Build an unsigned package.
+		-u, --unsigned              Build an unsigned & mangled userdata package.
 		-U, --userdata              Build an userdata package (can only be used with the sig update type).
 		-C, --legacy                Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:
                                       every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths

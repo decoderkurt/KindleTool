@@ -110,6 +110,7 @@ typedef enum
     OTAUpdate,
     RecoveryUpdate,
     RecoveryUpdateV2,
+    UserDataPackage,            // Actually just a gzipped tarball, but easier to implement this way...
     UnknownUpdate = -1
 } BundleVersion;
 
