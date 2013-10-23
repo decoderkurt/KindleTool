@@ -1279,6 +1279,7 @@ int kindle_create_main(int argc, char *argv[])
         { "magic2", required_argument, NULL, '2' },
         { "minor", required_argument, NULL, 'm' },
         { "platform", required_argument, NULL, 'p' },
+        { "board", required_argument, NULL, 'B' },
         { "hdrrev", required_argument, NULL, 'h' },
         { "cert", required_argument, NULL, 'c' },
         { "opt", required_argument, NULL, 'o' },
@@ -1370,7 +1371,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:aUdC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auUC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
