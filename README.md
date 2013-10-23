@@ -139,6 +139,6 @@
 
 ### notices:
 1. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
-2. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Kindle Touch).
+2. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-spaces none;
