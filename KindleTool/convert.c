@@ -575,10 +575,10 @@ int kindle_convert_main(int argc, char *argv[])
             if(!info_only && !unwrap_only && output != stdout) // Not info only, not unwrap only AND not stdout
             {
                 len = strlen(in_name);
-                out_name = malloc(len + 1 + (3 - ext_offset));
+                out_name = malloc(len + 1 + (13 - ext_offset));
                 memcpy(out_name, in_name, len - (4 + ext_offset));
                 out_name[len - (4 + ext_offset)] = 0;    // . => \0
-                strncat(out_name, ".tar.gz", 7);
+                strncat(out_name, "_converted.tar.gz", 17);
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
@@ -590,21 +590,10 @@ int kindle_convert_main(int argc, char *argv[])
             if(extract_sig) // We want the payload sig (implies not info only)
             {
                 len = strlen(in_name);
-                /* Hackishly handle data.stgz... */
-                if(IS_STGZ(in_name))
-                {
-                    sig_name = malloc(len + 1);
-                    memcpy(sig_name, in_name, len - 5);
-                    sig_name[len - 5] = 0;  // . => \0
-                    strncat(sig_name, ".psig", 5);
-                }
-                else
-                {
-                    sig_name = malloc(len + 2);
-                    memcpy(sig_name, in_name, len - 4);
-                    sig_name[len - 4] = 0;  // . => \0
-                    strncat(sig_name, ".psig", 5);
-                }
+                sig_name = malloc(len + 1 + (1 - ext_offset) );
+                memcpy(sig_name, in_name, len - (4 + ext_offset));
+                sig_name[len - (4 + ext_offset)] = 0;  // . => \0
+                strncat(sig_name, ".psig", 5);
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
@@ -618,21 +607,14 @@ int kindle_convert_main(int argc, char *argv[])
             if(unwrap_only)     // We want an unwrapped package (implies not info only)
             {
                 len = strlen(in_name);
-                /* Hackishly handle data.stgz... */
-                if(IS_STGZ(in_name))
-                {
-                    unwrapped_name = malloc(len + 9 + 1);
-                    memcpy(unwrapped_name, in_name, len - 5);
-                    unwrapped_name[len - 5] = 0;  // . => \0
+                unwrapped_name = malloc(len + 1 + (10 - ext_offset));
+                memcpy(unwrapped_name, in_name, len - (4 + ext_offset));
+                unwrapped_name[len - (4 + ext_offset)] = 0;  // . => \0
+                // If input is an userdata package, we can safely assume we'll end up with a tarballl
+                if(ext_offset)
                     strncat(unwrapped_name, "_unwrapped.tgz", 14);
-                }
                 else
-                {
-                    unwrapped_name = malloc(len + 10 + 1);
-                    memcpy(unwrapped_name, in_name, len - 4);
-                    unwrapped_name[len - 4] = 0;  // . => \0
                     strncat(unwrapped_name, "_unwrapped.bin", 14);
-                }
                 if((unwrap_output = fopen(unwrapped_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
