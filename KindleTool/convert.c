@@ -135,6 +135,8 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             // It's a straight unmunged tarball, and we aren't only asking for info, just rip it out ;).
             if(output != NULL)
             {
+                // We need the 4 bytes of 'bundle header' we consumed earlier back! (The GZIP magic number)
+                fseek(input, - MAGIC_NUMBER_LENGTH, SEEK_CUR);
                 while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
                 {
                     if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
