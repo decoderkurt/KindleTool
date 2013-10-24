@@ -1288,7 +1288,8 @@ int kindle_create_main(int argc, char *argv[])
         { "archive", no_argument, NULL, 'a' },
         { "unsigned", no_argument, NULL, 'u' },
         { "userdata", no_argument, NULL, 'U' },
-        { "legacy", no_argument, NULL, 'C' }
+        { "legacy", no_argument, NULL, 'C' },
+        { 0, 0, 0, 0 }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
@@ -1366,7 +1367,7 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "Invalid update type.\n");
+        fprintf(stderr, "'%s' is not a valid update type.\n", argv[0]);
         return -1;
     }
 
@@ -1662,8 +1663,14 @@ int kindle_create_main(int argc, char *argv[])
             case 'C':
                 legacy = 1;
                 break;
+            case ':':
+                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                break;
+            case '?':
+                fprintf(stderr, "Unknown switch %c\n", optopt);
+                break;
             default:
-                fprintf(stderr, "Unknown option code 0%o\n", opt);
+                fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
                 break;
         }
     }
@@ -1731,12 +1738,12 @@ int kindle_create_main(int argc, char *argv[])
         {
             if(!info.platform)
             {
-                fprintf(stderr, "You need to set a platform for this update type\n");
+                fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             if(!info.board)
             {
-                fprintf(stderr, "You need to set a board for this update type\n");
+                fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
@@ -1746,12 +1753,12 @@ int kindle_create_main(int argc, char *argv[])
         {
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
             {
-                fprintf(stderr, "You need to set a platform for this update type\n");
+                fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.board)
             {
-                fprintf(stderr, "You need to set a board for this update type\n");
+                fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
         }

@@ -480,7 +480,8 @@ int kindle_convert_main(int argc, char *argv[])
         { "keep", no_argument, NULL, 'k' },
         { "sig", no_argument, NULL, 's' },
         { "unsigned", no_argument, NULL, 'u' },
-        { "unwrap", no_argument, NULL, 'w' }
+        { "unwrap", no_argument, NULL, 'w' },
+        { 0, 0, 0, 0 }
     };
     FILE *input;
     FILE *output;
@@ -532,8 +533,14 @@ int kindle_convert_main(int argc, char *argv[])
             case 'w':
                 unwrap_only = 1;
                 break;
+            case ':':
+                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                break;
+            case '?':
+                fprintf(stderr, "Unknown switch %c\n", optopt);
+                break;
             default:
-                fprintf(stderr, "Unknown option code 0%o\n", opt);
+                fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
                 break;
         }
     }
@@ -566,7 +573,7 @@ int kindle_convert_main(int argc, char *argv[])
             // Check that a valid package input properly ends in .bin or .stgz, unless we just want to parse the header
             if(!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name)))
             {
-                fprintf(stderr, "The input file must be a '.bin' update package or a '.stgz' userdata package.\n");
+                fprintf(stderr, "Input file '%s' isn't a '.bin' update package or a '.stgz' userdata package.\n", in_name);
                 fail = 1;
                 continue;   // It's fatal, go away
             }
@@ -809,7 +816,7 @@ int kindle_extract_main(int argc, char *argv[])
     // Check that input properly ends in .bin
     if(!IS_BIN(bin_filename))
     {
-        fprintf(stderr, "The input file must be a '.bin' update package.\n");
+        fprintf(stderr, "Input file '%s' is not a '.bin' update package.\n", bin_filename);
         return -1;
     }
     // NOTE: Do some sanity checks for output directory handling?

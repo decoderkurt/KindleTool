@@ -569,7 +569,7 @@ int kindle_info_main(int argc, char *argv[])
     argc--;
     if(argc < 1)
     {
-        fprintf(stderr, "No serial number found in input.\n");
+        fprintf(stderr, "Missing argument. You must pass a serial number.\n");
         return -1;
     }
     serial_no = argv[0];
