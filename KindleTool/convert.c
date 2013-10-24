@@ -535,12 +535,15 @@ int kindle_convert_main(int argc, char *argv[])
                 break;
             case ':':
                 fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                return -1;
                 break;
             case '?':
                 fprintf(stderr, "Unknown switch %c\n", optopt);
+                return -1;
                 break;
             default:
                 fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+                return -1;
                 break;
         }
     }

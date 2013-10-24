@@ -1368,7 +1368,7 @@ int kindle_create_main(int argc, char *argv[])
     else
     {
         fprintf(stderr, "'%s' is not a valid update type.\n", argv[0]);
-        return -1;
+        goto do_error;
     }
 
     // Arguments
@@ -1665,12 +1665,15 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case ':':
                 fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                goto do_error;
                 break;
             case '?':
                 fprintf(stderr, "Unknown switch %c\n", optopt);
+                goto do_error;
                 break;
             default:
                 fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+                goto do_error;
                 break;
         }
     }
