@@ -1289,7 +1289,7 @@ int kindle_create_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { "userdata", no_argument, NULL, 'U' },
         { "legacy", no_argument, NULL, 'C' },
-        { 0, 0, 0, 0 }
+        { NULL, 0, NULL, 0 }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;

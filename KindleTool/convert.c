@@ -481,7 +481,7 @@ int kindle_convert_main(int argc, char *argv[])
         { "sig", no_argument, NULL, 's' },
         { "unsigned", no_argument, NULL, 'u' },
         { "unwrap", no_argument, NULL, 'w' },
-        { 0, 0, 0, 0 }
+        { NULL, 0, NULL, 0 }
     };
     FILE *input;
     FILE *output;
