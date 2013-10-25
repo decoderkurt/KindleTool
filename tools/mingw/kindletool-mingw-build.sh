@@ -157,11 +157,14 @@ if [[ ! -d "openssl-1.0.1e" ]] ; then
 	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-x32.patch
 	#patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-ipv6.patch	# Not MingW friendly
 	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-bad-mac-aes-ni.patch
+	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-perl-5.18.patch
+	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-s_client-verify.patch
 	sed -i -e '/DIRS/s: fips : :g' -e '/^MANSUFFIX/s:=.*:=ssl:' -e "/^MAKEDEPPROG/s:=.*:=${CROSS_TC}-gcc:" -e '/^install:/s:install_docs::' Makefile.org
 	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
 	cp /usr/portage/dev-libs/openssl/files/gentoo.config-1.0.0 gentoo.config
 	chmod a+rx gentoo.config
 	sed -i '1s,^:$,#!/usr/bin/perl,' Configure
+	sed -i '/stty -icanon min 0 time 50; read waste/d' config
 	#unset CROSS_COMPILE
 	# Aim for a minimal build, we only need MD5, RSA & SHA support...
 	# Can't disable hmac & aes/rjindael or make depend dies...
