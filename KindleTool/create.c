@@ -703,7 +703,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
         fprintf(stderr, "@ No script was detected in your input, this update package won't do a thing! @\n");
         fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
     }
-    // If we're building a recoveyr update, warn that this possibly isn't the brightest idea, given the very specific requirements...
+    // If we're building a recovery update, warn that this possibly isn't the brightest idea, given the very specific requirements...
     if(real_blocksize == RECOVERY_BLOCK_SIZE)
     {
         fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
