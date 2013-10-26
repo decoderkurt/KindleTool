@@ -800,8 +800,8 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             return kindle_create_ota_update(info, input_tgz, output, fake_sign);
             break;
         case RecoveryUpdate:
-            // Wrap FB02 w/ header_rev 2 in an UpdateSignature...
-            // FIXME: Should this really be the case?
+            // NOTE: I'm gonna assume that this, even FB02 @ rev. 2, shouldn't be wrapped in an UpdateSignature...
+#if 0
             if(strncmp(info->magic_number, "FB02", 4) == 0 && info->header_rev == 2)
             {
                 if((temp = tmpfile()) == NULL)
@@ -848,6 +848,9 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             {
                 return kindle_create_recovery(info, input_tgz, output, fake_sign);
             }
+#else
+            return kindle_create_recovery(info, input_tgz, output, fake_sign);
+#endif
             break;
         case RecoveryUpdateV2:
             if((temp = tmpfile()) == NULL)
