@@ -801,6 +801,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             break;
         case RecoveryUpdate:
             // Wrap FB02 w/ header_rev 2 in an UpdateSignature...
+            // FIXME: Should this really be the case?
             if(strncmp(info->magic_number, "FB02", 4) == 0 && info->header_rev == 2)
             {
                 if((temp = tmpfile()) == NULL)
