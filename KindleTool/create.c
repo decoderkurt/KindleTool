@@ -696,12 +696,19 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     archive_write_close(a);
     archive_write_free(a);
 
-    // Print a warning if no script was detected...
-    if(!kttar->has_script)
+    // Print a warning if no script was detected (in an OTA update)...
+    if(!kttar->has_script && real_blocksize == BLOCK_SIZE)
     {
         fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
         fprintf(stderr, "@ No script was detected in your input, this update package won't do a thing! @\n");
         fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+    }
+    // If we're building a recoveyr update, warn that this possibly isn't the brightest idea, given the very specific requirements...
+    if(real_blocksize == RECOVERY_BLOCK_SIZE)
+    {
+        fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+        fprintf(stderr, "@ You're building a recovery update from scratch! Make sure you know what you're doing... @\n");
+        fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
     }
 
     return 0;
