@@ -1744,7 +1744,7 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
-            if(!info.board)
+            if(strcmp(convert_board_id(info.board), "Unknown") == 0)
             {
                 fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
@@ -1759,7 +1759,7 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
             }
-            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.board)
+            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && strcmp(convert_board_id(info.board), "Unknown") == 0)
             {
                 fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
                 goto do_error;
