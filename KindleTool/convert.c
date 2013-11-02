@@ -654,19 +654,19 @@ int kindle_convert_main(int argc, char *argv[])
             // Print a recap of what we're doing
             if(info_only)
             {
-                fprintf(stderr, "Checking %supdate package %s\n", (fake_sign ? "fake " : ""), in_name);
+                fprintf(stderr, "Checking %s%s package %s\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
             }
             else if(unwrap_only)
             {
-                fprintf(stderr, "Unwrapping update package %s to %s\n", in_name, unwrapped_name);
+                fprintf(stderr, "Unwrapping %s package %s to %s\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name, unwrapped_name);
             }
             else
             {
-                fprintf(stderr, "Converting %supdate package %s to %s (%s, %s)\n", (fake_sign ? "fake " : ""), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
+                fprintf(stderr, "Converting %s%s package %s to %s (%s, %s)\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
             }
             if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output) < 0)
             {
-                fprintf(stderr, "Error converting update '%s'.\n", in_name);
+                fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
                 if(output != NULL && output != stdout)
                     unlink(out_name); // Clean up our mess, if we made one
                 fail = 1;
