@@ -576,7 +576,7 @@ int kindle_convert_main(int argc, char *argv[])
             // Check that a valid package input properly ends in .bin or .stgz, unless we just want to parse the header
             if(!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name)))
             {
-                fprintf(stderr, "Input file '%s' isn't a '.bin' update package or a '.stgz' userdata package.\n", in_name);
+                fprintf(stderr, "Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n", in_name);
                 fail = 1;
                 continue;   // It's fatal, go away
             }
@@ -816,10 +816,10 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     bin_filename = argv[0];
-    // Check that input properly ends in .bin
-    if(!IS_BIN(bin_filename))
+    // Check that input properly ends in .bin or .stgz
+    if(!IS_BIN(bin_filename) && !IS_STGZ(bin_filename))
     {
-        fprintf(stderr, "Input file '%s' is not a '.bin' update package.\n", bin_filename);
+        fprintf(stderr, "Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n", bin_filename);
         return -1;
     }
     // NOTE: Do some sanity checks for output directory handling?
@@ -828,7 +828,7 @@ int kindle_extract_main(int argc, char *argv[])
     output_dir = argv[1];
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
-        fprintf(stderr, "Cannot open update input '%s'.\n", bin_filename);
+        fprintf(stderr, "Cannot open input %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
         return -1;
     }
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
@@ -862,10 +862,10 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Print a recap of what we're about to do
-    fprintf(stderr, "Extracting update package %s to %s\n", bin_filename, output_dir);
+    fprintf(stderr, "Extracting %s package %s to %s\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
     if(kindle_convert(bin_input, tgz_output, NULL, 0, 0, NULL) < 0)
     {
-        fprintf(stderr, "Error converting update '%s'.\n", bin_filename);
+        fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
         fclose(bin_input);
         fclose(tgz_output);
         return -1;
