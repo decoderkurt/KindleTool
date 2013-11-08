@@ -98,6 +98,11 @@
 #define KT_USERATHOST "someone@somewhere"
 #endif
 
+// nettle version fallback
+#ifndef NETTLE_VERSION
+#define NETTLE_VERSION ">= 2.7.1"
+#endif
+
 // GCC version checks... (We check !clang in addition to GCC, because Clang 'helpfully' defines __GNUC__ ...)
 #if !defined(__clang__) && defined(__GNUC__)
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
