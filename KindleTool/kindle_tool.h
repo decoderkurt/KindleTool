@@ -28,10 +28,18 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <limits.h>
+
+#ifdef KT_USE_NETTLE
+#include <nettle/md5.h>
+#include <nettle/sha2.h>
+#include <nettle/rsa.h>
+#else
 #include <openssl/md5.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
