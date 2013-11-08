@@ -327,7 +327,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 #endif
 
 #ifdef KT_USE_NETTLE
-int get_default_key(struct rsa_private_key *rsa_pkey)
+void *get_default_key(struct rsa_private_key *rsa_pkey)
 {
     static char sign_key[] =
         "{KDExOnByaXZhdGUta2V5KDk6cnNhLXBrY3MxKDE6bjEyOToAyZ9Y1lPscVb/3kSnwj0fXuO\n"
@@ -344,13 +344,13 @@ int get_default_key(struct rsa_private_key *rsa_pkey)
         "X0KDrIks4+XQnkGb/xWtwhhKSgxOmM2NToA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY\n"
         "1tEJG+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zCkpKQ==}\0";
     //rsa_private_key_init(rsa_pkey);
-    if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, strlen(sign_key), sign_key))
+    if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, strlen(sign_key), (uint8_t *) sign_key))
     {
         fprintf(stderr, "Invalid private key!\n");
         //rsa_private_key_clear(rsa_pkey);
-        return 1;
+        return NULL;
     }
-    return 0;
+    return NULL;
 }
 #else
 RSA *get_default_key(void)

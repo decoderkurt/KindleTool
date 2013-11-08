@@ -1721,7 +1721,7 @@ int kindle_create_main(int argc, char *argv[])
                 // NUL-terminate the data.
                 buffer[done] = '\0';
 
-                if(!rsa_keypair_from_sexp(NULL, &info.sign_pkey, 0, done, buffer))
+                if(!rsa_keypair_from_sexp(NULL, info.sign_pkey, 0, done, (uint8_t *) buffer))
                 {
                     fprintf(stderr, "Invalid private key!\n");
                     //rsa_private_key_clear(&info.sign_pkey);
@@ -2162,7 +2162,7 @@ int kindle_create_main(int argc, char *argv[])
         free(info.metastrings[i]);
     free(info.metastrings);
 #ifdef KT_USE_NETTLE
-    rsa_private_key_clear(&info.sign_pkey);
+    rsa_private_key_clear(info.sign_pkey);
 #else
     RSA_free(info.sign_pkey);
 #endif
@@ -2194,7 +2194,7 @@ do_error:
         free(info.metastrings[i]);
     free(info.metastrings);
 #ifdef KT_USE_NETTLE
-    rsa_private_key_clear(&info.sign_pkey);
+    rsa_private_key_clear(info.sign_pkey);
 #else
     RSA_free(info.sign_pkey);
 #endif

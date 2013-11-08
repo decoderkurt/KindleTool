@@ -299,7 +299,7 @@ BundleVersion get_bundle_version(char *);
 const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
 #ifdef KT_USE_NETTLE
-int get_default_key(struct rsa_private_key *);
+void *get_default_key(struct rsa_private_key *);
 #else
 RSA *get_default_key(void);
 #endif
