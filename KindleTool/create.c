@@ -1813,6 +1813,14 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
+#ifdef KT_USE_NETTLE
+    // Check that we have something resembling a valid RSA private key to sign our stuff with...
+    // Shouldn't happen, unless nettle can't parse our hardcoded default key for some reason...
+    if(info.sign_pkey == NULL)
+    {
+        goto do_error;
+    }
+#endif
     // Signed userdata packages are very peculiar, handle them on their own...
     if(userdata_only)
     {
@@ -2194,7 +2202,8 @@ do_error:
         free(info.metastrings[i]);
     free(info.metastrings);
 #ifdef KT_USE_NETTLE
-    rsa_private_key_clear(info.sign_pkey);
+    if(info.sign_pkey != NULL)
+        rsa_private_key_clear(info.sign_pkey);
 #else
     RSA_free(info.sign_pkey);
 #endif
