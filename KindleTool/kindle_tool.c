@@ -329,6 +329,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 #ifdef KT_USE_NETTLE
 void *get_default_key(struct rsa_private_key *rsa_pkey)
 {
+    /*
     static char sign_key[] =
         "{KDExOnByaXZhdGUta2V5KDk6cnNhLXBrY3MxKDE6bjEyOToAyZ9Y1lPscVb/3kSnwj0fXuO\n"
         "5T1jdqx998/UG356pgsQUSz+pjIxsugD8snEF4N5z4uX3G++WpWaPjodNdh6THvS56XhIJa\n"
@@ -343,8 +344,47 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
         "E6YjY1OgDIs5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8\n"
         "X0KDrIks4+XQnkGb/xWtwhhKSgxOmM2NToA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY\n"
         "1tEJG+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zCkpKQ==}\0";
+    */
+    /*
+    static char sign_key[] =
+        "(private-key (rsa-pkcs1 (n |AMmfWNZT7HFW/95Ep8I9H17juU9Y3asfffP1Bt+eqYLE\n"
+        "                            FEs/qYyMbLoA/LJxBeDec+Ll9xvvlqVmj46HTXYekx70\n"
+        "                            uel4SCWgh2bUTgs6zKvPiS21C0ZGXMISuYEa3r5wBURX\n"
+        "                            zrLamE4neYuTQST1RBdshR+u/ImdLYwosbZxzOOV|)\n"
+        "                        (e |AQAB|)\n"
+        "                        (d |SLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJuDY6\n"
+        "                            yAbYiO7kDppqj4l8wGogTpv98OMXauY8JgQj6tgO5LkY\n"
+        "                            2upttukDr8uhE2z9Dh7HMZV/rDYa+9rybJusRiAQDmF+\n"
+        "                            VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmE=|)\n"
+        "                        (p |AOgiiQ6vR9jPdRNJsd8Pd6eBcU9n4lompTzFrJHsL4an\n"
+        "                            kjQKBKcINNBWB2RUZs+4tViJYMhwRrGO9WuFdi3YBz0=|)\n"
+        "                        (q |AN5ZxEYINEZlgQtyvLaAsnw76/Hl2qPsYFCd5TVm6ktB\n"
+        "                            7cMXM8JyBB+PSCA6I205y1K9zorRTGbmibk9jLVs0zk=|)\n"
+        "                        (a |AK6GCHU54tJmZqbxqQEDJ/qPnxkMCWmt1F00YOH0qGac\n"
+        "                            ZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCE=|)\n"
+        "                        (b |AMizlmrwdN8mODkxNA44VOO24t7Sb2yPrNCX9ZEieFG+\n"
+        "                            DPOQOfRGHlquZphQYjHxfQoOsiSzj5dCeQZv/Fa3CGE=|)\n"
+        "                        (c |ANxXZ67BYgjTSYb4rdmk5rS818VOOivrFejSGNbRCRvk\n"
+        "                            Rcy0cDuCBQ2OGv3aKIdWIdYhRRo3Jqas2urUbrWsPMw=|)))\0";
+    */
+    static char sign_key[] =
+        "MIICXgIBAAKBgQDJn1jWU+xxVv/eRKfCPR9e47lPWN2rH33z9QbfnqmCxBRLP6mM\n"
+        "jGy6APyycQXg3nPi5fcb75alZo+Oh012HpMe9LnpeEgloIdm1E4LOsyrz4kttQtG\n"
+        "RlzCErmBGt6+cAVEV86y2phOJ3mLk0Ek9UQXbIUfrvyJnS2MKLG2cczjlQIDAQAB\n"
+        "AoGASLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJuDY6yAbYiO7kDppqj4l8\n"
+        "wGogTpv98OMXauY8JgQj6tgO5LkY2upttukDr8uhE2z9Dh7HMZV/rDYa+9rybJus\n"
+        "RiAQDmF+VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmECQQDoIokOr0fYz3UT\n"
+        "SbHfD3engXFPZ+JaJqU8xayR7C+Gp5I0CgSnCDTQVgdkVGbPuLVYiWDIcEaxjvVr\n"
+        "hXYt2Ac9AkEA3lnERgg0RmWBC3K8toCyfDvr8eXao+xgUJ3lNWbqS0HtwxczwnIE\n"
+        "H49IIDojbTnLUr3OitFMZuaJuT2MtWzTOQJBAK6GCHU54tJmZqbxqQEDJ/qPnxkM\n"
+        "CWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCECQQDI\n"
+        "s5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8X0K\n"
+        "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
+        "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\0";
+
     //rsa_private_key_init(rsa_pkey);
-    if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, strlen(sign_key), (uint8_t *) sign_key))
+    //if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, strlen(sign_key), (uint8_t *) sign_key))
+    if(!rsa_keypair_from_der(NULL, rsa_pkey, 0, strlen(sign_key), (uint8_t *) sign_key))
     {
         fprintf(stderr, "Invalid private key!\n");
         //rsa_private_key_clear(rsa_pkey);
