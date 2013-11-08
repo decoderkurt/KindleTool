@@ -268,7 +268,35 @@ const char *convert_magic_number(char magic_number[4])
         return "Unknown";
 }
 
+#ifdef KT_USE_NETTLE
+int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
+{
+    unsigned char bytes[BUFFER_SIZE];
+    size_t bytes_read;
+    struct md5_ctx md5;
+    unsigned char output[MD5_DIGEST_SIZE];
+    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds a trailing null, we do not want that!
+    int i;
 
+    md5_init(&md5);
+    while((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
+    {
+        md5_update(&md5, bytes_read, bytes);
+    }
+    if(ferror(input) != 0)
+    {
+        fprintf(stderr, "Error reading input file.\n");
+        return -1;
+    }
+    md5_digest(&md5, MD5_DIGEST_SIZE, output);
+    for(i = 0; i < MD5_DIGEST_SIZE; i++)
+    {
+        sprintf(output_string_temp + (i * 2), "%02x", output[i]);
+    }
+    memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // Remove the trailing null. Any better way to do this?
+    return 0;
+}
+#else
 int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 {
     unsigned char bytes[BUFFER_SIZE];
@@ -285,7 +313,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error reading input.\n");
+        fprintf(stderr, "Error reading input file.\n");
         return -1;
     }
     MD5_Final(output, &md5);
@@ -296,7 +324,35 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // Remove the trailing null. Any better way to do this?
     return 0;
 }
+#endif
 
+#ifdef KT_USE_NETTLE
+int get_default_key(struct rsa_private_key *rsa_pkey)
+{
+    static char sign_key[] =
+        "{KDExOnByaXZhdGUta2V5KDk6cnNhLXBrY3MxKDE6bjEyOToAyZ9Y1lPscVb/3kSnwj0fXuO\n"
+        "5T1jdqx998/UG356pgsQUSz+pjIxsugD8snEF4N5z4uX3G++WpWaPjodNdh6THvS56XhIJa\n"
+        "CHZtROCzrMq8+JLbULRkZcwhK5gRrevnAFRFfOstqYTid5i5NBJPVEF2yFH678iZ0tjCixt\n"
+        "nHM45UpKDE6ZTM6AQABKSgxOmQxMjg6SLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJ\n"
+        "uDY6yAbYiO7kDppqj4l8wGogTpv98OMXauY8JgQj6tgO5LkY2upttukDr8uhE2z9Dh7HMZV\n"
+        "/rDYa+9rybJusRiAQDmF+VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmEpKDE6cDY1Og\n"
+        "DoIokOr0fYz3UTSbHfD3engXFPZ+JaJqU8xayR7C+Gp5I0CgSnCDTQVgdkVGbPuLVYiWDIc\n"
+        "EaxjvVrhXYt2Ac9KSgxOnE2NToA3lnERgg0RmWBC3K8toCyfDvr8eXao+xgUJ3lNWbqS0Ht\n"
+        "wxczwnIEH49IIDojbTnLUr3OitFMZuaJuT2MtWzTOSkoMTphNjU6AK6GCHU54tJmZqbxqQE\n"
+        "DJ/qPnxkMCWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCEpKD\n"
+        "E6YjY1OgDIs5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8\n"
+        "X0KDrIks4+XQnkGb/xWtwhhKSgxOmM2NToA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY\n"
+        "1tEJG+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zCkpKQ==}\0";
+    //rsa_private_key_init(rsa_pkey);
+    if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, strlen(sign_key), sign_key))
+    {
+        fprintf(stderr, "Invalid private key!\n");
+        //rsa_private_key_clear(rsa_pkey);
+        return 1;
+    }
+    return 0;
+}
+#else
 RSA *get_default_key(void)
 {
     static char sign_key[] =
@@ -330,6 +386,76 @@ RSA *get_default_key(void)
     }
     return rsa_pkey;
 }
+#endif
+
+#ifdef KT_USE_NETTLE
+// Shamelessly ripped out of nettle's examples/io.c ...
+size_t read_file(const char *name, size_t max_size, char **contents) {
+    size_t size, done;
+    char *buffer;
+    FILE *f;
+
+    f = fopen(name, "rb");
+    if(!f)
+    {
+        fprintf(stderr, "Failed to open '%s': %s\n", name, strerror(errno));
+        return 0;
+    }
+
+    size = BUFFER_SIZE;
+
+    for(buffer = NULL, done = 0;; size *= 2)
+    {
+        char *p;
+
+        if(max_size && size > max_size)
+            size = max_size;
+
+        /* Space for terminating NUL */
+        p = realloc(buffer, size + 1);
+
+        if(!p)
+        {
+            fail:
+                fclose(f);
+                free(buffer);
+                *contents = NULL;
+                return 0;
+        }
+
+        buffer = p;
+        done += fread(buffer + done, 1, size - done, f);
+
+        if(done < size)
+        {
+            // Short count means EOF or read error
+            if(ferror(f))
+            {
+                fprintf(stderr, "Failed to read '%s': %s\n",
+                        name, strerror(errno));
+
+                goto fail;
+            }
+            if(done == 0)
+                // Treat empty file as error
+                goto fail;
+
+            break;
+        }
+
+        if(size == max_size)
+            break;
+    }
+
+    fclose(f);
+
+    // NUL-terminate the data.
+    buffer[done] = '\0';
+    *contents = buffer;
+
+    return done;
+}
+#endif
 
 int kindle_print_help(const char *prog_name)
 {

@@ -26,6 +26,41 @@ static int write_entry(struct kttar *, struct archive *, struct archive *, struc
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
 
+#ifdef KT_USE_NETTLE
+int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file)
+{
+    unsigned char buffer[BUFFER_SIZE];
+    size_t len;
+    struct sha256_ctx hash;
+    sha256_init(&hash);
+    mpz_t s;
+
+    while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
+    {
+        sha256_update(&hash, len, buffer);
+    }
+    if(ferror(in_file) != 0)
+    {
+        fprintf(stderr, "Error reading input file.\n");
+        return -1;
+    }
+    mpz_init(s);
+    if(!rsa_sha256_sign(rsa_pkey, &hash, s))
+    {
+        fprintf(stderr, "RSA key too small.\n");
+        return -1;
+    }
+    if(!mpz_out_raw(sigout_file, s))
+    {
+        fprintf(stderr, "Failed writing signature: %s\n", strerror(errno));
+        return -1;
+    }
+
+    mpz_clear(s);
+    //rsa_private_key_clear(rsa_pkey);
+    return 0;
+}
+#else
 int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 {
     // Taken from: http://stackoverflow.com/a/2054412/91422
@@ -87,6 +122,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     EVP_MD_CTX_cleanup(&ctx);
     return 0;
 }
+#endif
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
@@ -442,7 +478,11 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
+#ifdef KT_USE_NETTLE
+int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, struct rsa_private_key *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
+#else
 int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
+#endif
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
@@ -1302,10 +1342,18 @@ int kindle_create_main(int argc, char *argv[])
         { "legacy", no_argument, NULL, 'C' },
         { NULL, 0, NULL, 0 }
     };
+#ifdef KT_USE_NETTLE
+    struct rsa_private_key rsa_pkey;
+    rsa_private_key_init(&rsa_pkey);
+    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(&rsa_pkey), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+#else
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+#endif
     FILE *input;
     FILE *output;
+#ifndef KT_USE_NETTLE
     BIO *bio;
+#endif
     int i;
     unsigned int ui;
     char *output_filename = NULL;
@@ -1609,13 +1657,89 @@ int kindle_create_main(int argc, char *argv[])
                 info.header_rev = (uint32_t) atoi(optarg);
                 break;
             case 'k':
+#ifdef KT_USE_NETTLE
+            {
+                // Shamelessly ripped out of nettle's examples/io.c ...
+                size_t max_size = 0;
+                size_t size, done;
+                char *buffer;
+                FILE *f;
+
+                f = fopen(optarg, "rb");
+                if(!f)
+                {
+                    fprintf(stderr, "Failed to open '%s': %s\n", optarg, strerror(errno));
+                    goto do_error;
+                }
+
+                size = BUFFER_SIZE;
+
+                for(buffer = NULL, done = 0;; size *= 2)
+                {
+                    char *p;
+
+                    if(max_size && size > max_size)
+                        size = max_size;
+
+                    /* Space for terminating NUL */
+                    p = realloc(buffer, size + 1);
+
+                    if(!p)
+                    {
+                        fail:
+                            fclose(f);
+                            free(buffer);
+                            goto do_error;
+                    }
+
+                    buffer = p;
+                    done += fread(buffer + done, 1, size - done, f);
+
+                    if(done < size)
+                    {
+                        // Short count means EOF or read error
+                        if(ferror(f))
+                        {
+                            fprintf(stderr, "Failed to read '%s': %s\n",
+                                    optarg, strerror(errno));
+
+                            goto fail;
+                        }
+                        if(done == 0)
+                            // Treat empty file as error
+                            goto fail;
+
+                        break;
+                    }
+
+                    if(size == max_size)
+                        break;
+                }
+
+                fclose(f);
+
+                // NUL-terminate the data.
+                buffer[done] = '\0';
+
+                if(!rsa_keypair_from_sexp(NULL, &info.sign_pkey, 0, done, buffer))
+                {
+                    fprintf(stderr, "Invalid private key!\n");
+                    //rsa_private_key_clear(&info.sign_pkey);
+                    free(buffer);
+                    goto do_error;
+                }
+
+                free(buffer);
+#else
                 if((bio = BIO_new_file(optarg, "rb")) == NULL || PEM_read_bio_RSAPrivateKey(bio, &info.sign_pkey, NULL, NULL) == NULL)
                 {
                     fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
                     goto do_error;
                 }
                 BIO_free(bio);
+#endif
                 break;
+            }
             case 'b':
                 strncpy(info.magic_number, optarg, 4);
                 if((info.version = get_bundle_version(optarg)) == UnknownUpdate)
@@ -2037,7 +2161,11 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
+#ifdef KT_USE_NETTLE
+    rsa_private_key_clear(&info.sign_pkey);
+#else
     RSA_free(info.sign_pkey);
+#endif
     fclose(input);
     if(output != stdout)
         fclose(output);
@@ -2046,8 +2174,10 @@ int kindle_create_main(int argc, char *argv[])
     if(!keep_archive && !skip_archive)
         unlink(tarball_filename);
     free(tarball_filename);
+#ifndef KT_USE_NETTLE
     // And OpenSSL cleanup, to make valgrind happy.
     CRYPTO_cleanup_all_ex_data();
+#endif
 
     return 0;
 
@@ -2063,13 +2193,19 @@ do_error:
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
+#ifdef KT_USE_NETTLE
+    rsa_private_key_clear(&info.sign_pkey);
+#else
     RSA_free(info.sign_pkey);
+#endif
     if(input != NULL)
         fclose(input);
     if(output != NULL && output != stdout)
         fclose(output);
     free(tarball_filename);
+#ifndef KT_USE_NETTLE
     CRYPTO_cleanup_all_ex_data();
+#endif
     return -1;
 }
 

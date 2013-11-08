@@ -29,6 +29,11 @@
 #include <archive_entry.h>
 #include <limits.h>
 
+// NOTE: Just to make KDevelop useful while I'm working on nettle...
+#ifndef KT_USE_NETTLE
+#define KT_USE_NETTLE
+#endif
+
 #ifdef KT_USE_NETTLE
 #include <nettle/md5.h>
 #include <nettle/sha2.h>
@@ -248,7 +253,11 @@ typedef struct
 {
     char magic_number[MAGIC_NUMBER_LENGTH];
     BundleVersion version;
+#ifdef KT_USE_NETTLE
+    struct rsa_private_key *sign_pkey;
+#else
     RSA *sign_pkey;
+#endif
     uint64_t source_revision;
     uint64_t target_revision;
     uint32_t magic_1;
@@ -289,7 +298,14 @@ const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
+#ifdef KT_USE_NETTLE
+int get_default_key(struct rsa_private_key *);
+#else
 RSA *get_default_key(void);
+#endif
+#ifdef KT_USE_NETTLE
+size_t read_file(const char *, size_t, char **);
+#endif
 int kindle_print_help(const char *);
 int kindle_print_version(const char *);
 int kindle_deobfuscate_main(int, char **);
@@ -307,8 +323,16 @@ int kindle_convert_main(int, char **);
 int libarchive_extract(const char *, const char *);
 int kindle_extract_main(int, char **);
 
+#ifdef KT_USE_NETTLE
+int sign_file(FILE *, struct rsa_private_key *, FILE *);
+#else
 int sign_file(FILE *, RSA *, FILE *);
+#endif
+#ifdef KT_USE_NETTLE
+int kindle_create_package_archive(const int, char **, const unsigned int, struct rsa_private_key *, const unsigned int, const unsigned int);
+#else
 int kindle_create_package_archive(const int, char **, const unsigned int, RSA *, const unsigned int, const unsigned int);
+#endif
 int kindle_create(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
