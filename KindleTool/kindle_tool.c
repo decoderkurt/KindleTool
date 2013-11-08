@@ -480,8 +480,8 @@ int kindle_print_version(const char *prog_name)
     printf("GCC %s ", __VERSION__);
 #endif
     printf("on %s @ %s against %s ", __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
-#ifdef USE_NETTLE
-    printf("& nettle %s\n", NETTLE_VERSION);            // FIXME: Can't find a way to get the nettle version at compile time... Get it from pkg-config --modversion nettle
+#ifdef KT_USE_NETTLE
+    printf("& nettle %s\n", NETTLE_VERSION);            // NOTE: This is completely custom, I couldn't find a way to get this info at buildtime in a saner way...
 #else
     printf("& %.*s\n", 14, OPENSSL_VERSION_TEXT);       // We don't care about the date, cut after the version number...
 #endif

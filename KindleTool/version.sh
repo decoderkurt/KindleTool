@@ -38,6 +38,26 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
+	# Check for a recent nettle version, and use it instead of OpenSSL if we find it...
+	if pkg-config --atleast-version=2.7.1 nettle ; then
+		HAS_PC_NETTLE="true"
+		# Check for hogweed, since we need it, and static, to properly pull in gmp
+		PC_NETTLE_CPPFLAGS="$(pkg-config hogweed --cflags-only-I --static)"
+		PC_NETLLE_LDFLAGS="$(pkg-config hogweed --libs-only-L --static)"
+		PC_NETTLE_LIBS="$(pkg-config hogweed --libs-only-l --libs-only-other --static)"
+		# Export the nettle version since there is no built-in way to get it at buildtime...
+		PC_NETTLE_VERSION="$(pkg-config --modversion nettle)"
+	else
+		HAS_PC_NETTLE="false"
+		PC_NETTLE_CPPFLAGS=""
+		PC_NETLLE_LDFLAGS=""
+		PC_NETTLE_LIBS=""
+		PC_NETLLE_VERSION=""
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @ Couldn't find nettle >= 2.7.1 via pkg-config, falling back to OpenSSL! @ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+	fi
+
 	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
 	# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
 	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
@@ -127,6 +147,11 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
 		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
 		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
+		echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}" >> ${VER_FILE}
+		echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}" >> ${VER_FILE}
+		echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}" >> ${VER_FILE}
+		echo "PC_NETTLE_LIBS = ${PC_NETTLE_LIBS}" >> ${VER_FILE}
+		echo "PC_NETTLE_VERSION = ${PC_NETTLE_VERSION}" >> ${VER_FILE}
 		echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
 	fi
 fi

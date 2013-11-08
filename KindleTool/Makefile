@@ -58,19 +58,30 @@ ifeq "$(OSTYPE)" "Darwin"
 else
 	CPPFLAGS?=-Iincludes
 endif
-LIBS=-larchive -lcrypto -lz
 
-# Needed for linking statically against OpenSSL on Linux, and as as-needed takes care of it when building dynamically, it doesn't hurt to keep it set in both cases ;).
-ifeq "$(OSTYPE)" "Linux"
-	# There's no libdl on Windows ;)
-	ifneq "$(MINGW)" "true"
-		LIBS+=-ldl
+# We of course need libarchive
+LIBS=-larchive
+# Do we have nettle? If so, use it!
+ifeq "$(HAS_PC_NETTLE)" "true"
+	LIBS+=$(PC_NETTLE_LIBS)
+else
+	# Fall back to OpenSSL
+	LIBS+=-lcrypto
+	# Needed for linking statically against OpenSSL on Linux, and as as-needed takes care of it when building dynamically, it doesn't hurt to keep it set in both cases ;).
+	ifeq "$(OSTYPE)" "Linux"
+		# There's no libdl on Windows ;)
+		ifneq "$(MINGW)" "true"
+			LIBS+=-ldl
+		endif
+	endif
+	# Needed for linking statically against OpenSSL on MinGW
+	ifeq "$(MINGW)" "true"
+		LIBS+=-lgdi32
 	endif
 endif
-# Needed for linking statically against OpenSSL on MinGW
-ifeq "$(MINGW)" "true"
-	LIBS+=-lgdi32
-endif
+# And we'll always need zlib, at least for libarchive, possibly for OpenSSL
+LIBS+=-lz
+
 # If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)
 #ifeq "$(OSTYPE)" "Linux"
 #	LIBS+=-ltcmalloc
@@ -139,6 +150,12 @@ endif
 ifeq "$(DEBUG)" "true"
 	KT_CPPFLAGS+=-DKT_UNKNOWN_DEVID
 endif
+# If we have nettle, use it
+ifeq "$(HAS_PC_NETTLE)" "true"
+	KT_CPPFLAGS+=-DKT_USE_NETTLE
+	# Also pass out stupid hack to get the buildtime nettle version...
+	KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
+endif
 
 ifndef LDFLAGS
 	ifeq "$(OSTYPE)" "Darwin"
@@ -156,6 +173,11 @@ ifeq "$(OSTYPE)" "Linux"
 		ifeq "$(HAS_PC_LIBARCHIVE)" "true"
 			CPPFLAGS+=$(PC_LIBARCHIVE_CPPFLAGS)
 			LDFLAGS+=$(PC_LIBARCHIVE_LDFLAGS)
+		endif
+		# Do the same for nettle
+		ifeq "$(HAS_PC_NETTLE)" "true"
+			CPPFLAGS+=$(PC_NETTLE_CPPFLAGS)
+			LDFLAGS+=$(PC_NETTLE_LDFLAGS)
 		endif
 	endif
 endif
