@@ -61,6 +61,11 @@ endif
 
 # We of course need libarchive
 LIBS=-larchive
+# Do we want to force OpenSSL?
+ifdef KT_FORCE_NO_NETTLE
+	# Quick shortcut, overwrite the pc test, so we don't have to be more messy in the conditionals later on...
+	HAS_PC_NETTLE:="false"
+endif
 # Do we have nettle? If so, use it!
 ifeq "$(HAS_PC_NETTLE)" "true"
 	LIBS+=$(PC_NETTLE_LIBS)
