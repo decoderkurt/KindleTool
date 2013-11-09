@@ -50,13 +50,63 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         fprintf(stderr, "RSA key too small.\n");
         return -1;
     }
-    if(!mpz_out_raw(sigout_file, s))
+    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Strip those...
+    char tmpsig_filename[] = KT_TMPDIR "/kindletool_nettle_tmpsig_XXXXXX";
+    int tmpsig_fd = -1;
+    FILE *tmpsig_file;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    if(_mktemp(tmpsig_filename) == NULL)
     {
-        fprintf(stderr, "Failed writing signature: %s\n", strerror(errno));
+        fprintf(stderr, "Couldn't create temporary signature file.\n");
+        return -1;
+    }
+    tmpsig_fd = open(pem_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
+    tmpsig_fd = mkstemp(tmpsig_filename);
+#endif
+    if(tmpsig_fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temp signature file.\n");
+        return -1;
+    }
+    if((tmpsig_file = fdopen(tmpsig_fd, "w+b")) == NULL)
+    {
+        fprintf(stderr, "Cannot open temp output '%s' for reading & writing.\n", tmpsig_filename);
+        close(tmpsig_fd);
+        unlink(tmpsig_filename);
         return -1;
     }
 
+    if(!mpz_out_raw(tmpsig_file, s))
+    {
+        fprintf(stderr, "Failed writing temp signature: %s\n", strerror(errno));
+        return -1;
+    }
     mpz_clear(s);
+
+    unsigned char sbuffer[BUFFER_SIZE];
+    size_t count;
+    // Skip the first four bytes...
+    fseek(tmpsig_file, 4, SEEK_SET);
+    while((count = fread(sbuffer, sizeof(unsigned char), BUFFER_SIZE, tmpsig_file)) > 0)
+    {
+        if(fwrite(sbuffer, sizeof(unsigned char), count, sigout_file) < count)
+        {
+            fprintf(stderr, "Error writing signature file.\n");
+            fclose(tmpsig_file);
+            return -1;
+        }
+    }
+    if(ferror(tmpsig_file) != 0)
+    {
+        fprintf(stderr, "Error reading temp signature file: %s.\n", strerror(errno));
+        fclose(tmpsig_file);
+        unlink(tmpsig_filename);
+        return -1;
+    }
+    fclose(tmpsig_file);
+    unlink(tmpsig_filename);
+
     //rsa_private_key_clear(rsa_pkey);
     return 0;
 }

@@ -21,13 +21,20 @@
 #ifndef KINDLETOOL
 #define KINDLETOOL
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <limits.h>
+#include <libgen.h>
+
 #include <archive.h>
 #include <archive_entry.h>
-#include <limits.h>
 
 // NOTE: Just to make KDevelop useful while I'm working on nettle...
 #ifndef KT_USE_NETTLE
@@ -35,6 +42,7 @@
 #endif
 
 #ifdef KT_USE_NETTLE
+#include <gmp.h>
 #include <nettle/buffer.h>
 #include <nettle/base64.h>
 #include <nettle/md5.h>
@@ -46,13 +54,6 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #endif
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <libgen.h>
 
 // Die in a slightly more graceful manner than by spewing a whole lot of warnings & errors if we're not building against at least libarchive 3.0.3
 #if ARCHIVE_VERSION_NUMBER < 3000003
