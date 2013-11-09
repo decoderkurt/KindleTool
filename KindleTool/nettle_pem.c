@@ -33,7 +33,6 @@ enum object_type
 /* Return 1 on success, 0 on error, -1 on eof */
 static int read_line(struct nettle_buffer *buffer, FILE *f)
 {
-    fprintf(stderr, "ENTER read_line!\n");
     int c;
 
     while((c = getc(f)) != EOF)
@@ -56,7 +55,6 @@ static int read_line(struct nettle_buffer *buffer, FILE *f)
 
 static int read_file(struct nettle_buffer *buffer, FILE *f)
 {
-    fprintf(stderr, "ENTER read_file!\n");
     int c;
 
     while((c = getc(f)) != EOF)
@@ -92,7 +90,6 @@ static const char pem_ws[33] =
 /* Returns 1 on match, otherwise 0. */
 static int match_pem_start(size_t length, const uint8_t *line, size_t *marker_start, size_t *marker_length)
 {
-    fprintf(stderr, "ENTER match_pem_start!\n");
     while(length > 0 && PEM_IS_SPACE(line[length - 1]))
         length--;
 
@@ -111,7 +108,6 @@ static int match_pem_start(size_t length, const uint8_t *line, size_t *marker_st
    the marker, otherwise 0. */
 static int match_pem_end(size_t length, const uint8_t *line, size_t marker_length, const uint8_t *marker)
 {
-    fprintf(stderr, "ENTER match_pem_end!\n");
     while(length > 0 && PEM_IS_SPACE(line[length - 1]))
         length--;
 
@@ -138,7 +134,6 @@ struct pem_info
 
 static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info)
 {
-    fprintf(stderr, "ENTER read_pem!\n");
     /* Find start line */
     for(;;)
     {
@@ -183,7 +178,6 @@ static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info
 
 static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *length)
 {
-    fprintf(stderr, "ENTER decode_base64!\n");
     struct base64_decode_ctx ctx;
 
     base64_decode_init(&ctx);
@@ -201,7 +195,6 @@ static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *len
 
 static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data, struct rsa_private_key *rsa_pkey)
 {
-    fprintf(stderr, "ENTER convert_rsa_private_key!\n");
     struct rsa_public_key pub;
     int res;
 
@@ -210,7 +203,6 @@ static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, 
 
     if(rsa_keypair_from_der(&pub, rsa_pkey, 0, length, data))
     {
-        fprintf(stderr, "Yay!\n");
         nettle_buffer_reset(buffer);
         res = 1;
     }
@@ -227,7 +219,6 @@ static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, 
 // Returns 1 on success, 0 on error, and -1 for unsupported algorithms.
 static int convert_type(struct nettle_buffer *buffer, enum object_type type, size_t length, const uint8_t *data, struct rsa_private_key *rsa_pkey)
 {
-    fprintf(stderr, "ENTER convert_type!\n");
     int res;
 
     switch(type)
@@ -246,7 +237,6 @@ static int convert_type(struct nettle_buffer *buffer, enum object_type type, siz
 
 static int load_pem(struct nettle_buffer *buffer, FILE *f, struct rsa_private_key *rsa_pkey, enum object_type type, int base64)
 {
-    fprintf(stderr, "ENTER load_pem!\n");
     if(type)
     {
         read_file(buffer, f);
@@ -353,7 +343,6 @@ int kt_private_rsa_from_pem(char *pem_filename, struct rsa_private_key *rsa_pkey
     fclose(f);
     nettle_buffer_clear(&buffer);
 
-    fprintf(stderr, "END kt_private_rsa_from_pem (Success!)\n");
     return EXIT_SUCCESS;
 }
 
