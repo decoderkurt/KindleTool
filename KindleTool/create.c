@@ -1782,17 +1782,6 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
-    /*
-    // Actually unneeded, rsa_keypair_from_* already takes care of it for us ;).
-#ifdef KT_USE_NETTLE
-    // Prepare/validate our private key...
-    if(rsa_private_key_prepare(&info.sign_pkey) != 1)
-    {
-        fprintf(stderr, "Invalid private RSA key!\n");
-        goto do_error;
-    }
-#endif
-    */
     // Signed userdata packages are very peculiar, handle them on their own...
     if(userdata_only)
     {
