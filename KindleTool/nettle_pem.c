@@ -202,9 +202,13 @@ static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *len
 static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data, struct rsa_private_key *rsa_pkey)
 {
     fprintf(stderr, "ENTER convert_rsa_private_key!\n");
+    struct rsa_public_key pub;
     int res;
 
-    if(rsa_keypair_from_der(NULL, rsa_pkey, 0, length, data))
+    // NOTE: Have to setup the pubkey, or everything blows up...
+    rsa_public_key_init(&pub);
+
+    if(rsa_keypair_from_der(&pub, rsa_pkey, 0, length, data))
     {
         fprintf(stderr, "Yay!\n");
         nettle_buffer_reset(buffer);
@@ -349,6 +353,7 @@ int kt_private_rsa_from_pem(char *pem_filename, struct rsa_private_key *rsa_pkey
     fclose(f);
     nettle_buffer_clear(&buffer);
 
+    fprintf(stderr, "END kt_private_rsa_from_pem (Success!)\n");
     return EXIT_SUCCESS;
 }
 

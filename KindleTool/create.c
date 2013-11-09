@@ -1818,6 +1818,7 @@ int kindle_create_main(int argc, char *argv[])
     // Shouldn't happen, unless nettle can't parse our hardcoded default key for some reason...
     if(info.sign_pkey == NULL)
     {
+        fprintf(stderr, "Invalid private key!\n");
         goto do_error;
     }
 #endif

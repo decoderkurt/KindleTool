@@ -346,7 +346,7 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
         "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
         "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\n"
         "-----END RSA PRIVATE KEY-----\n\0";
-    // FIXME: This is ugly. Fix it!
+    // FIXME: This is ugly. Fix it (from_der w/ an in-place base64 decoded buffer)!
     char pem_filename[] = KT_TMPDIR "/kindletool_default_pem_privkey_XXXXXX";
     int pem_fd = -1;
     FILE *pem_file;
@@ -381,13 +381,14 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
     }
     fclose(pem_file);
 
-    if(!kt_private_rsa_from_pem(pem_filename, rsa_pkey))
+    if(kt_private_rsa_from_pem(pem_filename, rsa_pkey) != 0)
     {
-        fprintf(stderr, "Invalid private key!\n");
+        fprintf(stderr, "Invalid default private key!\n");
         return NULL;
     }
 
     unlink(pem_filename);
+    fprintf(stderr, "END get_default_key (Success!)\n");
     return NULL;
 }
 #else
