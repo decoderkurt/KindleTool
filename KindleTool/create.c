@@ -86,7 +86,11 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
     // And finally, truncate it to finally excise those 4 extra bytes!
-    ftruncate(fileno(sigout_file), (off_t) offset + siglen - 4);
+    if(ftruncate(fileno(sigout_file), (off_t) offset + siglen - 4) != 0)
+    {
+        fprintf(stderr, "Error truncating signature file: %s.\n", strerror(errno));
+        return -1;
+    }
 
     return 0;
 }
