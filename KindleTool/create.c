@@ -41,7 +41,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
     if(ferror(in_file) != 0)
     {
-        fprintf(stderr, "Error reading input file.\n");
+        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         return -1;
     }
     mpz_init(s);
@@ -57,7 +57,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
 #if defined(_WIN32) && !defined(__CYGWIN__)
     if(_mktemp(tmpsig_filename) == NULL)
     {
-        fprintf(stderr, "Couldn't create temporary signature file.\n");
+        fprintf(stderr, "Couldn't create temporary signature file: %s.\n", strerror(errno));
         return -1;
     }
     tmpsig_fd = open(pem_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
@@ -66,12 +66,12 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
 #endif
     if(tmpsig_fd == -1)
     {
-        fprintf(stderr, "Couldn't open temp signature file.\n");
+        fprintf(stderr, "Couldn't open temp signature file: %s.\n", strerror(errno));
         return -1;
     }
     if((tmpsig_file = fdopen(tmpsig_fd, "w+b")) == NULL)
     {
-        fprintf(stderr, "Cannot open temp output '%s' for reading & writing.\n", tmpsig_filename);
+        fprintf(stderr, "Cannot open temp output '%s' for reading & writing: %s.\n", tmpsig_filename, strerror(errno));
         close(tmpsig_fd);
         unlink(tmpsig_filename);
         return -1;
@@ -79,7 +79,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
 
     if(!mpz_out_raw(tmpsig_file, s))
     {
-        fprintf(stderr, "Failed writing temp signature: %s\n", strerror(errno));
+        fprintf(stderr, "Failed to write temp signature: %s.\n", strerror(errno));
         return -1;
     }
     mpz_clear(s);
@@ -92,7 +92,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     {
         if(fwrite(sbuffer, sizeof(unsigned char), count, sigout_file) < count)
         {
-            fprintf(stderr, "Error writing signature file.\n");
+            fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
             fclose(tmpsig_file);
             return -1;
         }
@@ -160,7 +160,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
 
     if(fwrite(sig, sizeof(unsigned char), siglen, sigout_file) < siglen)
     {
-        fprintf(stderr, "Error writing signature file.\n");
+        fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
         free(sig);
         EVP_PKEY_free(pkey);
         return -7;
@@ -847,7 +847,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
         case OTAUpdateV2:
             if((temp = tmpfile()) == NULL)
             {
-                fprintf(stderr, "Error opening temp file.\n");
+                fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
                 return -1;
             }
             if(kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0) // Create the update
@@ -872,14 +872,14 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             {
                 if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                 {
-                    fprintf(stderr, "Error writing update to output.\n");
+                    fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
                     fclose(temp);
                     return -1;
                 }
             }
             if(ferror(temp) != 0)
             {
-                fprintf(stderr, "Error reading generated update.\n");
+                fprintf(stderr, "Error reading generated update: %s.\n", strerror(errno));
                 fclose(temp);
                 return -1;
             }
@@ -896,7 +896,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             {
                 if((temp = tmpfile()) == NULL)
                 {
-                    fprintf(stderr, "Error opening temp file.\n");
+                    fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
                     return -1;
                 }
                 if(kindle_create_recovery(info, input_tgz, temp, fake_sign) < 0)
@@ -920,14 +920,14 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
                 {
                     if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                     {
-                        fprintf(stderr, "Error writing update to output.\n");
+                        fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
                         fclose(temp);
                         return -1;
                     }
                 }
                 if(ferror(temp) != 0)
                 {
-                    fprintf(stderr, "Error reading generated update.\n");
+                    fprintf(stderr, "Error reading generated update: %s.\n", strerror(errno));
                     fclose(temp);
                     return -1;
                 }
@@ -945,7 +945,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
         case RecoveryUpdateV2:
             if((temp = tmpfile()) == NULL)
             {
-                fprintf(stderr, "Error opening temp file.\n");
+                fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
                 return -1;
             }
             if(kindle_create_recovery_v2(info, input_tgz, temp, fake_sign) < 0)
@@ -969,14 +969,14 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             {
                 if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                 {
-                    fprintf(stderr, "Error writing update to output.\n");
+                    fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
                     fclose(temp);
                     return -1;
                 }
             }
             if(ferror(temp) != 0)
             {
-                fprintf(stderr, "Error reading generated update.\n");
+                fprintf(stderr, "Error reading generated update: %s.\n", strerror(errno));
                 fclose(temp);
                 return -1;
             }
@@ -997,13 +997,13 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             {
                 if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                 {
-                    fprintf(stderr, "Error appending userdata tarball to output.\n");
+                    fprintf(stderr, "Error appending userdata tarball to output: %s.\n", strerror(errno));
                     return -1;
                 }
             }
             if(ferror(input_tgz) != 0)
             {
-                fprintf(stderr, "Error reading original userdata tarball update.\n");
+                fprintf(stderr, "Error reading original userdata tarball update: %s.\n", strerror(errno));
                 return -1;
             }
             return 0;
@@ -1063,7 +1063,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     {
         if((demunged_tgz = tmpfile()) == NULL)
         {
-            fprintf(stderr, "Error opening temp file.\n");
+            fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             free(header);
             return -1;
         }
@@ -1116,7 +1116,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     // Now, we write the header to the file
     if(fwrite(header, sizeof(unsigned char), header_size, output) < header_size)
     {
-        fprintf(stderr, "Error writing update header.\n");
+        fprintf(stderr, "Error writing update header: %s.\n", strerror(errno));
         free(header);
         return -1;
     }
@@ -1135,7 +1135,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     header.data.signature.certificate_number = (uint32_t)info->certificate_number; // 4 byte certificate number
     if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Error writing update header.\n");
+        fprintf(stderr, "Error writing update header: %s.\n", strerror(errno));
         return -1;
     }
     // Write signature to output
@@ -1165,7 +1165,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     {
         if((obfuscated_tgz = tmpfile()) == NULL)
         {
-            fprintf(stderr, "Error opening temp file.\n");
+            fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             return -1;
         }
         demunger(input_tgz, obfuscated_tgz, 0, 0);
@@ -1192,7 +1192,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     // Write header to output
     if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + OTA_UPDATE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Error writing update header.\n");
+        fprintf(stderr, "Error writing update header: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -1232,7 +1232,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     {
         if((obfuscated_tgz = tmpfile()) == NULL)
         {
-            fprintf(stderr, "Error opening temp file.\n");
+            fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             return -1;
         }
         demunger(input_tgz, obfuscated_tgz, 0, 0);
@@ -1259,7 +1259,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     // Write header to output
     if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Error writing update header.\n");
+        fprintf(stderr, "Error writing update header: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -1297,7 +1297,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     {
         if((demunged_tgz = tmpfile()) == NULL)
         {
-            fprintf(stderr, "Error opening temp file.\n");
+            fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             free(header);
             return -1;
         }
@@ -1355,7 +1355,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     // Now, we write the header to the file
     if(fwrite(header, sizeof(unsigned char), header_size, output) < header_size)
     {
-        fprintf(stderr, "Error writing update header.\n");
+        fprintf(stderr, "Error writing update header: %s.\n", strerror(errno));
         free(header);
         return -1;
     }

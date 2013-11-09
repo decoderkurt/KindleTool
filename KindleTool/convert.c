@@ -44,7 +44,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
 
     if(kindle_read_bundle_header(&header, input) < 0)
     {
-        fprintf(stderr, "Cannot read input file.\n");
+        fprintf(stderr, "Cannot read input file: %s.\n", strerror(errno));
         return -1;
     }
     // Slightly hackish way to detect unknown bundle types...
@@ -84,7 +84,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
                 {
                     if(fwrite(buffer, sizeof(unsigned char), count, unwrap_output) < count)
                     {
-                        fprintf(stderr, "Error writing unwrapped update to output.\n");
+                        fprintf(stderr, "Error writing unwrapped update to output: %s.\n", strerror(errno));
                         return -1;
                     }
                 }
@@ -142,7 +142,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
                 {
                     if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
                     {
-                        fprintf(stderr, "Error writing userdata tarball to output.\n");
+                        fprintf(stderr, "Error writing userdata tarball to output: %s.\n", strerror(errno));
                         return -1;
                     }
                 }
@@ -243,7 +243,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
 
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Cannot read update correctly.\n");
+        fprintf(stderr, "Cannot read update correctly: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -265,7 +265,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
 
     if(fread(header->data.signature_header_data, sizeof(unsigned char), UPDATE_SIGNATURE_BLOCK_SIZE, input) < UPDATE_SIGNATURE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Cannot read signature header.\n");
+        fprintf(stderr, "Cannot read signature header: %s.\n", strerror(errno));
         return -1;
     }
     cert_num = (CertificateNumber)(header->data.signature.certificate_number);
@@ -300,13 +300,13 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
         signature = malloc(seek);
         if(fread(signature, sizeof(unsigned char), seek, input) < seek)
         {
-            fprintf(stderr, "Cannot read signature!\n");
+            fprintf(stderr, "Cannot read signature! %s.\n", strerror(errno));
             free(signature);
             return -1;
         }
         if(fwrite(signature, sizeof(unsigned char), seek, output) < seek)
         {
-            fprintf(stderr, "Cannot write signature file!\n");
+            fprintf(stderr, "Cannot write signature file! %s.\n", strerror(errno));
             free(signature);
             return -1;
         }
@@ -319,7 +319,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
 {
     if(fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Cannot read OTA header.\n");
+        fprintf(stderr, "Cannot read OTA header: %s.\n", strerror(errno));
         return -1;
     }
     dm((unsigned char *)header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
@@ -342,7 +342,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
 {
     if(fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
-        fprintf(stderr, "Cannot read recovery update header.\n");
+        fprintf(stderr, "Cannot read recovery update header: %s.\n", strerror(errno));
         return -1;
     }
     dm((unsigned char *)header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
@@ -456,7 +456,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
 
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Cannot read update correctly.\n");
+        fprintf(stderr, "Cannot read update correctly: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -828,7 +828,7 @@ int kindle_extract_main(int argc, char *argv[])
     output_dir = argv[1];
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
-        fprintf(stderr, "Cannot open input %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
+        fprintf(stderr, "Cannot open input %s package '%s': %s.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, strerror(errno));
         return -1;
     }
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
@@ -839,7 +839,7 @@ int kindle_extract_main(int argc, char *argv[])
     // Inspired from libgit2's Posix emulation layer (https://github.com/libgit2/libgit2)
     if(_mktemp(tgz_filename) == NULL)
     {
-        fprintf(stderr, "Couldn't create temporary file template.\n");
+        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         fclose(bin_input);
         return -1;
     }
@@ -849,13 +849,13 @@ int kindle_extract_main(int argc, char *argv[])
 #endif
     if(tgz_fd == -1)
     {
-        fprintf(stderr, "Couldn't open temporary file.\n");
+        fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
         fclose(bin_input);
         return -1;
     }
     if((tgz_output = fdopen(tgz_fd, "wb")) == NULL)
     {
-        fprintf(stderr, "Cannot open temp output '%s' for writing.\n", tgz_filename);
+        fprintf(stderr, "Cannot open temp output '%s' for writing: %s.\n", tgz_filename, strerror(errno));
         fclose(bin_input);
         close(tgz_fd);
         unlink(tgz_filename);

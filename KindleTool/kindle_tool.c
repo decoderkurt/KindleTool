@@ -53,7 +53,7 @@ int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sig
         bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
         if(ferror(output) != 0)
         {
-            fprintf(stderr, "Error munging, cannot write to output.\n");
+            fprintf(stderr, "Error munging, cannot write to output: %s.\n", strerror(errno));
             return -1;
         }
         else if(bytes_written < bytes_read)
@@ -65,7 +65,7 @@ int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sig
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error munging, cannot read input.\n");
+        fprintf(stderr, "Error munging, cannot read input: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -86,7 +86,7 @@ int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_s
         bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
         if(ferror(output) != 0)
         {
-            fprintf(stderr, "Error demunging, cannot write to output.\n");
+            fprintf(stderr, "Error demunging, cannot write to output: %s.\n", strerror(errno));
             return -1;
         }
         else if(bytes_written < bytes_read)
@@ -98,7 +98,7 @@ int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_s
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error demunging, cannot read input.\n");
+        fprintf(stderr, "Error demunging, cannot read input: %s.\n", strerror(errno));
         return -1;
     }
 
@@ -286,7 +286,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error reading input file.\n");
+        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         return -1;
     }
     md5_digest(&md5, MD5_DIGEST_SIZE, output);
@@ -314,7 +314,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     if(ferror(input) != 0)
     {
-        fprintf(stderr, "Error reading input file.\n");
+        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         return -1;
     }
     MD5_Final(output, &md5);
@@ -353,7 +353,7 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
 #if defined(_WIN32) && !defined(__CYGWIN__)
     if(_mktemp(pem_filename) == NULL)
     {
-        fprintf(stderr, "Couldn't create temporary file template.\n");
+        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         return NULL;
     }
     pem_fd = open(pem_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
@@ -362,19 +362,19 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
 #endif
     if(pem_fd == -1)
     {
-        fprintf(stderr, "Couldn't open temporary private key file.\n");
+        fprintf(stderr, "Couldn't open temporary private key file: %s.\n", strerror(errno));
         return NULL;
     }
     if((pem_file = fdopen(pem_fd, "wb")) == NULL)
     {
-        fprintf(stderr, "Cannot open temp output '%s' for writing.\n", pem_filename);
+        fprintf(stderr, "Cannot open temp output '%s' for writing: %s.\n", pem_filename, strerror(errno));
         close(pem_fd);
         unlink(pem_filename);
         return NULL;
     }
     if(fwrite(sign_key, sizeof(unsigned char), strlen(sign_key), pem_file) < strlen(sign_key))
     {
-        fprintf(stderr, "Error writing temporary private key file.\n");
+        fprintf(stderr, "Error writing temporary private key file: %s.\n", strerror(errno));
         close(pem_fd);
         unlink(pem_filename);
         return NULL;
@@ -597,7 +597,7 @@ int kindle_obfuscate_main(int argc, char *argv[])
     {
         if((output = fopen(argv[1], "wb")) == NULL)
         {
-            fprintf(stderr, "Cannot open output for writing.\n");
+            fprintf(stderr, "Cannot open output for writing: %s.\n", strerror(errno));
             return -1;
         }
     }
@@ -605,7 +605,7 @@ int kindle_obfuscate_main(int argc, char *argv[])
     {
         if((input = fopen(argv[0], "rb")) == NULL)
         {
-            fprintf(stderr, "Cannot open input for reading.\n");
+            fprintf(stderr, "Cannot open input for reading: %s.\n", strerror(errno));
             fclose(output);
             return -1;
         }
@@ -635,7 +635,7 @@ int kindle_deobfuscate_main(int argc, char *argv[])
     {
         if((output = fopen(argv[1], "wb")) == NULL)
         {
-            fprintf(stderr, "Cannot open output for writing.\n");
+            fprintf(stderr, "Cannot open output for writing: %s.\n", strerror(errno));
             return -1;
         }
     }
@@ -643,7 +643,7 @@ int kindle_deobfuscate_main(int argc, char *argv[])
     {
         if((input = fopen(argv[0], "rb")) == NULL)
         {
-            fprintf(stderr, "Cannot open input for reading.\n");
+            fprintf(stderr, "Cannot open input for reading: %s.\n", strerror(errno));
             fclose(output);
             return -1;
         }
@@ -693,7 +693,7 @@ int kindle_info_main(int argc, char *argv[])
     // Find root password
     if(fprintf(temp, "%s\n", serial_no) < SERIAL_NO_LENGTH)
     {
-        fprintf(stderr, "Cannot write serial to temporary file.\n");
+        fprintf(stderr, "Cannot write serial to temporary file: %s.\n", strerror(errno));
         fclose(temp);
         return -1;
     }
@@ -752,12 +752,12 @@ int main(int argc, char *argv[])
 #else
     if(freopen(NULL, "rb", stdin) == NULL)
     {
-        fprintf(stderr, "Cannot set stdin to binary mode.\n");
+        fprintf(stderr, "Cannot set stdin to binary mode: %s.\n", strerror(errno));
         return -1;
     }
     if(freopen(NULL, "wb", stdout) == NULL)
     {
-        fprintf(stderr, "Cannot set stdout to binary mode.\n");
+        fprintf(stderr, "Cannot set stdout to binary mode: %s.\n", strerror(errno));
         return -1;
     }
 #endif
