@@ -34,6 +34,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
+    size_t siglen;
+    long offset;
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -51,62 +53,39 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
-    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Strip those...
-    char tmpsig_filename[] = KT_TMPDIR "/kindletool_nettle_tmpsig_XXXXXX";
-    int tmpsig_fd = -1;
-    FILE *tmpsig_file;
-#if defined(_WIN32) && !defined(__CYGWIN__)
-    if(_mktemp(tmpsig_filename) == NULL)
+    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Shift by 4 bytes backward to strip it...
+    offset = ftell(sigout_file);
+    if((siglen = mpz_out_raw(sigout_file, s)) == 0)
     {
-        fprintf(stderr, "Couldn't create temporary signature file: %s.\n", strerror(errno));
-        return -1;
-    }
-    tmpsig_fd = open(pem_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
-#else
-    tmpsig_fd = mkstemp(tmpsig_filename);
-#endif
-    if(tmpsig_fd == -1)
-    {
-        fprintf(stderr, "Couldn't open temp signature file: %s.\n", strerror(errno));
-        return -1;
-    }
-    if((tmpsig_file = fdopen(tmpsig_fd, "w+b")) == NULL)
-    {
-        fprintf(stderr, "Cannot open temp output '%s' for reading & writing: %s.\n", tmpsig_filename, strerror(errno));
-        close(tmpsig_fd);
-        unlink(tmpsig_filename);
-        return -1;
-    }
-
-    if(!mpz_out_raw(tmpsig_file, s))
-    {
-        fprintf(stderr, "Failed to write temp signature: %s.\n", strerror(errno));
+        fprintf(stderr, "Failed to write raw signature: %s.\n", strerror(errno));
+        mpz_clear(s);
         return -1;
     }
     mpz_clear(s);
-
-    unsigned char sbuffer[BUFFER_SIZE];
-    size_t count;
-    // Skip the first four bytes...
-    fseek(tmpsig_file, 4, SEEK_SET);
-    while((count = fread(sbuffer, sizeof(unsigned char), BUFFER_SIZE, tmpsig_file)) > 0)
+    // Read back the sig, without the 4 bytes of crap we don't need...
+    fseek(sigout_file, (long int) - siglen + 4, SEEK_CUR);
+    // Reuse the buffer
+    memset(buffer, 0, sizeof(buffer));
+    // NOTE: Probably not terribly portable, but should do the job for us...
+    if((len = fread(buffer, sizeof(unsigned char), siglen - 4, sigout_file)) < siglen - 4)
     {
-        if(fwrite(sbuffer, sizeof(unsigned char), count, sigout_file) < count)
-        {
-            fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
-            fclose(tmpsig_file);
-            return -1;
-        }
-    }
-    if(ferror(tmpsig_file) != 0)
-    {
-        fprintf(stderr, "Error reading temp signature file: %s.\n", strerror(errno));
-        fclose(tmpsig_file);
-        unlink(tmpsig_filename);
+        fprintf(stderr, "Short read when reading back signature file!\n");
         return -1;
     }
-    fclose(tmpsig_file);
-    unlink(tmpsig_filename);
+    if(ferror(sigout_file) != 0)
+    {
+        fprintf(stderr, "Error reading back signature file: %s.\n", strerror(errno));
+        return -1;
+    }
+    // Write it back at the original offset...
+    fseek(sigout_file, offset, SEEK_SET);
+    if(fwrite(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
+    {
+        fprintf(stderr, "Error writing back signature file: %s.\n", strerror(errno));
+        return -1;
+    }
+    // And finally, truncate it to finally excise those 4 extra bytes!
+    ftruncate(fileno(sigout_file), (off_t) offset + siglen - 4);
 
     //rsa_private_key_clear(rsa_pkey);
     return 0;
@@ -720,9 +699,9 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 fclose(file);
                 goto cleanup;
             }
-            if((sigfile = fdopen(sigfd, "wb")) == NULL)
+            if((sigfile = fdopen(sigfd, "w+b")) == NULL)
             {
-                fprintf(stderr, "Cannot open temp signature file '%s' for writing\n", signame);
+                fprintf(stderr, "Cannot open temp signature file '%s' for reading & writing\n", signame);
                 fclose(file);
                 close(sigfd);
                 unlink(sigabsolutepath);
@@ -1989,8 +1968,8 @@ int kindle_create_main(int argc, char *argv[])
         archive_entry_free(entry);
         archive_match_free(match);
 
-        // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
-        if((output = fopen(output_filename, "wb")) == NULL)
+        // Check to see if we can read & write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
+        if((output = fopen(output_filename, "w+b")) == NULL)
         {
             fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
             goto do_error;
