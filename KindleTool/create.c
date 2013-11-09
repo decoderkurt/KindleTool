@@ -1346,6 +1346,7 @@ int kindle_create_main(int argc, char *argv[])
     struct rsa_private_key rsa_pkey;
     rsa_private_key_init(&rsa_pkey);
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(&rsa_pkey), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
+    info.sign_pkey = &rsa_pkey;
 #else
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
 #endif
