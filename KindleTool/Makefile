@@ -23,6 +23,7 @@ ifeq "$(MINGW)" "true"
 endif
 
 SRCS=kindle_tool.c create.c convert.c
+SRCS+=nettle_pem.c
 
 default: all
 

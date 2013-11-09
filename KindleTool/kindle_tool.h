@@ -35,6 +35,8 @@
 #endif
 
 #ifdef KT_USE_NETTLE
+#include <nettle/buffer.h>
+#include <nettle/base64.h>
 #include <nettle/md5.h>
 #include <nettle/sha2.h>
 #include <nettle/rsa.h>
@@ -302,9 +304,6 @@ int md5_sum(FILE *, char *);
 void *get_default_key(struct rsa_private_key *);
 #else
 RSA *get_default_key(void);
-#endif
-#ifdef KT_USE_NETTLE
-size_t read_file(const char *, size_t, char **);
 #endif
 int kindle_print_help(const char *);
 int kindle_print_version(const char *);
