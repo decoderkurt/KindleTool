@@ -1124,7 +1124,11 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
         return -1;
     }
     // Write signature to output
+#ifdef KT_USE_NETTLE
     if(sign_file(input_bin, &info->sign_pkey, output) < 0)
+#else
+    if(sign_file(input_bin, info->sign_pkey, output) < 0)
+#endif
     {
         fprintf(stderr, "Error signing update package payload.\n");
         return -1;
@@ -2091,7 +2095,11 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
+#ifdef KT_USE_NETTLE
         if(kindle_create_package_archive(tarball_fd, input_list, input_index, &info.sign_pkey, legacy, real_blocksize) != 0)
+#else
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy, real_blocksize) != 0)
+#endif
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
