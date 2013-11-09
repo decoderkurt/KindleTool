@@ -53,7 +53,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
-    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Shift by 4 bytes backward to strip it...
+    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We'll shift our stream by 4 bytes backward to strip it...
     offset = ftell(sigout_file);
     if((siglen = mpz_out_raw(sigout_file, s)) == 0)
     {
@@ -699,6 +699,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 fclose(file);
                 goto cleanup;
             }
+            // NOTE: Keep the w+, we need write & right for the wonderful nettle/gmpc mpz_out_raw workaround...
             if((sigfile = fdopen(sigfd, "w+b")) == NULL)
             {
                 fprintf(stderr, "Cannot open temp signature file '%s' for reading & writing\n", signame);
@@ -1969,6 +1970,7 @@ int kindle_create_main(int argc, char *argv[])
         archive_match_free(match);
 
         // Check to see if we can read & write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
+        // NOTE: Keep the w+, we need write & right for the wonderful nettle/gmpc mpz_out_raw workaround...
         if((output = fopen(output_filename, "w+b")) == NULL)
         {
             fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
