@@ -1141,7 +1141,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     // Write signature to output
     if(sign_file(input_bin, info->sign_pkey, output) < 0)
     {
-        fprintf(stderr, "Error signing update package.\n");
+        fprintf(stderr, "Error signing update package payload.\n");
         return -1;
     }
     return 0;
