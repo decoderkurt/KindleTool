@@ -159,7 +159,7 @@ endif
 # If we have nettle, use it
 ifeq "$(HAS_PC_NETTLE)" "true"
 	KT_CPPFLAGS+=-DKT_USE_NETTLE
-	# Also pass out stupid hack to get the buildtime nettle version...
+	# Also pass our stupid hack to get the buildtime nettle version...
 	KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
 endif
 

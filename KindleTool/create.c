@@ -703,8 +703,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 fclose(file);
                 goto cleanup;
             }
-            // NOTE: Keep the w+, we need write & right for the wonderful nettle/gmpc mpz_out_raw workaround...
+#ifdef KT_USE_NETTLE
+            // NOTE: Keep the w+, we need read & write for the wonderful nettle/gmpc mpz_out_raw workaround...
             if((sigfile = fdopen(sigfd, "w+b")) == NULL)
+#else
+            if((sigfile = fdopen(sigfd, "wb")) == NULL)
+#endif
             {
                 fprintf(stderr, "Cannot open temp signature file '%s' for reading & writing\n", signame);
                 fclose(file);
@@ -1960,8 +1964,12 @@ int kindle_create_main(int argc, char *argv[])
         archive_match_free(match);
 
         // Check to see if we can read & write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
-        // NOTE: Keep the w+, we need write & right for the wonderful nettle/gmpc mpz_out_raw workaround...
+#ifdef KT_USE_NETTLE
+        // NOTE: Keep the w+, we need read & write for the wonderful nettle/gmpc mpz_out_raw workaround...
         if((output = fopen(output_filename, "w+b")) == NULL)
+#else
+        if((output = fopen(output_filename, "wb")) == NULL)
+#endif
         {
             fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
             goto do_error;
