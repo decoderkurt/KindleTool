@@ -50,6 +50,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     if(!rsa_sha256_sign(rsa_pkey, &hash, s))
     {
         fprintf(stderr, "RSA key too small.\n");
+        mpz_clear(s);
         return -1;
     }
 
@@ -87,7 +88,6 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     // And finally, truncate it to finally excise those 4 extra bytes!
     ftruncate(fileno(sigout_file), (off_t) offset + siglen - 4);
 
-    //rsa_private_key_clear(rsa_pkey);
     return 0;
 }
 #else
@@ -1120,7 +1120,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
         return -1;
     }
     // Write signature to output
-    if(sign_file(input_bin, info->sign_pkey, output) < 0)
+    if(sign_file(input_bin, &info->sign_pkey, output) < 0)
     {
         fprintf(stderr, "Error signing update package payload.\n");
         return -1;
@@ -1373,14 +1373,7 @@ int kindle_create_main(int argc, char *argv[])
         { "legacy", no_argument, NULL, 'C' },
         { NULL, 0, NULL, 0 }
     };
-#ifdef KT_USE_NETTLE
-    struct rsa_private_key rsa_pkey;
-    rsa_private_key_init(&rsa_pkey);
-    UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(&rsa_pkey), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
-    info.sign_pkey = &rsa_pkey;
-#else
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
-#endif
     FILE *input;
     FILE *output;
 #ifndef KT_USE_NETTLE
@@ -1690,8 +1683,7 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case 'k':
 #ifdef KT_USE_NETTLE
-            {
-                if(kt_private_rsa_from_pem(optarg, info.sign_pkey) != 0)
+                if(kt_private_rsa_from_pem(optarg, &info.sign_pkey) != 0)
                 {
                     fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
                     goto do_error;
@@ -1705,7 +1697,6 @@ int kindle_create_main(int argc, char *argv[])
                 BIO_free(bio);
 #endif
                 break;
-            }
             case 'b':
                 strncpy(info.magic_number, optarg, 4);
                 if((info.version = get_bundle_version(optarg)) == UnknownUpdate)
@@ -1779,15 +1770,6 @@ int kindle_create_main(int argc, char *argv[])
         }
     }
 
-#ifdef KT_USE_NETTLE
-    // Check that we have something resembling a valid RSA private key to sign our stuff with...
-    // Shouldn't happen, unless nettle can't parse our hardcoded default key for some reason...
-    if(info.sign_pkey == NULL)
-    {
-        fprintf(stderr, "Invalid private key!\n");
-        goto do_error;
-    }
-#endif
     // Signed userdata packages are very peculiar, handle them on their own...
     if(userdata_only)
     {
@@ -2105,7 +2087,7 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy, real_blocksize) != 0)
+        if(kindle_create_package_archive(tarball_fd, input_list, input_index, &info.sign_pkey, legacy, real_blocksize) != 0)
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
@@ -2138,7 +2120,7 @@ int kindle_create_main(int argc, char *argv[])
         free(info.metastrings[i]);
     free(info.metastrings);
 #ifdef KT_USE_NETTLE
-    rsa_private_key_clear(info.sign_pkey);
+    rsa_private_key_clear(&info.sign_pkey);
 #else
     RSA_free(info.sign_pkey);
 #endif
@@ -2170,8 +2152,7 @@ do_error:
         free(info.metastrings[i]);
     free(info.metastrings);
 #ifdef KT_USE_NETTLE
-    if(info.sign_pkey != NULL)
-        rsa_private_key_clear(info.sign_pkey);
+    rsa_private_key_clear(&info.sign_pkey);
 #else
     RSA_free(info.sign_pkey);
 #endif

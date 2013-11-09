@@ -328,7 +328,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 #endif
 
 #ifdef KT_USE_NETTLE
-void *get_default_key(struct rsa_private_key *rsa_pkey)
+struct rsa_private_key get_default_key(void)
 {
     // Make nettle happy... (Array created from the bin2h output of pkcs1-conv on our pem file)
     static char sign_key_sexp[] =
@@ -366,13 +366,16 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
         "\x49\x86\xF8\xAD\xD9\xA4\xE6\xB4\xBC\xD7\xC5\x4E\x3A\x2B\xEB\x15\xE8\xD2\x18\xD6"
         "\xD1\x09\x1B\xE4\x45\xCC\xB4\x70\x3B\x82\x05\x0D\x8E\x1A\xFD\xDA\x28\x87\x56\x21"
         "\xD6\x21\x45\x1A\x37\x26\xA6\xAC\xDA\xEA\xD4\x6E\xB5\xAC\x3C\xCC\x29\x29\x29";
-    if(!rsa_keypair_from_sexp(NULL, rsa_pkey, 0, sizeof(sign_key_sexp), (uint8_t *) sign_key_sexp))
+
+    struct rsa_private_key rsa_pkey;
+    rsa_private_key_init(&rsa_pkey);
+
+    if(!rsa_keypair_from_sexp(NULL, &rsa_pkey, 0, sizeof(sign_key_sexp), (uint8_t *) sign_key_sexp))
     {
         fprintf(stderr, "Invalid default private key!\n");
-        return NULL;
     }
 
-    return NULL;
+    return rsa_pkey;
 }
 #else
 RSA *get_default_key(void)

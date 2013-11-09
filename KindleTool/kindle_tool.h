@@ -257,7 +257,7 @@ typedef struct
     char magic_number[MAGIC_NUMBER_LENGTH];
     BundleVersion version;
 #ifdef KT_USE_NETTLE
-    struct rsa_private_key *sign_pkey;
+    struct rsa_private_key sign_pkey;
 #else
     RSA *sign_pkey;
 #endif
@@ -302,7 +302,7 @@ BundleVersion get_bundle_version(char *);
 const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
 #ifdef KT_USE_NETTLE
-void *get_default_key(struct rsa_private_key *);
+struct rsa_private_key get_default_key(void);
 #else
 RSA *get_default_key(void);
 #endif

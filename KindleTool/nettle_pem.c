@@ -212,6 +212,8 @@ static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, 
         res = 0;
     }
 
+    rsa_public_key_clear(&pub);
+
     return res;
 }
 
