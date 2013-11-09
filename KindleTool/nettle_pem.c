@@ -38,7 +38,7 @@ static int read_line(struct nettle_buffer *buffer, FILE *f)
 
     while((c = getc(f)) != EOF)
     {
-        if(!NETTLE_BUFFER_PUTC(buffer, c))
+        if(!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c))
             return 0;
 
         if(c == '\n')
@@ -60,7 +60,7 @@ static int read_file(struct nettle_buffer *buffer, FILE *f)
     int c;
 
     while((c = getc(f)) != EOF)
-        if(!NETTLE_BUFFER_PUTC(buffer, c))
+        if(!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c))
             return 0;
 
     if(ferror(f))
