@@ -21,20 +21,19 @@
 #include "kindle_tool.h"
 
 #ifdef KT_USE_NETTLE
-// Most of this is *heavily* inspired from the pkcs1-conv nettle tool...
+// Nearly all of this was just lifted straight off from the pkcs1-conv nettle tool...
 enum object_type
 {
-    /* Use a range of values which also work as option id:s */
     RSA_PRIVATE_KEY = 0x200,
     RSA_PUBLIC_KEY,
     DSA_PRIVATE_KEY,
-    /* DSA public keys only supported as part of a SubjectPublicKeyInfo, i.e., the GENERAL_PUBLIC_KEY case. */
     GENERAL_PUBLIC_KEY,
 };
 
 /* Return 1 on success, 0 on error, -1 on eof */
 static int read_line(struct nettle_buffer *buffer, FILE *f)
 {
+    fprintf(stderr, "ENTER read_line!\n");
     int c;
 
     while((c = getc(f)) != EOF)
@@ -57,6 +56,7 @@ static int read_line(struct nettle_buffer *buffer, FILE *f)
 
 static int read_file(struct nettle_buffer *buffer, FILE *f)
 {
+    fprintf(stderr, "ENTER read_file!\n");
     int c;
 
     while((c = getc(f)) != EOF)
@@ -92,6 +92,7 @@ static const char pem_ws[33] =
 /* Returns 1 on match, otherwise 0. */
 static int match_pem_start(size_t length, const uint8_t *line, size_t *marker_start, size_t *marker_length)
 {
+    fprintf(stderr, "ENTER match_pem_start!\n");
     while(length > 0 && PEM_IS_SPACE(line[length - 1]))
         length--;
 
@@ -110,6 +111,7 @@ static int match_pem_start(size_t length, const uint8_t *line, size_t *marker_st
    the marker, otherwise 0. */
 static int match_pem_end(size_t length, const uint8_t *line, size_t marker_length, const uint8_t *marker)
 {
+    fprintf(stderr, "ENTER match_pem_end!\n");
     while(length > 0 && PEM_IS_SPACE(line[length - 1]))
         length--;
 
@@ -136,6 +138,7 @@ struct pem_info
 
 static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info)
 {
+    fprintf(stderr, "ENTER read_pem!\n");
     /* Find start line */
     for(;;)
     {
@@ -180,6 +183,7 @@ static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info
 
 static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *length)
 {
+    fprintf(stderr, "ENTER decode_base64!\n");
     struct base64_decode_ctx ctx;
 
     base64_decode_init(&ctx);
@@ -195,65 +199,57 @@ static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *len
     }
 }
 
-static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
+static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data, struct rsa_private_key *rsa_pkey)
 {
-    struct rsa_public_key pub;
-    struct rsa_private_key priv;
+    fprintf(stderr, "ENTER convert_rsa_private_key!\n");
     int res;
 
-    rsa_public_key_init(&pub);
-    rsa_private_key_init(&priv);
-
-    if(rsa_keypair_from_der(&pub, &priv, 0, length, data))
+    if(rsa_keypair_from_der(NULL, rsa_pkey, 0, length, data))
     {
-        /* Reuses the buffer */
+        fprintf(stderr, "Yay!\n");
         nettle_buffer_reset(buffer);
-        res = rsa_keypair_to_sexp(buffer, NULL, &pub, &priv);
+        res = 1;
     }
     else
     {
         fprintf(stderr, "Invalid PKCS#1 private key.\n");
         res = 0;
     }
-    rsa_public_key_clear(&pub);
-    rsa_private_key_clear(&priv);
 
     return res;
 }
 
-/* NOTE: Destroys contents of buffer */
-/* Returns 1 on success, 0 on error, and -1 for unsupported algorithms. */
-static int convert_type(struct nettle_buffer *buffer, enum object_type type, size_t length, const uint8_t *data)
+// NOTE: Destroys contents of buffer
+// Returns 1 on success, 0 on error, and -1 for unsupported algorithms.
+static int convert_type(struct nettle_buffer *buffer, enum object_type type, size_t length, const uint8_t *data, struct rsa_private_key *rsa_pkey)
 {
+    fprintf(stderr, "ENTER convert_type!\n");
     int res;
 
     switch(type)
     {
         default:
-            abort();
+            fprintf(stderr, "Unsupported key type!\n");
+            return -1;
 
         case RSA_PRIVATE_KEY:
-            res = convert_rsa_private_key(buffer, length, data);
+            res = convert_rsa_private_key(buffer, length, data, rsa_pkey);
             break;
     }
-
-    /*
-    if(res > 0)
-        res = write_file(buffer, stdout);
-    */
 
     return res;
 }
 
-static int convert_file(struct nettle_buffer *buffer, FILE *f, enum object_type type, int base64)
+static int load_pem(struct nettle_buffer *buffer, FILE *f, struct rsa_private_key *rsa_pkey, enum object_type type, int base64)
 {
+    fprintf(stderr, "ENTER load_pem!\n");
     if(type)
     {
         read_file(buffer, f);
         if(base64 && !decode_base64(buffer, 0, &buffer->size))
             return 0;
 
-        if(convert_type(buffer, type, buffer->size, buffer->contents) != 1)
+        if(convert_type(buffer, type, buffer->size, buffer->contents, rsa_pkey) != 1)
             return 0;
 
         return 1;
@@ -279,7 +275,10 @@ static int convert_file(struct nettle_buffer *buffer, FILE *f, enum object_type 
             }
 
             if(!decode_base64(buffer, info.data_start, &info.data_length))
+            {
+                fprintf(stderr, "decode_base64 failed!\n");
                 return 0;
+            }
 
             marker = buffer->contents + info.marker_start;
 
@@ -315,13 +314,16 @@ static int convert_file(struct nettle_buffer *buffer, FILE *f, enum object_type 
             if(!type)
                 fprintf(stderr, "Ignoring unsupported object type `%s'.\n", marker);
 
-            else if(convert_type(buffer, type, info.data_length, buffer->contents + info.data_start) != 1)
+            else if(convert_type(buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) != 1)
+            {
+                fprintf(stderr, "convert_type failed!\n");
                 return 0;
+            }
         }
     }
 }
 
-int main_pem_import(char *pem_filename)
+int kt_private_rsa_from_pem(char *pem_filename, struct rsa_private_key *rsa_pkey)
 {
     struct nettle_buffer buffer;
     enum object_type type = 0;
@@ -338,8 +340,11 @@ int main_pem_import(char *pem_filename)
         return EXIT_FAILURE;
     }
 
-    if(!convert_file(&buffer, f, type, base64))
+    if(!load_pem(&buffer, f, rsa_pkey, type, base64))
+    {
+        fprintf(stderr, "load_pem failed!\n");
         return EXIT_FAILURE;
+    }
 
     fclose(f);
     nettle_buffer_clear(&buffer);

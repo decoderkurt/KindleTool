@@ -77,6 +77,7 @@ int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_s
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
     size_t bytes_written;
+
     while((bytes_read = fread(bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0)
     {
         // Don't demunge if we supplied a fake package
@@ -330,6 +331,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
 void *get_default_key(struct rsa_private_key *rsa_pkey)
 {
     static char sign_key[] =
+        "-----BEGIN RSA PRIVATE KEY-----\n"
         "MIICXgIBAAKBgQDJn1jWU+xxVv/eRKfCPR9e47lPWN2rH33z9QbfnqmCxBRLP6mM\n"
         "jGy6APyycQXg3nPi5fcb75alZo+Oh012HpMe9LnpeEgloIdm1E4LOsyrz4kttQtG\n"
         "RlzCErmBGt6+cAVEV86y2phOJ3mLk0Ek9UQXbIUfrvyJnS2MKLG2cczjlQIDAQAB\n"
@@ -342,16 +344,50 @@ void *get_default_key(struct rsa_private_key *rsa_pkey)
         "CWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCECQQDI\n"
         "s5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8X0K\n"
         "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
-        "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\0";
-    size_t len = strlen(sign_key);
+        "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\n"
+        "-----END RSA PRIVATE KEY-----\n\0";
+    // FIXME: This is ugly. Fix it!
+    char pem_filename[] = KT_TMPDIR "/kindletool_default_pem_privkey_XXXXXX";
+    int pem_fd = -1;
+    FILE *pem_file;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    if(_mktemp(pem_filename) == NULL)
+    {
+        fprintf(stderr, "Couldn't create temporary file template.\n");
+        return NULL;
+    }
+    pem_fd = open(pem_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+#else
+    pem_fd = mkstemp(pem_filename);
+#endif
+    if(pem_fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temporary private key file.\n");
+        return NULL;
+    }
+    if((pem_file = fdopen(pem_fd, "wb")) == NULL)
+    {
+        fprintf(stderr, "Cannot open temp output '%s' for writing.\n", pem_filename);
+        close(pem_fd);
+        unlink(pem_filename);
+        return NULL;
+    }
+    if(fwrite(sign_key, sizeof(unsigned char), strlen(sign_key), pem_file) < strlen(sign_key))
+    {
+        fprintf(stderr, "Error writing temporary private key file.\n");
+        close(pem_fd);
+        unlink(pem_filename);
+        return NULL;
+    }
+    fclose(pem_file);
 
-    fprintf(stderr, "Key length: %d vs %d\n", len, strlen(sign_key));
-    fprintf(stderr, "Key:\n####\n%s\n####\n", sign_key);
-    if(!rsa_keypair_from_der(NULL, rsa_pkey, 0, len, (uint8_t *) sign_key))
+    if(!kt_private_rsa_from_pem(pem_filename, rsa_pkey))
     {
         fprintf(stderr, "Invalid private key!\n");
         return NULL;
     }
+
+    unlink(pem_filename);
     return NULL;
 }
 #else

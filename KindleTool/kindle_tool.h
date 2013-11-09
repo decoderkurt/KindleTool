@@ -340,6 +340,10 @@ int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const unsigned i
 int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_main(int, char **);
 
+#ifdef KT_USE_NETTLE
+int kt_private_rsa_from_pem(char *, struct rsa_private_key *);
+#endif
+
 #endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;
