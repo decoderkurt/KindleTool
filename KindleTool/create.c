@@ -50,6 +50,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         fprintf(stderr, "RSA key too small.\n");
         return -1;
     }
+
     // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Strip those...
     char tmpsig_filename[] = KT_TMPDIR "/kindletool_nettle_tmpsig_XXXXXX";
     int tmpsig_fd = -1;
@@ -1710,77 +1711,11 @@ int kindle_create_main(int argc, char *argv[])
             case 'k':
 #ifdef KT_USE_NETTLE
             {
-                // Shamelessly ripped out of nettle's examples/io.c ...
-                size_t max_size = 0;
-                size_t size, done;
-                char *buffer;
-                FILE *f;
-
-                f = fopen(optarg, "rb");
-                if(!f)
+                if(kt_private_rsa_from_pem(optarg, info.sign_pkey) != 0)
                 {
-                    fprintf(stderr, "Failed to open '%s': %s\n", optarg, strerror(errno));
+                    fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
                     goto do_error;
                 }
-
-                size = BUFFER_SIZE;
-
-                for(buffer = NULL, done = 0;; size *= 2)
-                {
-                    char *p;
-
-                    if(max_size && size > max_size)
-                        size = max_size;
-
-                    /* Space for terminating NUL */
-                    p = realloc(buffer, size + 1);
-
-                    if(!p)
-                    {
-                        fail:
-                            fclose(f);
-                            free(buffer);
-                            goto do_error;
-                    }
-
-                    buffer = p;
-                    done += fread(buffer + done, 1, size - done, f);
-
-                    if(done < size)
-                    {
-                        // Short count means EOF or read error
-                        if(ferror(f))
-                        {
-                            fprintf(stderr, "Failed to read '%s': %s\n",
-                                    optarg, strerror(errno));
-
-                            goto fail;
-                        }
-                        if(done == 0)
-                            // Treat empty file as error
-                            goto fail;
-
-                        break;
-                    }
-
-                    if(size == max_size)
-                        break;
-                }
-
-                fclose(f);
-
-                // NUL-terminate the data.
-                buffer[done] = '\0';
-
-                if(!rsa_keypair_from_sexp(NULL, info.sign_pkey, 0, done, (uint8_t *) buffer))
-                {
-                    fprintf(stderr, "Invalid private key!\n");
-                    //rsa_private_key_clear(&info.sign_pkey);
-                    free(buffer);
-                    goto do_error;
-                }
-
-                free(buffer);
 #else
                 if((bio = BIO_new_file(optarg, "rb")) == NULL || PEM_read_bio_RSAPrivateKey(bio, &info.sign_pkey, NULL, NULL) == NULL)
                 {

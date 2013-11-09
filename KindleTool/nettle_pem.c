@@ -205,7 +205,7 @@ static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, 
     struct rsa_public_key pub;
     int res;
 
-    // NOTE: Have to setup the pubkey, or everything blows up...
+    // NOTE: Unlike rsa_keypair_from_sex, we *HAVE* to setup the pubkey, or everything blows up...
     rsa_public_key_init(&pub);
 
     if(rsa_keypair_from_der(&pub, rsa_pkey, 0, length, data))
