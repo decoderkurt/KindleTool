@@ -68,7 +68,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     // Reuse the buffer
     memset(buffer, 0, sizeof(buffer));
     // NOTE: Probably not terribly portable, but should do the job for us...
-    if((len = fread(buffer, sizeof(unsigned char), siglen - 4, sigout_file)) < siglen - 4)
+    if(fread(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
     {
         fprintf(stderr, "Short read when reading back signature file!\n");
         return -1;
