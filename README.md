@@ -21,12 +21,15 @@
 		-i, --info                  Just print the package information, no conversion done.
 		-s, --sig                   OTA V2 updates only. Extract the payload signature.
 		-k, --keep                  Don't delete the input package.
-		-u, --unsigned              Assume input is an unsigned package.
+		-u, --unsigned              Assume input is an unsigned & mangled userdata package.
 		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header (especially useful for userdata packages).
 
-* KindleTool extract &lt;<b>input</b>&gt; &lt;<b>output</b>&gt;
+* KindleTool extract [<i>options</i>] &lt;<b>input</b>&gt; &lt;<b>output</b>&gt;
 
 >> Extracts a Kindle update package to a directory.
+
+	Options:
+		-u, --unsigned              Assume input is an unsigned & mangled userdata package.
 
 * KindleTool create &lt;<b>type</b>&gt; &lt;<b>devices</b>&gt; [<i>options</i>] &lt;<b>dir</b>|<b>file</b>&gt;... [ &lt;<b>output</b>&gt; ]
 

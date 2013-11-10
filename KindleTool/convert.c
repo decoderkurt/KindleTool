@@ -800,6 +800,15 @@ cleanup:
 
 int kindle_extract_main(int argc, char *argv[])
 {
+    int opt;
+    int opt_index;
+    static const struct option opts[] =
+    {
+        { "unsigned", no_argument, NULL, 'u' },
+        { NULL, 0, NULL, 0 }
+    };
+    unsigned int fake_sign;
+
     char *bin_filename;
     char tgz_filename[] = KT_TMPDIR "/kindletool_extract_tgz_XXXXXX";
     char *output_dir;
@@ -807,15 +816,42 @@ int kindle_extract_main(int argc, char *argv[])
     int tgz_fd;
     FILE *tgz_output;
 
-    // Skip command
-    argv++;
-    argc--;
-    if(argc < 2)
+    fake_sign = 0;
+    while((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1)
     {
-        fprintf(stderr, "Invalid number of arguments.\n");
+        switch(opt)
+        {
+            case 'u':
+                fake_sign = 1;
+                break;
+            case ':':
+                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                return -1;
+                break;
+            case '?':
+                fprintf(stderr, "Unknown switch %c\n", optopt);
+                return -1;
+                break;
+            default:
+                fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+                return -1;
+                break;
+        }
+    }
+
+    // Validate our args...
+    if(argc < 3)
+    {
+        fprintf(stderr, "Invalid number of arguments (need input & output).\n");
         return -1;
     }
-    bin_filename = argv[0];
+    if(optind < argc)
+    {
+        // We know exactly what we need, and in what order
+        bin_filename = argv[optind];
+        output_dir = argv[optind + 1];
+    }
+
     // Check that input properly ends in .bin or .stgz
     if(!IS_BIN(bin_filename) && !IS_STGZ(bin_filename))
     {
@@ -825,7 +861,6 @@ int kindle_extract_main(int argc, char *argv[])
     // NOTE: Do some sanity checks for output directory handling?
     // The 'rewrite pathname entry' cheap method we currently use is pretty 'dumb' (it assumes the path is correct, creating it if need be),
     // but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
-    output_dir = argv[1];
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
         fprintf(stderr, "Cannot open input %s package '%s': %s.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, strerror(errno));
@@ -863,7 +898,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     // Print a recap of what we're about to do
     fprintf(stderr, "Extracting %s package %s to %s\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
-    if(kindle_convert(bin_input, tgz_output, NULL, 0, 0, NULL) < 0)
+    if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL) < 0)
     {
         fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
         fclose(bin_input);

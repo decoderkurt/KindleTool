@@ -213,16 +213,19 @@ updates only. Extract the payload signature.
 Don't delete the input package.
 .TP
 .BR \-u ", " \-\-unsigned
-Assume input is an unsigned package.
+Assume input is an unsigned & mangled userdata package.
 .TP
 .BR \-w ", " \-\-unwrap
 Just unwrap the package, if it's wrapped in an UpdateSignature header (especially useful for userdata packages).
 .SS extract
 .IR Syntax :
-.RB < input "> <" output >
+.RB [ options "] <" input "> <" output >
 .RS
 Extracts a Kindle update package to a directory.
 .RE
+.TP
+.BR \-u ", " \-\-unsigned
+Assume input is an unsigned & mangled userdata package.
 .SS info
 .IR Syntax :
 .RB < serialno >
