@@ -200,7 +200,7 @@ EOF
 	# Fake user@host tag
 	if [[ "$(whoami)" == "NiLuJe" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export KT_FORCE_USE_NETTLE="true"
+		export KT_USE_NETTLE="true"
 		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael\"'"
 	fi
 	cd KindleTool/KindleTool

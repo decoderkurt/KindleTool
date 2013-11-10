@@ -6,7 +6,7 @@ OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE
 MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
-ASAN_CLFAGS="-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3"
+ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
@@ -63,18 +63,18 @@ endif
 # We of course need libarchive
 LIBS=-larchive
 # Do we want to force OpenSSL?
-ifdef KT_FORCE_NO_NETTLE
+ifdef KT_USE_OPENSSL
 	# Quick shortcut, overwrite the pc test, so we don't have to be more messy in the conditionals later on...
-	HAS_PC_NETTLE:="false"
+	HAS_PC_NETTLE:=false
 endif
 # Alternatively, do we want to force Nettle, regardless of what pkg-config might say?
-ifdef KT_FORCE_USE_NETTLE
+ifdef KT_USE_NETTLE
 	# Again, shortcut the pc tests
-	HAS_PC_NETTLE:="true"
-	PC_NETTLE_CPPFLAGS:=""
-	PC_NETTLE_LDFLAGS:=""
+	HAS_PC_NETTLE:=true
+	PC_NETTLE_CPPFLAGS:=
+	PC_NETTLE_LDFLAGS:=
 	PC_NETTLE_LIBS:=-lhogweed -lgmp -lnettle
-	PC_NETTLE_VERSION:=""
+	PC_NETTLE_VERSION:=
 endif
 # Do we have nettle? If so, use it!
 ifeq "$(HAS_PC_NETTLE)" "true"
