@@ -17,9 +17,9 @@ Build_Linux() {
 	export LDFLAGS="-L${PWD}/../../kt-sysroot/lib -Wl,-O1 -Wl,--as-needed"
 
 	GMP_VER="5.1.3"
-	GMP_DIR="gmp-${LIBARCHIVE_VER}"
+	GMP_DIR="gmp-${GMP_VER}"
 	NETTLE_VER="2.7.1"
-	NETTLE_DIR="nettle-${LIBARCHIVE_VER}"
+	NETTLE_DIR="nettle-${NETTLE_VER}"
 	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
