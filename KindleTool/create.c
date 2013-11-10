@@ -872,56 +872,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
             break;
         case RecoveryUpdate:
             // NOTE: I'm gonna assume that this, even FB02 @ rev. 2, shouldn't be wrapped in an UpdateSignature...
-#if 0
-            if(strncmp(info->magic_number, "FB02", 4) == 0 && info->header_rev == 2)
-            {
-                if((temp = tmpfile()) == NULL)
-                {
-                    fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
-                    return -1;
-                }
-                if(kindle_create_recovery(info, input_tgz, temp, fake_sign) < 0)
-                {
-                    fprintf(stderr, "Error creating update package.\n");
-                    fclose(temp);
-                    return -1;
-                }
-                rewind(temp);
-                if(!fake_sign)
-                {
-                    if(kindle_create_signature(info, temp, output) < 0)
-                    {
-                        fprintf(stderr, "Error signing update package.\n");
-                        fclose(temp);
-                        return -1;
-                    }
-                    rewind(temp);
-                }
-                while((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0)
-                {
-                    if(fwrite(buffer, sizeof(unsigned char), count, output) < count)
-                    {
-                        fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
-                        fclose(temp);
-                        return -1;
-                    }
-                }
-                if(ferror(temp) != 0)
-                {
-                    fprintf(stderr, "Error reading generated update: %s.\n", strerror(errno));
-                    fclose(temp);
-                    return -1;
-                }
-                fclose(temp);
-                return 0;
-            }
-            else
-            {
-                return kindle_create_recovery(info, input_tgz, output, fake_sign);
-            }
-#else
             return kindle_create_recovery(info, input_tgz, output, fake_sign);
-#endif
             break;
         case RecoveryUpdateV2:
             if((temp = tmpfile()) == NULL)
