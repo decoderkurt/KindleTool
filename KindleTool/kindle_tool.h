@@ -119,7 +119,7 @@
 
 // nettle version fallback
 #ifndef NETTLE_VERSION
-#define NETTLE_VERSION ">= 2.7.1"
+#define NETTLE_VERSION ">= 2.6"
 #endif
 
 // GCC version checks... (We check !clang in addition to GCC, because Clang 'helpfully' defines __GNUC__ ...)

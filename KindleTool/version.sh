@@ -39,7 +39,7 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 	fi
 
 	# Check for a recent nettle version, and use it instead of OpenSSL if we find it...
-	if pkg-config --atleast-version=2.7.1 nettle ; then
+	if pkg-config --atleast-version=2.6 nettle ; then
 		HAS_PC_NETTLE="true"
 		# Check for hogweed, since we need it, and static, to properly pull in gmp
 		PC_NETTLE_CPPFLAGS="$(pkg-config hogweed --cflags-only-I --static)"
@@ -53,9 +53,9 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		PC_NETLLE_LDFLAGS=""
 		PC_NETTLE_LIBS=""
 		PC_NETLLE_VERSION=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** @ Couldn't find nettle >= 2.7.1 via pkg-config, falling back to OpenSSL! @ **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, falling back to OpenSSL! @ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
 	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
