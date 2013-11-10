@@ -291,17 +291,13 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     md5_digest(&md5, MD5_DIGEST_SIZE, digest);
     // And build the hex checksum the nettle way ;)
-    //uint8_t hex[BASE16_ENCODE_LENGTH(8) + 1];
     for(i = 0; i + 8 < MD5_DIGEST_SIZE; i += 8)
     {
         base16_encode_update(hex, 8, digest + i);
-        //hex[BASE16_ENCODE_LENGTH(8)] = 0;
-        strncpy(output_string + (i * 2), (char *)hex, 16);
+        strncpy(output_string + (i * 2), (char *)hex, MD5_DIGEST_SIZE);
     }
     base16_encode_update(hex, MD5_DIGEST_SIZE - i, digest + i);
-    //hex[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE - i)] = 0;
-    strncpy(output_string + (i * 2), (char *)hex, 16);
-    printf("output_string: %.*s\n", 32, output_string);
+    strncpy(output_string + (i * 2), (char *)hex, MD5_DIGEST_SIZE);
 
     return 0;
 }
