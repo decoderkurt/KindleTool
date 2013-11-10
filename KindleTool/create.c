@@ -60,7 +60,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
     {
         // See the notes above, handle 2K keys at most.
-        fprintf(stderr, "Key is too large for our buffers!");
+        fprintf(stderr, "Key is too large for our buffers!\n");
         mpz_clear(s);
         return -1;
     }
@@ -73,7 +73,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     base16_decode_update(&hex_ctx, &rsa_pkey->size, (uint8_t *)bytes_buffer, rsa_pkey->size * 2, (uint8_t *)hex_sig);
     if(base16_decode_final(&hex_ctx) != 1)
     {
-        fprintf(stderr, "Failed to decode hex signature!");
+        fprintf(stderr, "Failed to decode hex signature!\n");
         return -1;
     }
 
