@@ -43,16 +43,16 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		HAS_PC_NETTLE="true"
 		# Check for hogweed, since we need it, and static, to properly pull in gmp
 		PC_NETTLE_CPPFLAGS="$(pkg-config hogweed --cflags-only-I --static)"
-		PC_NETLLE_LDFLAGS="$(pkg-config hogweed --libs-only-L --static)"
+		PC_NETTLE_LDFLAGS="$(pkg-config hogweed --libs-only-L --static)"
 		PC_NETTLE_LIBS="$(pkg-config hogweed --libs-only-l --libs-only-other --static)"
 		# Export the nettle version since there is no built-in way to get it at buildtime...
 		PC_NETTLE_VERSION="$(pkg-config --modversion nettle)"
 	else
 		HAS_PC_NETTLE="false"
 		PC_NETTLE_CPPFLAGS=""
-		PC_NETLLE_LDFLAGS=""
+		PC_NETTLE_LDFLAGS=""
 		PC_NETTLE_LIBS=""
-		PC_NETLLE_VERSION=""
+		PC_NETTLE_VERSION=""
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 		echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, falling back to OpenSSL! @ **!**"
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
