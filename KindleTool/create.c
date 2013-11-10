@@ -67,7 +67,12 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     fseek(sigout_file, (long int) - siglen + 4, SEEK_CUR);
     // Reuse the buffer
     memset(buffer, 0, sizeof(buffer));
-    // NOTE: Probably not terribly portable, but should do the job for us...
+    // NOTE: Not terribly awesome, but probably good enough for us, as long as siglen - 4 < BUFFER_SIZE
+    if(siglen - 4 > BUFFER_SIZE)
+    {
+        fprintf(stderr, "Signature is too large for our readback buffer!\n");
+        return -1;
+    }
     if(fread(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
     {
         fprintf(stderr, "Short read when reading back signature file!\n");
