@@ -16,5 +16,7 @@
 
 * So, yeah, we'll need to build gmp for the static builds
 
+* Be able to FORCE_NETTLE in the Makefile to bypass pkg-config (static builds)
+
 * See if we need to do something special to have clean valgrind output with nettle
 

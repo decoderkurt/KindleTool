@@ -270,14 +270,12 @@ const char *convert_magic_number(char magic_number[4])
 }
 
 #ifdef KT_USE_NETTLE
-int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
+int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)])
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
     struct md5_ctx md5;
     uint8_t digest[MD5_DIGEST_SIZE];
-    uint8_t hex[BASE16_ENCODE_LENGTH(8)];
-    unsigned int i;
 
     md5_init(&md5);
     while((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
@@ -291,13 +289,7 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     }
     md5_digest(&md5, MD5_DIGEST_SIZE, digest);
     // And build the hex checksum the nettle way ;)
-    for(i = 0; i + 8 < MD5_DIGEST_SIZE; i += 8)
-    {
-        base16_encode_update(hex, 8, digest + i);
-        strncpy(output_string + (i * 2), (char *)hex, MD5_DIGEST_SIZE);
-    }
-    base16_encode_update(hex, MD5_DIGEST_SIZE - i, digest + i);
-    strncpy(output_string + (i * 2), (char *)hex, MD5_DIGEST_SIZE);
+    base16_encode_update((uint8_t *)output_string, MD5_DIGEST_SIZE, digest);
 
     return 0;
 }
