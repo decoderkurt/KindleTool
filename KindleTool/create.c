@@ -54,49 +54,33 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
-    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We'll shift our stream by 4 bytes backward to strip it...
-    offset = ftello(sigout_file);
-    if((siglen = mpz_out_raw(sigout_file, s)) == 0)
-    {
-        fprintf(stderr, "Failed to write raw signature: %s.\n", strerror(errno));
-        mpz_clear(s);
-        return -1;
-    }
+    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We don't want that, so do it in a more roundabout way...
+    char *hex_sig = mpz_get_str(NULL, 16, s);
     mpz_clear(s);
-    // Read back the sig, without the 4 bytes of crap we don't need...
-    siglen -= 4;
-    fseeko(sigout_file, offset + 4, SEEK_SET);
-    // Reuse the buffer, zero it just in case (should be mostly overkil...)
-    memset(buffer, 0, sizeof(buffer));
-    // NOTE: Not terribly awesome, but probably good enough for us, as long as siglen < BUFFER_SIZE
-    if(siglen > BUFFER_SIZE)
+
+    // Convert the hex string a byte char array... Cf. http://stackoverflow.com/questions/12535320
+    siglen = strlen(hex_sig) / 2;
+    char *bytes_buffer = malloc(siglen);      // allocate the buffer
+
+    char *h = hex_sig;        // this will walk through the hex string
+    char *b = bytes_buffer;   // point inside the buffer
+
+    // offset into this string is the numeric value
+    char xlate[] = "0123456789abcdef";
+
+    for (; *h; h += 2, ++b)    // go by twos through the hex string
+        *b = ((strchr(xlate, *h) - xlate) * 16) // multiply leading digit by 16
+        + ((strchr(xlate, *(h + 1)) - xlate));
+
+    free(hex_sig);
+
+    // And now, write our sig!
+    if(fwrite(bytes_buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
     {
-        fprintf(stderr, "Signature is too large for our readback buffer!\n");
+        fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
         return -1;
     }
-    if(fread(buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
-    {
-        fprintf(stderr, "Short read when reading back signature file!\n");
-        return -1;
-    }
-    if(ferror(sigout_file) != 0)
-    {
-        fprintf(stderr, "Error reading back signature file: %s.\n", strerror(errno));
-        return -1;
-    }
-    // Write it back at the original offset...
-    fseeko(sigout_file, offset, SEEK_SET);
-    if(fwrite(buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
-    {
-        fprintf(stderr, "Error writing back signature file: %s.\n", strerror(errno));
-        return -1;
-    }
-    // And finally, truncate it to finally excise those 4 extra bytes!
-    if(ftruncate(fileno(sigout_file), offset + siglen) != 0)
-    {
-        fprintf(stderr, "Error truncating signature file: %s.\n", strerror(errno));
-        return -1;
-    }
+    free(bytes_buffer);
 
     return 0;
 }
