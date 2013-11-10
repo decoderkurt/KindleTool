@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 OSTYPE="$(uname -s)"
 ARCH="$(uname -m)"

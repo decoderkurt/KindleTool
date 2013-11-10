@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Simple static build, using the host's OpenSSL.
 # (Only libarchive will be built/statically linked).
