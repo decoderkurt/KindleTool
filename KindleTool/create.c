@@ -34,6 +34,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
+    char hex_sig[BUFFER_SIZE / 2];
+    char bytes_buffer[BUFFER_SIZE / 2];
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -53,12 +55,16 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
 
     // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We don't want that, so do it in a more roundabout way...
-    char *hex_sig = mpz_get_str(NULL, 16, s);
+    if(rsa_pkey->size > BUFFER_SIZE / 2)
+    {
+        fprintf(stderr, "Key is too large for our buffer!");
+        mpz_clear(s);
+        return -1;
+    }
+    mpz_get_str(hex_sig, 16, s);
     mpz_clear(s);
 
     // Convert the hex string a byte char array... Cf. http://stackoverflow.com/questions/12535320
-    char *bytes_buffer = malloc(rsa_pkey->size);      // allocate the buffer
-
     char *h = hex_sig;        // this will walk through the hex string
     char *b = bytes_buffer;   // point inside the buffer
 
@@ -69,15 +75,12 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         *b = ((strchr(xlate, *h) - xlate) * 16) // multiply leading digit by 16
         + ((strchr(xlate, *(h + 1)) - xlate));
 
-    free(hex_sig);
-
     // And now, write our sig!
     if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
     {
         fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
         return -1;
     }
-    free(bytes_buffer);
 
     return 0;
 }
