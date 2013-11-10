@@ -110,7 +110,7 @@ export PATH="/home/niluje/x-tools/mingw32/bin:${PATH}"
 BASE_CFLAGS="-O2 -ffast-math ${ARCH_FLAGS} -pipe -fomit-frame-pointer"
 export CFLAGS="${BASE_CFLAGS}"
 export CXXFLAGS="${BASE_CFLAGS}"
-BASE_CPPFLAGS="-I${TC_BUILD_DIR}/include"
+BASE_CPPFLAGS="-isystem${TC_BUILD_DIR}/include"
 export CPPFLAGS="${BASE_CPPFLAGS}"
 BASE_LDFLAGS="-L${TC_BUILD_DIR}/lib -Wl,-O1 -Wl,--as-needed"
 export LDFLAGS="${BASE_LDFLAGS}"
@@ -120,84 +120,80 @@ export LDFLAGS="${BASE_LDFLAGS}"
 mkdir -p "${TC_BUILD_DIR}"
 cd "${TC_BUILD_DIR}"
 
-if [[ ! -d "zlib-1.2.8" ]] ; then
+ZLIB_VER="1.2.8"
+ZLIB_DIR="zlib-${ZLIB_VER}"
+ZLIB_FILE="zlib${ZLIB_VER//.}.zip"
+GMP_VER="5.1.3"
+GMP_DIR="gmp-${GMP_VER}"
+NETTLE_VER="2.7.1"
+NETTLE_DIR="nettle-${NETTLE_VER}"
+LIBARCHIVE_VER="3.1.2"
+LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
+
+if [[ ! -d "${ZLIB_DIR}" ]] ; then
 	echo "* Building zlib . . ."
 	echo ""
-	if [[ ! -f "./zlib128.zip" ]] ; then
-		wget -O "zlib128.zip" "http://zlib.net/zlib128.zip"
+	if [[ ! -f "./${ZLIB_FILE}" ]] ; then
+		wget -O "${ZLIB_FILE}" "http://zlib.net/${ZLIB_FILE}"
 	fi
-	unzip ./zlib128.zip
-	cd zlib-1.2.8
+	unzip ./${ZLIB_FILE}
+	cd ${ZLIB_DIR}
 	patch -p1 < ../../../KindleTool/tools/mingw/zlib-1.2.7-mingw-makefile-fix.patch
 	make -f win32/Makefile.gcc
-	mkdir -p ../include ../bin ../lib
-	#cp -v zlib1.dll ../bin
-	cp -v zconf.h zlib.h ../include
-	cp -v libz.a ../lib
-	#cp -v libz.dll.a ../lib
+	mkdir -p ${TC_BUILD_DIR}/include ${TC_BUILD_DIR}/bin ${TC_BUILD_DIR}/lib
+	#cp -v zlib1.dll ${TC_BUILD_DIR}/bin
+	cp -v zconf.h zlib.h ${TC_BUILD_DIR}/include
+	cp -v libz.a ${TC_BUILD_DIR}/lib
+	#cp -v libz.dll.a ${TC_BUILD_DIR}/lib
 	cd ..
 fi
 
-if [[ ! -d "openssl-1.0.1e" ]] ; then
-	echo "* Building OpenSSL 1 . . ."
+# GMP
+if [[ ! -d "${GMP_DIR}" ]] ; then
+	echo "* Building ${GMP_DIR} . . ."
 	echo ""
-	if [[ ! -f "./openssl-1.0.1e.tar.gz" ]] ; then
-		wget -O "./openssl-1.0.1e.tar.gz" "http://www.openssl.org/source/openssl-1.0.1e.tar.gz"
+	if [[ ! -f "./${GMP_DIR}.tar.xz" ]] ; then
+		wget -O "./${GMP_DIR}.tar.xz" "http://ftp.gmplib.org/gmp/${GMP_DIR}.tar.xz"
 	fi
-	tar -xvzf ./openssl-1.0.1e.tar.gz
-	cd openssl-1.0.1e
-	export CROSS_COMPILE="${CROSS_TC}-"
-	export CFLAGS="${CPPFLAGS} ${BASE_CFLAGS} -fno-strict-aliasing"
-	export CXXFLAGS="${BASE_CFLAGS} -fno-strict-aliasing"
-	rm -f Makefile
-	patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0a-ldflags.patch
-	patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0d-windres.patch
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.0h-pkg-config.patch
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-parallel-build.patch
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1-x32.patch
-	#patch -p0 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-ipv6.patch	# Not MingW friendly
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-bad-mac-aes-ni.patch
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-perl-5.18.patch
-	patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-1.0.1e-s_client-verify.patch
-	sed -i -e '/DIRS/s: fips : :g' -e '/^MANSUFFIX/s:=.*:=ssl:' -e "/^MAKEDEPPROG/s:=.*:=${CROSS_TC}-gcc:" -e '/^install:/s:install_docs::' Makefile.org
-	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
-	cp /usr/portage/dev-libs/openssl/files/gentoo.config-1.0.0 gentoo.config
-	chmod a+rx gentoo.config
-	sed -i '1s,^:$,#!/usr/bin/perl,' Configure
-	sed -i '/stty -icanon min 0 time 50; read waste/d' config
-	#unset CROSS_COMPILE
-	# Aim for a minimal build, we only need MD5, RSA & SHA support...
-	# Can't disable hmac & aes/rjindael or make depend dies...
-	# Can't disable srtp/tls, or the build fails...
-	# Can't disable lhash, asn1, x509, cmac, pkcs7, bn, x509v3 & pkcs12 or linking KindleTool fails...
-	# Can't disable dsa, pem, conf, comp, ts, ocsp, ui, stack, txt_db, modes, whrlpool & pqueue or the MinGW build fails...
-	# Total savings on MinGW: ~200KB. And a lot of pain. :D
-	./Configure mingw -DL_ENDIAN ${BASE_CFLAGS} -fno-strict-aliasing no-bf no-camellia no-cast no-cms no-des no-dh no-ec no-ecdh no-ecdsa no-idea no-gost no-jpake no-krb5 no-md2 no-md4 no-mdc2 no-rc2 no-rc4 no-rc5 no-ripemd no-srp no-zlib no-ssl no-store --prefix=${TC_BUILD_DIR} --openssldir=${TC_BUILD_DIR}/etc/ssl no-shared threads
-	grep '^CFLAG=' Makefile | LC_ALL=C sed -e 's:^CFLAG=::' -e 's:-ffast-math ::g' -e 's:-fomit-frame-pointer ::g' -e 's:-O[0-9] ::g' -e 's:-march=[-a-z0-9]* ::g' -e 's:-mcpu=[-a-z0-9]* ::g' -e 's:-m[a-z0-9]* ::g' > x-compile-tmp
-	CFLAG="$(< x-compile-tmp)"
-	sed -i -e "/^CFLAG/s:=.*:=${CFLAG} ${CFLAGS}:" -e "/^SHARED_LDFLAGS=/s:$: ${LDFLAGS}:" Makefile
-	make -j1 depend
-	make -j2 all
-	make rehash
+	tar -xvJf ./${GMP_DIR}.tar.xz
+	cd ${GMP_DIR}
+	patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
+	libtoolize
+	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-cxx
+	make -j2
 	make install
 	cd ..
 fi
 
-LIBARCHIVE_VER="3.1.2"
-LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
+# nettle
+if [[ ! -d "${NETTLE_DIR}" ]] ; then
+	echo "* Building ${NETTLE_DIR} . . ."
+	echo ""
+	if [[ ! -f "./${NETTLE_DIR}.tar.gz" ]] ; then
+		wget -O "./${NETTLE_DIR}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/${NETTLE_DIR}.tar.gz"
+	fi
+	tar -xvzf ./${NETTLE_DIR}.tar.gz
+	cd ${NETTLE_DIR}
+	sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
+	sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+	autoreconf -fi
+	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+	make -j2
+	make install
+	cd ..
+fi
 
+# libarchive
 if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
 	echo "* Building ${LIBARCHIVE_DIR} . . ."
 	echo ""
-	export CFLAGS="${BASE_CFLAGS}"
-	export CXXFLAGS="${BASE_CFLAGS}"
 	if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
 		wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
 	fi
 	tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 	cd ${LIBARCHIVE_DIR}
 	./build/autogen.sh
-	./configure --prefix=${TC_BUILD_DIR} --host=${CROSS_TC} --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
+	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 	make -j2
 	make install
 	cd ..

@@ -63,7 +63,7 @@ Build_Linux() {
 		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
 		autoreconf -fi
-		./configure  --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 		make -j2
 		make install
 		cd ..
@@ -279,7 +279,7 @@ Build_OSX() {
 		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
 		autoreconf -fi
-		./configure  --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 		make -j2
 		make install
 		cd ..
