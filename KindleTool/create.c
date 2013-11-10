@@ -34,8 +34,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
-    char hex_sig[BUFFER_SIZE / 2];
-    char bytes_buffer[BUFFER_SIZE / 2];
+    char hex_sig[BUFFER_SIZE / 4];
+    char bytes_buffer[BUFFER_SIZE / 4];
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -55,7 +55,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
 
     // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We don't want that, so do it in a more roundabout way...
-    if(rsa_pkey->size > BUFFER_SIZE / 2)
+    if(rsa_pkey->size > BUFFER_SIZE / 4)
     {
         fprintf(stderr, "Key is too large for our buffer!");
         mpz_clear(s);
@@ -72,8 +72,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     char xlate[] = "0123456789abcdef";
 
     for (; *h; h += 2, ++b)    // go by twos through the hex string
-        *b = ((strchr(xlate, *h) - xlate) * 16) // multiply leading digit by 16
-        + ((strchr(xlate, *(h + 1)) - xlate));
+        *b = (char)(((strchr(xlate, *h) - xlate) * 16) // multiply leading digit by 16
+        + ((strchr(xlate, *(h + 1)) - xlate)));
 
     // And now, write our sig!
     if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
