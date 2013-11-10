@@ -13,8 +13,6 @@ Build_Linux() {
 		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 	fi
-	export CPPFLAGS="-I${PWD}/../../kt-sysroot/include"
-	export LDFLAGS="-L${PWD}/../../kt-sysroot/lib -Wl,-O1 -Wl,--as-needed"
 
 	GMP_VER="5.1.3"
 	GMP_DIR="gmp-${GMP_VER}"
@@ -29,6 +27,10 @@ Build_Linux() {
 	# Get out of our git tree
 	cd ../..
 
+	KT_SYSROOT="${PWD}/kt-sysroot-lin-${ARCH}"
+	export CPPFLAGS="-I${KT_SYSROOT}/include"
+	export LDFLAGS="-L${KT_SYSROOT}/lib -Wl,-O1 -Wl,--as-needed"
+
 	# GMP
 	if [[ ! -d "${GMP_DIR}" ]] ; then
 		echo "* Building ${GMP_DIR} . . ."
@@ -40,7 +42,7 @@ Build_Linux() {
 		cd ${GMP_DIR}
 		patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
 		libtoolize
-		./configure --prefix="../kt-sysroot" --enable-static --disable-shared --disable-cxx
+		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
 		make -j2
 		make install
 		cd ..
@@ -58,7 +60,7 @@ Build_Linux() {
 		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
 		autoreconf -fi
-		./configure  --prefix="../kt-sysroot" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		./configure  --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 		make -j2
 		make install
 		cd ..
@@ -76,7 +78,7 @@ Build_Linux() {
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
-		./configure --prefix="../kt-sysroot" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 		make -j2
 		make install
 		unset ac_cv_header_ext2fs_ext2_fs_h
