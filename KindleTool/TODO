@@ -1,1 +1,3 @@
 * Test Nettle support on OSX. Also check our ports & buildscripts.
+
+* Build against nettle git? (It fixes the size_t warnings on x86_64)
