@@ -9,9 +9,11 @@ Build_Linux() {
 	if [[ "${ARCH}" == "x86_64" ]] ; then
 		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+		export GMPABI="64"
 	else
 		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+		export GMPABI="32"
 	fi
 
 	GMP_VER="5.1.3"
@@ -42,7 +44,7 @@ Build_Linux() {
 		cd ${GMP_DIR}
 		patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
 		libtoolize
-		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
+		./configure ABI=${GMPABI} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
 		make -j2
 		make install
 		cd ..
