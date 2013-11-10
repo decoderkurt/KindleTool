@@ -36,8 +36,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_t s;
     struct base16_decode_ctx hex_ctx;
     // NOTE: The buffer sizes here aren't terribly portable, but we're reasonably sure we'll never need more than this (at worst, a 2K RSA key)...
-    char hex_sig[BUFFER_SIZE / 2];      // 512
-    char bytes_buffer[BUFFER_SIZE / 4]; // 256
+    char hex_sig[CERTIFICATE_2K_SIZE * 2];      // 512
+    char bytes_buffer[CERTIFICATE_2K_SIZE];     // 256
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -57,7 +57,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
 
     // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We don't want that, so do it in a more roundabout way...
-    if(rsa_pkey->size > BUFFER_SIZE / 4)
+    if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
     {
         // See the notes above, handle 2K keys at most.
         fprintf(stderr, "Key is too large for our buffers!");
