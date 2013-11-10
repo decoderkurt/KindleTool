@@ -17,6 +17,6 @@ platforms        darwin
 fetch.type       git
 git.url          https://github.com/NiLuJe/KindleTool.git
 
-depends_lib      port:openssl port:libarchive
+depends_lib      port:nettle port:libarchive
 
 use_configure    no
