@@ -67,6 +67,15 @@ ifdef KT_FORCE_NO_NETTLE
 	# Quick shortcut, overwrite the pc test, so we don't have to be more messy in the conditionals later on...
 	HAS_PC_NETTLE:="false"
 endif
+# Alternatively, do we want to force Nettle, regardless of what pkg-config might say?
+ifdef KT_FORCE_USE_NETTLE
+	# Again, shortcut the pc tests
+	HAS_PC_NETTLE:="true"
+	PC_NETTLE_CPPFLAGS:=""
+	PC_NETTLE_LDFLAGS:=""
+	PC_NETTLE_LIBS:=-lhogweed -lgmp -lnettle
+	PC_NETTLE_VERSION:=""
+endif
 # Do we have nettle? If so, use it!
 ifeq "$(HAS_PC_NETTLE)" "true"
 	LIBS+=$(PC_NETTLE_LIBS)
@@ -159,8 +168,10 @@ endif
 # If we have nettle, use it
 ifeq "$(HAS_PC_NETTLE)" "true"
 	KT_CPPFLAGS+=-DKT_USE_NETTLE
-	# Also pass our stupid hack to get the buildtime nettle version...
-	KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
+	# Also pass our stupid hack to get the buildtime nettle version, if it's not empty...
+	ifneq "$(PC_NETTLE_VERSION)" ""
+		KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
+	endif
 endif
 
 ifndef LDFLAGS
