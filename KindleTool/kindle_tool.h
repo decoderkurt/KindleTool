@@ -37,15 +37,14 @@
 #include <archive_entry.h>
 
 // NOTE: Just to make KDevelop useful while I'm working on nettle...
-/*
 #ifndef KT_USE_NETTLE
 #define KT_USE_NETTLE
 #endif
-*/
 
 #ifdef KT_USE_NETTLE
 #include <gmp.h>
 #include <nettle/buffer.h>
+#include <nettle/base16.h>
 #include <nettle/base64.h>
 #include <nettle/md5.h>
 #include <nettle/sha2.h>

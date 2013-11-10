@@ -275,9 +275,9 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
     struct md5_ctx md5;
-    unsigned char output[MD5_DIGEST_SIZE];
-    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds a trailing null, we do not want that!
-    int i;
+    uint8_t digest[MD5_DIGEST_SIZE];
+    uint8_t hex[BASE16_ENCODE_LENGTH(8)];
+    unsigned int i;
 
     md5_init(&md5);
     while((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
@@ -289,12 +289,20 @@ int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
         fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         return -1;
     }
-    md5_digest(&md5, MD5_DIGEST_SIZE, output);
-    for(i = 0; i < MD5_DIGEST_SIZE; i++)
+    md5_digest(&md5, MD5_DIGEST_SIZE, digest);
+    // And build the hex checksum the nettle way ;)
+    //uint8_t hex[BASE16_ENCODE_LENGTH(8) + 1];
+    for(i = 0; i + 8 < MD5_DIGEST_SIZE; i += 8)
     {
-        sprintf(output_string_temp + (i * 2), "%02x", output[i]);
+        base16_encode_update(hex, 8, digest + i);
+        //hex[BASE16_ENCODE_LENGTH(8)] = 0;
+        strncpy(output_string + (i * 2), (char *)hex, 16);
     }
-    memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // Remove the trailing null. Any better way to do this?
+    base16_encode_update(hex, MD5_DIGEST_SIZE - i, digest + i);
+    //hex[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE - i)] = 0;
+    strncpy(output_string + (i * 2), (char *)hex, 16);
+    printf("output_string: %.*s\n", 32, output_string);
+
     return 0;
 }
 #else
