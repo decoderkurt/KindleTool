@@ -14,8 +14,16 @@ Build_Linux() {
 	unset CPPFLAGS	# Let the Makefile take care of it ;).
 	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
 	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
-	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
+	if [[ "${ARCH}" == "x86_64" ]] ; then
+		GMPABI="64"
+	else
+		GMPABI="32"
+	fi
 
+	GMP_VER="5.1.3"
+	GMP_DIR="gmp-${GMP_VER}"
+	NETTLE_VER="2.7.1"
+	NETTLE_DIR="nettle-${NETTLE_VER}"
 	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
@@ -24,6 +32,46 @@ Build_Linux() {
 
 	# Get out of our git tree
 	cd ../..
+
+	KT_SYSROOT="${PWD}/kt-sysroot-lin-${ARCH}"
+	# NOTE: Use -isystem so that gmp doesn't do crazy stuff...
+	export CPPFLAGS="-isystem${KT_SYSROOT}/include"
+	export LDFLAGS="-L${KT_SYSROOT}/lib -Wl,-O1 -Wl,--as-needed"
+
+	# GMP
+	if [[ ! -d "${GMP_DIR}" ]] ; then
+		echo "* Building ${GMP_DIR} . . ."
+		echo ""
+		if [[ ! -f "./${GMP_DIR}.tar.xz" ]] ; then
+			wget -O "./${GMP_DIR}.tar.xz" "http://ftp.gmplib.org/gmp/${GMP_DIR}.tar.xz"
+		fi
+		tar -xvJf ./${GMP_DIR}.tar.xz
+		cd ${GMP_DIR}
+		patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
+		libtoolize
+		./configure ABI=${GMPABI} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
+		make -j2
+		make install
+		cd ..
+	fi
+
+	# nettle
+	if [[ ! -d "${NETTLE_DIR}" ]] ; then
+		echo "* Building ${NETTLE_DIR} . . ."
+		echo ""
+		if [[ ! -f "./${NETTLE_DIR}.tar.gz" ]] ; then
+			wget -O "./${NETTLE_DIR}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/${NETTLE_DIR}.tar.gz"
+		fi
+		tar -xvzf ./${NETTLE_DIR}.tar.gz
+		cd ${NETTLE_DIR}
+		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
+		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+		autoreconf -fi
+		./configure  --prefix="${KT_SYSROOT}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		make -j2
+		make install
+		cd ..
+	fi
 
 	# libarchive
 	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
@@ -36,8 +84,9 @@ Build_Linux() {
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
-		./configure --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
-		make
+		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		make -j2
+		make install
 		unset ac_cv_header_ext2fs_ext2_fs_h
 		cd ..
 	fi
@@ -65,16 +114,10 @@ EOF
 	# KindleTool
 	echo "* Building KindleTool . . ."
 	echo ""
-	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
-	mkdir -p lib includes
-	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
-	cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
-	cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
 	make clean
 	make strip
-	rm -rf lib includes
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
