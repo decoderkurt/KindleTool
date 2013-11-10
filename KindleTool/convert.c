@@ -817,6 +817,8 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *tgz_output;
 
     fake_sign = 0;
+    bin_filename = NULL;
+    output_dir = NULL;
     while((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1)
     {
         switch(opt)
@@ -850,6 +852,17 @@ int kindle_extract_main(int argc, char *argv[])
         // We know exactly what we need, and in what order
         bin_filename = argv[optind];
         output_dir = argv[optind + 1];
+    }
+    // Double validation, and make GCC happy
+    if(bin_filename == NULL)
+    {
+        fprintf(stderr, "Input filename isn't set!\n");
+        return -1;
+    }
+    if(output_dir == NULL)
+    {
+        fprintf(stderr, "Output directory isn't set!\n");
+        return -1;
     }
 
     // Check that input properly ends in .bin or .stgz
