@@ -64,16 +64,17 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
     mpz_clear(s);
     // Read back the sig, without the 4 bytes of crap we don't need...
+    siglen -= 4;
     fseeko(sigout_file, offset + 4, SEEK_SET);
-    // Reuse the buffer
+    // Reuse the buffer, zero it just in case (should be mostly overkil...)
     memset(buffer, 0, sizeof(buffer));
-    // NOTE: Not terribly awesome, but probably good enough for us, as long as siglen - 4 < BUFFER_SIZE
-    if(siglen - 4 > BUFFER_SIZE)
+    // NOTE: Not terribly awesome, but probably good enough for us, as long as siglen < BUFFER_SIZE
+    if(siglen > BUFFER_SIZE)
     {
         fprintf(stderr, "Signature is too large for our readback buffer!\n");
         return -1;
     }
-    if(fread(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
+    if(fread(buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
     {
         fprintf(stderr, "Short read when reading back signature file!\n");
         return -1;
@@ -85,13 +86,13 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
     // Write it back at the original offset...
     fseeko(sigout_file, offset, SEEK_SET);
-    if(fwrite(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
+    if(fwrite(buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
     {
         fprintf(stderr, "Error writing back signature file: %s.\n", strerror(errno));
         return -1;
     }
     // And finally, truncate it to finally excise those 4 extra bytes!
-    if(ftruncate(fileno(sigout_file), offset + siglen - 4) != 0)
+    if(ftruncate(fileno(sigout_file), offset + siglen) != 0)
     {
         fprintf(stderr, "Error truncating signature file: %s.\n", strerror(errno));
         return -1;
