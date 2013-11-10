@@ -13,9 +13,13 @@ Build_Linux() {
 		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 	fi
-	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
+	export CPPFLAGS="-I${PWD}/../../kt-sysroot/include"
+	export LDFLAGS="-L${PWD}/../../kt-sysroot/lib -Wl,-O1 -Wl,--as-needed"
 
-	OPENSSL_DIR="openssl-0.9.8y"
+	GMP_VER="5.1.3"
+	GMP_DIR="gmp-${LIBARCHIVE_VER}"
+	NETTLE_VER="2.7.1"
+	NETTLE_DIR="nettle-${LIBARCHIVE_VER}"
 	LIBARCHIVE_VER="3.1.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
@@ -25,36 +29,38 @@ Build_Linux() {
 	# Get out of our git tree
 	cd ../..
 
-	# OpenSSL: pretty much the same way as in my arm builds
-	if [[ ! -d "${OPENSSL_DIR}" ]] ; then
-		echo "* Building ${OPENSSL_DIR} . . ."
+	# GMP
+	if [[ ! -d "${GMP_DIR}" ]] ; then
+		echo "* Building ${GMP_DIR} . . ."
 		echo ""
-		export LDFLAGS="-Wa,--noexecstack"
-		if [[ ! -f "./${OPENSSL_DIR}.tar.gz" ]] ; then
-			wget -O "./${OPENSSL_DIR}.tar.gz" "http://www.openssl.org/source/${OPENSSL_DIR}.tar.gz"
+		if [[ ! -f "./${GMP_DIR}.tar.xz" ]] ; then
+			wget -O "./${GMP_DIR}.tar.xz" "http://ftp.gmplib.org/gmp/${GMP_DIR}.tar.xz"
 		fi
-		tar -xvzf ./${OPENSSL_DIR}.tar.gz
-		cd ${OPENSSL_DIR}
-		patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-0.9.8e-bsd-sparc64.patch
-		patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-0.9.8h-ldflags.patch
-		patch -p1 < /usr/portage/dev-libs/openssl/files/openssl-0.9.8m-binutils.patch
-		sed -i -e '/DIRS/s: fips : :g' -e '/^MANSUFFIX/s:=.*:=ssl:' -e '/^MAKEDEPPROG/s:=.*:=gcc:' -e '/^install:/s:install_docs::' Makefile{,.org}
-		sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
-		cp /usr/portage/dev-libs/openssl/files/gentoo.config-0.9.8 gentoo.config
-		chmod a+rx gentoo.config
-		sed -i '1s,^:$,#!/usr/bin/perl,' Configure
-		sed -i '/^"debug-ben-debug-64"/d' Configure
-		sed -i '/^"debug-steve/d' Configure
-		if [[ "${ARCH}" == "x86_64" ]] ; then
-			./Configure linux-generic64 -DL_ENDIAN -O2 -march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
-		else
-			./Configure linux-generic32 -DL_ENDIAN -O2 -march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -fno-strict-aliasing enable-camellia enable-mdc2 enable-tlsext enable-zlib shared threads
+		tar -xvJf ./${GMP_DIR}.tar.xz
+		cd ${GMP_DIR}
+		patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
+		libtoolize
+		./configure --prefix="../kt-sysroot" --enable-static --disable-shared --disable-cxx
+		make -j2
+		make install
+		cd ..
+	fi
+
+	# nettle
+	if [[ ! -d "${NETTLE_DIR}" ]] ; then
+		echo "* Building ${NETTLE_DIR} . . ."
+		echo ""
+		if [[ ! -f "./${NETTLE_DIR}.tar.gz" ]] ; then
+			wget -O "./${NETTLE_DIR}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/${NETTLE_DIR}.tar.gz"
 		fi
-		grep '^CFLAG=' Makefile | LC_ALL=C sed -e 's:^CFLAG=::' -e 's:-ffast-math ::g' -e 's:-fomit-frame-pointer ::g' -e 's:-O[0-9] ::g' -e 's:-march=[-a-z0-9]* ::g' -e 's:-mcpu=[-a-z0-9]* ::g' -e 's:-m[a-z0-9]* ::g' >| x-compile-tmp
-		CFLAG="$(< x-compile-tmp)"
-		sed -i -e "/^CFLAG/s:=.*:=${CFLAG} ${CFLAGS}:" -e "/^SHARED_LDFLAGS=/s:$: ${LDFLAGS}:" Makefile
-		make -j1 depend
-		make -j1 build_libs
+		tar -xvzf ./${NETTLE_DIR}.tar.gz
+		cd ${NETTLE_DIR}
+		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
+		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+		autoreconf -fi
+		./configure  --prefix="../kt-sysroot" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		make -j2
+		make install
 		cd ..
 	fi
 
@@ -70,8 +76,9 @@ Build_Linux() {
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
-		./configure --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2 --without-openssl
-		make
+		./configure --prefix="../kt-sysroot" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		make -j2
+		make install
 		unset ac_cv_header_ext2fs_ext2_fs_h
 		cd ..
 	fi
@@ -96,8 +103,8 @@ KindleTool, Copyright (C) 2011-2013  Yifan Lu, licensed under the GNU General Pu
       (http://www.lysator.liu.se/~nisse/nettle)
 EOF
 
-	# KindleTool (OpenSSL-0.9.8)
-	echo "* Building KindleTool (OpenSSL-0.9.8) . . ."
+	# KindleTool
+	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
 	if [[ "$(whoami)" == "niluje" ]] ; then
@@ -108,57 +115,10 @@ EOF
 			export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 		fi
 	fi
-	export LDFLAGS="-Llib -Wl,-O1 -Wl,--as-needed"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
-	mkdir -p lib includes
-	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
-	#cp -v ../../${OPENSSL_DIR}/libcrypto.a lib
-	cp -v ../../${OPENSSL_DIR}/libcrypto.so.0.9.8 lib
-	cd lib
-	ln -sfv libcrypto.so.0.9.8 libcrypto.so
-	cd ..
-	cp -vrL ../../${OPENSSL_DIR}/include/openssl includes
-	if [[ "${ARCH}" == "x86_64" ]] ; then
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
-	fi
 	make clean
 	make strip
-	rm -rf lib includes
-
-	# Package it
-	git log --stat --graph > ../../ChangeLog
-	./version.sh PMS
-	VER_FILE="VERSION"
-	VER_CURRENT="$(<${VER_FILE})"
-	# Strip the git commit
-	REV="${VER_CURRENT%%-*}"
-	#REV="${VER_CURRENT}"
-	cd ../..
-	cp -v KindleTool/KindleTool/Release/kindletool ./kindletool
-	cp -v KindleTool/README.md ./README
-	# Quick! Markdown => plaintext
-	sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
-	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
-	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-linux-${ARCH}-openssl-0.9.8.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
-	rm -f kindletool README kindletool.1 ChangeLog VERSION
-
-	# KindleTool (OpenSSL-1)
-	echo "* Building KindleTool (OpenSSL-1) . . ."
-	echo ""
-	cd KindleTool/KindleTool
-	rm -rf lib includes
-	mkdir -p lib includes
-	cp -v ../../${LIBARCHIVE_DIR}/.libs/libarchive.a lib
-	if [[ "${ARCH}" == "x86_64" ]] ; then
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive.h includes
-		cp -v ../../${LIBARCHIVE_DIR}/libarchive/archive_entry.h includes
-	fi
-	make clean
-	make strip
-	rm -rf lib includes
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog

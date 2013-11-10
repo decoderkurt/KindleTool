@@ -24,10 +24,10 @@ To compile for OSX:
 To compile for Windows:
 	1) Get Cygwin
 	2) Install the required packages for a proper toolchain (gcc4, binutils, autoconf, automake, libtool, make, ...)
-	3) Install the packages: libopenssl100 / openssl-devel, zlib / zlib-devel, git, cmake
+	3) Install the packages: libnettle4 / libnettle-devel, zlib / zlib-devel, git, cmake
 	4) Compile and install libarchive >= 3.0.3
 	4.1) I recommend a minimal build configured via
-		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-expat --without-xml2
+		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 	4.2) If you want to download it via wget from the Cygwin shell, you'll have to install wget & curl, and jump through a few hoops to setup the SSL CA certs... (cf. http://stackoverflow.com/questions/9224298/).
 	5) Compile using "make" in the tool's directory
 	6) Install it by running "make install"
