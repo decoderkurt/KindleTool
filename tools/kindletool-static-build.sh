@@ -30,8 +30,8 @@ Build_Linux() {
 	cd ../..
 
 	KT_SYSROOT="${PWD}/kt-sysroot-lin-${ARCH}"
-	# NOTE: Use -idirafter so that gmp doesn't do crazy stuff...
-	export CPPFLAGS="-idirafter${KT_SYSROOT}/include"
+	# NOTE: Use -isystem so that gmp doesn't do crazy stuff...
+	export CPPFLAGS="-isystem${KT_SYSROOT}/include"
 	export LDFLAGS="-L${KT_SYSROOT}/lib -Wl,-O1 -Wl,--as-needed"
 
 	# GMP
