@@ -212,12 +212,16 @@ cat > ../../CREDITS << EOF
   |   Licensed under the zlib license (http://zlib.net/zlib_license.html)
   |   (http://zlib.net/)
   |
-  |->   OpenSSL, Copyright (C) 1998-2011 The OpenSSL Project. SSLeay, Copyright (C) 1995-1998 Eric Young,
-  |   Licensed under an Apache-style license (http://openssl.org/source/license.html).
-  |   (http://openssl.org/)
-  |
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
+  |
+  |->   GMP, GNU MP Library, Copyright 1991-2013 Free Software Foundation, Inc.,
+  |   licensed under the GNU Lesser General Public License version 3+ (http://www.gnu.org/licenses/lgpl.html).
+  |   (http://gmplib.org/)
+  |
+  |->   nettle, Copyright (C) 2001-2013 Niels Möller,
+  |   licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
+  |   (http://www.lysator.liu.se/~nisse/nettle)
   |
   \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009, 2010 by the mingw-w64 project,
       Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/apps/trac/mingw-w64/browser/tags/v2.0.4/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
