@@ -65,15 +65,14 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_clear(s);
 
     // Convert the hex string a byte char array... Cf. http://stackoverflow.com/questions/12535320
-    char *h = hex_sig;        // this will walk through the hex string
-    char *b = bytes_buffer;   // point inside the buffer
+    char *h = hex_sig;                                  // this will walk through the hex string
+    char *b = bytes_buffer;                             // points inside the buffer
 
-    // offset into this string is the numeric value
-    char xlate[] = "0123456789abcdef";
+    char xlate[] = "0123456789abcdef";                  // offset into this string is the numeric value
 
-    for (; *h; h += 2, ++b)    // go by twos through the hex string
-        *b = (char)(((strchr(xlate, *h) - xlate) * 16) // multiply leading digit by 16
-        + ((strchr(xlate, *(h + 1)) - xlate)));
+    for(; *h; h += 2, ++b)                              // go by twos through the hex string
+        *b = (char)(((strchr(xlate, *h) - xlate) * 16)  // multiply leading digit by 16
+                    + ((strchr(xlate, *(h + 1)) - xlate)));
 
     // And now, write our sig!
     if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
