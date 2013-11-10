@@ -69,13 +69,20 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_clear(s);
     fprintf(stderr, "Hex @ 0: %.*s, Hex @ 255: %.*s [%c]\n", 1, &hex_sig[0], 1, &hex_sig[255], hex_sig[255]);
     fprintf(stderr, "Hex: %s (len: %zd [%zd])\n", hex_sig, strlen(hex_sig), sizeof(hex_sig));
-    // Apparently, mpz_get_str can return an odd number (leading 0...), work around that...
+    // Apparently, mpz_get_str can return an odd number (without leading zero(s?)...), work around that...
+    //while(hex_sig[(rsa_pkey->size * 2) - 1] == '\0')
     while(strlen(hex_sig) < rsa_pkey->size * 2)
     {
+        // Shift the array one byte to the right, and add the leading zero
+        memcpy(hex_sig + 1, hex_sig, rsa_pkey->size * 2);
+        hex_sig[0] = '0';
+        fprintf(stderr, "New Hex: %s (len: %zd [%zd])\n", hex_sig, strlen(hex_sig), sizeof(hex_sig));
+        /*
         char tmp_buff[CERTIFICATE_2K_SIZE * 2];
         strcpy(tmp_buff, hex_sig);
         sprintf(hex_sig, "0%s", tmp_buff);
         fprintf(stderr, "New Hex: %s (len: %zd [%zd])\n", hex_sig, strlen(hex_sig), sizeof(hex_sig));
+        */
     }
 
     // And then decode it to a byte array...
