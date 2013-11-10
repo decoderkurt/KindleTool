@@ -35,7 +35,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     sha256_init(&hash);
     mpz_t s;
     size_t siglen;
-    long offset;
+    off_t offset;
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -55,7 +55,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
 
     // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We'll shift our stream by 4 bytes backward to strip it...
-    offset = ftell(sigout_file);
+    offset = ftello(sigout_file);
     if((siglen = mpz_out_raw(sigout_file, s)) == 0)
     {
         fprintf(stderr, "Failed to write raw signature: %s.\n", strerror(errno));
@@ -64,7 +64,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     }
     mpz_clear(s);
     // Read back the sig, without the 4 bytes of crap we don't need...
-    fseek(sigout_file, (long int) - siglen + 4, SEEK_CUR);
+    fseeko(sigout_file, offset + 4, SEEK_SET);
     // Reuse the buffer
     memset(buffer, 0, sizeof(buffer));
     // NOTE: Not terribly awesome, but probably good enough for us, as long as siglen - 4 < BUFFER_SIZE
@@ -84,14 +84,14 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
     // Write it back at the original offset...
-    fseek(sigout_file, offset, SEEK_SET);
+    fseeko(sigout_file, offset, SEEK_SET);
     if(fwrite(buffer, sizeof(unsigned char), siglen - 4, sigout_file) < siglen - 4)
     {
         fprintf(stderr, "Error writing back signature file: %s.\n", strerror(errno));
         return -1;
     }
     // And finally, truncate it to finally excise those 4 extra bytes!
-    if(ftruncate(fileno(sigout_file), (off_t) offset + siglen - 4) != 0)
+    if(ftruncate(fileno(sigout_file), offset + siglen - 4) != 0)
     {
         fprintf(stderr, "Error truncating signature file: %s.\n", strerror(errno));
         return -1;
