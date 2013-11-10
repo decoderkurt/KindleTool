@@ -34,8 +34,6 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
-    size_t siglen;
-    off_t offset;
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -59,8 +57,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_clear(s);
 
     // Convert the hex string a byte char array... Cf. http://stackoverflow.com/questions/12535320
-    siglen = strlen(hex_sig) / 2;
-    char *bytes_buffer = malloc(siglen);      // allocate the buffer
+    char *bytes_buffer = malloc(rsa_pkey->size);      // allocate the buffer
 
     char *h = hex_sig;        // this will walk through the hex string
     char *b = bytes_buffer;   // point inside the buffer
@@ -75,7 +72,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     free(hex_sig);
 
     // And now, write our sig!
-    if(fwrite(bytes_buffer, sizeof(unsigned char), siglen, sigout_file) < siglen)
+    if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
     {
         fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
         return -1;
