@@ -21,7 +21,9 @@
 #include "kindle_tool.h"
 
 #ifdef KT_USE_NETTLE
-// Nearly all of this was just lifted straight off from the pkcs1-conv nettle tool...
+// This was pretty much just lifted straight off from nettle's tools/pkcs1-conv.c,
+// Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
+// with a very few tweaks to better suit our needs...
 enum object_type
 {
     RSA_PRIVATE_KEY = 0x200,
