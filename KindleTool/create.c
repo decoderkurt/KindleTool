@@ -34,7 +34,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
-    char hex_sig[BUFFER_SIZE / 4];
+    char hex_sig[BUFFER_SIZE / 2];
     char bytes_buffer[BUFFER_SIZE / 4];
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
