@@ -23,7 +23,7 @@ IUSE="debug"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
-	dev-libs/openssl
+	dev-libs/nettle[gmp]
 	app-arch/libarchive[zlib]"
 
 DOCS=( "README.md" )
