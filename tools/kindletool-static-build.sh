@@ -34,6 +34,12 @@ Build_Linux() {
 	export CPPFLAGS="-isystem${KT_SYSROOT}/include"
 	export LDFLAGS="-L${KT_SYSROOT}/lib -Wl,-O1 -Wl,--as-needed"
 
+	BASE_PKG_CONFIG_PATH="${KT_SYSROOT}/lib/pkgconfig"
+	BASE_PKG_CONFIG_LIBDIR="${KT_SYSROOT}/lib/pkgconfig"
+	export PKG_CONFIG_DIR=
+	export PKG_CONFIG_PATH="${BASE_PKG_CONFIG_PATH}"
+	export PKG_CONFIG_LIBDIR="${BASE_PKG_CONFIG_LIBDIR}"
+
 	# GMP
 	if [[ ! -d "${GMP_DIR}" ]] ; then
 		echo "* Building ${GMP_DIR} . . ."
@@ -251,6 +257,12 @@ Build_OSX() {
 	# NOTE: Use -isystem so that gmp doesn't do crazy stuff...
 	export CPPFLAGS="-isystem${KT_SYSROOT}/include"
 	export LDFLAGS="-L${KT_SYSROOT}/lib"
+
+	BASE_PKG_CONFIG_PATH="${KT_SYSROOT}/lib/pkgconfig"
+	BASE_PKG_CONFIG_LIBDIR="${KT_SYSROOT}/lib/pkgconfig"
+	export PKG_CONFIG_DIR=
+	export PKG_CONFIG_PATH="${BASE_PKG_CONFIG_PATH}"
+	export PKG_CONFIG_LIBDIR="${BASE_PKG_CONFIG_LIBDIR}"
 
 	# GMP
 	if [[ ! -d "${GMP_DIR}" ]] ; then

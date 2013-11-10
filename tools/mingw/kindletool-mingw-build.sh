@@ -115,6 +115,12 @@ export CPPFLAGS="${BASE_CPPFLAGS}"
 BASE_LDFLAGS="-L${TC_BUILD_DIR}/lib -Wl,-O1 -Wl,--as-needed"
 export LDFLAGS="${BASE_LDFLAGS}"
 
+BASE_PKG_CONFIG_PATH="${TC_BUILD_DIR}/lib/pkgconfig"
+BASE_PKG_CONFIG_LIBDIR="${TC_BUILD_DIR}/lib/pkgconfig"
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_PATH="${BASE_PKG_CONFIG_PATH}"
+export PKG_CONFIG_LIBDIR="${BASE_PKG_CONFIG_LIBDIR}"
+
 ## Go :)
 ## Get to our build dir
 mkdir -p "${TC_BUILD_DIR}"
