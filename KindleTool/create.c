@@ -34,11 +34,9 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
-    struct base16_decode_ctx hex_ctx;
-    // NOTE: The buffer sizes here aren't terribly portable, but we're reasonably sure we'll never need more than this (at worst, a 2K RSA key)...
-    // NOTE: The zero initialization is also by design, don't mess with it ;).
-    char hex_sig[(CERTIFICATE_2K_SIZE * 2) + 1] = {0};  // 512 + 1 (mpz_get_str adds a trailing null)
-    char bytes_buffer[CERTIFICATE_2K_SIZE] = {0};       // 256
+    // NOTE: Not terribly portable, but we know we can't use keys > 2K anyways...
+    char raw_sig[CERTIFICATE_2K_SIZE];
+    size_t siglen;
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -57,7 +55,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
-    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... We don't want that, so do it in a more roundabout way...
+    // Some sanity checks...
     if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
     {
         // See the notes above, handle 2K keys at most.
@@ -65,28 +63,18 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         mpz_clear(s);
         return -1;
     }
-    // So, start by getting our sig in hex...
-    mpz_get_str(hex_sig, 16, s);
+    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Do it ourselves with mpz_export!
+    mpz_export(raw_sig, &siglen, 1, sizeof(char *), 1, 0, s);      // Words of 4 bytes, most significant word & byte first, full words.
     mpz_clear(s);
-    // NOTE: Apparently, mpz_get_str & mpz_out_str 'helpfully' strips the leading zeros, work around that...
-    while(hex_sig[(rsa_pkey->size * 2) - 1] == '\0')
+    // More sanity checks!
+    if(siglen * sizeof(char *) != rsa_pkey->size)
     {
-        // Shift the array one byte to the right, and prepend a leading zero
-        memmove(hex_sig + 1, hex_sig, rsa_pkey->size * 2);
-        hex_sig[0] = '0';
-    }
-
-    // And then decode it to a byte array...
-    base16_decode_init(&hex_ctx);
-    base16_decode_update(&hex_ctx, &rsa_pkey->size, (uint8_t *)bytes_buffer, rsa_pkey->size * 2, (uint8_t *)hex_sig);
-    if(base16_decode_final(&hex_ctx) != 1)
-    {
-        fprintf(stderr, "Failed to decode hex signature!\n");
+        fprintf(stderr, "Signature is too short for our key!\n");
         return -1;
     }
 
     // Finally, write our sig!
-    if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
+    if(fwrite(raw_sig, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
     {
         fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
         return -1;
