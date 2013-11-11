@@ -37,8 +37,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct base16_decode_ctx hex_ctx;
     // NOTE: The buffer sizes here aren't terribly portable, but we're reasonably sure we'll never need more than this (at worst, a 2K RSA key)...
     // NOTE: The zero initialization is also by design, don't mess with it ;).
-    char hex_sig[CERTIFICATE_2K_SIZE * 2 + 1] = {0};     // 512 + 1 (mpz_get_str adds a trailing null)
-    char bytes_buffer[CERTIFICATE_2K_SIZE] = {0};        // 256
+    char hex_sig[(CERTIFICATE_2K_SIZE * 2) + 1] = {0};  // 512 + 1 (mpz_get_str adds a trailing null)
+    char bytes_buffer[CERTIFICATE_2K_SIZE] = {0};       // 256
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
