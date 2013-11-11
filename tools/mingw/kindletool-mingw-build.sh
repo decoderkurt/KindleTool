@@ -205,6 +205,8 @@ else
 		fi
 		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+		# Fix MinGW builds...
+		sed -e 's#desdata$(EXEEXT)#desdata$(EXEEXT_FOR_BUILD)#g' -i Makefile.in
 		sh ./.bootstrap
 		./configure --prefix="${TC_BUILD_DIR}" --libdir="${TC_BUILD_DIR}/lib" --host="${CROSS_TC}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 		make -j2
