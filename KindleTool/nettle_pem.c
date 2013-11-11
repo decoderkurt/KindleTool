@@ -321,7 +321,7 @@ static int load_pem(struct nettle_buffer *buffer, FILE *f, struct rsa_private_ke
     }
 }
 
-int kt_private_rsa_from_pem(char *pem_filename, struct rsa_private_key *rsa_pkey)
+int nettle_rsa_privkey_from_pem(char *pem_filename, struct rsa_private_key *rsa_pkey)
 {
     struct nettle_buffer buffer;
     enum object_type type = 0;

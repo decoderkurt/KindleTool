@@ -71,7 +71,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     // NOTE: Apparently, mpz_get_str & mpz_out_str 'helpfully' strips the leading zeros, work around that...
     while(hex_sig[(rsa_pkey->size * 2) - 1] == '\0')
     {
-        // Shift the array one byte to the right, and prepend the leading zero
+        // Shift the array one byte to the right, and prepend a leading zero
         memmove(hex_sig + 1, hex_sig, rsa_pkey->size * 2);
         hex_sig[0] = '0';
     }
@@ -1648,15 +1648,15 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case 'k':
 #ifdef KT_USE_NETTLE
-                if(kt_private_rsa_from_pem(optarg, &info.sign_pkey) != 0)
+                if(nettle_rsa_privkey_from_pem(optarg, &info.sign_pkey) != 0)
                 {
-                    fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
+                    fprintf(stderr, "Key '%s' cannot be loaded.\n", optarg);
                     goto do_error;
                 }
 #else
                 if((bio = BIO_new_file(optarg, "rb")) == NULL || PEM_read_bio_RSAPrivateKey(bio, &info.sign_pkey, NULL, NULL) == NULL)
                 {
-                    fprintf(stderr, "Key %s cannot be loaded.\n", optarg);
+                    fprintf(stderr, "Key '%s' cannot be loaded.\n", optarg);
                     goto do_error;
                 }
                 BIO_free(bio);

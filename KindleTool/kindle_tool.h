@@ -346,7 +346,7 @@ int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const unsigne
 int kindle_create_main(int, char **);
 
 #ifdef KT_USE_NETTLE
-int kt_private_rsa_from_pem(char *, struct rsa_private_key *);
+int nettle_rsa_privkey_from_pem(char *, struct rsa_private_key *);
 #endif
 
 #endif
