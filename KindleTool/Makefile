@@ -23,7 +23,6 @@ ifeq "$(MINGW)" "true"
 endif
 
 SRCS=kindle_tool.c create.c convert.c
-SRCS+=nettle_pem.c
 
 default: all
 
@@ -78,6 +77,8 @@ ifdef KT_USE_NETTLE
 endif
 # Do we have nettle? If so, use it!
 ifeq "$(HAS_PC_NETTLE)" "true"
+	# And build our pem loading helper, too :).
+	SRCS+=nettle_pem.c
 	LIBS+=$(PC_NETTLE_LIBS)
 else
 	# Fall back to OpenSSL
