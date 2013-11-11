@@ -172,21 +172,45 @@ if [[ ! -d "${GMP_DIR}" ]] ; then
 fi
 
 # nettle
-if [[ ! -d "${NETTLE_DIR}" ]] ; then
-	echo "* Building ${NETTLE_DIR} . . ."
-	echo ""
-	if [[ ! -f "./${NETTLE_DIR}.tar.gz" ]] ; then
-		wget -O "./${NETTLE_DIR}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/${NETTLE_DIR}.tar.gz"
+if [[ "${USE_STABLE_NETTLE}" == "true" ]] ; then
+	if [[ ! -d "${NETTLE_DIR}" ]] ; then
+		echo "* Building ${NETTLE_DIR} . . ."
+		echo ""
+		if [[ ! -f "./${NETTLE_DIR}.tar.gz" ]] ; then
+			wget -O "./${NETTLE_DIR}.tar.gz" "http://www.lysator.liu.se/~nisse/archive/${NETTLE_DIR}.tar.gz"
+		fi
+		tar -xvzf ./${NETTLE_DIR}.tar.gz
+		cd ${NETTLE_DIR}
+		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
+		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+		autoreconf -fi
+		./configure --prefix="${TC_BUILD_DIR}" --libdir="${TC_BUILD_DIR}/lib" --host="${CROSS_TC}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		make -j2
+		make install
+		cd ..
 	fi
-	tar -xvzf ./${NETTLE_DIR}.tar.gz
-	cd ${NETTLE_DIR}
-	sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
-	sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
-	autoreconf -fi
-	./configure --prefix="${TC_BUILD_DIR}" --libdir="${TC_BUILD_DIR}/lib" --host="${CROSS_TC}" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
-	make -j2
-	make install
-	cd ..
+else
+	# Build from git to benefit from the more x86_64 friendly API changes
+	if [[ ! -d "nettle" ]] ; then
+		echo "* Building nettle . . ."
+		echo ""
+		if [[ -d "nettle-git" ]] ; then
+			cd nettle-git
+			make distclean
+			git checkout -- configure.ac Makefile.in
+			git pull
+		else
+			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
+			cd nettle-git
+		fi
+		sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
+		sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+		sh ./.bootstrap
+		./configure --prefix="${TC_BUILD_DIR}" --libdir="${TC_BUILD_DIR}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+		make -j2
+		make install
+		cd ..
+	fi
 fi
 
 # libarchive
