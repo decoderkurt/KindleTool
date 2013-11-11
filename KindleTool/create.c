@@ -36,6 +36,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_t s;
     struct base16_decode_ctx hex_ctx;
     // NOTE: The buffer sizes here aren't terribly portable, but we're reasonably sure we'll never need more than this (at worst, a 2K RSA key)...
+    // NOTE: The zero initialization is also by design, don't mess with it ;).
     char hex_sig[CERTIFICATE_2K_SIZE * 2 + 1] = {0};     // 512 + 1 (mpz_get_str adds a trailing null)
     char bytes_buffer[CERTIFICATE_2K_SIZE] = {0};        // 256
 
@@ -67,14 +68,12 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     // So, start by getting our sig in hex...
     mpz_get_str(hex_sig, 16, s);
     mpz_clear(s);
-    // NOTE: Apparently, mpz_get_str & mpz_out_str can return an odd or incomplete string (without leading zero(s?)...), work around that...
-    fprintf(stderr, "Hex: %s (Len: %zd)\n", hex_sig, strlen(hex_sig));
+    // NOTE: Apparently, mpz_get_str & mpz_out_str 'helpfully' strips the leading zeros, work around that...
     while(hex_sig[(rsa_pkey->size * 2) - 1] == '\0')
     {
         // Shift the array one byte to the right, and prepend the leading zero
         memmove(hex_sig + 1, hex_sig, rsa_pkey->size * 2);
         hex_sig[0] = '0';
-        fprintf(stderr, "New Hex: %s (Len: %zd)\n", hex_sig, strlen(hex_sig));
     }
 
     // And then decode it to a byte array...
@@ -85,7 +84,6 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         fprintf(stderr, "Failed to decode hex signature!\n");
         return -1;
     }
-    fprintf(stderr, "SigLen: %zd\n", strlen(bytes_buffer));
 
     // Finally, write our sig!
     if(fwrite(bytes_buffer, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
