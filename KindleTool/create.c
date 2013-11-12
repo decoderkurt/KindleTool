@@ -63,8 +63,8 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         mpz_clear(s);
         return -1;
     }
-    // NOTE: mpz_out_raw prepends 4 bytes with the size of the sig... Do it ourselves with mpz_export!
-    mpz_export(raw_sig, &siglen, 1, sizeof(char *), 1, 0, s);      // Words of the proper amount of bytes for the host, most significant word & byte first, full words.
+    // NOTE: mpz_out_raw outputs in a format that doesn't quite fit our needs (it prepends 4 bytes of size info)... Do it ourselves with mpz_export!
+    mpz_export(raw_sig, &siglen, 1, sizeof(char *), 1, 0, s);   // Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
     mpz_clear(s);
     // More sanity checks!
     if(siglen * sizeof(char *) != rsa_pkey->size)
