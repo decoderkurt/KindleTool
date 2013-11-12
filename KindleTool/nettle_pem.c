@@ -187,10 +187,9 @@ static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *len
     /* Decode in place */
     if(base64_decode_update(&ctx, length, buffer->contents + start, *length, buffer->contents + start) && base64_decode_final(&ctx))
         return 1;
-
     else
     {
-        fprintf(stderr, "Invalid base64 date.\n");
+        fprintf(stderr, "Invalid base64 data.\n");
         return 0;
     }
 }
@@ -200,7 +199,7 @@ static int convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, 
     struct rsa_public_key pub;
     int res;
 
-    // NOTE: Unlike rsa_keypair_from_sex, we *HAVE* to init the pubkey too, or everything blows up, the from_der codepath expects it to be malloc'ed...
+    // NOTE: Unlike rsa_keypair_from_sexp, we *HAVE* to init the pubkey too, or everything blows up, the from_der codepath expects it to be setup...
     rsa_public_key_init(&pub);
 
     if(rsa_keypair_from_der(&pub, rsa_pkey, 0, length, data))

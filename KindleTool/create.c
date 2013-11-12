@@ -32,7 +32,6 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     unsigned char buffer[BUFFER_SIZE];
     size_t len;
     struct sha256_ctx hash;
-    sha256_init(&hash);
     mpz_t sig;
     // NOTE: Don't do this at home, kids! We can get away with it because we know we can't use keys > 2K anyway...
     unsigned char raw_sig[CERTIFICATE_2K_SIZE];
@@ -45,6 +44,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
+    sha256_init(&hash);
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
         sha256_update(&hash, len, buffer);

@@ -371,6 +371,7 @@ struct rsa_private_key get_default_key(void)
     if(!rsa_keypair_from_sexp(NULL, &rsa_pkey, 0, sizeof(sign_key_sexp), (uint8_t *) sign_key_sexp))
     {
         fprintf(stderr, "Invalid default private key!\n");
+        // In the unlikely event this ever happens, it'll be caught later in sign_file ;).
     }
 
     return rsa_pkey;
