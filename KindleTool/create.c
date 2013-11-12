@@ -33,9 +33,9 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     size_t len;
     struct sha256_ctx hash;
     sha256_init(&hash);
-    mpz_t s;
+    mpz_t sig;
     // NOTE: Don't do this at home, kids! We can get away with it because we know we can't use keys > 2K anyway...
-    char raw_sig[CERTIFICATE_2K_SIZE];
+    unsigned char raw_sig[CERTIFICATE_2K_SIZE];
     size_t siglen;
 
     // Like we just said, handle 2K keys at most!
@@ -54,19 +54,19 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         return -1;
     }
-    mpz_init(s);
-    if(!rsa_sha256_sign(rsa_pkey, &hash, s))
+    mpz_init(sig);
+    if(!rsa_sha256_sign(rsa_pkey, &hash, sig))
     {
         fprintf(stderr, "RSA key is too small!\n");
-        mpz_clear(s);
+        mpz_clear(sig);
         return -1;
     }
 
     // NOTE: mpz_out_raw outputs a format that doesn't quite fit our needs (it prepends 4 bytes of size info)... Do it ourselves with mpz_export!
-    mpz_export(raw_sig, &siglen, 1, sizeof(char *), 1, 0, s);   // Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
-    mpz_clear(s);
+    mpz_export(raw_sig, &siglen, 1, sizeof(unsigned char *), 1, 0, sig);   // Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
+    mpz_clear(sig);
     // Check that the sig looks sane...
-    if(siglen * sizeof(char *) != rsa_pkey->size)
+    if(siglen * sizeof(unsigned char *) != rsa_pkey->size)
     {
         fprintf(stderr, "Signature is too short (or too large?) for our key!\n");
         return -1;
