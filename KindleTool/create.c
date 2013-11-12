@@ -41,7 +41,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     // Like we just said, handle 2K keys at most!
     if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
     {
-        fprintf(stderr, "Key is too large (2K at most)!\n");
+        fprintf(stderr, "RSA key is too large (2K at most)!\n");
         return -1;
     }
 
@@ -57,7 +57,7 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     mpz_init(s);
     if(!rsa_sha256_sign(rsa_pkey, &hash, s))
     {
-        fprintf(stderr, "RSA key too small.\n");
+        fprintf(stderr, "RSA key is too small!\n");
         mpz_clear(s);
         return -1;
     }
