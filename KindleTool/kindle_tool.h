@@ -37,9 +37,11 @@
 #include <archive_entry.h>
 
 // NOTE: Just to make KDevelop useful while I'm working on nettle...
+/*
 #ifndef KT_USE_NETTLE
 #define KT_USE_NETTLE
 #endif
+*/
 
 #ifdef KT_USE_NETTLE
 #include <gmp.h>

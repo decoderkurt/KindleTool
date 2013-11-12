@@ -34,9 +34,16 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
     struct sha256_ctx hash;
     sha256_init(&hash);
     mpz_t s;
-    // NOTE: Not terribly portable, but we know we can't use keys > 2K anyways...
+    // NOTE: Don't do this at home, kids! We can get away with it because we know we can't use keys > 2K anyway...
     char raw_sig[CERTIFICATE_2K_SIZE];
     size_t siglen;
+
+    // Like we just said, handle 2K keys at most!
+    if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
+    {
+        fprintf(stderr, "Key is too large (2K at most)!\n");
+        return -1;
+    }
 
     while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
     {
@@ -55,25 +62,17 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
         return -1;
     }
 
-    // Some sanity checks...
-    if(rsa_pkey->size > CERTIFICATE_2K_SIZE)
-    {
-        // See the notes above, handle 2K keys at most.
-        fprintf(stderr, "Key is too large for our buffers!\n");
-        mpz_clear(s);
-        return -1;
-    }
-    // NOTE: mpz_out_raw outputs in a format that doesn't quite fit our needs (it prepends 4 bytes of size info)... Do it ourselves with mpz_export!
+    // NOTE: mpz_out_raw outputs a format that doesn't quite fit our needs (it prepends 4 bytes of size info)... Do it ourselves with mpz_export!
     mpz_export(raw_sig, &siglen, 1, sizeof(char *), 1, 0, s);   // Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
     mpz_clear(s);
-    // More sanity checks!
+    // Check that the sig looks sane...
     if(siglen * sizeof(char *) != rsa_pkey->size)
     {
-        fprintf(stderr, "Signature is too short for our key!\n");
+        fprintf(stderr, "Signature is too short (or too large?) for our key!\n");
         return -1;
     }
 
-    // Finally, write our sig!
+    // And finally, write our sig!
     if(fwrite(raw_sig, sizeof(unsigned char), rsa_pkey->size, sigout_file) < rsa_pkey->size)
     {
         fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
