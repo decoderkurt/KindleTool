@@ -842,16 +842,16 @@ int kindle_extract_main(int argc, char *argv[])
     }
 
     // We need exactly 2 non-switch options (I/O)!
-    if((optind + 2) != argc)
-    {
-        fprintf(stderr, "Invalid number of arguments (need input & output).\n");
-        return -1;
-    }
-    if(optind < argc)
+    if(optind < argc && (optind + 2) == argc)
     {
         // We know exactly what we need, and in what order
         bin_filename = argv[optind];
         output_dir = argv[optind + 1];
+    }
+    else
+    {
+        fprintf(stderr, "Invalid number of arguments (need input & output).\n");
+        return -1;
     }
     // Double validation, and make GCC happy
     if(bin_filename == NULL)
