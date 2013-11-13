@@ -350,18 +350,11 @@ Build_OSX() {
 		fi
 	else
 		# Build from git to benefit from the more x86_64 friendly API changes
-		if [[ ! -d "nettle" ]] ; then
+		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
-			if [[ -d "nettle-git" ]] ; then
-				cd nettle-git
-				make distclean
-				git checkout -- configure.ac Makefile.in
-				git pull
-			else
-				git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
-				cd nettle-git
-			fi
+			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
+			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
 			sh ./.bootstrap
