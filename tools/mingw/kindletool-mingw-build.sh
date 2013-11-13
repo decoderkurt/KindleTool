@@ -124,6 +124,7 @@ export PKG_CONFIG_LIBDIR="${BASE_PKG_CONFIG_LIBDIR}"
 ## Go :)
 ## Get to our build dir
 mkdir -p "${TC_BUILD_DIR}"
+KT_TOOLS_DIR="${PWD}/.."
 cd "${TC_BUILD_DIR}"
 
 ZLIB_VER="1.2.8"
@@ -216,19 +217,34 @@ else
 fi
 
 # libarchive
-if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
-	echo "* Building ${LIBARCHIVE_DIR} . . ."
-	echo ""
-	if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-		wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
+	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+		echo "* Building ${LIBARCHIVE_DIR} . . ."
+		echo ""
+		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
+			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+		fi
+		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
+		cd ${LIBARCHIVE_DIR}
+		./build/autogen.sh
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		make -j2
+		make install
+		cd ..
 	fi
-	tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
-	cd ${LIBARCHIVE_DIR}
-	./build/autogen.sh
-	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-	make -j2
-	make install
-	cd ..
+else
+	if [[ ! -d "libarchive-git" ]] ; then
+		echo "* Building libarchive . . ."
+		echo ""
+		git clone https://github.com/libarchive/libarchive.git libarchive-git
+		cd libarchive-git
+		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-issue-317.patch
+		./build/autogen.sh
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		make -j2
+		make install
+		cd ..
+	fi
 fi
 
 # Build KT package credits

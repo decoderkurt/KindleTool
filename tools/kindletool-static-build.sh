@@ -200,20 +200,36 @@ Build_Cygwin() {
 	cd ../..
 
 	# libarchive
-	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
-		echo "* Building ${LIBARCHIVE_DIR} . . ."
-		echo ""
-		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+	if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
+		if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+			echo "* Building ${LIBARCHIVE_DIR} . . ."
+			echo ""
+			if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
+				wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+			fi
+			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
+			cd ${LIBARCHIVE_DIR}
+			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
+			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
+			make
+			make install
+			cd ..
 		fi
-		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
-		cd ${LIBARCHIVE_DIR}
-		# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
-		# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-		cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_NETTLE=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
-		make
-		make install
-		cd ..
+	else
+		if [[ ! -d "libarchive-git" ]] ; then
+			echo "* Building libarchive . . ."
+			echo ""
+			git clone https://github.com/libarchive/libarchive.git libarchive-git
+			cd libarchive-git
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
+			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
+			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
+			make
+			make install
+			cd ..
+		fi
 	fi
 
 	# Build KT package credits
@@ -357,19 +373,34 @@ Build_OSX() {
 	fi
 
 	# libarchive
-	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
-		echo "* Building ${LIBARCHIVE_DIR} . . ."
-		echo ""
-		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			curl -L "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz" -o "./${LIBARCHIVE_DIR}.tar.gz"
+	if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
+		if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+			echo "* Building ${LIBARCHIVE_DIR} . . ."
+			echo ""
+			if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
+				curl -L "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz" -o "./${LIBARCHIVE_DIR}.tar.gz"
+			fi
+			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
+			cd ${LIBARCHIVE_DIR}
+			./build/autogen.sh
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			make -j2
+			make install
+			cd ..
 		fi
-		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
-		cd ${LIBARCHIVE_DIR}
-		./build/autogen.sh
-		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-		make -j2
-		make install
-		cd ..
+	else
+		if [[ ! -d "libarchive-git" ]] ; then
+			echo "* Building libarchive . . ."
+			echo ""
+			git clone https://github.com/libarchive/libarchive.git libarchive-git
+			cd libarchive-git
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
+			./build/autogen.sh
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			make -j2
+			make install
+			cd ..
+		fi
 	fi
 
 	# Build KT package credits
