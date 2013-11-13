@@ -841,8 +841,8 @@ int kindle_extract_main(int argc, char *argv[])
         }
     }
 
-    // Validate our args...
-    if(argc < 3)
+    // We need exactly 2 non-switch options (I/O)!
+    if((optind + 2) != argc)
     {
         fprintf(stderr, "Invalid number of arguments (need input & output).\n");
         return -1;
