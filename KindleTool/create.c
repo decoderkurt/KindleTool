@@ -116,7 +116,7 @@ int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
     }
     if(ferror(in_file))
     {
-        fprintf(stderr, "Error reading file.\n");
+        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
         EVP_PKEY_free(pkey);
         return -5;
     }
@@ -340,7 +340,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             break;
         else if(r != ARCHIVE_OK)
         {
-            fprintf(stderr, "archive_read_next_header2() failed: %s.", archive_error_string(disk));
+            fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
             {
                 fprintf(stderr, " (FATAL).\n");
@@ -1906,7 +1906,7 @@ int kindle_create_main(int argc, char *argv[])
         // Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
         if((output = fopen(output_filename, "wb")) == NULL)
         {
-            fprintf(stderr, "Cannot create output package '%s'.\n", output_filename);
+            fprintf(stderr, "Cannot create output package file '%s': %s.\n", output_filename, strerror(errno));
             goto do_error;
         }
     }
