@@ -112,11 +112,11 @@ Build_Linux() {
 		fi
 	else
 		if [[ ! -d "libarchive-git" ]] ; then
-			echo "* Building ${LIBARCHIVE_DIR} . . ."
+			echo "* Building libarchive . . ."
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
-			patch -p1 KindleTool/tools/libarchive-fix-issue-317.patch
+			patch -p1 < KindleTool/tools/libarchive-fix-issue-317.patch
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
