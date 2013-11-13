@@ -13,7 +13,7 @@ ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-siblin
 # and only happens when using the NSS compat stuff (which happened to be the default on my system...)
 # Same thing for OpenSSL's uninitialized stuff when built without PURIFY (cf. OpenSSL's FAQ)
 # The fcntl stuff in libarchive's tree_dup is a libarchive issue: https://code.google.com/p/libarchive/issues/detail?id=317
-# With nettle and a patched libarchive master, we have a clean output :).
+# With nettle and a patched libarchive master, like in my builds, we have a clean output :).
 
 # Kindle cross toolchain prefix
 ifeq "$(KINDLE)" "true"

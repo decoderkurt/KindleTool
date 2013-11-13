@@ -77,18 +77,11 @@ Build_Linux() {
 		fi
 	else
 		# Build from git to benefit from the more x86_64 friendly API changes
-		if [[ ! -d "nettle" ]] ; then
+		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
-			if [[ -d "nettle-git" ]] ; then
-				cd nettle-git
-				make distclean
-				git checkout -- configure.ac Makefile.in
-				git pull
-			else
-				git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
-				cd nettle-git
-			fi
+			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
+			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
 			sh ./.bootstrap
@@ -100,21 +93,38 @@ Build_Linux() {
 	fi
 
 	# libarchive
-	if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
-		echo "* Building ${LIBARCHIVE_DIR} . . ."
-		echo ""
-		export ac_cv_header_ext2fs_ext2_fs_h=0
-		if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
-			wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+	if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
+		if [[ ! -d "${LIBARCHIVE_DIR}" ]] ; then
+			echo "* Building ${LIBARCHIVE_DIR} . . ."
+			echo ""
+			if [[ ! -f "./${LIBARCHIVE_DIR}.tar.gz" ]] ; then
+				wget -O "./${LIBARCHIVE_DIR}.tar.gz" "http://github.com/libarchive/libarchive/archive/v${LIBARCHIVE_VER}.tar.gz"
+			fi
+			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
+			cd ${LIBARCHIVE_DIR}
+			export ac_cv_header_ext2fs_ext2_fs_h=0
+			./build/autogen.sh
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			make -j2
+			make install
+			unset ac_cv_header_ext2fs_ext2_fs_h
+			cd ..
 		fi
-		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
-		cd ${LIBARCHIVE_DIR}
-		./build/autogen.sh
-		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-		make -j2
-		make install
-		unset ac_cv_header_ext2fs_ext2_fs_h
-		cd ..
+	else
+		if [[ ! -d "libarchive-git" ]] ; then
+			echo "* Building ${LIBARCHIVE_DIR} . . ."
+			echo ""
+			git clone https://github.com/libarchive/libarchive.git libarchive-git
+			cd libarchive-git
+			patch -p1 KindleTool/tools/libarchive-fix-issue-317.patch
+			export ac_cv_header_ext2fs_ext2_fs_h=0
+			./build/autogen.sh
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			make -j2
+			make install
+			unset ac_cv_header_ext2fs_ext2_fs_h
+			cd ..
+		fi
 	fi
 
 	# Build KT package credits
