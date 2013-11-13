@@ -163,22 +163,22 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         // Exclude *.sig files in a case insensitive way, to avoid duplicates
         matching = archive_match_new();
         if(archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
-            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
         // Exclude *.dat too, to avoid ending up with multiple bundlefiles!
         if(archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exclude "./update*\\.[Dd][Aa][Tt]$" instead
-            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
         // Exclude *nix hidden files, too?
         // NOTE: The ARCHIVE_READDISK_MAC_COPYFILE flag for read_disk is disabled by default, so we should already be creating 'sane' archives on OS X, without the crazy ._* acl/xattr files ;)
         // On the other hand, if the user passed us a self-built tarball, we can't do anything about it. OS X users: export COPYFILE_DISABLE=1 is your friend!
         /*
         if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK)
-            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(matching));
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
         */
 
         r = archive_match_path_excluded(matching, entry);
         if(r < 0)
         {
-            fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(matching));
+            fprintf(stderr, "archive_match_path_excluded() failed: %s.\n", archive_error_string(matching));
             archive_match_free(matching);
             return 0;
         }
@@ -214,7 +214,7 @@ static int write_entry(struct kttar *kttar, struct archive *a, struct archive *i
     e = archive_write_header(a, entry);
     if(e != ARCHIVE_OK)
     {
-        fprintf(stderr, "archive_write_header() failed: %s\n", archive_error_string(a));
+        fprintf(stderr, "archive_write_header() failed: %s.\n", archive_error_string(a));
     }
 
     if(e == ARCHIVE_FATAL)
@@ -263,7 +263,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
                 if(bytes_written < 0)
                 {
                     // Write failed; this is bad
-                    fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
+                    fprintf(stderr, "archive_write_data() failed: %s.\n", archive_error_string(a));
                     return -1;
                 }
                 if((size_t)bytes_written < ns)
@@ -281,7 +281,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
         if(bytes_written < 0)
         {
             // Write failed; this is bad
-            fprintf(stderr, "archive_write_data() failed: %s\n", archive_error_string(a));
+            fprintf(stderr, "archive_write_data() failed: %s.\n", archive_error_string(a));
             return -1;
         }
         if((size_t)bytes_written < bytes_read)
@@ -294,7 +294,7 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
     }
     if(r < ARCHIVE_WARN)
     {
-        fprintf(stderr, "archive_read_data_block() failed: %s\n", archive_error_string(a));
+        fprintf(stderr, "archive_read_data_block() failed: %s.\n", archive_error_string(a));
         return -1;
     }
     return 0;
@@ -326,7 +326,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
     r = archive_read_disk_open(disk, input_filename);
     if(r != ARCHIVE_OK)
     {
-        fprintf(stderr, "archive_read_disk_open() failed: %s\n", archive_error_string(disk));
+        fprintf(stderr, "archive_read_disk_open() failed: %s.\n", archive_error_string(disk));
         archive_read_free(disk);
         archive_entry_free(entry);
         return 1;
@@ -340,15 +340,15 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             break;
         else if(r != ARCHIVE_OK)
         {
-            fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
+            fprintf(stderr, "archive_read_next_header2() failed: %s.", archive_error_string(disk));
             if(r == ARCHIVE_FATAL)
             {
-                fprintf(stderr, " (FATAL)\n");
+                fprintf(stderr, " (FATAL).\n");
                 goto cleanup;
             }
             else if(r < ARCHIVE_WARN)
             {
-                fprintf(stderr, " (FAILED)\n");
+                fprintf(stderr, " (FAILED).\n");
                 // NOTE: We don't want to end up with an incomplete archive, abort.
                 goto cleanup;
             }
@@ -369,7 +369,7 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
                 if(archive_entry_filetype(entry) == AE_IFDIR && strlen(archive_entry_pathname(entry)) <= kttar->tweak_pointer_index)
                 {
                     // Print what we're stripping, ala GNU tar...
-                    fprintf(stderr, "kindletool: Removing leading '%s/' from member names\n", archive_entry_pathname(entry));
+                    fprintf(stderr, "kindletool: Removing leading '%s/' from member names.\n", archive_entry_pathname(entry));
                     // Just skip it, we don't need a redundant and explicit root directory entry in our tarball...
                     archive_read_disk_descend(disk);
                     continue;
@@ -535,7 +535,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
     // Allocate a buffer for file data.
     if((kttar->buff = malloc(kttar->buff_size)) == NULL)
     {
-        fprintf(stderr, "Cannot allocate memory for archive copy buffer\n");
+        fprintf(stderr, "Cannot allocate memory for archive copy buffer.\n");
         return 1;
     }
 
@@ -574,7 +574,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 #if defined(_WIN32) && !defined(__CYGWIN__)
     if(_mktemp(bundle_filename) == NULL)
     {
-        fprintf(stderr, "Couldn't create temporary file template.\n");
+        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         goto cleanup;
     }
     bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
@@ -583,12 +583,12 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 #endif
     if(bundle_fd == -1)
     {
-        fprintf(stderr, "Couldn't open temporary file.\n");
+        fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
         goto cleanup;
     }
     if((bundlefile = fdopen(bundle_fd, "wb+")) == NULL)
     {
-        fprintf(stderr, "Cannot open temp bundlefile '%s' for writing.\n", bundle_filename);
+        fprintf(stderr, "Cannot open temp bundlefile '%s' for writing: %s.\n", bundle_filename, strerror(errno));
         close(bundle_fd);
         unlink(bundle_filename);
         goto cleanup;
@@ -644,7 +644,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
             {
                 if(md5_sum(file, md5) != 0)
                 {
-                    fprintf(stderr, "Cannot calculate hash sum for '%s'\n", kttar->to_sign_and_bundle_list[i]);
+                    fprintf(stderr, "Cannot calculate hash sum for '%s'.\n", kttar->to_sign_and_bundle_list[i]);
                     fclose(file);
                     // Avoid a double free, bis.
                     signame = NULL;
@@ -676,7 +676,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 #if defined(_WIN32) && !defined(__CYGWIN__)
             if(_mktemp(sigabsolutepath) == NULL)
             {
-                fprintf(stderr, "Couldn't create temporary file template.\n");
+                fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
                 fclose(file);
                 goto cleanup;
             }
@@ -686,13 +686,13 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
 #endif
             if(sigfd == -1)
             {
-                fprintf(stderr, "Couldn't open temporary signature file.\n");
+                fprintf(stderr, "Couldn't open temporary signature file: %s.\n", strerror(errno));
                 fclose(file);
                 goto cleanup;
             }
             if((sigfile = fdopen(sigfd, "wb")) == NULL)
             {
-                fprintf(stderr, "Cannot open temp signature file '%s' for reading & writing\n", signame);
+                fprintf(stderr, "Cannot open temp signature file '%s' for writing: %s.\n", signame, strerror(errno));
                 fclose(file);
                 close(sigfd);
                 unlink(sigabsolutepath);
@@ -700,7 +700,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
             }
             if(sign_file(file, rsa_pkey_file, sigfile) < 0)
             {
-                fprintf(stderr, "Cannot sign '%s'\n", kttar->to_sign_and_bundle_list[i]);
+                fprintf(stderr, "Cannot sign '%s'.\n", kttar->to_sign_and_bundle_list[i]);
                 fclose(file);
                 fclose(sigfile);
                 unlink(sigabsolutepath);   // Delete empty/broken sigfile
@@ -1708,11 +1708,11 @@ int kindle_create_main(int argc, char *argv[])
                 legacy = 1;
                 break;
             case ':':
-                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);
                 goto do_error;
                 break;
             case '?':
-                fprintf(stderr, "Unknown switch %c\n", optopt);
+                fprintf(stderr, "Unknown switch '%c'.\n", optopt);
                 goto do_error;
                 break;
             default:
@@ -1748,7 +1748,7 @@ int kindle_create_main(int argc, char *argv[])
         }
         if((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX))
         {
-            fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u\n", convert_bundle_version(info.version), UINT32_MAX);
+            fprintf(stderr, "Source/target revision for this update type (%s) cannot exceed %u.\n", convert_bundle_version(info.version), UINT32_MAX);
             goto do_error;
         }
         // When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it @ FC02, or shit happens.
@@ -1785,12 +1785,12 @@ int kindle_create_main(int argc, char *argv[])
         {
             if(!info.platform)
             {
-                fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
+                fprintf(stderr, "You need to set a platform for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             if(strcmp(convert_board_id(info.board), "Unknown") == 0)
             {
-                fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
+                fprintf(stderr, "You need to set a board for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             // Don't bother for header rev? We don't for other potentially optional flags in recovery, so...
@@ -1800,12 +1800,12 @@ int kindle_create_main(int argc, char *argv[])
         {
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
             {
-                fprintf(stderr, "You need to set a platform for this update type (%s)\n", convert_bundle_version(info.version));
+                fprintf(stderr, "You need to set a platform for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
             }
             if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && strcmp(convert_board_id(info.board), "Unknown") == 0)
             {
-                fprintf(stderr, "You need to set a board for this update type (%s)\n", convert_bundle_version(info.version));
+                fprintf(stderr, "You need to set a board for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
             }
         }
@@ -1881,7 +1881,7 @@ int kindle_create_main(int argc, char *argv[])
             }
         }
         if(archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
-            fprintf(stderr, "archive_match_exclude_pattern() failed: %s\n", archive_error_string(match));
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(match));
         free(valid_update_file_pattern);
 
         archive_entry_copy_pathname(entry, output_filename);
@@ -1891,7 +1891,7 @@ int kindle_create_main(int argc, char *argv[])
         {
             if(r < 0)
             {
-                fprintf(stderr, "archive_match_path_excluded() failed: %s\n", archive_error_string(match));
+                fprintf(stderr, "archive_match_path_excluded() failed: %s.\n", archive_error_string(match));
             }
             fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (%s) in order to be picked up by the Kindle.\n", output_filename, (fake_sign || userdata_only) ? "data.stgz" : "update*.bin");
             archive_entry_free(entry);
@@ -1950,7 +1950,7 @@ int kindle_create_main(int argc, char *argv[])
 #if defined(_WIN32) && !defined(__CYGWIN__)
         if(_mktemp(tarball_filename) == NULL)
         {
-            fprintf(stderr, "Couldn't create temporary file template.\n");
+            fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
             goto do_error;
         }
         tarball_fd = open(tarball_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
@@ -1959,7 +1959,7 @@ int kindle_create_main(int argc, char *argv[])
 #endif
         if(tarball_fd == -1)
         {
-            fprintf(stderr, "Couldn't open temporary tarball file.\n");
+            fprintf(stderr, "Couldn't open temporary tarball file: %s.\n", strerror(errno));
             goto do_error;
         }
     }
@@ -1968,11 +1968,11 @@ int kindle_create_main(int argc, char *argv[])
     // Again, a signed userdata package is the ugly duckling...
     if(userdata_only)
     {
-        fprintf(stderr, "Building userdata package %s directly from %s (signed with cert %d)\n", output_filename, tarball_filename, info.certificate_number);
+        fprintf(stderr, "Building userdata package '%s' directly from '%s' (signed with cert %d).\n", output_filename, tarball_filename, info.certificate_number);
     }
     else
     {
-        fprintf(stderr, "Building %s%s%s (%.*s) update package %s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? tarball_filename : ""));
+        fprintf(stderr, "Building %s%s%s (%.*s) update package '%s'%s%s%s%s for", (legacy ? "(in legacy mode) " : ""), (fake_sign ? "fake " : ""), (convert_bundle_version(info.version)), MAGIC_NUMBER_LENGTH, info.magic_number, output_filename, (skip_archive ? " directly from " : ""), (skip_archive ? "'" : ""), (skip_archive ? tarball_filename : ""), (skip_archive ? "'" : ""));
         // If we have specific device IDs, list them
         if(info.num_devices > 0)
         {
@@ -1995,9 +1995,9 @@ int kindle_create_main(int argc, char *argv[])
         {
             case OTAUpdateV2:
                 if(info.target_revision == UINT64_MAX)
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : "\n"));
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : ".\n"));
                 else
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : "\n"));
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %d, %hd Metadata%s", (long long) info.source_revision, (long long) info.target_revision, info.critical, info.certificate_number, info.num_meta, (info.num_meta ? " (" : ".\n"));
                 // Loop over meta
                 for(i = 0; i < info.num_meta; i++)
                 {
@@ -2005,28 +2005,28 @@ int kindle_create_main(int argc, char *argv[])
                     if(i != info.num_meta - 1)
                         fprintf(stderr, "; ");
                     else
-                        fprintf(stderr, ")\n");
+                        fprintf(stderr, ").\n");
                 }
                 break;
             case OTAUpdate:
                 if(info.target_revision == UINT32_MAX)
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Optional: %hhu\n", (long long) info.source_revision, info.optional);
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: MAX, Optional: %hhu.\n", (long long) info.source_revision, info.optional);
                 else
-                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Optional: %hhu\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
+                    fprintf(stderr, " Min. OTA: %llu, Target OTA: %llu, Optional: %hhu.\n", (long long) info.source_revision, (long long) info.target_revision, info.optional);
                 break;
             case RecoveryUpdate:
                 fprintf(stderr, " Minor: %d, Magic 1: %d, Magic 2: %d", info.minor, info.magic_1, info.magic_2);
                 if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev > 0)
-                    fprintf(stderr, ", Header Rev: %llu, Platform: %s, Board: %s\n", (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
+                    fprintf(stderr, ", Header Rev: %llu, Platform: %s, Board: %s.\n", (long long) info.header_rev, convert_platform_id(info.platform), convert_board_id(info.board));
                 else
-                    fprintf(stderr, "\n");
+                    fprintf(stderr, ".\n");
                 break;
             case RecoveryUpdateV2:
                 if(info.target_revision == UINT64_MAX)
                     fprintf(stderr, " Target OTA: MAX");
                 else
                     fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
-                fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Cert: %d, Platform: %s, Board: %s\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, info.certificate_number, convert_platform_id(info.platform), convert_board_id(info.board));
+                fprintf(stderr, ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Cert: %d, Platform: %s, Board: %s.\n", info.minor, info.magic_1, info.magic_2, (long long) info.header_rev, info.certificate_number, convert_platform_id(info.platform), convert_board_id(info.board));
                 break;
             case UnknownUpdate:
             default:
@@ -2057,7 +2057,7 @@ int kindle_create_main(int argc, char *argv[])
     // And finally, build our package :)
     if((input = fopen(tarball_filename, "rb")) == NULL)
     {
-        fprintf(stderr, "Cannot read input tarball '%s'.\n", tarball_filename);
+        fprintf(stderr, "Cannot read input tarball '%s': %s.\n", tarball_filename, strerror(errno));
         goto do_error;
     }
     if(kindle_create(&info, input, output, fake_sign) < 0)

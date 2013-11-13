@@ -534,11 +534,11 @@ int kindle_convert_main(int argc, char *argv[])
                 unwrap_only = 1;
                 break;
             case ':':
-                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);
                 return -1;
                 break;
             case '?':
-                fprintf(stderr, "Unknown switch %c\n", optopt);
+                fprintf(stderr, "Unknown switch '%c'.\n", optopt);
                 return -1;
                 break;
             default:
@@ -654,15 +654,15 @@ int kindle_convert_main(int argc, char *argv[])
             // Print a recap of what we're doing
             if(info_only)
             {
-                fprintf(stderr, "Checking %s%s package %s\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
+                fprintf(stderr, "Checking %s%s package '%s'.\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
             }
             else if(unwrap_only)
             {
-                fprintf(stderr, "Unwrapping %s package %s to %s\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name, unwrapped_name);
+                fprintf(stderr, "Unwrapping %s package '%s' to '%s'.\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name, unwrapped_name);
             }
             else
             {
-                fprintf(stderr, "Converting %s%s package %s to %s (%s, %s)\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
+                fprintf(stderr, "Converting %s%s package '%s' to '%s' (%s, %s).\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
             }
             if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output) < 0)
             {
@@ -749,7 +749,7 @@ int libarchive_extract(const char *filename, const char *prefix)
         filename = NULL;
     if((r = archive_read_open_filename(a, filename, 10240)))
     {
-        fprintf(stderr, "archive_read_open_file() failure: %s\n", archive_error_string(a));
+        fprintf(stderr, "archive_read_open_file() failure: %s.\n", archive_error_string(a));
         archive_read_free(a);
         return 1;
     }
@@ -760,7 +760,7 @@ int libarchive_extract(const char *filename, const char *prefix)
         if(r == ARCHIVE_EOF)
             break;
         if(r != ARCHIVE_OK)
-            fprintf(stderr, "archive_read_next_header() failed: %s\n", archive_error_string(a));
+            fprintf(stderr, "archive_read_next_header() failed: %s.\n", archive_error_string(a));
         if(r < ARCHIVE_WARN)
             goto cleanup;
 
@@ -778,7 +778,7 @@ int libarchive_extract(const char *filename, const char *prefix)
         r = archive_read_extract(a, entry, flags);
         if(r != ARCHIVE_OK)
         {
-            fprintf(stderr, "archive_read_extract() failed: %s\n", archive_error_string(a));
+            fprintf(stderr, "archive_read_extract() failed: %s.\n", archive_error_string(a));
             free(fixed_path);
             goto cleanup;
         }
@@ -827,11 +827,11 @@ int kindle_extract_main(int argc, char *argv[])
                 fake_sign = 1;
                 break;
             case ':':
-                fprintf(stderr, "Missing argument for switch %c\n", optopt);
+                fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);
                 return -1;
                 break;
             case '?':
-                fprintf(stderr, "Unknown switch %c\n", optopt);
+                fprintf(stderr, "Unknown switch '%c'.\n", optopt);
                 return -1;
                 break;
             default:
@@ -910,7 +910,7 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Print a recap of what we're about to do
-    fprintf(stderr, "Extracting %s package %s to %s\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
+    fprintf(stderr, "Extracting %s package '%s' to '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
     if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL) < 0)
     {
         fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);

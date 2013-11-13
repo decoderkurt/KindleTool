@@ -47,7 +47,7 @@ static int read_line(struct nettle_buffer *buffer, FILE *f)
     }
     if(ferror(f))
     {
-        fprintf(stderr, "Read failed: %s\n", strerror(errno));
+        fprintf(stderr, "Read failed: %s.\n", strerror(errno));
         return 0;
     }
 
@@ -65,7 +65,7 @@ static int read_file(struct nettle_buffer *buffer, FILE *f)
 
     if(ferror(f))
     {
-        fprintf(stderr, "Read failed: %s\n", strerror(errno));
+        fprintf(stderr, "Read failed: %s.\n", strerror(errno));
         return 0;
     }
     else

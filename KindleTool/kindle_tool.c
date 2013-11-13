@@ -58,7 +58,7 @@ int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sig
         }
         else if(bytes_written < bytes_read)
         {
-            fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
+            fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes.\n", bytes_read, bytes_written);
             return -1;
         }
         length -= bytes_read;
@@ -91,7 +91,7 @@ int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_s
         }
         else if(bytes_written < bytes_read)
         {
-            fprintf(stderr, "Error demunging, read %zu bytes but only wrote %zu bytes\n", bytes_read, bytes_written);
+            fprintf(stderr, "Error demunging, read %zu bytes but only wrote %zu bytes.\n", bytes_read, bytes_written);
             return -1;
         }
         length -= bytes_read;
@@ -402,7 +402,7 @@ RSA *get_default_key(void)
         bio = BIO_new_mem_buf((void *)sign_key, -1);
         if(PEM_read_bio_RSAPrivateKey(bio, &rsa_pkey, NULL, NULL) == NULL)
         {
-            fprintf(stderr, "Error loading RSA Private Key File\n");
+            fprintf(stderr, "Error loading RSA Private Key File.\n");
             return NULL;
         }
         // Don't leak our BIO
