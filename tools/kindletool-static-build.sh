@@ -7,12 +7,12 @@ ARCH="$(uname -m)"
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
 	if [[ "${ARCH}" == "x86_64" ]] ; then
-		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-		export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE"
+		export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE"
 		export GMPABI="64"
 	else
-		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-		export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+		export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export GMPABI="32"
 	fi
 
@@ -154,9 +154,9 @@ EOF
 	if [[ "$(whoami)" == "niluje" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
 		if [[ "${ARCH}" == "x86_64" ]] ; then
-			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 		else
-			export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+			export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 		fi
 	fi
 	cd KindleTool/KindleTool
@@ -186,8 +186,8 @@ EOF
 # Win32 !
 Build_Cygwin() {
 	echo "* Preparing a static KindleTool build on Cygwin . . ."
-	export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer"
-	export CXXFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer"
+	export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
+	export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 	LIBARCHIVE_VER="3.1.2"
@@ -251,7 +251,7 @@ EOF
 	if [[ "$(whoami)" == "NiLuJe" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
 		export KT_USE_NETTLE="true"
-		export CFLAGS="-march=i686 -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael\"'"
+		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael\"'"
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...

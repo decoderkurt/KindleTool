@@ -12,9 +12,11 @@ ARCH="$(uname -m)"
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
 	unset CPPFLAGS	# Let the Makefile take care of it ;).
-	export CFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
-	export CXXFLAGS="-pipe -O2 -fomit-frame-pointer -march=native"
+	export CFLAGS="-march=native -pipe -O2 -fomit-frame-pointer"
+	export CXXFLAGS="-march=native -pipe -O2 -fomit-frame-pointer"
 	if [[ "${ARCH}" == "x86_64" ]] ; then
+		export CFLAGS="${CFLAGS} -frename-registers -fweb"
+		export CXXFLAGS="${CXXFLAGS} -frename-registers -fweb"
 		GMPABI="64"
 	else
 		GMPABI="32"

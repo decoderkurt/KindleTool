@@ -101,13 +101,13 @@ git pull
 
 echo "* Setting environment up . . ."
 echo ""
-ARCH_FLAGS="-march=i686 -mtune=i686"
+ARCH_FLAGS="-march=i686 -mtune=generic"
 CROSS_TC="i686-w64-mingw32"
 TC_BUILD_DIR="/home/niluje/Kindle/KTool_Static/MinGW/Build_W32"
 
 export PATH="/home/niluje/x-tools/mingw32/bin:${PATH}"
 
-BASE_CFLAGS="-O2 -ffast-math ${ARCH_FLAGS} -pipe -fomit-frame-pointer"
+BASE_CFLAGS="${ARCH_FLAGS} -O2 -pipe -fomit-frame-pointer"
 export CFLAGS="${BASE_CFLAGS}"
 export CXXFLAGS="${BASE_CFLAGS}"
 BASE_CPPFLAGS="-isystem${TC_BUILD_DIR}/include"
