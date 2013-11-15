@@ -4,7 +4,7 @@ DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
 # FIXME: For debug builds, start using -Og instead of -O0 ASAP (GCC 4.8 only, IIRC)
 OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE
-MINGW_CFLAGS=-O2 -ffast-math -march=i686 -mtune=i686 -fomit-frame-pointer -pipe
+MINGW_CFLAGS=-O2 -march=i686 -mtune=generic -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
 ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
