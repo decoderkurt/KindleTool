@@ -884,14 +884,14 @@ int kindle_extract_main(int argc, char *argv[])
     // it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
     // NOTE: Probably not as race-proof on MinGW, according to libarchive...
 #if defined(_WIN32) && !defined(__CYGWIN__)
-    // Inspired from libgit2's Posix emulation layer (https://github.com/libgit2/libgit2)
+    // Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
     if(_mktemp(tgz_filename) == NULL)
     {
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         fclose(bin_input);
         return -1;
     }
-    tgz_fd = open(tgz_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+    tgz_fd = open(tgz_filename, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, 0600);
 #else
     tgz_fd = mkstemp(tgz_filename);
 #endif

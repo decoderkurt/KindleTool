@@ -577,7 +577,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         goto cleanup;
     }
-    bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+    bundle_fd = open(bundle_filename, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, 0600);
 #else
     bundle_fd = mkstemp(bundle_filename);
 #endif
@@ -680,7 +680,7 @@ int kindle_create_package_archive(const int outfd, char **filename, const unsign
                 fclose(file);
                 goto cleanup;
             }
-            sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+            sigfd = open(sigabsolutepath, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, 0600);
 #else
             sigfd = mkstemp(sigabsolutepath);
 #endif
@@ -1953,7 +1953,7 @@ int kindle_create_main(int argc, char *argv[])
             fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
             goto do_error;
         }
-        tarball_fd = open(tarball_filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0744);
+        tarball_fd = open(tarball_filename, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, 0600);
 #else
         tarball_fd = mkstemp(tarball_filename);
 #endif
