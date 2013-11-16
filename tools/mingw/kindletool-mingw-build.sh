@@ -247,7 +247,7 @@ cat > ../../CREDITS << EOF
 * kindletool.exe: KindleTool, Copyright (C) 2011-2013  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
-  |->   zlib, Copyright (C) 1995-2012 Jean-loup Gailly and Mark Adler,
+  |->   zlib, Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler,
   |   Licensed under the zlib license (http://zlib.net/zlib_license.html)
   |   (http://zlib.net/)
   |
@@ -262,8 +262,8 @@ cat > ../../CREDITS << EOF
   |   licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
   |   (http://www.lysator.liu.se/~nisse/nettle)
   |
-  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009, 2010 by the mingw-w64 project,
-      Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/apps/trac/mingw-w64/browser/tags/v2.0.4/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
+  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009-2013 by the mingw-w64 project,
+      Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/p/mingw-w64/code/HEAD/tree/stable/v3.x/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
       (http://mingw-w64.sourceforge.net/)
 EOF
 
