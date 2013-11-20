@@ -175,6 +175,8 @@ const char *convert_platform_id(Platform plat)
 {
     switch(plat)
     {
+        case Plat_Unspecified:
+            return "Unspecified";
         case MarioDeprecated:
             return "Mario (Deprecated)";
         case Luigi:
@@ -189,8 +191,6 @@ const char *convert_platform_id(Platform plat)
             return "Yoshime (Yoshime3)";
         case Wario:
             return "Wario";
-        case Plat_Unspecified:
-            return "Unspecified";
         default:
             return "Unknown";
     }
@@ -495,6 +495,7 @@ int kindle_print_help(const char *prog_name)
         "    Platforms:\n"
         "      Recovery V2 & recovery FB02 with header rev 2 updates only. Use a single platform per package.\n"
         "      \n"
+        "      -p, --platform unspecified  Don't target a specific platform.\n"
         "      -p, --platform mario        Mario (mostly devices shipped on FW 1.x) [Deprecated].\n"
         "      -p, --platform luigi        Luigi (mostly devices shipped on FW 2.x).\n"
         "      -p, --platform banjo        Banjo (devices shipped on FW 3.x?).\n"

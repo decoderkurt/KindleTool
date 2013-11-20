@@ -1597,7 +1597,9 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 break;
             case 'p':
-                if(strcmp(optarg, "mario") == 0)
+                if(strcmp(optarg, "unspecified") == 0)
+                    info.platform = Plat_Unspecified;
+                else if(strcmp(optarg, "mario") == 0)
                     info.platform = MarioDeprecated;
                 else if(strcmp(optarg, "luigi") == 0)
                     info.platform = Luigi;
@@ -1783,7 +1785,7 @@ int kindle_create_main(int argc, char *argv[])
         // We need a platform id, board id (& header rev?) for recovery2
         if(info.version == RecoveryUpdateV2)
         {
-            if(!info.platform)
+            if(strcmp(convert_platform_id(info.platform), "Unknown") == 0)
             {
                 fprintf(stderr, "You need to set a platform for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
@@ -1798,7 +1800,7 @@ int kindle_create_main(int argc, char *argv[])
         // We need a platform id & board id for recovery FB02 V2
         if(info.version == RecoveryUpdate)
         {
-            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && !info.platform)
+            if(strncmp(info.magic_number, "FB02", 4) == 0 && info.header_rev == 2 && strcmp(convert_platform_id(info.platform), "Unknown") == 0)
             {
                 fprintf(stderr, "You need to set a platform for this update type (%s).\n", convert_bundle_version(info.version));
                 goto do_error;
