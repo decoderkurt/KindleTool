@@ -182,13 +182,17 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
     hindex = 0;
 
-    source_revision = *(uint64_t *)&data[hindex];
+    // NOTE: Use memcpy to avoid unaligned accesses on ARM... (Even on the A8)
+    //source_revision = *(uint64_t *)&data[hindex];
+    memcpy(&source_revision, &data[hindex], sizeof(uint64_t));
     hindex += sizeof(uint64_t);
     fprintf(stderr, "Minimum OTA    %llu\n", (long long) source_revision);
-    target_revision = *(uint64_t *)&data[hindex];
+    //target_revision = *(uint64_t *)&data[hindex];
+    memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
     hindex += sizeof(uint64_t);
     fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
-    num_devices = *(uint16_t *)&data[hindex];
+    //num_devices = *(uint16_t *)&data[hindex];
+    memcpy(&num_devices, &data[hindex], sizeof(uint16_t));
     //hindex += sizeof(uint16_t);       // Shut clang's sa up
     fprintf(stderr, "Devices        %hd\n", num_devices);
     free(data);
@@ -198,7 +202,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     read_size = fread(data, sizeof(uint16_t), num_devices, input);
     for(hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t))
     {
-        device = *(uint16_t *)&data[hindex];
+        //device = *(uint16_t *)&data[hindex];
+        memcpy(&device, &data[hindex], sizeof(uint16_t));
         // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
         if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
@@ -212,6 +217,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
     hindex = 0;
 
+    // NOTE: Here, the alignment is identical between critical & data, so we can get away with it safely.
     critical = *(uint8_t *)&data[hindex];       // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
     hindex += sizeof(uint8_t);
     fprintf(stderr, "Critical       %hhu\n", critical);
@@ -222,7 +228,8 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
-    num_metadata = *(uint16_t *)&data[hindex];
+    //num_metadata = *(uint16_t *)&data[hindex];
+    memcpy(&num_metadata, &data[hindex], sizeof(uint16_t));
     //hindex += sizeof(uint16_t);       // Shut clang's sa up
     fprintf(stderr, "Metadata       %hd\n", num_metadata);
     free(data);
@@ -403,33 +410,40 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     hindex = 0;
 
     hindex += sizeof(uint32_t); // Padding
-    target_revision = *(uint64_t *)&data[hindex];
+    //target_revision = *(uint64_t *)&data[hindex];
+    memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
     hindex += sizeof(uint64_t);
     fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
     pkg_md5_sum = (char *)&data[hindex];
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
-    magic_1 = *(uint32_t *)&data[hindex];
+    //magic_1 = *(uint32_t *)&data[hindex];
+    memcpy(&magic_1, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     fprintf(stderr, "Magic 1        %d\n", magic_1);
-    magic_2 = *(uint32_t *)&data[hindex];
+    //magic_2 = *(uint32_t *)&data[hindex];
+    memcpy(&magic_2, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     fprintf(stderr, "Magic 2        %d\n", magic_2);
-    minor = *(uint32_t *)&data[hindex];
+    //minor = *(uint32_t *)&data[hindex];
+    memcpy(&minor, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     fprintf(stderr, "Minor          %d\n", minor);
-    platform = *(uint32_t *)&data[hindex];
+    //platform = *(uint32_t *)&data[hindex];
+    memcpy(&platform, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown platforms...
     if(strcmp(convert_platform_id(platform), "Unknown") == 0)
         fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
     else
         fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
-    header_rev = *(uint32_t *)&data[hindex];
+    //header_rev = *(uint32_t *)&data[hindex];
+    memcpy(&header_rev, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     fprintf(stderr, "Header Rev     %d\n", header_rev);
-    board = *(uint32_t *)&data[hindex];
+    //board = *(uint32_t *)&data[hindex];
+    memcpy(&board, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
     // Slightly hackish way to detect unknown boards (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
     if(strcmp(convert_board_id(board), "Unknown") == 0)
@@ -444,7 +458,8 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     fprintf(stderr, "Devices        %hhd\n", num_devices);
     for(i = 0; i < num_devices; i++)
     {
-        device = *(uint16_t *)&data[hindex];
+        //device = *(uint16_t *)&data[hindex];
+        memcpy(&device, &data[hindex], sizeof(uint16_t));
         // Slightly hackish way to detect unknown devices...
         if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
