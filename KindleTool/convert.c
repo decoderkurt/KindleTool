@@ -182,7 +182,9 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
     hindex = 0;
 
-    // NOTE: Use memcpy to avoid unaligned accesses on ARM... (Even on the A8)
+    // NOTE: Use memcpy to avoid unaligned accesses on ARM...
+    // (Because for some reason, even the A8 eats dirt (the alignment trap throws a SIGILL) on some vld1.64 :64 instructions,
+    // and my non-existent understanding of ARM assembly & GCC innards is no help at all ;D).
     //source_revision = *(uint64_t *)&data[hindex];
     memcpy(&source_revision, &data[hindex], sizeof(uint64_t));
     hindex += sizeof(uint64_t);
