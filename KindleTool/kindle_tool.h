@@ -173,6 +173,7 @@ typedef enum
     KindlePaperWhite2WifiJapan = 0x5A,
     KindlePaperWhite2Wifi3G = 0xD5,
     KindlePaperWhite2Wifi3GEurope = 0xD7,
+    KindlePaperWhite2Wifi3GRussia = 0xD8,
 #ifdef KT_UNKNOWN_DEVID
     ValidKindleUnknown_0x13 = 0x13,
     ValidKindleUnknown_0x16 = 0x16,
