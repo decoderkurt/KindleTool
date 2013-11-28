@@ -1445,18 +1445,19 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "paperwhite2") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    unsigned int num_aliased_devices = 5;
+                    unsigned int num_aliased_devices = 6;
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi;
                     info.devices[info.num_devices++] = KindlePaperWhite2WifiJapan;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GRussia;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GJapan;
                 }
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    unsigned int num_aliased_devices = 14;
+                    unsigned int num_aliased_devices = 15;
 #ifdef KT_UNKNOWN_DEVID
                     num_aliased_devices++;
 #endif
@@ -1478,6 +1479,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GRussia;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GJapan;
                 }
 #ifdef KT_UNKNOWN_DEVID
                 else if(strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0)
@@ -1595,6 +1597,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcmp(optarg, "pw2gr") == 0 || strcmp(optarg, "kpw2gr") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3GRussia;
+                        strncpy(info.magic_number, "FD04", 4);
+                    }
+                    else if(strcmp(optarg, "pw2gj") == 0 || strcmp(optarg, "kpw2gj") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3GJapan;
                         strncpy(info.magic_number, "FD04", 4);
                     }
                     else if(strcmp(optarg, "none") == 0)
