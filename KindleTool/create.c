@@ -1612,14 +1612,8 @@ int kindle_create_main(int argc, char *argv[])
                     }
                     else
                     {
-                        // Check if we passed a raw device code...
-                        errno = 0;
+                        // Check if we passed an hex device code...
                         Device dev_code = strtol(optarg, NULL, 16);
-                        if(errno != 0)
-                        {
-                            fprintf(stderr, "Invalid device code '%s': %s.\n", optarg, strerror(errno));
-                            goto do_error;
-                        }
                         // Now check if it's a valid device...
                         if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
                         {
@@ -1629,7 +1623,6 @@ int kindle_create_main(int argc, char *argv[])
                         else
                         {
                             // Yay, known valid device code :)
-                            fprintf(stderr, "Passed device: 0x%02X (%s)\n", dev_code, convert_device_id(dev_code));
                             info.devices[info.num_devices - 1] = dev_code;
                             // Roughly guess a decent magic number...
                             if(dev_code < Kindle4NonTouch)
