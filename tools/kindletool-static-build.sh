@@ -68,7 +68,7 @@ Build_Linux() {
 			tar -xvzf ./${NETTLE_DIR}.tar.gz
 			cd ${NETTLE_DIR}
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
-			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+			sed -e '/SUBDIRS/s/testsuite examples//' -i Makefile.in
 			autoreconf -fi
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 			make -j2
@@ -83,7 +83,7 @@ Build_Linux() {
 			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
 			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
-			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+			sed -e '/SUBDIRS/s/testsuite examples//' -i Makefile.in
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 			make -j2
@@ -340,8 +340,8 @@ Build_OSX() {
 			fi
 			tar -xvzf ./${NETTLE_DIR}.tar.gz
 			cd ${NETTLE_DIR}
-			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
-			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i '' configure.ac
+			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
 			autoreconf -fi
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 			make -j2
@@ -355,8 +355,8 @@ Build_OSX() {
 			echo ""
 			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
 			cd nettle-git
-			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
-			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
+			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i '' configure.ac
+			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 			make -j2
