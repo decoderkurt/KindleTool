@@ -359,6 +359,9 @@ Build_OSX() {
 			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
+			# FIXME: the current asm implementation doesn't build on OS X, disable it.
+			#sed -e 's/#define HAVE_NATIVE_gcm_hash8 1/#undef HAVE_NATIVE_gcm_hash8/' -i '' config.h
+			# Or revert: http://git.lysator.liu.se/nettle/nettle/commit/4611f79cf2c2d863797de6497e543b7baac8b636
 			make -j2
 			make install
 			cd ..
