@@ -1613,7 +1613,7 @@ int kindle_create_main(int argc, char *argv[])
                     else
                     {
                         // Check if we passed an hex device code...
-                        Device dev_code = strtoul(optarg, NULL, 16);
+                        Device dev_code = (Device)strtoul(optarg, NULL, 16);
                         // Now check if it's a valid device...
                         if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
                         {
