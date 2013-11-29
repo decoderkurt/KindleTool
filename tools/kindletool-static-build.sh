@@ -424,6 +424,8 @@ EOF
 		export KT_NO_USERATHOST_TAG="true"
 		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 	fi
+	# Force Nettle
+	export KT_USE_NETTLE="true"
 	cd KindleTool/KindleTool
 	rm -rf lib includes
 	make clean
