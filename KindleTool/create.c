@@ -1630,8 +1630,8 @@ int kindle_create_main(int argc, char *argv[])
                         char device_code[3];
                         snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
                         Device dev_code = (Device)strtoul(device_code, NULL, 16);
-                        // Now check if it's a valid device...
-                        if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                        // Unless we're feeling adventurous, check if it's a valid device...
+                        if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
                         {
                             fprintf(stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
                             goto do_error;
@@ -1659,8 +1659,14 @@ int kindle_create_main(int argc, char *argv[])
                     {
                         // Check if we passed an hex device code...
                         Device dev_code = (Device)strtoul(optarg, NULL, 16);
-                        // Now check if it's a valid device...
-                        if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                        // Check that it even remotely looks like a device code first...
+                        if(dev_code < 0x00 || dev_code > 0xFF)
+                        {
+                            fprintf(stderr, "Unknown or invalid device %s.\n", optarg);
+                            goto do_error;
+                        }
+                        // Unless we're feeling adventurous, check if it's a valid device...
+                        if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
                         {
                             fprintf(stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
                             goto do_error;
