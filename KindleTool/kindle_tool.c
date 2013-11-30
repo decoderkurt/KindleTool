@@ -20,6 +20,9 @@
 
 #include "kindle_tool.h"
 
+// Ugly global.
+unsigned int kt_with_unknown_devcodes;
+
 void md(unsigned char *bytes, size_t length)
 {
     unsigned int i;
@@ -163,14 +166,12 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) Wifi+3G Russia";
         case KindlePaperWhite2Wifi3GJapan:
             return "Kindle PaperWhite 2 (2013) Wifi+3G Japan";
-#ifdef KT_UNKNOWN_DEVID
         case ValidKindleUnknown_0x13:
-            return "Unknown Kindle (B013)";
+            return "Unknown Kindle (0x13)";
         case ValidKindleUnknown_0x16:
-            return "Unknown Kindle (B016)";
+            return "Unknown Kindle (0x16)";
         case ValidKindleUnknown_0x21:
-            return "Unknown Kindle (B021)";
-#endif
+            return "Unknown Kindle (0x21)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -721,6 +722,12 @@ int main(int argc, char *argv[])
 {
     const char *prog_name;
     const char *cmd;
+
+    // Do we want to use unknown devcodes?
+    if(getenv("KT_WITH_UNKNOWN_DEVCODES") == NULL)
+        kt_with_unknown_devcodes = 0;
+    else
+        kt_with_unknown_devcodes = 1;
 
     prog_name = argv[0];
     // Discard program name for easier parsing

@@ -165,10 +165,6 @@ KT_CPPFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 ifndef KT_NO_USERATHOST_TAG
 	KT_CPPFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
 endif
-# Play with valid unknown device codes in debug builds...
-ifeq "$(DEBUG)" "true"
-	KT_CPPFLAGS+=-DKT_UNKNOWN_DEVID
-endif
 # If we have nettle, use it
 ifeq "$(HAS_PC_NETTLE)" "true"
 	KT_CPPFLAGS+=-DKT_USE_NETTLE
