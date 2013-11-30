@@ -1609,7 +1609,7 @@ int kindle_create_main(int argc, char *argv[])
                         // We *really* mean no devices, so reset num_devices ;).
                         info.num_devices = 0;
                     }
-                    else if(strcmp(optarg, "auto") == 0)
+                    else if(strcmp(optarg, "auto") == 0 || strcmp(optarg, "current") == 0)
                     {
                         // Detect the current Kindle model
                         FILE *kindle_usid;

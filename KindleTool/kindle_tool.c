@@ -513,6 +513,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gb, pw2gr & pw2gj\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
+        "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
         "      \n"
         "    Platforms:\n"
         "      Recovery V2 & recovery FB02 with header rev 2 updates only. Use a single platform per package.\n"
@@ -572,8 +573,10 @@ int kindle_print_help(const char *prog_name)
         "    Show this help screen.\n"
         "    \n"
         "notices:\n"
-        "  1)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
-        "  2)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).\n"
+        "  1)  If the variable KT_WITH_UNKNOWN_DEVCODES is set in your environment (no matter the value), some device checks will be relaxed with the create command.\n"
+        "  \n"
+        "  2)  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.\n"
+        "  3)  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).\n"
         , prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name, prog_name);
     return 0;
 }

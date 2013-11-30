@@ -83,6 +83,7 @@
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gb, pw2gr & pw2gj
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
+		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
 	Platforms:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single platform per package.
@@ -146,7 +147,9 @@
 >> Show this help screen.
 
 ### notices:
-1. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
-2. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).
+1. If the variable KT_WITH_UNKNOWN_DEVCODES is set in your environment (no matter the value), some device checks will be relaxed with the create command.
+
+2. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
+3. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-spaces none;
