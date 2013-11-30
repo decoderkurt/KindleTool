@@ -1610,6 +1610,52 @@ int kindle_create_main(int argc, char *argv[])
                         // We *really* mean no devices, so reset num_devices ;).
                         info.num_devices = 0;
                     }
+                    else if(strcmp(optarg, "auto") == 0)
+                    {
+                        // Detect the current Kindle model
+                        FILE *kindle_usid;
+                        if((kindle_usid = fopen("/proc/usid", "rb")) == NULL)
+                        {
+                            fprintf(stderr, "Cannot open /proc/usid (not running on a Kindle?): %s.\n", strerror(errno));
+                            goto do_error;
+                        }
+                        unsigned char serial_no[SERIAL_NO_LENGTH];
+                        if(fread(serial_no, sizeof(unsigned char), SERIAL_NO_LENGTH, kindle_usid) < SERIAL_NO_LENGTH || ferror(kindle_usid) != 0)
+                        {
+                            fprintf(stderr, "Error reading /proc/usid: %s.\n", strerror(errno));
+                            fclose(kindle_usid);
+                            goto do_error;
+                        }
+                        fclose(kindle_usid);
+                        // Get the device code...
+                        char device_code[3];
+                        snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
+                        Device dev_code = (Device)strtoul(device_code, NULL, 16);
+                        // Now check if it's a valid device...
+                        if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                        {
+                            fprintf(stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
+                            goto do_error;
+                        }
+                        else
+                        {
+                            // Yay, known valid device code :)
+                            info.devices[info.num_devices - 1] = dev_code;
+                            // Roughly guess a decent magic number...
+                            if(dev_code < Kindle4NonTouch)
+                            {
+                                strncpy(info.magic_number, "FC02", 4);
+                            }
+                            else if(dev_code == Kindle4NonTouch || dev_code == Kindle4NonTouchBlack)
+                            {
+                                strncpy(info.magic_number, "FC04", 4);
+                            }
+                            else
+                            {
+                                strncpy(info.magic_number, "FD04", 4);
+                            }
+                        }
+                    }
                     else
                     {
                         // Check if we passed an hex device code...

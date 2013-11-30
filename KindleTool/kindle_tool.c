@@ -708,7 +708,7 @@ int kindle_info_main(int argc, char *argv[])
 
     // Handle the PW2 passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
-    device = (Device)strtol(device_code, NULL, 16);
+    device = (Device)strtoul(device_code, NULL, 16);
     if(device == KindlePaperWhite2Wifi || device == KindlePaperWhite2WifiJapan || device == KindlePaperWhite2Wifi3G || device == KindlePaperWhite2Wifi3GEurope || device == KindlePaperWhite2Wifi3GRussia || device == KindlePaperWhite2Wifi3GJapan)
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
     else
