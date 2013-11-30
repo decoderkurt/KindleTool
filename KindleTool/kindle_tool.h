@@ -172,12 +172,18 @@ typedef enum
     KindlePaperWhite2Wifi = 0xD4,       // Kindle PaperWhite (black bezel), released fall 2013 on FW 5.4.0
     KindlePaperWhite2WifiJapan = 0x5A,
     KindlePaperWhite2Wifi3G = 0xD5,
+    ValidKindlePinot_0xD6 = 0xD6,
     KindlePaperWhite2Wifi3GEurope = 0xD7,
     KindlePaperWhite2Wifi3GRussia = 0xD8,
     KindlePaperWhite2Wifi3GJapan = 0xF2,
-    ValidKindleUnknown_0x13 = 0x13,
+    ValidKindleIcewine_0x13 = 0x13,
     ValidKindleUnknown_0x16 = 0x16,
     ValidKindleUnknown_0x21 = 0x21,
+    ValidKindleIcewine_0x54 = 0x54,
+    ValidKindleIcewine_0x2A = 0x2A,
+    ValidKindleIcewine_0x4F = 0x4F,
+    ValidKindleIcewine_0x52 = 0x52,
+    ValidKindleIcewine_0x53 = 0x53,
     KindleUnknown = 0x00
 } Device;
 

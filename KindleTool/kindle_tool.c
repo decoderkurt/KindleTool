@@ -160,18 +160,30 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) Wifi Japan";
         case KindlePaperWhite2Wifi3G:
             return "Kindle PaperWhite 2 (2013) Wifi+3G";
+        case ValidKindlePinot_0xD6:
+            return "Unknown Kindle [Pinot] (0xD6)";
         case KindlePaperWhite2Wifi3GEurope:
             return "Kindle PaperWhite 2 (2013) Wifi+3G Europe";
         case KindlePaperWhite2Wifi3GRussia:
             return "Kindle PaperWhite 2 (2013) Wifi+3G Russia";
         case KindlePaperWhite2Wifi3GJapan:
             return "Kindle PaperWhite 2 (2013) Wifi+3G Japan";
-        case ValidKindleUnknown_0x13:
-            return "Unknown Kindle (0x13)";
+        case ValidKindleIcewine_0x13:
+            return "Unknown Kindle [Icewine] (0x13)";
         case ValidKindleUnknown_0x16:
             return "Unknown Kindle (0x16)";
         case ValidKindleUnknown_0x21:
             return "Unknown Kindle (0x21)";
+        case ValidKindleIcewine_0x54:
+            return "Unknown Kindle [Icewine] (0x54)";
+        case ValidKindleIcewine_0x2A:
+            return "Unknown Kindle [Icewine] (0x2A)";
+        case ValidKindleIcewine_0x4F:
+            return "Unknown Kindle [Icewine] (0x4F)";
+        case ValidKindleIcewine_0x52:
+            return "Unknown Kindle [Icewine] (0x52)";
+        case ValidKindleIcewine_0x53:
+            return "Unknown Kindle [Icewine] (0x53)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -723,7 +735,7 @@ int main(int argc, char *argv[])
     const char *prog_name;
     const char *cmd;
 
-    // Do we want to use unknown devcodes?
+    // Do we want to use unknown devcodes? Very lame test, only check if the var actually exists, we don't check the value...
     if(getenv("KT_WITH_UNKNOWN_DEVCODES") == NULL)
         kt_with_unknown_devcodes = 0;
     else
