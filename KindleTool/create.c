@@ -1661,7 +1661,7 @@ int kindle_create_main(int argc, char *argv[])
                         char *endptr;
                         Device dev_code = (Device)strtoul(optarg, &endptr, 16);
                         // Check that it even remotely looks like a device code first...
-                        if(*endptr != '\0' || dev_code < 0x00 || dev_code > 0xFF)
+                        if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0xFF)
                         {
                             fprintf(stderr, "Unknown or invalid device %s.\n", optarg);
                             goto do_error;
