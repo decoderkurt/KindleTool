@@ -357,8 +357,6 @@ Build_OSX() {
 			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i '' configure.ac
 			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
-			# FIXME: the current asm implementation doesn't build on OS X, disable it.
-			sed -e 's/asm_nettle_optional_list="gcm-hash8.asm"/asm_nettle_optional_list=""/' -i '' configure.ac
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
 			make -j2
