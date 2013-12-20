@@ -23,8 +23,10 @@ case "${UNAME}" in
 	;;
 esac
 
-# On Linux, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
-if [[ "${UNAME}" == "Linux" ]] ; then
+# On Linux & OS X, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
+if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
+	# NOTE: On OS X, we don't tweak PKG_CONFIG_PATH="/usr/local/opt/libarchive/lib/pkgconfig" manually,
+	# because we don't want to override what Homebrew & our static build scripts do. The Makefile should use sane defaults as fallback.
 	if pkg-config --atleast-version=3.0.3 libarchive ; then
 		HAS_PC_LIBARCHIVE="true"
 		PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
@@ -58,19 +60,23 @@ if [[ "${UNAME}" == "Linux" ]] ; then
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
-	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
-	# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
-	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
-	# but the only distro on which the Makefile expects this to be accurate is Gentoo, so that should cover it ;).
-	if [[ -f /etc/lsb-release ]] ; then
-		. /etc/lsb-release
-	else
-		if [[ -f /etc/gentoo-release ]] ; then
-			# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
-			DISTRIB_ID="Gentoo"
+	if [[ "${UNAME}" == "Linux" ]] ; then
+		# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
+		# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
+		# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
+		# but the only distro on which the Makefile expects this to be accurate is Gentoo, so that should cover it ;).
+		if [[ -f /etc/lsb-release ]] ; then
+			. /etc/lsb-release
 		else
-			DISTRIB_ID="Unknown"
+			if [[ -f /etc/gentoo-release ]] ; then
+				# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
+				DISTRIB_ID="Gentoo"
+			else
+				DISTRIB_ID="Unknown"
+			fi
 		fi
+	elif [[ "${UNAME}" == "Darwin" ]] ; then
+		DISTRIB_ID="Mac_OS_X-$(sw_vers -productVersion)"
 	fi
 fi
 
@@ -143,7 +149,7 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
 	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
 	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
-	if [[ "${UNAME}" == "Linux" ]] ; then
+	if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
 		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
 		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
 		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}

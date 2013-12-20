@@ -1,2 +1,6 @@
 # Ignore Kdevelop related stuff
 *.kdev4
+
+# Ignore extra XCode related stuff
+KindleTool.xcodeproj/project.xcworkspace
+KindleTool.xcodeproj/xcuserdata

@@ -40,23 +40,20 @@ ifndef DESTDIR
 	PREFIX:=/.
 else
 	ifeq "$(OSTYPE)" "Darwin"
-		# Play nice with MacPorts
-		PREFIX:=/opt/local
+		# Play nice with Homebrew (not so much, in fact, but whatever).
+		PREFIX:=/usr/local
 	else
 		# Should play nice with various Linux PMS, specifically non-prefixed Portage/Paludis setups
 		PREFIX:=/usr
 	endif
 endif
-ifeq "$(OSTYPE)" "Darwin"
-	DESTDIR?=/opt/local
-else
-	DESTDIR?=/usr/local
-endif
+DESTDIR?=/usr/local
 BINDIR:=$(DESTDIR)/$(PREFIX)/bin
 MANDIR:=$(DESTDIR)/$(PREFIX)/share/man/man1
 
 ifeq "$(OSTYPE)" "Darwin"
-	CPPFLAGS?=-I/opt/local/include
+	# Homebrew default paths... (w/ libarchive keg)
+	CPPFLAGS?=-I/usr/local/include -I/usr/local/opt/libarchive/include
 else
 	CPPFLAGS?=-Iincludes
 endif
@@ -176,7 +173,8 @@ endif
 
 ifndef LDFLAGS
 	ifeq "$(OSTYPE)" "Darwin"
-		LDFLAGS:=-L/opt/local/lib
+		# Again, Homebrew default paths, w/ libarchive keg
+		LDFLAGS:=-L/usr/local/lib -L/usr/local/opt/libarchive/lib
 	else
 		LDFLAGS:=-Llib
 		LDFLAGS+=-Wl,-O1 -Wl,--as-needed
