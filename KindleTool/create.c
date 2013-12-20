@@ -26,7 +26,6 @@ static int write_entry(struct kttar *, struct archive *, struct archive *, struc
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
 
-#ifdef KT_USE_NETTLE
 int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file)
 {
     unsigned char buffer[BUFFER_SIZE];
@@ -81,69 +80,6 @@ int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file
 
     return 0;
 }
-#else
-int sign_file(FILE *in_file, RSA *rsa_pkey, FILE *sigout_file)
-{
-    // Taken from: http://stackoverflow.com/a/2054412/91422
-    EVP_PKEY *pkey;
-    EVP_MD_CTX ctx;
-    unsigned char buffer[BUFFER_SIZE];
-    size_t len;
-    unsigned char *sig;
-    uint32_t siglen;
-    pkey = EVP_PKEY_new();
-
-    if(EVP_PKEY_set1_RSA(pkey, rsa_pkey) == 0)
-    {
-        fprintf(stderr, "EVP_PKEY_assign_RSA: failed.\n");
-        return -2;
-    }
-    EVP_MD_CTX_init(&ctx);
-    if(!EVP_SignInit(&ctx, EVP_sha256()))
-    {
-        fprintf(stderr, "EVP_SignInit: failed.\n");
-        EVP_PKEY_free(pkey);
-        return -3;
-    }
-    while((len = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, in_file)) > 0)
-    {
-        if(!EVP_SignUpdate(&ctx, buffer, len))
-        {
-            fprintf(stderr, "EVP_SignUpdate: failed.\n");
-            EVP_PKEY_free(pkey);
-            return -4;
-        }
-    }
-    if(ferror(in_file))
-    {
-        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
-        EVP_PKEY_free(pkey);
-        return -5;
-    }
-    sig = malloc((size_t)EVP_PKEY_size(pkey));
-    if(!EVP_SignFinal(&ctx, sig, &siglen, pkey))
-    {
-        fprintf(stderr, "EVP_SignFinal: failed.\n");
-        free(sig);
-        EVP_PKEY_free(pkey);
-        return -6;
-    }
-
-    if(fwrite(sig, sizeof(unsigned char), siglen, sigout_file) < siglen)
-    {
-        fprintf(stderr, "Error writing signature file: %s.\n", strerror(errno));
-        free(sig);
-        EVP_PKEY_free(pkey);
-        return -7;
-    }
-
-    free(sig);
-    EVP_PKEY_free(pkey);
-    // Don't leak our context
-    EVP_MD_CTX_cleanup(&ctx);
-    return 0;
-}
-#endif
 
 // As usual, largely based on libarchive's doc, examples, and source ;)
 static int metadata_filter(struct archive *a, void *_data __attribute__((unused)), struct archive_entry *entry)
@@ -499,11 +435,7 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
-#ifdef KT_USE_NETTLE
 int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, struct rsa_private_key *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
-#else
-int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, RSA *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
-#endif
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
@@ -1061,11 +993,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
         return -1;
     }
     // Write signature to output
-#ifdef KT_USE_NETTLE
     if(sign_file(input_bin, &info->sign_pkey, output) < 0)
-#else
-    if(sign_file(input_bin, info->sign_pkey, output) < 0)
-#endif
     {
         fprintf(stderr, "Error signing update package payload.\n");
         return -1;
@@ -1321,9 +1249,6 @@ int kindle_create_main(int argc, char *argv[])
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
     FILE *input;
     FILE *output;
-#ifndef KT_USE_NETTLE
-    BIO *bio;
-#endif
     int i;
     unsigned int ui;
     char *output_filename = NULL;
@@ -1733,20 +1658,11 @@ int kindle_create_main(int argc, char *argv[])
                 info.header_rev = (uint32_t) atoi(optarg);
                 break;
             case 'k':
-#ifdef KT_USE_NETTLE
                 if(nettle_rsa_privkey_from_pem(optarg, &info.sign_pkey) != 0)
                 {
                     fprintf(stderr, "Key '%s' cannot be loaded.\n", optarg);
                     goto do_error;
                 }
-#else
-                if((bio = BIO_new_file(optarg, "rb")) == NULL || PEM_read_bio_RSAPrivateKey(bio, &info.sign_pkey, NULL, NULL) == NULL)
-                {
-                    fprintf(stderr, "Key '%s' cannot be loaded.\n", optarg);
-                    goto do_error;
-                }
-                BIO_free(bio);
-#endif
                 break;
             case 'b':
                 strncpy(info.magic_number, optarg, 4);
@@ -2137,11 +2053,7 @@ int kindle_create_main(int argc, char *argv[])
     // Create our package archive, sigfile & bundlefile included
     if(!skip_archive)
     {
-#ifdef KT_USE_NETTLE
         if(kindle_create_package_archive(tarball_fd, input_list, input_index, &info.sign_pkey, legacy, real_blocksize) != 0)
-#else
-        if(kindle_create_package_archive(tarball_fd, input_list, input_index, info.sign_pkey, legacy, real_blocksize) != 0)
-#endif
         {
             fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
             // Delete the borked files
@@ -2173,11 +2085,7 @@ int kindle_create_main(int argc, char *argv[])
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-#ifdef KT_USE_NETTLE
     rsa_private_key_clear(&info.sign_pkey);
-#else
-    RSA_free(info.sign_pkey);
-#endif
     fclose(input);
     if(output != stdout)
         fclose(output);
@@ -2186,10 +2094,6 @@ int kindle_create_main(int argc, char *argv[])
     if(!keep_archive && !skip_archive)
         unlink(tarball_filename);
     free(tarball_filename);
-#ifndef KT_USE_NETTLE
-    // And OpenSSL cleanup, to make valgrind happy.
-    CRYPTO_cleanup_all_ex_data();
-#endif
 
     return 0;
 
@@ -2205,19 +2109,12 @@ do_error:
     for(i = 0; i < info.num_meta; i++)
         free(info.metastrings[i]);
     free(info.metastrings);
-#ifdef KT_USE_NETTLE
     rsa_private_key_clear(&info.sign_pkey);
-#else
-    RSA_free(info.sign_pkey);
-#endif
     if(input != NULL)
         fclose(input);
     if(output != NULL && output != stdout)
         fclose(output);
     free(tarball_filename);
-#ifndef KT_USE_NETTLE
-    CRYPTO_cleanup_all_ex_data();
-#endif
     return -1;
 }
 

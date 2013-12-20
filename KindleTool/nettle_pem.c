@@ -20,7 +20,6 @@
 
 #include "kindle_tool.h"
 
-#ifdef KT_USE_NETTLE
 // This was pretty much just lifted straight off from nettle's tools/pkcs1-conv.c,
 // Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
 // with a very few tweaks to better suit our needs...
@@ -349,5 +348,4 @@ int nettle_rsa_privkey_from_pem(char *pem_filename, struct rsa_private_key *rsa_
     return EXIT_SUCCESS;
 }
 
-#endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

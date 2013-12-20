@@ -290,7 +290,6 @@ const char *convert_magic_number(char magic_number[4])
         return "Unknown";
 }
 
-#ifdef KT_USE_NETTLE
 int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)])
 {
     unsigned char bytes[BUFFER_SIZE];
@@ -314,37 +313,7 @@ int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE
 
     return 0;
 }
-#else
-int md5_sum(FILE *input, char output_string[MD5_HASH_LENGTH])
-{
-    unsigned char bytes[BUFFER_SIZE];
-    size_t bytes_read;
-    MD5_CTX md5;
-    unsigned char output[MD5_DIGEST_LENGTH];
-    char output_string_temp[MD5_HASH_LENGTH + 1]; // sprintf adds a trailing null, we do not want that!
-    int i;
 
-    MD5_Init(&md5);
-    while((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0)
-    {
-        MD5_Update(&md5, bytes, bytes_read);
-    }
-    if(ferror(input) != 0)
-    {
-        fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
-        return -1;
-    }
-    MD5_Final(output, &md5);
-    for(i = 0; i < MD5_DIGEST_LENGTH; i++)
-    {
-        sprintf(output_string_temp + (i * 2), "%02x", output[i]);
-    }
-    memcpy(output_string, output_string_temp, MD5_HASH_LENGTH); // Remove the trailing null. Any better way to do this?
-    return 0;
-}
-#endif
-
-#ifdef KT_USE_NETTLE
 struct rsa_private_key get_default_key(void)
 {
     // Make nettle happy... (Array created from the bin2h output of pkcs1-conv on our pem file)
@@ -395,41 +364,6 @@ struct rsa_private_key get_default_key(void)
 
     return rsa_pkey;
 }
-#else
-RSA *get_default_key(void)
-{
-    static char sign_key[] =
-        "-----BEGIN RSA PRIVATE KEY-----\n"
-        "MIICXgIBAAKBgQDJn1jWU+xxVv/eRKfCPR9e47lPWN2rH33z9QbfnqmCxBRLP6mM\n"
-        "jGy6APyycQXg3nPi5fcb75alZo+Oh012HpMe9LnpeEgloIdm1E4LOsyrz4kttQtG\n"
-        "RlzCErmBGt6+cAVEV86y2phOJ3mLk0Ek9UQXbIUfrvyJnS2MKLG2cczjlQIDAQAB\n"
-        "AoGASLym1POD2kOznSERkF5yoc3vvXNmzORYkRk1eJkJuDY6yAbYiO7kDppqj4l8\n"
-        "wGogTpv98OMXauY8JgQj6tgO5LkY2upttukDr8uhE2z9Dh7HMZV/rDYa+9rybJus\n"
-        "RiAQDmF+VCzY2HirjpsSzgRu0r82NC8znNm2eGORys9BvmECQQDoIokOr0fYz3UT\n"
-        "SbHfD3engXFPZ+JaJqU8xayR7C+Gp5I0CgSnCDTQVgdkVGbPuLVYiWDIcEaxjvVr\n"
-        "hXYt2Ac9AkEA3lnERgg0RmWBC3K8toCyfDvr8eXao+xgUJ3lNWbqS0HtwxczwnIE\n"
-        "H49IIDojbTnLUr3OitFMZuaJuT2MtWzTOQJBAK6GCHU54tJmZqbxqQEDJ/qPnxkM\n"
-        "CWmt1F00YOH0qGacZZcqUQUjblGT3EraCdHyFKVT46fOgdfMm0cTOB6PZCECQQDI\n"
-        "s5Zq8HTfJjg5MTQOOFTjtuLe0m9sj6zQl/WRInhRvgzzkDn0Rh5armaYUGIx8X0K\n"
-        "DrIks4+XQnkGb/xWtwhhAkEA3FdnrsFiCNNJhvit2aTmtLzXxU46K+sV6NIY1tEJ\n"
-        "G+RFzLRwO4IFDY4a/dooh1Yh1iFFGjcmpqza6tRutaw8zA==\n"
-        "-----END RSA PRIVATE KEY-----\0";
-    static RSA *rsa_pkey = NULL;
-    BIO *bio;
-    if(rsa_pkey == NULL)
-    {
-        bio = BIO_new_mem_buf((void *)sign_key, -1);
-        if(PEM_read_bio_RSAPrivateKey(bio, &rsa_pkey, NULL, NULL) == NULL)
-        {
-            fprintf(stderr, "Error loading RSA Private Key File.\n");
-            return NULL;
-        }
-        // Don't leak our BIO
-        BIO_free(bio);
-    }
-    return rsa_pkey;
-}
-#endif
 
 int kindle_print_help(const char *prog_name)
 {
@@ -583,7 +517,6 @@ int kindle_print_help(const char *prog_name)
 
 int kindle_print_version(const char *prog_name)
 {
-
     printf("%s (KindleTool) %s built by %s with ", prog_name, KT_VERSION, KT_USERATHOST);
 #ifdef __clang__
     printf("Clang %s ", __clang_version__);
@@ -591,11 +524,7 @@ int kindle_print_version(const char *prog_name)
     printf("GCC %s ", __VERSION__);
 #endif
     printf("on %s @ %s against %s ", __DATE__, __TIME__, ARCHIVE_VERSION_STRING);
-#ifdef KT_USE_NETTLE
     printf("& nettle %s\n", NETTLE_VERSION);            // NOTE: This is completely custom, I couldn't find a way to get this info at buildtime in a saner way...
-#else
-    printf("& %.*s\n", 14, OPENSSL_VERSION_TEXT);       // We don't care about the date, cut after the version number...
-#endif
     return 0;
 }
 
