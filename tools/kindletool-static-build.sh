@@ -45,7 +45,7 @@ Build_Linux() {
 		echo "* Building ${GMP_DIR} . . ."
 		echo ""
 		if [[ ! -f "./${GMP_DIR}.tar.xz" ]] ; then
-			wget -O "./${GMP_DIR}.tar.xz" "http://ftp.gmplib.org/gmp/${GMP_DIR}.tar.xz"
+			wget -O "./${GMP_DIR}.tar.xz" "https://gmplib.org/download/gmp/${GMP_DIR}.tar.xz"
 		fi
 		tar -xvJf ./${GMP_DIR}.tar.xz
 		cd ${GMP_DIR}
@@ -319,7 +319,7 @@ Build_OSX() {
 		echo "* Building ${GMP_DIR} . . ."
 		echo ""
 		if [[ ! -f "./${GMP_DIR}.tar.xz" ]] ; then
-			curl -L "http://ftp.gmplib.org/gmp/${GMP_DIR}.tar.xz" -o "./${GMP_DIR}.tar.xz"
+			curl -L "https://gmplib.org/download/gmp/${GMP_DIR}.tar.xz" -o "./${GMP_DIR}.tar.xz"
 		fi
 		tar -xvJf ./${GMP_DIR}.tar.xz
 		cd ${GMP_DIR}
