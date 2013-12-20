@@ -387,10 +387,12 @@ Build_OSX() {
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
 			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
-			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			# Switch to CMake, the autotools buildsystem is starting to look unmaintained...
+			cmake -DCMAKE_INSTALL_PREFIX="${KT_SYSROOT}" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=FALSE -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
 			make -j2
 			make install
+			# Kill the shared libs, because I'm too lazy to figure out how to tell CMake not to build them in the first place...
+			rm -rf ${KT_SYSROOT}/lib/libarchive.dylib ${KT_SYSROOT}/lib/libarchive.14.dylib
 			cd ..
 		fi
 	fi
