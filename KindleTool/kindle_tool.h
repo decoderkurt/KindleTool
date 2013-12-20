@@ -114,7 +114,7 @@
 
 // user@host tag fallback
 #ifndef KT_USERATHOST
-#define KT_USERATHOST "someone@somewhere"
+#define KT_USERATHOST "someone@somewhere on something"
 #endif
 
 // nettle version fallback

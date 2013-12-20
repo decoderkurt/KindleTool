@@ -40,7 +40,7 @@ if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
 		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
-	# Check for a recent nettle version, and use it instead of OpenSSL if we find it...
+	# Check for a recent nettle version...
 	if pkg-config --atleast-version=2.6 nettle ; then
 		HAS_PC_NETTLE="true"
 		# Check for hogweed, since we need it, and static, to properly pull in gmp
@@ -55,9 +55,9 @@ if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
 		PC_NETTLE_LDFLAGS=""
 		PC_NETTLE_LIBS=""
 		PC_NETTLE_VERSION=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, falling back to OpenSSL! @ **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, don't be surprised if the build fails! @ **!**"
+		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	fi
 
 	if [[ "${UNAME}" == "Linux" ]] ; then
@@ -72,11 +72,11 @@ if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
 				# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
 				DISTRIB_ID="Gentoo"
 			else
-				DISTRIB_ID="Unknown"
+				DISTRIB_ID="Linux"
 			fi
 		fi
 	elif [[ "${UNAME}" == "Darwin" ]] ; then
-		DISTRIB_ID="Mac_OS_X-$(sw_vers -productVersion)"
+		DISTRIB_ID="Mac OS X $(sw_vers -productVersion)"
 	fi
 fi
 

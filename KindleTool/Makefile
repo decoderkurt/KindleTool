@@ -24,7 +24,7 @@ ifeq "$(MINGW)" "true"
 	CROSS_PREFIX?=i686-w64-mingw32-
 endif
 
-SRCS=kindle_tool.c create.c convert.c
+SRCS=kindle_tool.c create.c convert.c nettle_pem.c
 
 default: all
 
@@ -60,39 +60,11 @@ endif
 
 # We of course need libarchive
 LIBS=-larchive
-# Do we want to force OpenSSL?
-ifdef KT_USE_OPENSSL
-	# Quick shortcut, overwrite the pc test, so we don't have to be more messy in the conditionals later on...
-	HAS_PC_NETTLE:=false
-endif
-# Alternatively, do we want to force Nettle, regardless of what pkg-config might say?
-ifdef KT_USE_NETTLE
-	# Again, shortcut the pc tests
-	HAS_PC_NETTLE:=true
-	PC_NETTLE_CPPFLAGS:=
-	PC_NETTLE_LDFLAGS:=
-	PC_NETTLE_LIBS:=-lhogweed -lgmp -lnettle
-	PC_NETTLE_VERSION:=
-endif
-# Do we have nettle? If so, use it!
+# And nettle (try to use sane fallbacks on the off chance we have it somewhere but pkg-config failed to find it...)
 ifeq "$(HAS_PC_NETTLE)" "true"
-	# And build our pem loading helper, too :).
-	SRCS+=nettle_pem.c
 	LIBS+=$(PC_NETTLE_LIBS)
 else
-	# Fall back to OpenSSL
-	LIBS+=-lcrypto
-	# Needed for linking statically against OpenSSL on Linux, and as as-needed takes care of it when building dynamically, it doesn't hurt to keep it set in both cases ;).
-	ifeq "$(OSTYPE)" "Linux"
-		# There's no libdl on Windows ;)
-		ifneq "$(MINGW)" "true"
-			LIBS+=-ldl
-		endif
-	endif
-	# Needed for linking statically against OpenSSL on MinGW
-	ifeq "$(MINGW)" "true"
-		LIBS+=-lgdi32
-	endif
+	LIBS+=-lhogweed -lgmp -lnettle
 endif
 # And we'll always need zlib, at least for libarchive, possibly for OpenSSL
 LIBS+=-lz
@@ -160,15 +132,11 @@ endif
 KT_CPPFLAGS+=-DKT_VERSION='"$(KT_VERSION)"'
 # Add a user@host build tag, unless explicitly forbidden
 ifndef KT_NO_USERATHOST_TAG
-	KT_CPPFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST)"'
+	KT_CPPFLAGS+=-DKT_USERATHOST='"$(COMPILE_BY)@$(COMPILE_HOST) on $(DISTRIB_ID)"'
 endif
-# If we have nettle, use it
-ifeq "$(HAS_PC_NETTLE)" "true"
-	KT_CPPFLAGS+=-DKT_USE_NETTLE
-	# Also pass our stupid hack to get the buildtime nettle version, if it's not empty...
-	ifneq "$(PC_NETTLE_VERSION)" ""
-		KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
-	endif
+# Also pass our stupid hack to get the buildtime nettle version, if it's not empty...
+ifneq "$(PC_NETTLE_VERSION)" ""
+	KT_CPPFLAGS+=-DNETTLE_VERSION='"$(PC_NETTLE_VERSION)"'
 endif
 
 ifndef LDFLAGS
@@ -181,25 +149,22 @@ ifndef LDFLAGS
 	endif
 endif
 
-# If we're on Linux, not on Gentoo, and pkgconfig detected libarchive >= 3.0.3, use its CPP/LDFLAGS for include & lib searchpath
-# That should help us link against the correct libarchive version on Debian/Ubuntu, where libarchive-2 and libarchive-3 coexist with a single -dev package
-ifeq "$(OSTYPE)" "Linux"
-	ifneq "$(DISTRIB_ID)" "Gentoo"
-		ifeq "$(HAS_PC_LIBARCHIVE)" "true"
-			CPPFLAGS+=$(PC_LIBARCHIVE_CPPFLAGS)
-			LDFLAGS+=$(PC_LIBARCHIVE_LDFLAGS)
-		endif
-		# Do the same for nettle
-		ifeq "$(HAS_PC_NETTLE)" "true"
-			CPPFLAGS+=$(PC_NETTLE_CPPFLAGS)
-			LDFLAGS+=$(PC_NETTLE_LDFLAGS)
-		endif
-	endif
+# On platforms where we rely on pkg-config (Linux & OS X), make sure we obey it!
+# That should help us link against the correct libarchive version on Debian/Ubuntu, where libarchive-2 and libarchive-3 coexist with a single -dev package;
+# And on OS X, where libarchive is keg-only with Homebrew.
+ifeq "$(HAS_PC_LIBARCHIVE)" "true"
+	CPPFLAGS+=$(PC_LIBARCHIVE_CPPFLAGS)
+	LDFLAGS+=$(PC_LIBARCHIVE_LDFLAGS)
+endif
+# Do the same for nettle
+ifeq "$(HAS_PC_NETTLE)" "true"
+	CPPFLAGS+=$(PC_NETTLE_CPPFLAGS)
+	LDFLAGS+=$(PC_NETTLE_LDFLAGS)
 endif
 
 # Let's say we want to default to building stuff that will work on OS X 10.6/10.7... If I get how this stuff works, that should do it...
 #ifeq "$(OSTYPE)" "Darwin"
-#	# Check that we don't mess with MacPorts, which defaults to the OS version... (I'm not sure MacPorts even sets it for us, since we're not using autotools...)
+#	# Check that we don't mess with Homebrew, which defaults to the OS version... (I'm not sure Homebrew even sets it for us, since we're not using autotools...)
 #	# Although it supposedly defaults to the OS version since OS X 10.5 anyway, so...
 #	ifndef MACOSX_DEPLOYMENT_TARGET
 #		export MACOSX_DEPLOYMENT_TARGET=10.6
