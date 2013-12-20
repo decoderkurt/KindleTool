@@ -1,1 +1,5 @@
 * Test Nettle support on OSX. Also check our ports & buildscripts (namely, might be time to enable pkg-config handling on OSX).
+* Create Homebrew formulae
+* Fix XCode project file to look for libarchive & nettle
+* Tweak OS X CFLAGS
+* Use pkg-config on Cygwin, too.
