@@ -395,6 +395,7 @@ Build_OSX() {
 			rm -rf ${KT_SYSROOT}/lib/libarchive.dylib ${KT_SYSROOT}/lib/libarchive.14.dylib
 			# FIXME: Apparently, we have no way of telling CMake not to build LIBXML support at all
 			# FIXME: We also can't tell CMake that we don't actually care about the shared version of the library...
+			# FIXME: Also, we don't install a pkg-config file when building with CMake...
 			cd ..
 		fi
 	fi
