@@ -41,7 +41,7 @@ ifndef DESTDIR
 else
 	ifeq "$(OSTYPE)" "Darwin"
 		# Play nice with Homebrew (not so much, in fact, but whatever).
-		PREFIX?=/usr/local
+		PREFIX?=/.
 	else
 		# Should play nice with various Linux PMS, specifically non-prefixed Portage/Paludis setups
 		PREFIX:=/usr
