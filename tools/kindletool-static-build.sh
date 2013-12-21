@@ -156,7 +156,7 @@ EOF
 		if [[ "${ARCH}" == "x86_64" ]] ; then
 			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
 		else
-			export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+			export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
 		fi
 	fi
 	cd KindleTool/KindleTool
@@ -425,7 +425,7 @@ EOF
 	# Fake user@host tag
 	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' > /dev/null 2>&1 ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael on Mac OS X $(sw_vers -productVersion)\"'"
 	fi
 	cd KindleTool/KindleTool
 	rm -rf lib includes

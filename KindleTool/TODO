@@ -3,3 +3,4 @@
 * Fix XCode project file to look for libarchive & nettle
 * Tweak OS X CFLAGS
 * Use pkg-config on Cygwin, too.
+* Split the gentoo stuff into its own overlay repo
