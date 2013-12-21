@@ -1,8 +1,8 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
-# FIXME: For debug builds, start using -Og instead of -O0 ASAP (GCC 4.8 only, IIRC)
+DEBUG_CFLAGS=-Og -march=native -fno-omit-frame-pointer -pipe -g3
 OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
+DARWIN_OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
 MINGW_CFLAGS=-O2 -march=i686 -mtune=generic -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
@@ -79,7 +79,11 @@ ifeq "$(DEBUG)" "true"
 	CFLAGS:=$(DEBUG_CFLAGS)
 else
 	OUT_DIR=Release
-	CFLAGS?=$(OPT_CFLAGS)
+	ifeq "$(OSTYPE)" "Darwin"
+		CFLAGS?=$(DARWIN_OPT_CFLAGS)
+	else
+		CFLAGS?=$(OPT_CFLAGS)
+	endif
 endif
 
 ifeq "$(KINDLE)" "true"

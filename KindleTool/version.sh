@@ -35,9 +35,12 @@ if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
 		HAS_PC_LIBARCHIVE="false"
 		PC_LIBARCHIVE_CPPFLAGS=""
 		PC_LIBARCHIVE_LDFLAGS=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		# NOTE: Don't warn on Homebrew, it tweaks the env properly ;).
+		if [[ -z "${HOMEBREW_PREFIX}" ]] ; then
+			echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+			echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
+			echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+		fi
 	fi
 
 	# Check for a recent nettle version...
