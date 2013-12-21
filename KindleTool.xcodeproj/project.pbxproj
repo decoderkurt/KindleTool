@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B21B788A1866531E0046BFE2 /* nettle_pem.c in Sources */ = {isa = PBXBuildFile; fileRef = B21B78891866531E0046BFE2 /* nettle_pem.c */; };
 		CE1DABEC14AF9C1E003B5CBA /* create.c in Sources */ = {isa = PBXBuildFile; fileRef = CE1DABEB14AF9C1E003B5CBA /* create.c */; };
 		CEE4226814589F0C005E216E /* kindle_tool.c in Sources */ = {isa = PBXBuildFile; fileRef = CEE4226714589F0C005E216E /* kindle_tool.c */; };
 		CEE4226A14589F0C005E216E /* kindletool.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = CEE4226914589F0C005E216E /* kindletool.1 */; };
@@ -27,6 +28,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B21B78891866531E0046BFE2 /* nettle_pem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nettle_pem.c; sourceTree = "<group>"; };
 		CE1DABEB14AF9C1E003B5CBA /* create.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = create.c; sourceTree = "<group>"; };
 		CEE4226314589F0C005E216E /* KindleTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = KindleTool; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEE4226714589F0C005E216E /* kindle_tool.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = kindle_tool.c; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 		CEE4226614589F0C005E216E /* KindleTool */ = {
 			isa = PBXGroup;
 			children = (
+				B21B78891866531E0046BFE2 /* nettle_pem.c */,
 				CEE42276145B818D005E216E /* convert.c */,
 				CE1DABEB14AF9C1E003B5CBA /* create.c */,
 				CEE42278145B82E0005E216E /* kindle_tool.h */,
@@ -126,6 +129,7 @@
 			files = (
 				CEE4226814589F0C005E216E /* kindle_tool.c in Sources */,
 				CEE42277145B818D005E216E /* convert.c in Sources */,
+				B21B788A1866531E0046BFE2 /* nettle_pem.c in Sources */,
 				CE1DABEC14AF9C1E003B5CBA /* create.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,6 +215,32 @@
 		CEE4226E14589F0C005E216E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/usr/local/opt/libarchive/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/opt/libarchive/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-larchive",
+					"-lhogweed",
+					"-lgmp",
+					"-lnettle",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -218,6 +248,31 @@
 		CEE4226F14589F0C005E216E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/usr/local/opt/libarchive/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/opt/libarchive/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-larchive",
+					"-lhogweed",
+					"-lgmp",
+					"-lnettle",
+					"-lz",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -1,4 +1,2 @@
-* Test Nettle support on OSX.
-* Fix XCode project file to look for libarchive & nettle
 * Use pkg-config on Cygwin, too.
 * Split the gentoo stuff into its own overlay repo
