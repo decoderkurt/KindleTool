@@ -162,6 +162,11 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	fi
 fi
 
+# Homebrew debug...
+echo ""
+echo "** PKG_CONFIG_PATH='${PKG_CONFIG_PATH=}' **"
+echo ""
+
 # Build a proper VERSION file (PMS)
 if [[ "${1}" == "PMS" ]] ; then
 	echo "${VER}" > VERSION
