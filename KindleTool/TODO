@@ -1,2 +1,4 @@
 * Use pkg-config on Cygwin, too.
 * Split the gentoo stuff into its own overlay repo
+* Update COMPILING
+* Update Wiki
