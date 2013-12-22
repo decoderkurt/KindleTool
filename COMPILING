@@ -21,7 +21,7 @@ To compile for OSX:
 To compile for Windows:
 	1) Get Cygwin
 	2) Install the required packages for a proper toolchain (gcc4, binutils, autoconf, automake, libtool, make, ...)
-	3) Install the packages: libnettle4 / libnettle-devel, zlib / zlib-devel, git, cmake, patch, pkg-config
+	3) Install the packages: libnettle4 / libnettle-devel, zlib / zlib-devel, git, cmake, patch, pkg-config, libxml2-devel
 	4) Compile and install libarchive >= 3.0.3
 	4.1) I recommend a minimal build configured via
 		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
