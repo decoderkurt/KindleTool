@@ -396,15 +396,10 @@ Build_OSX() {
 			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
 			patch -p1 < ../KindleTool/tools/libarchive-fix-autotools-build.patch
 			patch -p1 < ../KindleTool/tools/libarchive-cmake-pkgconfig.patch
-			# Switch to CMake, the autotools buildsystem isn't always up to date on master
-			cmake -DCMAKE_INSTALL_PREFIX="${KT_SYSROOT}" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=FALSE -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
+			./build/autogen.sh
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 			make -j2
 			make install
-			# Kill the shared libs...
-			rm -f ${KT_SYSROOT}/lib/libarchive.dylib ${KT_SYSROOT}/lib/libarchive.14.dylib
-			# FIXME: Apparently, we have no way of telling CMake not to build LIBXML support at all
-			# FIXME: We also can't tell CMake that we don't actually care about the shared version of the library...
-			# FIXME: Also, we don't get a pkg-config file when building libarchive with CMake...
 			cd ..
 		fi
 	fi
