@@ -219,6 +219,7 @@ if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
+		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-issue-317.patch
 		./build/autogen.sh
 		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 		make -j2

@@ -108,6 +108,7 @@ Build_Linux() {
 			fi
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2

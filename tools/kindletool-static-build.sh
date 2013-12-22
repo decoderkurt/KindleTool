@@ -102,6 +102,7 @@ Build_Linux() {
 			fi
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
@@ -211,9 +212,10 @@ Build_Cygwin() {
 			fi
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
 			make
 			make install
 			cd ..
@@ -229,7 +231,7 @@ Build_Cygwin() {
 			patch -p1 < ../KindleTool/tools/libarchive-cmake-pkgconfig.patch
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_TAR=ON -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
 			make
 			make install
 			cd ..
@@ -378,6 +380,7 @@ Build_OSX() {
 			fi
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
+			patch -p1 < ../KindleTool/tools/libarchive-fix-issue-317.patch
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 			make -j2
