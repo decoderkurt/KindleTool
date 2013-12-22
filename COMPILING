@@ -13,7 +13,7 @@ To compile for Linux:
 		You'll have to build it manually (get the latest 3.x release from http://libarchive.github.com/).
 		See https://github.com/NiLuJe/KindleTool/issues/1 for more details. Or try using the simple-linux-static-build.sh script in the tools folder.
 
-Fellow Gentoo users, there's a portage overlay in the gentoo folder, enjoy ;).
+Fellow Gentoo users, there's a portage overlay over on https://github.com/NiLuJe/gentoo-kindletool, enjoy ;).
 
 To compile for OSX:
 	1) If you're using Homebrew, see https://github.com/NiLuJe/homebrew-kindletool
