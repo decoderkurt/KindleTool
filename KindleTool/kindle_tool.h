@@ -33,6 +33,11 @@
 #include <limits.h>
 #include <libgen.h>
 
+// libarchive does not pull that in for us anymore ;).
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#include <windows.h>
+#endif
+
 #include <archive.h>
 #include <archive_entry.h>
 
