@@ -1,0 +1,24 @@
+diff --git a/tar/bsdtar_platform.h b/tar/bsdtar_platform.h
+index 45228f5..e73f982 100644
+--- a/tar/bsdtar_platform.h
++++ b/tar/bsdtar_platform.h
+@@ -42,6 +42,10 @@
+ #include "config.h"
+ #endif
+ 
++#if defined(_WIN32) && !defined(__CYGWIN__)
++#include "bsdtar_windows.h"
++#endif
++
+ /* Get a real definition for __FBSDID if we can */
+ #if HAVE_SYS_CDEFS_H
+ #include <sys/cdefs.h>
+@@ -125,8 +129,4 @@
+ #define	__LA_DEAD
+ #endif
+ 
+-#if defined(_WIN32) && !defined(__CYGWIN__)
+-#include "bsdtar_windows.h"
+-#endif
+-
+ #endif /* !BSDTAR_PLATFORM_H_INCLUDED */
