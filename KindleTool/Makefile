@@ -11,9 +11,8 @@ ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-siblin
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
 # and only happens when using the NSS compat stuff (which happened to be the default on my system...)
-# Same thing for OpenSSL's uninitialized stuff when built without PURIFY (cf. OpenSSL's FAQ)
 # The fcntl stuff in libarchive's tree_dup is a libarchive issue: https://code.google.com/p/libarchive/issues/detail?id=317
-# With nettle and a patched libarchive master, like in my builds, we have a clean output :).
+# With a patched libarchive master, like in my builds, we have a clean output :).
 
 # Kindle cross toolchain prefix
 ifeq "$(KINDLE)" "true"
@@ -66,7 +65,7 @@ ifeq "$(HAS_PC_NETTLE)" "true"
 else
 	LIBS+=-lhogweed -lgmp -lnettle
 endif
-# And we'll always need zlib, at least for libarchive, possibly for OpenSSL
+# And zlib (for libarchive)
 LIBS+=-lz
 
 # If we want to use part of gperftools (http://gperftools.googlecode.com/svn/trunk/doc/heap_checker.html for example)

@@ -1,7 +1,7 @@
 #!/bin/bash -e
 #
-# Simple static build, using the host's OpenSSL.
-# (Only libarchive will be built/statically linked).
+# Simple static build.
+# (Only libarchive & nettle will be built/statically linked).
 #
 ##
 
