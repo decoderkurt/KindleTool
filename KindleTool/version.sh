@@ -23,61 +23,62 @@ case "${UNAME}" in
 	;;
 esac
 
-# On Linux & OS X, check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
-if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
-	# NOTE: On OS X, we don't tweak PKG_CONFIG_PATH="/usr/local/opt/libarchive/lib/pkgconfig" manually,
-	# because we don't want to override what Homebrew & our static build scripts do. The Makefile should use sane defaults as fallback.
-	if pkg-config --atleast-version=3.0.3 libarchive ; then
-		HAS_PC_LIBARCHIVE="true"
-		PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
-		PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
-	else
-		HAS_PC_LIBARCHIVE="false"
-		PC_LIBARCHIVE_CPPFLAGS=""
-		PC_LIBARCHIVE_LDFLAGS=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-	fi
+# Check libarchive's version and get the proper CPP/LDFLAGS via pkg-config, to make sure we pickup the correct libarchive version
+# NOTE: On OS X, we don't tweak PKG_CONFIG_PATH="/usr/local/opt/libarchive/lib/pkgconfig" manually,
+# because we don't want to override what Homebrew & our static build scripts do. The Makefile should use sane defaults as fallback.
+if pkg-config --atleast-version=3.0.3 libarchive ; then
+	HAS_PC_LIBARCHIVE="true"
+	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
+	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
+else
+	HAS_PC_LIBARCHIVE="false"
+	PC_LIBARCHIVE_CPPFLAGS=""
+	PC_LIBARCHIVE_LDFLAGS=""
+	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+	echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
+	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+fi
 
-	# Check for a recent nettle version...
-	if pkg-config --atleast-version=2.6 nettle ; then
-		HAS_PC_NETTLE="true"
-		# Check for hogweed, since we need it, and static, to properly pull in gmp
-		PC_NETTLE_CPPFLAGS="$(pkg-config hogweed --cflags-only-I --static)"
-		PC_NETTLE_LDFLAGS="$(pkg-config hogweed --libs-only-L --static)"
-		PC_NETTLE_LIBS="$(pkg-config hogweed --libs-only-l --libs-only-other --static)"
-		# Export the nettle version since there is no built-in way to get it at buildtime...
-		PC_NETTLE_VERSION="$(pkg-config --modversion nettle)"
-	else
-		HAS_PC_NETTLE="false"
-		PC_NETTLE_CPPFLAGS=""
-		PC_NETTLE_LDFLAGS=""
-		PC_NETTLE_LIBS=""
-		PC_NETTLE_VERSION=""
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-		echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, don't be surprised if the build fails! @ **!**"
-		echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
-	fi
+# Check for a recent nettle version...
+if pkg-config --atleast-version=2.6 nettle ; then
+	HAS_PC_NETTLE="true"
+	# Check for hogweed, since we need it, and static, to properly pull in gmp
+	PC_NETTLE_CPPFLAGS="$(pkg-config hogweed --cflags-only-I --static)"
+	PC_NETTLE_LDFLAGS="$(pkg-config hogweed --libs-only-L --static)"
+	PC_NETTLE_LIBS="$(pkg-config hogweed --libs-only-l --libs-only-other --static)"
+	# Export the nettle version since there is no built-in way to get it at buildtime...
+	PC_NETTLE_VERSION="$(pkg-config --modversion nettle)"
+else
+	HAS_PC_NETTLE="false"
+	PC_NETTLE_CPPFLAGS=""
+	PC_NETTLE_LDFLAGS=""
+	PC_NETTLE_LIBS=""
+	PC_NETTLE_VERSION=""
+	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+	echo "**!** @ Couldn't find nettle >= 2.6 via pkg-config, don't be surprised if the build fails! @ **!**"
+	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
+fi
 
-	if [[ "${UNAME}" == "Linux" ]] ; then
-		# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
-		# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
-		# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
-		# but the only distro on which the Makefile expects this to be accurate is Gentoo, so that should cover it ;).
-		if [[ -f /etc/lsb-release ]] ; then
-			. /etc/lsb-release
+if [[ "${UNAME}" == "Linux" ]] ; then
+	# Also check the distro name, we'll use pkg-config's cflags in the Makefile on every distro out there except Gentoo, in order
+	# to link against the correct libarchive version on distros where libarchive-2 and libarchive-3 can coexist (Debian/Ubuntu, for example).
+	# NOTE: I'm fully aware that lsb_release is not installed/properly setup by default on every distro,
+	# but the only distro on which the Makefile expects this to be accurate is Gentoo, so that should cover it ;).
+	if [[ -f /etc/lsb-release ]] ; then
+		. /etc/lsb-release
+	else
+		if [[ -f /etc/gentoo-release ]] ; then
+			# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
+			DISTRIB_ID="Gentoo"
 		else
-			if [[ -f /etc/gentoo-release ]] ; then
-				# Make sure we detect Gentoo, even if sys-apps/lsb-release isn't installed
-				DISTRIB_ID="Gentoo"
-			else
-				DISTRIB_ID="Linux"
-			fi
+			DISTRIB_ID="Linux"
 		fi
-	elif [[ "${UNAME}" == "Darwin" ]] ; then
-		DISTRIB_ID="Mac OS X $(sw_vers -productVersion)"
 	fi
+elif [[ "${UNAME}" == "Darwin" ]] ; then
+	DISTRIB_ID="Mac OS X $(sw_vers -productVersion)"
+else
+	# Cygwin?
+	DISTRIB_ID="${UNAME}"
 fi
 
 # If we don't have git installed (why, oh why would you do that? :D), just use the fallback
@@ -149,17 +150,15 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
 	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
 	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
-	if [[ "${UNAME}" == "Linux" ]] || [[ "${UNAME}" == "Darwin" ]] ; then
-		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
-		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
-		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
-		echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}" >> ${VER_FILE}
-		echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}" >> ${VER_FILE}
-		echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}" >> ${VER_FILE}
-		echo "PC_NETTLE_LIBS = ${PC_NETTLE_LIBS}" >> ${VER_FILE}
-		echo "PC_NETTLE_VERSION = ${PC_NETTLE_VERSION}" >> ${VER_FILE}
-		echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
-	fi
+	echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
+	echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
+	echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
+	echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}" >> ${VER_FILE}
+	echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}" >> ${VER_FILE}
+	echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}" >> ${VER_FILE}
+	echo "PC_NETTLE_LIBS = ${PC_NETTLE_LIBS}" >> ${VER_FILE}
+	echo "PC_NETTLE_VERSION = ${PC_NETTLE_VERSION}" >> ${VER_FILE}
+	echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
 fi
 
 # Build a proper VERSION file (PMS)

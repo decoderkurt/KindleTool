@@ -157,7 +157,7 @@ EOF
 	if [[ "$(whoami)" == "niluje" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
 		if [[ "${ARCH}" == "x86_64" ]] ; then
-			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael\"'"
+			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
 		else
 			export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
 		fi
@@ -256,7 +256,7 @@ EOF
 	# Fake user@host tag
 	if [[ "$(whoami)" == "NiLuJe" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael\"'"
+		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael on $(uname -s)\"'"
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...

@@ -78,6 +78,7 @@ ifeq "$(DEBUG)" "true"
 	CFLAGS:=$(DEBUG_CFLAGS)
 else
 	OUT_DIR=Release
+	# Don't default to stuff that'll make clang unhappy on OS X
 	ifeq "$(OSTYPE)" "Darwin"
 		CFLAGS?=$(DARWIN_OPT_CFLAGS)
 	else
