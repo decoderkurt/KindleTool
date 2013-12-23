@@ -115,6 +115,88 @@ index 06f3355..41beca6 100644
  	libarchive/test/test_read_format_zip_filename.c		\
  	libarchive/test/test_read_format_zip_mac_metadata.c	\
  	libarchive/test/test_read_format_zip_sfx.c		\
+diff --git a/cpio/cpio_platform.h b/cpio/cpio_platform.h
+index 31d9a73..58d2edb 100644
+--- a/cpio/cpio_platform.h
++++ b/cpio/cpio_platform.h
+@@ -42,6 +42,10 @@
+ #include "config.h"
+ #endif
+ 
++#if defined(_WIN32) && !defined(__CYGWIN__)
++#include "cpio_windows.h"
++#endif
++
+ /* Get a real definition for __FBSDID if we can */
+ #if HAVE_SYS_CDEFS_H
+ #include <sys/cdefs.h>
+@@ -70,8 +74,4 @@
+ #define __LA_DEAD
+ #endif
+ 
+-#if defined(_WIN32) && !defined(__CYGWIN__)
+-#include "cpio_windows.h"
+-#endif
+-
+ #endif /* !CPIO_PLATFORM_H_INCLUDED */
+diff --git a/cpio/cpio_windows.h b/cpio/cpio_windows.h
+index 105bf69..d8576b3 100644
+--- a/cpio/cpio_windows.h
++++ b/cpio/cpio_windows.h
+@@ -26,6 +26,7 @@
+  */
+ #ifndef CPIO_WINDOWS_H
+ #define CPIO_WINDOWS_H 1
++#include <windows.h>
+ 
+ #include <io.h>
+ #include <string.h>
+diff --git a/libarchive/archive_pack_dev.c b/libarchive/archive_pack_dev.c
+index 474f962..5295da2 100644
+--- a/libarchive/archive_pack_dev.c
++++ b/libarchive/archive_pack_dev.c
+@@ -76,14 +76,39 @@ static const char iMajorError[] = "invalid major number";
+ static const char iMinorError[] = "invalid minor number";
+ static const char tooManyFields[] = "too many fields for format";
+ 
+-	/* exported */
++/* This is balatantly stolen from libarchive/archive_entry.c,
++ * in an attempt to get this to play nice on MinGW... */
++#if !defined(HAVE_MAJOR) && !defined(major)
++/* Replacement for major/minor/makedev. */
++#define major(x) ((int)(0x00ff & ((x) >> 8)))
++#define minor(x) ((int)(0xffff00ff & (x)))
++#define makedev(maj,min) ((0xff00 & ((maj)<<8)) | (0xffff00ff & (min)))
++#endif
++
++/* Play games to come up with a suitable makedev() definition. */
++#ifdef __QNXNTO__
++/* QNX.  <sigh> */
++#include <sys/netmgr.h>
++#define apd_makedev(maj, min) makedev(ND_LOCAL_NODE, (maj), (min))
++#elif defined makedev
++/* There's a "makedev" macro. */
++#define apd_makedev(maj, min) makedev((maj), (min))
++#elif defined mkdev || ((defined _WIN32 || defined __WIN32__) && !defined(__CYGWIN__))
++/* Windows. <sigh> */
++#define apd_makedev(maj, min) mkdev((maj), (min))
++#else
++/* There's a "makedev" function. */
++#define apd_makedev(maj, min) makedev((maj), (min))
++#endif
++
++/* exported */
+ dev_t
+ pack_native(int n, u_long numbers[], const char **error)
+ {
+ 	dev_t dev = 0;
+ 
+ 	if (n == 2) {
+-		dev = makedev(numbers[0], numbers[1]);
++		dev = apd_makedev(numbers[0], numbers[1]);
+ 		if ((u_long)major(dev) != numbers[0])
+ 			*error = iMajorError;
+ 		else if ((u_long)minor(dev) != numbers[1])
 diff --git a/libarchive/archive_read_disk_posix.c b/libarchive/archive_read_disk_posix.c
 index a13dbbf..94eb5e7 100644
 --- a/libarchive/archive_read_disk_posix.c
@@ -128,3 +210,341 @@ index a13dbbf..94eb5e7 100644
  		if (new_fd != -1)
  			return (new_fd);
  		/* Linux 2.6.18 - 2.6.23 declare F_DUPFD_CLOEXEC,
+diff --git a/libarchive/archive_read_support_format_7zip.c b/libarchive/archive_read_support_format_7zip.c
+index e94192e..90f685d 100644
+--- a/libarchive/archive_read_support_format_7zip.c
++++ b/libarchive/archive_read_support_format_7zip.c
+@@ -328,7 +328,7 @@ struct _7zip {
+ 	char			 format_name[64];
+ 
+ 	/* Custom value that is non-zero if this archive contains encrypted entries. */
+-	char			 has_encrypted_entries;
++	int			 has_encrypted_entries;
+ };
+ 
+ static int	archive_read_format_7zip_has_encrypted_entries(struct archive_read *);
+@@ -515,7 +515,7 @@ check_7zip_header_in_sfx(const char *p)
+ 	switch ((unsigned char)p[5]) {
+ 	case 0x1C:
+ 		if (memcmp(p, _7ZIP_SIGNATURE, 6) != 0)
+-			return (6); 
++			return (6);
+ 		/*
+ 		 * Test the CRC because its extraction code has 7-Zip
+ 		 * Magic Code, so we should do this in order not to
+@@ -523,15 +523,15 @@ check_7zip_header_in_sfx(const char *p)
+ 		 */
+ 		if (crc32(0, (const unsigned char *)p + 12, 20)
+ 			!= archive_le32dec(p + 8))
+-			return (6); 
++			return (6);
+ 		/* Hit the header! */
+ 		return (0);
+-	case 0x37: return (5); 
+-	case 0x7A: return (4); 
+-	case 0xBC: return (3); 
+-	case 0xAF: return (2); 
+-	case 0x27: return (1); 
+-	default: return (6); 
++	case 0x37: return (5);
++	case 0x7A: return (4);
++	case 0xBC: return (3);
++	case 0xAF: return (2);
++	case 0x27: return (1);
++	default: return (6);
+ 	}
+ }
+ 
+@@ -655,7 +655,7 @@ archive_read_format_7zip_read_header(struct archive_read *a,
+ 		if (zip->sconv == NULL)
+ 			return (ARCHIVE_FATAL);
+ 	}
+-	
++
+ 	/* Figure out if the entry is encrypted by looking at the folder
+ 	   that is associated to the current 7zip entry. If the folder
+ 	   has a coder with a _7Z_CRYPTO codec then the folder is encrypted.
+@@ -1076,7 +1076,7 @@ init_decompression(struct archive_read *a, struct _7zip *zip,
+ 		 * for BCJ+LZMA. If we were able to tell the uncompressed
+ 		 * size to liblzma when using lzma_raw_decoder() liblzma
+ 		 * could correctly deal with BCJ+LZMA. But unfortunately
+-		 * there is no way to do that. 
++		 * there is no way to do that.
+ 		 * Discussion about this can be found at XZ Utils forum.
+ 		 */
+ 		if (coder2 != NULL) {
+@@ -1519,7 +1519,7 @@ decompress(struct archive_read *a, struct _7zip *zip,
+ 
+ 		do {
+ 			int sym;
+-			
++
+ 			sym = __archive_ppmd7_functions.Ppmd7_DecodeSymbol(
+ 				&(zip->ppmd7_context), &(zip->range_dec.p));
+ 			if (sym < 0) {
+@@ -3264,7 +3264,7 @@ read_stream(struct archive_read *a, const void **buff, size_t size,
+ 		return (r);
+ 
+ 	/*
+-	 * Skip the bytes we alrady has skipped in skip_stream(). 
++	 * Skip the bytes we alrady has skipped in skip_stream().
+ 	 */
+ 	while (skip_bytes) {
+ 		ssize_t skipped;
+diff --git a/libarchive/archive_read_support_format_rar.c b/libarchive/archive_read_support_format_rar.c
+index 1ad0e06..ae302a6 100644
+--- a/libarchive/archive_read_support_format_rar.c
++++ b/libarchive/archive_read_support_format_rar.c
+@@ -304,11 +304,11 @@ struct rar
+     ssize_t		 avail_in;
+     const unsigned char *next_in;
+   } br;
+-  
++
+   /*
+    * Custom field to denote that this archive contains encrypted entries
+    */
+-  char has_encrypted_entries;
++  int has_encrypted_entries;
+ };
+ 
+ static int archive_read_support_format_rar_capabilities(struct archive_read *);
+@@ -791,7 +791,7 @@ archive_read_format_rar_options(struct archive_read *a,
+ {
+   struct rar *rar;
+   int ret = ARCHIVE_FAILED;
+-        
++
+   rar = (struct rar *)(a->format->data);
+   if (strcmp(key, "hdrcharset")  == 0) {
+     if (val == NULL || val[0] == 0)
+@@ -1013,7 +1013,7 @@ archive_read_format_rar_read_data(struct archive_read *a, const void **buff,
+   {
+   case COMPRESS_METHOD_STORE:
+     ret = read_data_stored(a, buff, size, offset);
+-    break; 
++    break;
+ 
+   case COMPRESS_METHOD_FASTEST:
+   case COMPRESS_METHOD_FAST:
+@@ -1023,13 +1023,13 @@ archive_read_format_rar_read_data(struct archive_read *a, const void **buff,
+     ret = read_data_compressed(a, buff, size, offset);
+     if (ret != ARCHIVE_OK && ret != ARCHIVE_WARN)
+       __archive_ppmd7_functions.Ppmd7_Free(&rar->ppmd7_context, &g_szalloc);
+-    break; 
++    break;
+ 
+   default:
+     archive_set_error(&a->archive, ARCHIVE_ERRNO_FILE_FORMAT,
+                       "Unsupported compression method for RAR file.");
+     ret = ARCHIVE_FATAL;
+-    break; 
++    break;
+   }
+   return (ret);
+ }
+@@ -1438,7 +1438,7 @@ read_header(struct archive_read *a, struct archive_entry *entry,
+           flagbyte = *(p + offset++);
+           flagbits = 8;
+         }
+-	
++
+         flagbits -= 2;
+         switch((flagbyte >> flagbits) & 3)
+         {
+@@ -2672,7 +2672,7 @@ expand(struct archive_read *a, int64_t end)
+     if ((symbol = read_next_symbol(a, &rar->maincode)) < 0)
+       return (ARCHIVE_FATAL);
+     rar->output_last_match = 0;
+-    
++
+     if (symbol < 256)
+     {
+       lzss_emit_literal(rar, symbol);
+diff --git a/libarchive/archive_read_support_format_zip.c b/libarchive/archive_read_support_format_zip.c
+index a0f0c1b..bd4ccde 100644
+--- a/libarchive/archive_read_support_format_zip.c
++++ b/libarchive/archive_read_support_format_zip.c
+@@ -78,7 +78,7 @@ struct zip {
+ 	size_t			central_directory_entries_on_this_disk;
+ 	char			have_central_directory;
+ 	int64_t			offset;
+-	char			has_encrypted_entries;
++	int			has_encrypted_entries;
+ 
+ 	/* List of entries (seekable Zip only) */
+ 	size_t			entries_remaining;
+@@ -126,8 +126,8 @@ struct zip {
+ #define ZIP_STRONG_ENCRYPTED	(1<<6)
+ /* See "7.2 Single Password Symmetric Encryption Method"
+    in http://www.pkware.com/documents/casestudies/APPNOTE.TXT */
+-#define ZIP_CENTRAL_DIRECTORY_ENCRYPTED	(1<<13)	
+-#define ZIP_UTF8_NAME	(1<<11)	
++#define ZIP_CENTRAL_DIRECTORY_ENCRYPTED	(1<<13)
++#define ZIP_UTF8_NAME	(1<<11)
+ 
+ static int	archive_read_format_zip_has_encrypted_entries(struct archive_read *);
+ static int	archive_read_support_format_zip_capabilities_seekable(struct archive_read *a);
+@@ -229,7 +229,7 @@ archive_read_support_format_zip_seekable(struct archive *_a)
+ 	 */
+ 	zip->has_encrypted_entries = ARCHIVE_READ_FORMAT_ENCRYPTION_DONT_KNOW;
+ 
+-	
++
+ 	r = __archive_read_register_format(a,
+ 	    zip,
+ 	    "zip",
+@@ -359,7 +359,7 @@ archive_read_format_zip_seekable_bid(struct archive_read *a, int best_bid)
+ 		if (!found)
+ 			return 0;
+ 	}
+-    
++
+ 	/* Since we've already done the hard work of finding the
+ 	   end of central directory record, let's save the important
+ 	   information. */
+@@ -525,7 +525,7 @@ slurp_central_directory(struct archive_read *a, struct zip *zip)
+ 		external_attributes = archive_le32dec(p + 38);
+ 		zip_entry->local_header_offset =
+ 		    archive_le32dec(p + 42) + correction;
+-		
++
+ 		/* If we can't guess the mode, leave it zero here;
+ 		   when we read the local file header we might get
+ 		   more information. */
+@@ -783,7 +783,7 @@ archive_read_format_zip_seekable_read_header(struct archive_read *a,
+ 	if (zip->entries_remaining <= 0 || zip->entry == NULL)
+ 		return ARCHIVE_EOF;
+ 	--zip->entries_remaining;
+-	
++
+ 	if (zip->entry->rsrcname.s)
+ 		rsrc = (struct zip_entry *)__archive_rb_tree_find_node(
+ 		    &zip->tree_rsrc, zip->entry->rsrcname.s);
+@@ -1076,7 +1076,7 @@ zip_read_local_file_header(struct archive_read *a, struct archive_entry *entry,
+ 			archive_entry_set_is_metadata_encrypted(entry, 1);
+ 			return ARCHIVE_FATAL;
+         }
+-	}	
++	}
+ 	zip_entry->compression = (char)archive_le16dec(p + 8);
+ 	zip_entry->mtime = zip_time(p + 10);
+ 	local_crc32 = archive_le32dec(p + 14);
+@@ -1430,7 +1430,7 @@ zip_read_data_none(struct archive_read *a, const void **_buff,
+ 		}
+ 		/* Check for a complete PK\007\010 signature. */
+ 		p = buff;
+-		if (p[0] == 'P' && p[1] == 'K' 
++		if (p[0] == 'P' && p[1] == 'K'
+ 		    && p[2] == '\007' && p[3] == '\010'
+ 		    && archive_le32dec(p + 4) == zip->entry_crc32
+ 		    && archive_le32dec(p + 8) ==
+diff --git a/libarchive/archive_windows.c b/libarchive/archive_windows.c
+index c033abd..1b36f51 100644
+--- a/libarchive/archive_windows.c
++++ b/libarchive/archive_windows.c
+@@ -301,7 +301,7 @@ __la_open(const char *path, int flags, ...)
+ 	ws = NULL;
+ 	if ((flags & ~O_BINARY) == O_RDONLY) {
+ 		/*
+-		 * When we open a directory, _open function returns 
++		 * When we open a directory, _open function returns
+ 		 * "Permission denied" error.
+ 		 */
+ 		attr = GetFileAttributesA(path);
+@@ -515,9 +515,9 @@ __hstat(HANDLE handle, struct ustat *st)
+ 	else
+ 		mode |= S_IFREG;
+ 	st->st_mode = mode;
+-	
++
+ 	fileTimeToUTC(&info.ftLastAccessTime, &t, &ns);
+-	st->st_atime = t; 
++	st->st_atime = t;
+ 	st->st_atime_nsec = ns;
+ 	fileTimeToUTC(&info.ftLastWriteTime, &t, &ns);
+ 	st->st_mtime = t;
+@@ -525,7 +525,7 @@ __hstat(HANDLE handle, struct ustat *st)
+ 	fileTimeToUTC(&info.ftCreationTime, &t, &ns);
+ 	st->st_ctime = t;
+ 	st->st_ctime_nsec = ns;
+-	st->st_size = 
++	st->st_size =
+ 	    ((int64_t)(info.nFileSizeHigh) * ((int64_t)MAXDWORD + 1))
+ 		+ (int64_t)(info.nFileSizeLow);
+ #ifdef SIMULATE_WIN_STAT
+@@ -905,4 +905,19 @@ __la_dosmaperr(unsigned long e)
+ 	return;
+ }
+ 
++/* Taken from http://unixpapa.com/incnote/string.html */
++char *
++__la_strsep(char **sp, char *sep)
++{
++	char *p, *s;
++	if (sp == NULL || *sp == NULL || **sp == '\0')
++		return(NULL);
++	s = *sp;
++	p = s + strcspn(s, sep);
++	if (*p != '\0')
++		*p++ = '\0';
++	*sp = p;
++	return(s);
++}
++
+ #endif /* _WIN32 && !__CYGWIN__ */
+diff --git a/libarchive/archive_windows.h b/libarchive/archive_windows.h
+index c6f5bc5..1ef4fa0 100644
+--- a/libarchive/archive_windows.h
++++ b/libarchive/archive_windows.h
+@@ -89,7 +89,7 @@
+ 
+ /* Alias the Windows _function to the POSIX equivalent. */
+ #define	close		_close
+-#define	fcntl(fd, cmd, flg)	/* No operation. */		
++#define	fcntl(fd, cmd, flg)	/* No operation. */
+ #ifndef fileno
+ #define	fileno		_fileno
+ #endif
+@@ -203,7 +203,7 @@
+ #define	_S_IXGRP        (_S_IXUSR >> 3) /* read permission, group */
+ #define	_S_IWGRP        (_S_IWUSR >> 3) /* write permission, group */
+ #define	_S_IRGRP        (_S_IRUSR >> 3) /* execute/search permission, group */
+-#define	_S_IRWXO        (_S_IRWXG >> 3) 
++#define	_S_IRWXO        (_S_IRWXG >> 3)
+ #define	_S_IXOTH        (_S_IXGRP >> 3) /* read permission, other */
+ #define	_S_IWOTH        (_S_IWGRP >> 3) /* write permission, other */
+ #define	_S_IROTH        (_S_IRGRP  >> 3) /* execute/search permission, other */
+@@ -277,6 +277,8 @@ extern wchar_t *__la_win_permissive_name(const char *name);
+ extern wchar_t *__la_win_permissive_name_w(const wchar_t *wname);
+ extern void __la_dosmaperr(unsigned long e);
+ #define la_dosmaperr(e) __la_dosmaperr(e)
++extern char *__la_strsep(char **sp, char *sep);
++#define strsep(sp, sep) __la_strsep(sp, sep)
+ extern struct archive_entry *__la_win_entry_in_posix_pathseparator(
+     struct archive_entry *);
+ 
+diff --git a/tar/bsdtar_platform.h b/tar/bsdtar_platform.h
+index 45228f5..e73f982 100644
+--- a/tar/bsdtar_platform.h
++++ b/tar/bsdtar_platform.h
+@@ -42,6 +42,10 @@
+ #include "config.h"
+ #endif
+ 
++#if defined(_WIN32) && !defined(__CYGWIN__)
++#include "bsdtar_windows.h"
++#endif
++
+ /* Get a real definition for __FBSDID if we can */
+ #if HAVE_SYS_CDEFS_H
+ #include <sys/cdefs.h>
+@@ -125,8 +129,4 @@
+ #define	__LA_DEAD
+ #endif
+ 
+-#if defined(_WIN32) && !defined(__CYGWIN__)
+-#include "bsdtar_windows.h"
+-#endif
+-
+ #endif /* !BSDTAR_PLATFORM_H_INCLUDED */

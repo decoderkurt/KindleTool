@@ -235,6 +235,7 @@ else
 		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-issue-317.patch
 		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-autotools-build.patch
 		patch -p1 < ${KT_TOOLS_DIR}/libarchive-cmake-pkgconfig.patch
+		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-has_encrypted_entries.patch
 		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-mingw.patch
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
