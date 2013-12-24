@@ -219,7 +219,6 @@ if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
 		fi
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-issue-317.patch
 		./build/autogen.sh
 		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
 		make -j2
@@ -232,10 +231,6 @@ else
 		echo ""
 		git clone https://github.com/libarchive/libarchive.git libarchive-git
 		cd libarchive-git
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-issue-317.patch
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-autotools-build.patch
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-cmake-pkgconfig.patch
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-has_encrypted_entries.patch
 		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-mingw.patch
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am

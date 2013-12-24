@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 11b7139..9623b78 100644
+index 11b7139..d693fa7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -59,7 +59,7 @@ SET(LIBARCHIVE_VERSION_NUMBER  "${_version_number}")
@@ -38,11 +38,26 @@ index 11b7139..9623b78 100644
  CHECK_TYPE_SIZE(uint64_t UINT64_T)
  CHECK_TYPE_SIZE(uintmax_t UINTMAX_T)
  
-@@ -1518,6 +1518,33 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.in
+@@ -1518,6 +1518,9 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/config.h.in
  INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
  ADD_DEFINITIONS(-DHAVE_CONFIG_H)
  
-+# Generate a libarchive.pc like autotools for pkg-config
++# Handle generation of the libarchive.pc file for pkg-config
++INCLUDE(CreatePkgConfigFile)
++
+ #
+ # Register installation of PDF documents.
+ #
+diff --git a/build/cmake/CreatePkgConfigFile.cmake b/build/cmake/CreatePkgConfigFile.cmake
+new file mode 100644
+index 0000000..f96bbef
+--- /dev/null
++++ b/build/cmake/CreatePkgConfigFile.cmake
+@@ -0,0 +1,31 @@
++# - Generate a libarchive.pc like autotools for pkg-config
++#
++
++# Set the required variables (we use the same input file as autotools)
 +SET(prefix ${CMAKE_INSTALL_PREFIX})
 +SET(exec_prefix \${prefix})
 +SET(libdir \${exec_prefix}/lib)
@@ -61,14 +76,12 @@ index 11b7139..9623b78 100644
 +FOREACH(mylib ${PC_LIBXML_STATIC_LDFLAGS})
 +	SET(LIBS "${LIBS} ${mylib}")
 +ENDFOREACH()
-+# FIXME: The order is all wrong, thus there's a good chance it'll make some binutils versions unhappy...
++# FIXME: The order of the libraries doesn't take dependencies into account,
++#	 thus there's a good chance it'll make some binutils versions unhappy...
++#	 This only affects Libs.private (looked up for static builds) though.
 +CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/build/pkgconfig/libarchive.pc.in
 +		${CMAKE_CURRENT_SOURCE_DIR}/build/pkgconfig/libarchive.pc
 +		@ONLY)
 +# And install it, of course ;).
 +INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/pkgconfig/libarchive.pc
 +	DESTINATION "lib/pkgconfig")
-+
- #
- # Register installation of PDF documents.
- #
