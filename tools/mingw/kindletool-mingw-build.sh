@@ -231,7 +231,6 @@ else
 		echo ""
 		git clone https://github.com/libarchive/libarchive.git libarchive-git
 		cd libarchive-git
-		patch -p1 < ${KT_TOOLS_DIR}/libarchive-fix-mingw.patch
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
 		./build/autogen.sh
