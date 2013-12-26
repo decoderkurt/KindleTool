@@ -103,7 +103,7 @@ elif [[ -z "${VER}" && -d "${GIT_DIR:-${KT_DIR}/../.git}" || -f "${KT_DIR}/../.g
 		v[0-9]*)
 			# Check if our working directory is dirty
 			git update-index -q --refresh
-			[[ -z "$(git diff-index HEAD -m --)" ]] || VER="${VER}-dirty"
+			[[ -z "$(git diff HEAD -m --)" ]] || VER="${VER}-dirty"
 			# - => .
 			#VER=${VER//-/.}
 			# - => ., but only the first (rev since tag)
