@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Make sure we put our stuff in the proper directory (ie. the same one as this script)
+KT_DIR="${0%/*}"
+
 # Build a make include with, among other things, our version tag, straight from git (heavily inspired from git's GIT-VERSION-GEN)
-VER_FILE="version-inc"
+VER_FILE="${KT_DIR}/version-inc"
+VERSION_FILE="${KT_DIR}/VERSION"
 
 # Fallback version
 FALLBACK_VER="v1.6.0-GIT"
@@ -83,14 +87,14 @@ fi
 
 # If we don't have git installed (why, oh why would you do that? :D), just use the fallback
 if ! git help &>/dev/null ; then
-	echo "${FALLBACK_VER}" > VERSION
+	echo "${FALLBACK_VER}" > ${VERSION_FILE}
 fi
 
 # If we have a VERSION file, just use that (that's useful for package managers)
 # Otherwise, and if we have a proper git repo, use git (unless we asked for a new VERSION file)!
-if [[ -f "VERSION" ]] && [[ "${1}" != "PMS" ]] ; then
-	VER="$(< VERSION)"
-elif [[ -z "${VER}" && -d "../${GIT_DIR:-.git}" || -f "../.git" ]] ; then
+if [[ -f "${VERSION_FILE}" ]] && [[ "${1}" != "PMS" ]] ; then
+	VER="$(< ${VERSION_FILE})"
+elif [[ -z "${VER}" && -d "${GIT_DIR:-${KT_DIR}/../.git}" || -f "${KT_DIR}/../.git" ]] ; then
 	# Get a properly formatted version string from our latest tag
 	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
 	# Or from the first commit (provided we manually tagged $(git rev-list --max-parents=0 HEAD) as TAIL, which we did)
@@ -163,5 +167,5 @@ fi
 
 # Build a proper VERSION file (PMS)
 if [[ "${1}" == "PMS" ]] ; then
-	echo "${VER}" > VERSION
+	echo "${VER}" > ${VERSION_FILE}
 fi
