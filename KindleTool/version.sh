@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Make sure we put our stuff in the proper directory (ie. the same one as this script)
 KT_DIR="${0%/*}"
