@@ -87,8 +87,8 @@ if ! git help &>/dev/null ; then
 fi
 
 # If we have a VERSION file, just use that (that's useful for package managers)
-# Otherwise, and if we have a proper git repo, use git!
-if [[ -f "VERSION" ]] ; then
+# Otherwise, and if we have a proper git repo, use git (unless we asked for a new VERSION file)!
+if [[ -f "VERSION" ]] && [[ "${1}" != "PMS" ]] ; then
 	VER="$(< VERSION)"
 elif [[ -z "${VER}" && -d "../${GIT_DIR:-.git}" || -f "../.git" ]] ; then
 	# Get a properly formatted version string from our latest tag

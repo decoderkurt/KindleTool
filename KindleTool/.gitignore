@@ -8,5 +8,6 @@ Kindle/
 MinGW/
 # Ignore version tag
 version-inc
+VERSION
 # Ignore my Test directory
 Test/

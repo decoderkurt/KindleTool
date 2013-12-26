@@ -211,6 +211,7 @@ clean:
 	rm -rf MinGW/*.o
 	rm -rf MinGW/kindletool.exe
 	rm -rf version-inc
+	rm -rf VERSION
 
 install: all
 	install -d -m 755 $(BINDIR)
