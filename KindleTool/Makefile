@@ -31,7 +31,7 @@ default: all
 # It's basically our fake automated configure script, and it uses bash features, so override the default shell!
 SHELL:=/bin/bash
 version-inc:
-	@$(SHELL) -x ./version.sh
+	@$(SHELL) ./version.sh
 -include version-inc
 
 # Try to use sane defaults for DESTDIR/PREFIX, while still playing nice with PMS
