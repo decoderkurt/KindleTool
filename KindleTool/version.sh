@@ -103,7 +103,12 @@ elif [[ -z "${VER}" && -d "${GIT_DIR:-${KT_DIR}/../.git}" || -f "${KT_DIR}/../.g
 		v[0-9]*)
 			# Check if our working directory is dirty
 			git update-index -q --refresh
-			[[ -z "$(git diff-index --name-only HEAD -m --relative=KindleTool --)" ]] || VER="${VER}-dirty"
+			# Not sure I understand the details, but this helps to avoid ending up with a dirty tag when building through Homebrew...
+			if [[ -n "${GIT_DIR}" ]] ; then
+				[[ -z "$(git diff-index --name-only HEAD -m --relative=KindleTool --)" ]] || VER="${VER}-dirty"
+			else
+				[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
+			fi
 			# - => .
 			#VER=${VER//-/.}
 			# - => ., but only the first (rev since tag)
@@ -111,7 +116,12 @@ elif [[ -z "${VER}" && -d "${GIT_DIR:-${KT_DIR}/../.git}" || -f "${KT_DIR}/../.g
 		;;
 		TAIL*)
 			git update-index -q --refresh
-			[[ -z "$(git diff-index --name-only HEAD -m --relative=KindleTool --)" ]] || VER="${VER}-dirty"
+			# Same thing as before, special case GIT_DIR...
+			if [[ -n "${GIT_DIR}" ]] ; then
+				[[ -z "$(git diff-index --name-only HEAD -m --relative=KindleTool --)" ]] || VER="${VER}-dirty"
+			else
+				[[ -z "$(git diff-index --name-only HEAD --)" ]] || VER="${VER}-dirty"
+			fi
 			# - => .
 			#VER=${VER//-/.}
 			# TAIL- => r (ala SVN)
