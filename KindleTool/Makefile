@@ -1,6 +1,7 @@
 CC?=gcc
 STRIP?=strip
 DEBUG_CFLAGS=-Og -march=native -fno-omit-frame-pointer -pipe -g3
+DARWIN_DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
 OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
 DARWIN_OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
@@ -75,7 +76,12 @@ LIBS+=-lz
 
 ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
-	CFLAGS:=$(DEBUG_CFLAGS)
+	# Clang doesn't support -Og...
+	ifeq "$(OSTYPE)" "Darwin"
+		CFLAGS:=$(DARWIN_DEBUG_CFLAGS)
+	else
+		CFLAGS:=$(DEBUG_CFLAGS)
+	endif
 else
 	OUT_DIR=Release
 	# Don't default to stuff that'll make clang unhappy on OS X
