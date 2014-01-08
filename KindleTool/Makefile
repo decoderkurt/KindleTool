@@ -12,8 +12,6 @@ ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-siblin
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
 # and only happens when using the NSS compat stuff (which happened to be the default on my system...)
-# The fcntl stuff in libarchive's tree_dup is a libarchive issue: https://code.google.com/p/libarchive/issues/detail?id=317
-# With a patched libarchive master, like in my builds, we have a clean output :).
 
 # Kindle cross toolchain prefix
 ifeq "$(KINDLE)" "true"

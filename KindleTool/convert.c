@@ -629,7 +629,9 @@ int kindle_convert_main(int argc, char *argv[])
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
                     fail = 1;
                     if(!info_only && output != stdout)
+                    {
                         free(out_name);
+                    }
                     free(sig_name);
                     continue;   // It's fatal, go away
                 }
@@ -658,9 +660,24 @@ int kindle_convert_main(int argc, char *argv[])
                 fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
                 fail = 1;
                 if(!info_only && !unwrap_only && output != stdout)
+                {
+                    // Don't leave 0-byte files behind...
+                    if(output != NULL)
+                    {
+                        fclose(output);
+                        unlink(out_name);
+                    }
                     free(out_name);
+                }
                 if(extract_sig)
+                {
+                    if(sig_output != NULL)
+                    {
+                        fclose(sig_output);
+                        unlink(sig_name);
+                    }
                     free(sig_name);
+                }
                 continue;   // It's fatal, go away
             }
             // If we're outputting to stdout, set a dummy human readable output name
@@ -693,9 +710,13 @@ int kindle_convert_main(int argc, char *argv[])
 
             // Clean up behind us
             if(!info_only && !unwrap_only)
+            {
                 free(out_name);
+            }
             if(output != NULL && output != stdout)
+            {
                 fclose(output);
+            }
             if(input != NULL)
                 fclose(input);
             if(sig_output != NULL)
