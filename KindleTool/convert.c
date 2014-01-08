@@ -200,7 +200,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     free(data);
 
     // Now get the data
-    data = malloc(num_devices * sizeof(uint16_t));
+    data = malloc(num_devices * sizeof(uint16_t));      // NOTE: This upsets clang's sa... While theoretically dangerous, I don't *think* we do anything wrong with it...
     read_size = fread(data, sizeof(uint16_t), num_devices, input);
     for(hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t))
     {
