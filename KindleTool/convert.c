@@ -630,6 +630,11 @@ int kindle_convert_main(int argc, char *argv[])
                     fail = 1;
                     if(!info_only && output != stdout)
                     {
+                        if(output != NULL)
+                        {
+                            fclose(output);
+                            unlink(out_name);
+                        }
                         free(out_name);
                     }
                     free(sig_name);
@@ -652,6 +657,15 @@ int kindle_convert_main(int argc, char *argv[])
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
                     fail = 1;
                     free(unwrapped_name);
+                    if(extract_sig)
+                    {
+                        if(sig_output != NULL)
+                        {
+                            fclose(sig_output);
+                            unlink(sig_name);
+                        }
+                        free(sig_name);
+                    }
                     continue;   // It's fatal, go away
                 }
             }
