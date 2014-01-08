@@ -80,7 +80,11 @@ ifeq "$(DEBUG)" "true"
 	ifeq "$(OSTYPE)" "Darwin"
 		CFLAGS:=$(DARWIN_DEBUG_CFLAGS)
 	else
-		CFLAGS:=$(DEBUG_CFLAGS)
+		ifeq "$(CC)" "clang"
+			CFLAGS:=$(DARWIN_DEBUG_CFLAGS)
+		else
+			CFLAGS:=$(DEBUG_CFLAGS)
+		endif
 	endif
 else
 	OUT_DIR=Release
