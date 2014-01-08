@@ -628,7 +628,7 @@ int kindle_convert_main(int argc, char *argv[])
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
                     fail = 1;
-                    if(!info_only && output != stdout)
+                    if(!info_only && !unwrap_only && output != stdout)
                     {
                         if(output != NULL)
                         {
@@ -691,6 +691,15 @@ int kindle_convert_main(int argc, char *argv[])
                         unlink(sig_name);
                     }
                     free(sig_name);
+                }
+                if(unwrap_only)
+                {
+                    if(unwrap_output != NULL)
+                    {
+                        fclose(unwrap_output);
+                        unlink(unwrapped_name);
+                    }
+                    free(unwrapped_name);
                 }
                 continue;   // It's fatal, go away
             }
