@@ -78,10 +78,11 @@
 		-d, --device pw2gb          Kindle PaperWhite 2 (2013) Wifi+3G Europe
 		-d, --device pw2gr          Kindle PaperWhite 2 (2013) Wifi+3G Russia
 		-d, --device pw2gj          Kindle PaperWhite 2 (2013) Wifi+3G Japan
-		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gb, pw2gr & pw2gj
+		-d, --device pw2ga          Kindle PaperWhite 2 (2013) Wifi+3G Africa
+		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gb, pw2gr, pw2gj & pw2ga
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
-		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gb, pw2gr & pw2gj
+		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gb, pw2gr, pw2gj & pw2ga
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
