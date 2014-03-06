@@ -8,7 +8,7 @@ VER_FILE="${KT_DIR}/version-inc"
 VERSION_FILE="${KT_DIR}/VERSION"
 
 # Fallback version
-FALLBACK_VER="v1.6.0-GIT"
+FALLBACK_VER="v1.6.2-GIT"
 
 # Apparently, bsdmake hates me, so, get uname's output from here
 UNAME="$(uname -s)"
