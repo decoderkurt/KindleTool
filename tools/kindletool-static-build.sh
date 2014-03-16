@@ -221,7 +221,6 @@ Build_Cygwin() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
-			patch -p1 < ../KindleTool/tools/libarchive-cmake-pkgconfig.patch
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
 			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
