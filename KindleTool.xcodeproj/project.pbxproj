@@ -103,7 +103,7 @@
 		CEE4225A14589F0C005E216E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = CEE4225D14589F0C005E216E /* Build configuration list for PBXProject "KindleTool" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -182,7 +182,7 @@
 					/usr/local/opt/libarchive/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-larchive",
 					"-lhogweed",
