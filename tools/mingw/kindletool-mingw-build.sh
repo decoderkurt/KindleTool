@@ -130,8 +130,8 @@ cd "${TC_BUILD_DIR}"
 ZLIB_VER="1.2.8"
 ZLIB_DIR="zlib-${ZLIB_VER}"
 ZLIB_FILE="zlib${ZLIB_VER//.}.zip"
-GMP_VER="5.1.3"
-GMP_DIR="gmp-${GMP_VER}"
+GMP_VER="6.0.0a"
+GMP_DIR="gmp-${GMP_VER%a}"
 NETTLE_VER="2.7.1"
 NETTLE_DIR="nettle-${NETTLE_VER}"
 LIBARCHIVE_VER="3.1.2"
@@ -164,7 +164,6 @@ if [[ ! -d "${GMP_DIR}" ]] ; then
 	fi
 	tar -xvJf ./${GMP_DIR}.tar.xz
 	cd ${GMP_DIR}
-	patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
 	libtoolize
 	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-cxx
 	make -j2

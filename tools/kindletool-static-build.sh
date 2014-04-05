@@ -16,8 +16,8 @@ Build_Linux() {
 		export GMPABI="32"
 	fi
 
-	GMP_VER="5.1.3"
-	GMP_DIR="gmp-${GMP_VER}"
+	GMP_VER="6.0.0a"
+	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="2.7.1"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
 	LIBARCHIVE_VER="3.1.2"
@@ -49,7 +49,6 @@ Build_Linux() {
 		fi
 		tar -xvJf ./${GMP_DIR}.tar.xz
 		cd ${GMP_DIR}
-		patch -p1 < /usr/portage/dev-libs/gmp/files/gmp-4.1.4-noexecstack.patch
 		libtoolize
 		./configure ABI=${GMPABI} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
 		make -j2
@@ -288,8 +287,8 @@ Build_OSX() {
 	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
 	export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
 
-	GMP_VER="5.1.3"
-	GMP_DIR="gmp-${GMP_VER}"
+	GMP_VER="6.0.0a"
+	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="2.7.1"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
 	LIBARCHIVE_VER="3.1.2"
