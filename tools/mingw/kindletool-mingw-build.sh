@@ -233,7 +233,7 @@ else
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
 		./build/autogen.sh
-		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --disable-bsdcat
 		make -j2
 		make install
 		cd ..
