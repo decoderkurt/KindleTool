@@ -184,7 +184,7 @@ typedef enum
     MarioDeprecated = 0x01,    // Kindle 1 (and Kindle 2)
     Luigi = 0x02,              // Kindle 3
     Banjo = 0x03,              // ??
-    Yoshi = 0x04,              // Kindle Touch (and apparently Kindle 4 too)
+    Yoshi = 0x04,              // Kindle Touch (and Kindle 4)
     YoshimeProto = 0x05,       // Early PW proto?
     Yoshime = 0x06,            // Kindle PW
     Wario = 0x07               // Kindle PW2
