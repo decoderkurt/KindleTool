@@ -181,20 +181,21 @@ typedef enum
 typedef enum
 {
     Plat_Unspecified = 0x00,
-    MarioDeprecated = 0x01,
-    Luigi = 0x02,
-    Banjo = 0x03,
-    Yoshi = 0x04,
-    YoshimeProto = 0x05,
-    Yoshime = 0x06,
-    Wario = 0x07
+    MarioDeprecated = 0x01,    // Kindle 1
+    Luigi = 0x02,              // Kindle 2 (and Kindle 3)
+    Banjo = 0x03,              // ??
+    Yoshi = 0x04,              // Kindle Touch (and apparently Kindle 4 too)
+    YoshimeProto = 0x05,       // Early PW proto?
+    Yoshime = 0x06,            // Kindle PW
+    Wario = 0x07               // Kindle PW2
 } Platform;
 
 typedef enum
 {
-    Board_Unspecified = 0x00,   // Used on the PW
+    Board_Unspecified = 0x00,   // Used on the PW (skip board check)
     Tequila = 0x03,             // Kindle 4 Silver
     Whitney = 0x05              // Kindle Touch
+    // Other potentially relevant OTAv2 ready boards:
     /*
     Sauza = 0xFF,               // Kindle 4 Black
     Celeste = 0xFF,             // PW
@@ -202,6 +203,27 @@ typedef enum
     Pinot = 0xFF                // PW2
     */
 } Board;
+
+// For reference, list of boards (AFAICT, in chronological order):
+// ADS                        // K1 proto? (w/ ETH)
+// Mario                      // Kindle 1 (w/ ETH) [Also a platform]
+// Nell/NellSL/NellWW         // K2 & ?? & K2i?
+// Turing/TuringWW            // DX & DXi?
+// Luigi/Luigi3               // ?? (r3 w/ ETH) [Also a platform]
+// Shasta (+ WFO variant)     // Kindle 3
+// Yoshi                      // ?? [Also a platform]
+// Primer                     // Deprecated proto
+// Harv                       // K4 proto?
+// Tequila (is WFO)           // Kindle 4 Silver
+// Sauza                      // Kindle 4 Black?
+// Finkle                     // Touch proto?
+// Whitney (+ WFO variant)    // Kindle Touch
+// Yoshime3                   // PW proto? (w/ ETH) [Also a Platform]
+// Yoshime                    // Temp. Yoshime dev boards [Also a Platform]
+// Celeste (+ WFO variant)    // Kindle PW
+// Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
+// Wario                      // Temp. Wario dev boards [Also a Platform]
+// Pinot (+ WFO variant)      // Kindle PW2
 
 typedef struct
 {
