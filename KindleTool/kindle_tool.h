@@ -181,8 +181,8 @@ typedef enum
 typedef enum
 {
     Plat_Unspecified = 0x00,
-    MarioDeprecated = 0x01,    // Kindle 1
-    Luigi = 0x02,              // Kindle 2 (and Kindle 3)
+    MarioDeprecated = 0x01,    // Kindle 1 (and Kindle 2)
+    Luigi = 0x02,              // Kindle 3
     Banjo = 0x03,              // ??
     Yoshi = 0x04,              // Kindle Touch (and apparently Kindle 4 too)
     YoshimeProto = 0x05,       // Early PW proto?
