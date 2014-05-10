@@ -215,7 +215,7 @@ typedef enum
 // Primer                     // Deprecated proto
 // Harv                       // K4 proto?
 // Tequila (is WFO)           // Kindle 4 Silver
-// Sauza                      // Kindle 4 Black?
+// Sauza                      // Kindle 4 Black? (NOT in chronological order)
 // Finkle                     // Touch proto?
 // Whitney (+ WFO variant)    // Kindle Touch
 // Yoshime3                   // PW proto? (w/ ETH) [Also a Platform]
