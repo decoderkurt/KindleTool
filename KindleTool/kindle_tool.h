@@ -207,8 +207,8 @@ typedef enum
 // For reference, list of boards (AFAICT, in chronological order):
 // ADS                        // K1 proto? (w/ ETH)
 // Mario                      // Kindle 1? (w/ ETH) [Also a platform]
-// Nell/NellSL/NellWW         // K2 & ?? & K2i?
-// Turing/TuringWW            // DX & DXi?
+// Nell/NellSL/NellWW         // DX & DXG & DXi?
+// Turing/TuringWW            // Kindle 2 & Kindle 2 International
 // Luigi/Luigi3               // ?? (r3 w/ ETH) [Also a platform]
 // Shasta (+ WFO variant)     // Kindle 3
 // Yoshi                      // ?? [Also a platform]
