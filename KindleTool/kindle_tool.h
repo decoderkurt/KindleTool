@@ -195,7 +195,7 @@ typedef enum
     Board_Unspecified = 0x00,   // Used on the PW (skip board check)
     Tequila = 0x03,             // Kindle 4 Silver
     Whitney = 0x05              // Kindle Touch
-    // Other potentially relevant OTAv2 ready boards:
+    // Other potentially relevant (OTA|Recovery)v2 ready boards:
     /*
     Sauza = 0xFF,               // Kindle 4 Black
     Celeste = 0xFF,             // PW
