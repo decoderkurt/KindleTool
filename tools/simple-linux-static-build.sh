@@ -85,7 +85,7 @@ Build_Linux() {
 		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
-			git clone git://git.lysator.liu.se/nettle/nettle.git nettle-git
+			git clone https://git.lysator.liu.se/nettle/nettle.git nettle-git
 			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 			sed -i '/SUBDIRS/s/testsuite examples//' Makefile.in
