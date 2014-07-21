@@ -172,6 +172,16 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) Wifi (4GB) Europe";
         case KindlePaperWhite2Wifi3G4GBEurope:
             return "Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe";
+        case KindlePaperWhite2Unknown_0xF4:
+            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0xF4)";
+        case KindlePaperWhite2Unknown_0xF9:
+            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0xF9)";
+        case KindlePaperWhite2Unknown_0x62:
+            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x62)";
+        case KindlePaperWhite2Unknown_0x61:
+            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x61)";
+        case KindlePaperWhite2Unknown_0x5F:
+            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x5F)";
         case ValidKindleIcewine_0x13:
             return "Unknown Kindle [Icewine] (0x13)";
         case ValidKindleUnknown_0x16:
@@ -661,7 +671,7 @@ int kindle_info_main(int argc, char *argv[])
     // Handle the PW2 passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
-    if(device == KindlePaperWhite2Wifi || device == KindlePaperWhite2WifiJapan || device == KindlePaperWhite2Wifi3G || device == KindlePaperWhite2Wifi3GCanada || device == KindlePaperWhite2Wifi3GEurope || device == KindlePaperWhite2Wifi3GRussia || device == KindlePaperWhite2Wifi3GJapan || device == KindlePaperWhite2Wifi4GBEurope || device == KindlePaperWhite2Wifi3G4GBEurope)
+    if(device == KindlePaperWhite2Wifi || device == KindlePaperWhite2WifiJapan || device == KindlePaperWhite2Wifi3G || device == KindlePaperWhite2Wifi3GCanada || device == KindlePaperWhite2Wifi3GEurope || device == KindlePaperWhite2Wifi3GRussia || device == KindlePaperWhite2Wifi3GJapan || device == KindlePaperWhite2Wifi4GBEurope || device == KindlePaperWhite2Wifi3G4GBEurope || device == KindlePaperWhite2Unknown_0xF4 || device == KindlePaperWhite2Unknown_0xF9 || device == KindlePaperWhite2Unknown_0x62 || device == KindlePaperWhite2Unknown_0x61 || device == KindlePaperWhite2Unknown_0x5F)
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
     else
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
