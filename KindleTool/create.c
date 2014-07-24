@@ -1375,7 +1375,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GRussia;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GJapan;
-                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBEurope;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBInternational;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBEurope;
                     if(kt_with_unknown_devcodes)
                     {
@@ -1409,7 +1409,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GRussia;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3GJapan;
-                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBEurope;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBInternational;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBEurope;
                     if(kt_with_unknown_devcodes)
                     {
@@ -1551,12 +1551,12 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3GJapan;
                         strncpy(info.magic_number, "FD04", 4);
                     }
-                    else if(strcmp(optarg, "pw2eu") == 0 || strcmp(optarg, "kpw2eu") == 0)
+                    else if(strcmp(optarg, "pw2il") == 0 || strcmp(optarg, "kpw2il") == 0)
                     {
-                        info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi4GBEurope;
+                        info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi4GBInternational;
                         strncpy(info.magic_number, "FD04", 4);
                     }
-                    else if(strcmp(optarg, "pw2geu") == 0 || strcmp(optarg, "kpw2geu") == 0)
+                    else if(strcmp(optarg, "pw2gbl") == 0 || strcmp(optarg, "kpw2gbl") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3G4GBEurope;
                         strncpy(info.magic_number, "FD04", 4);
