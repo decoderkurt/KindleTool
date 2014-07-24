@@ -171,7 +171,7 @@ typedef enum
     KindlePaperWhite2Wifi3G4GBEurope = 0x60,
     KindlePaperWhite2Unknown_0xF4 = 0xF4,
     KindlePaperWhite2Unknown_0xF9 = 0xF9,
-    KindlePaperWhite2Unknown_0x62 = 0x62,
+    KindlePaperWhite2Wifi3G4GB = 0x62,
     KindlePaperWhite2Unknown_0x61 = 0x61,
     KindlePaperWhite2Unknown_0x5F = 0x5F,
     ValidKindleIcewine_0x13 = 0x13,
