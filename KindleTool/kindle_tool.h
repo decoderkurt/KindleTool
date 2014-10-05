@@ -160,7 +160,7 @@ typedef enum
     KindlePaperWhiteWifi3GEurope = 0x1D,
     KindlePaperWhiteWifi3GJapan = 0x1F,
     KindlePaperWhiteWifi3GBrazil = 0x20,
-    KindlePaperWhite2Wifi = 0xD4,       // Kindle PaperWhite (black bezel), released fall 2013 on FW 5.4.0
+    KindlePaperWhite2Wifi = 0xD4,       // Kindle PaperWhite 2 (black bezel), released fall 2013 on FW 5.4.0
     KindlePaperWhite2WifiJapan = 0x5A,
     KindlePaperWhite2Wifi3G = 0xD5,
     KindlePaperWhite2Wifi3GCanada = 0xD6,

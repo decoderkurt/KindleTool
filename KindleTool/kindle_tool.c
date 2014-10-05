@@ -677,9 +677,15 @@ int kindle_info_main(int argc, char *argv[])
     device = (Device)strtoul(device_code, NULL, 16);
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
     if(device == KindlePaperWhite2Wifi4GBInternational || device >= KindlePaperWhite2WifiJapan)
+    {
+        fprintf(stderr, "Identified a device released in or after 2013\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
+    }
     else
+    {
+        fprintf(stderr, "Identified a device released before 2013\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
+    }
     fclose(temp);
     return 0;
 }
