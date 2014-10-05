@@ -207,8 +207,9 @@ typedef enum
     /*
     Sauza = 0xFF,               // Kindle 4 Black
     Celeste = 0xFF,             // PW
-    Icewine = 0xEE,             // Dev/Proto?
+    Icewine = 0xEE,             // Dev/Proto? Kindle Voyage?
     Pinot = 0xFF                // PW2
+    Bourbon = 0xFF              // Kindle Basic?
     */
 } Board;
 
@@ -232,6 +233,8 @@ typedef enum
 // Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
 // Wario                      // Temp. Wario dev boards [Also a Platform]
 // Pinot (+ WFO variant)      // Kindle PW2
+// Bourbon                    // Kindle Basic?
+// Icewine (on Wario)         // Kindle Voyage?
 
 typedef struct
 {
