@@ -182,6 +182,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x61)";
         case KindlePaperWhite2Unknown_0x5F:
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x5F)";
+        case KindleBasic:
+            return "Kindle Basic (2014)";
         case ValidKindleIcewine_0x13:
             return "Unknown Kindle [Icewine] (0x13)";
         case ValidKindleUnknown_0x16:
@@ -460,7 +462,8 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device pw2il          Kindle PaperWhite 2 (2013) Wifi (4GB) International\n"
         "      -d, --device pw2gbl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe\n"
         "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) Wifi+3G (4GB)\n"
-        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl & pw2gl\n"
+        "      -d, --device kb             Kindle Basic (2014)\n"
+        "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & kb\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl & pw2gl\n"
@@ -669,10 +672,11 @@ int kindle_info_main(int argc, char *argv[])
     // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
     // the recovery MMC export option expects a 9 chars password, so, provide both...
 
-    // Handle the PW2 passwords while we're at it... Thanks to npoland for this one ;).
+    // Handle the >= PW2 passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
-    if(device == KindlePaperWhite2Wifi || device == KindlePaperWhite2WifiJapan || device == KindlePaperWhite2Wifi3G || device == KindlePaperWhite2Wifi3GCanada || device == KindlePaperWhite2Wifi3GEurope || device == KindlePaperWhite2Wifi3GRussia || device == KindlePaperWhite2Wifi3GJapan || device == KindlePaperWhite2Wifi4GBInternational || device == KindlePaperWhite2Wifi3G4GBEurope || device == KindlePaperWhite2Unknown_0xF4 || device == KindlePaperWhite2Unknown_0xF9 || device == KindlePaperWhite2Wifi3G4GB || device == KindlePaperWhite2Unknown_0x61 || device == KindlePaperWhite2Unknown_0x5F)
+    // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
+    if(device == KindlePaperWhite2Wifi4GBInternational || device >= KindlePaperWhite2WifiJapan)
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
     else
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);

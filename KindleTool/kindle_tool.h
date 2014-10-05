@@ -174,6 +174,7 @@ typedef enum
     KindlePaperWhite2Wifi3G4GB = 0x62,
     KindlePaperWhite2Unknown_0x61 = 0x61,
     KindlePaperWhite2Unknown_0x5F = 0x5F,
+    KindleBasic = 0xC6,                 // Kindle Basic (Pearl, Touch), released fall 2014 on FW 5.6.0
     ValidKindleIcewine_0x13 = 0x13,
     ValidKindleUnknown_0x16 = 0x16,
     ValidKindleUnknown_0x21 = 0x21,
