@@ -56,8 +56,11 @@ pp = pprint.PrettyPrinter(indent=4)
 pp.pprint(sorted(model_tuples, key=itemgetter(1)))
 
 print '\nKindle models >= KindlePaperWhite2WifiJapan\n'
-cutoff_id = [v for i, v in enumerate(model_tuples) if v[0] == 'KindlePaperWhite2WifiJapan']
+cutoff_id = 0
+for i, v in enumerate(model_tuples):
+	if v[0] == 'KindlePaperWhite2WifiJapan':
+		cutoff_id = v[1]
+
 for t in model_tuples:
-	# Print anything greater or equal than KindlePaperWhite2WifiJapan
-	if t[1] >= cutoff_id[0][1]:
+	if t[1] >= cutoff_id:
 		print t
