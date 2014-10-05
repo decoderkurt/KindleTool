@@ -55,9 +55,9 @@ print 'Kindle models sorted by device code\n'
 pp = pprint.PrettyPrinter(indent=4)
 pp.pprint(sorted(model_tuples, key=itemgetter(1)))
 
-print '\nKindle models >= KindlePaperWhite2Wifi3GJapan\n'
-
+print '\nKindle models >= KindlePaperWhite2WifiJapan\n'
+cutoff_id = [v for i, v in enumerate(model_tuples) if v[0] == 'KindlePaperWhite2WifiJapan']
 for t in model_tuples:
-	# Print anything greater or equal than KindlePaperWhite2Wifi3GJapan
-	if t[1] >= 0x5A:
+	# Print anything greater or equal than KindlePaperWhite2WifiJapan
+	if t[1] >= cutoff_id[0][1]:
 		print t
