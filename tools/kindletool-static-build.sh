@@ -391,8 +391,11 @@ Build_OSX() {
 		fi
 	fi
 
+	# Prepare our Release directory to avoid some case sensitivity sillyness...
+	mkdir -p Release
+
 	# Build KT package credits
-	cat > CREDITS << EOF
+	cat > Release/CREDITS << EOF
 * kindletool:
 
 KindleTool, Copyright (C) 2011-2014  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
