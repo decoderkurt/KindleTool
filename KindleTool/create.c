@@ -1567,7 +1567,7 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3G4GB;
                         strncpy(info.magic_number, "FD04", 4);
                     }
-                    else if(strcmp(optarg, "kb") == 0 || strcmp(optarg, "bk") == 0)
+                    else if(strcmp(optarg, "kt2") == 0 || strcmp(optarg, "bk") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindleBasic;
                         strncpy(info.magic_number, "FD04", 4);
