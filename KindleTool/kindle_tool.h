@@ -193,8 +193,8 @@ typedef enum
     Luigi = 0x02,              // Kindle 3
     Banjo = 0x03,              // ??
     Yoshi = 0x04,              // Kindle Touch (and Kindle 4)
-    YoshimeProto = 0x05,       // Early PW proto?
-    Yoshime = 0x06,            // Kindle PW
+    YoshimeProto = 0x05,       // Early PW proto? (NB: Platform AKA Yoshime)
+    Yoshime = 0x06,            // Kindle PW (NB: Platform AKA Yoshime3)
     Wario = 0x07               // Kindle PW2
 } Platform;
 
@@ -209,7 +209,7 @@ typedef enum
     Celeste = 0xFF,             // PW
     Icewine = 0xEE,             // Dev/Proto? Kindle Voyage?
     Pinot = 0xFF                // PW2
-    Bourbon = 0xFF              // Kindle Basic?
+    Bourbon = 0xFF              // Kindle Basic
     */
 } Board;
 
@@ -227,13 +227,13 @@ typedef enum
 // Sauza                      // Kindle 4 Black? (NOT in chronological order)
 // Finkle                     // Touch proto?
 // Whitney (+ WFO variant)    // Kindle Touch
-// Yoshime3                   // PW proto? (w/ ETH) [Also a Platform]
-// Yoshime                    // Temp. Yoshime dev boards [Also a Platform]
+// Yoshime                    // Temp. Yoshime dev board [Also a Platform, said platform is AKA YoshimeProto]
+// Yoshime3                   // Temp. Yoshime3 dev boards (w/ ETH). PW proto? [Also a Platform, said platform is AKA Yoshime]
 // Celeste (+ WFO variant)    // Kindle PW
 // Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
 // Wario                      // Temp. Wario dev boards [Also a Platform]
 // Pinot (+ WFO variant)      // Kindle PW2
-// Bourbon                    // Kindle Basic?
+// Bourbon                    // Kindle Basic
 // Icewine (on Wario)         // Kindle Voyage?
 
 typedef struct
