@@ -227,8 +227,8 @@ typedef enum
 // Sauza                      // Kindle 4 Black? (NOT in chronological order)
 // Finkle                     // Touch proto?
 // Whitney (+ WFO variant)    // Kindle Touch
-// Yoshime                    // Temp. Yoshime dev board [Also a Platform, said platform is AKA YoshimeProto]
-// Yoshime3                   // Temp. Yoshime3 dev boards (w/ ETH). PW proto? [Also a Platform, said platform is AKA Yoshime]
+// Yoshime                    // Temp. Yoshime dev board [Also a Platform, which we call YoshimeProto]
+// Yoshime3                   // Temp. Yoshime3 dev boards (w/ ETH). PW proto? [Also a Platform, which we call Yoshime]
 // Celeste (+ WFO variant)    // Kindle PW
 // Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
 // Wario                      // Temp. Wario dev boards [Also a Platform]
