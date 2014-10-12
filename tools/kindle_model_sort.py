@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
 from operator import itemgetter
-import pprint
 
 model_tuples = [
 	('Kindle1', 0x01),
@@ -52,8 +51,8 @@ model_tuples = [
 ]
 
 print 'Kindle models sorted by device code\n'
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(sorted(model_tuples, key=itemgetter(1)))
+for t in sorted(model_tuples, key=itemgetter(1)):
+	print "{:<40} {:0>2X}".format(t[0], t[1])
 
 print '\nKindle models >= KindlePaperWhite2WifiJapan\n'
 cutoff_id = 0
@@ -63,4 +62,4 @@ for i, v in enumerate(model_tuples):
 
 for t in model_tuples:
 	if t[1] >= cutoff_id:
-		print t
+		print "{:<40} {:0>2X}".format(t[0], t[1])
