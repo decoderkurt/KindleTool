@@ -200,6 +200,18 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle [Icewine] (0x52)";
         case ValidKindleIcewine_0x53:
             return "Unknown Kindle [Icewine] (0x53)";
+        case ValidKindleUnknown_0x07:
+            return "Unknown Kindle (0x07)";
+        case ValidKindleUnknown_0x0B:
+            return "Unknown Kindle (0x0B)";
+        case ValidKindleUnknown_0x0C:
+            return "Unknown Kindle (0x0C)";
+        case ValidKindleUnknown_0x0D:
+            return "Unknown Kindle (0x0D)";
+        case ValidKindleUnknown_0x99:
+            return "Unknown Kindle (0x99)";
+        case ValidKindleUnknown_0xDD:
+            return "Unknown Kindle (0xDD)";
         case KindleUnknown:
         default:
             return "Unknown";

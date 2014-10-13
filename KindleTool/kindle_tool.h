@@ -183,6 +183,12 @@ typedef enum
     ValidKindleIcewine_0x4F = 0x4F,
     ValidKindleIcewine_0x52 = 0x52,
     ValidKindleIcewine_0x53 = 0x53,
+    ValidKindleUnknown_0x07 = 0x07,
+    ValidKindleUnknown_0x0B = 0x0B,
+    ValidKindleUnknown_0x0C = 0x0C,
+    ValidKindleUnknown_0x0D = 0x0D,
+    ValidKindleUnknown_0x99 = 0x99,
+    ValidKindleUnknown_0xDD = 0xDD,
     KindleUnknown = 0x00
 } Device;
 

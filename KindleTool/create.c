@@ -1424,7 +1424,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(kt_with_unknown_devcodes && (strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0))
                 {
                     strncpy(info.magic_number, "FD04", 4);      // Meh?
-                    unsigned int num_aliased_devices = 8;
+                    unsigned int num_aliased_devices = 14;
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = ValidKindleIcewine_0x13;
                     info.devices[info.num_devices++] = ValidKindleUnknown_0x16;
@@ -1434,6 +1434,12 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = ValidKindleIcewine_0x4F;
                     info.devices[info.num_devices++] = ValidKindleIcewine_0x52;
                     info.devices[info.num_devices++] = ValidKindleIcewine_0x53;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x07;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x0B;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x0C;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x0D;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0x99;
+                    info.devices[info.num_devices++] = ValidKindleUnknown_0xDD;
                 }
                 else
                 {
