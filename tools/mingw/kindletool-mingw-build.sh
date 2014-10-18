@@ -95,6 +95,7 @@ EOF
 
 ## I'd use this TC: http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/rubenvb/gcc-4.7-release/
 ## but they're actually for an x86_64 Linux host, not x86, so, fallback to the automated builds on my x86 box... (Or use http://sourceforge.net/projects/mingw-w64-dgn/)
+## NOTE: Might need to symlink bcrypt.h to Bcrypt.h to make libarchive happy...
 
 # Make sure we're up to date
 git pull
@@ -233,7 +234,7 @@ else
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
 		./build/autogen.sh
-		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --disable-bsdcat
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --disable-bsdcat
 		make -j2
 		make install
 		cd ..

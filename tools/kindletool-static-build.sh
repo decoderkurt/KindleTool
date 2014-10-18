@@ -115,9 +115,11 @@ Build_Linux() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
+			# Kill -Werror, git master doesn't always build with it...
+			sed -e 's/-Werror //' -i ./Makefile.am
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
 			make -j2
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -383,8 +385,10 @@ Build_OSX() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
+			# Kill -Werror, git master doesn't always build with it...
+			sed -e 's/-Werror //' -i ./Makefile.am
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
 			make -j2
 			make install
 			cd ..
