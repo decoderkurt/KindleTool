@@ -288,6 +288,9 @@ Build_OSX() {
 	export MACOSX_DEPLOYMENT_TARGET=10.6
 	export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
 	export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6"
+	# NOTE: Don't pull fstatat & openat, they were introduced in 10.10, and I don't want to have to keep an old SDK around to handle this the right way...
+	export ac_cv_func_fstatat=no
+	export ac_cv_func_openat=no
 
 	GMP_VER="6.0.0a"
 	GMP_DIR="gmp-${GMP_VER%a}"
