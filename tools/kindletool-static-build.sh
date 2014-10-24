@@ -186,7 +186,8 @@ EOF
 # Win32 !
 Build_Cygwin() {
 	echo "* Preparing a static KindleTool build on Cygwin . . ."
-	export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
+	# NOTE: Horrible hack. _NSIG isn't defined on Cygwin (it's defined in the linux headers), and CMake doesn't give a damn about CPPFLAGS.
+	export CFLAGS="-D_NSIG=64 -march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
 	export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
@@ -224,8 +225,6 @@ Build_Cygwin() {
 			cd libarchive-git
 			# NOTE: CMake isn't up to date in the Cygwin repos, but is new enough for our purposes. Revert part of 1052c76, it doesn't concern us on Cygwin anyway.
 			sed -e 's/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6 FATAL_ERROR)/' -i CMakeLists.txt
-			# NOTE: Horrible hack. _NSIG isn't defined on Cygwin?
-			export CPPFLAGS="-D_NSIG=64"
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
 			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
