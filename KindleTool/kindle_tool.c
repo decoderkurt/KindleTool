@@ -184,14 +184,14 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x5F)";
         case KindleBasic:
             return "Kindle Basic (2014)";
-        case ValidKindleIcewine_0x13:
-            return "Unknown Kindle [Icewine] (0x13)";
+        case KindleVoyageWifi:
+            return "Kindle Voyage WiFi";
         case ValidKindleUnknown_0x16:
             return "Unknown Kindle (0x16)";
         case ValidKindleUnknown_0x21:
             return "Unknown Kindle (0x21)";
-        case ValidKindleIcewine_0x54:
-            return "Unknown Kindle [Icewine] (0x54)";
+        case KindleVoyageWifi3G:
+            return "Kindle Voyage WiFi+3G";
         case ValidKindleIcewine_0x2A:
             return "Unknown Kindle [Icewine] (0x2A)";
         case ValidKindleIcewine_0x4F:
@@ -453,7 +453,6 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device k3gb           Kindle 3 Wifi+3G Europe\n"
         "      -d, --device k4             Kindle 4 (No Touch) Silver (2011)\n"
         "      -d, --device k4b            Kindle 4 (No Touch) Black (2012)\n"
-        "      -d, --device kindle4        Alias for k4 & k4b\n"
         "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
         "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe\n"
@@ -475,10 +474,14 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device pw2gbl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe\n"
         "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) Wifi+3G (4GB)\n"
         "      -d, --device kt2            Kindle Basic (2014)\n"
+        "      -d, --device kv             Kindle Voyage WiFi\n"
+        "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
+        "      -d, --device kindle4        Alias for k4 & k4b\n"
         "      -d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & kt2\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl & pw2gl\n"
+        "      -d, --device voyage         Alias for kv & kvg\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
         "      \n"
@@ -688,7 +691,7 @@ int kindle_info_main(int argc, char *argv[])
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device == KindlePaperWhite2Wifi4GBInternational || device >= KindlePaperWhite2WifiJapan)
+    if(device == KindleVoyageWifi || device == KindleVoyageWifi3G || device == KindlePaperWhite2Wifi4GBInternational || device >= KindlePaperWhite2WifiJapan)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);

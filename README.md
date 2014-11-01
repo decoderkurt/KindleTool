@@ -61,7 +61,6 @@
 		-d, --device k3gb           Kindle 3 Wifi+3G Europe
 		-d, --device k4             Kindle 4 (No Touch) Silver (2011)
 		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
-		-d, --device kindle4        Alias for k4 & k4b
 		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
 		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe
@@ -83,10 +82,14 @@
 		-d, --device pw2gbl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe
 		-d, --device pw2gl          Kindle PaperWhite 2 (2013) Wifi+3G (4GB)
 		-d, --device kt2            Kindle Basic (2014)
+		-d, --device kv             Kindle Voyage WiFi
+		-d, --device kvg            Kindle Voyage WiFi+3G
+		-d, --device kindle4        Alias for k4 & k4b
 		-d, --device kindle5        Alias for k5w, k5g, k5gb, pw, pwg, pwgc, pwgb, pwgj, pwgbr, pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & kt2
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl & pw2gl
+		-d, --device voyage         Alias for kv & kvg
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
