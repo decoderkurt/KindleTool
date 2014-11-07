@@ -44,10 +44,10 @@ model_tuples = [
 	('KindlePaperWhite2Unknown_0xF9', 0xF9),
 	('KindleVoyageWifi', 0x13, 'A3FE7AD5N5R11'),
 	('KindleVoyageWifi3G', 0x54, 'A1VHVRSIVA49BF'),
-	('ValidKindleIcewine_0x2A', 0x2A, 'A2KSI370ME58SV'),
-	('ValidKindleIcewine_0x4F', 0x4F, 'AEK24W3B90XSI'),
-	('ValidKindleIcewine_0x52', 0x52, 'A66ZTOXC8UWFP'),
-	('ValidKindleIcewine_0x53', 0x53, 'A26JMGYIXWMKGL'),
+	('KindleVoyageUnknown_0x2A', 0x2A, 'A2KSI370ME58SV'),
+	('KindleVoyageUnknown_0x4F', 0x4F, 'AEK24W3B90XSI'),
+	('KindleVoyageUnknown_0x52', 0x52, 'A66ZTOXC8UWFP'),
+	('KindleVoyageUnknown_0x53', 0x53, 'A26JMGYIXWMKGL'),
 	('KindleBasic', 0xC6, 'A2TNPB8EVLW5FA'),
 	('ValidKindleUnknown_0x99', 0x99, 'A2I96HKA5TK143'),
 	('ValidKindleUnknown_0xDD', 0xDD, 'A9N06WOIL49CA'),
@@ -60,10 +60,10 @@ print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
 	print "{:<40} {:02X} {:10} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
-print '\nKindle models >= KindlePaperWhite2WifiJapan\n'
+print '\nKindle models >= KindleVoyageUnknown_0x2A\n'
 cutoff_id = 0
 for i, v in enumerate(model_tuples):
-	if v[0] == 'KindlePaperWhite2WifiJapan':
+	if v[0] == 'KindleVoyageUnknown_0x2A':
 		cutoff_id = v[1]
 
 for t in model_tuples:

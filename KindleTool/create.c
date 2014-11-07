@@ -1395,11 +1395,10 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindleVoyageWifi3G;
                     if(kt_with_unknown_devcodes)
                     {
-                        // FIXME: Wild guess!
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x2A;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x4F;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x52;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x53;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x2A;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x53;
                     }
                 }
                 else if(strcmp(optarg, "kindle5") == 0)
@@ -1440,11 +1439,10 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindleVoyageWifi3G;
                     if(kt_with_unknown_devcodes)
                     {
-                        // FIXME: Wild guess!
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x2A;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x4F;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x52;
-                        info.devices[info.num_devices++] = ValidKindleIcewine_0x53;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x2A;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
+                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x53;
                     }
                 }
                 else if(kt_with_unknown_devcodes && (strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0))

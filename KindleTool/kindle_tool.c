@@ -192,14 +192,14 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (0x21)";
         case KindleVoyageWifi3G:
             return "Kindle Voyage WiFi+3G";
-        case ValidKindleIcewine_0x2A:
-            return "Unknown Kindle [Icewine] (0x2A)";
-        case ValidKindleIcewine_0x4F:
-            return "Unknown Kindle [Icewine] (0x4F)";
-        case ValidKindleIcewine_0x52:
-            return "Unknown Kindle [Icewine] (0x52)";
-        case ValidKindleIcewine_0x53:
-            return "Unknown Kindle [Icewine] (0x53)";
+        case KindleVoyageUnknown_0x2A:
+            return "Kindle Voyage (Unknown Variant 0x2A)";
+        case KindleVoyageUnknown_0x4F:
+            return "Kindle Voyage (Unknown Variant 0x4F)";
+        case KindleVoyageUnknown_0x52:
+            return "Kindle Voyage (Unknown Variant 0x52)";
+        case KindleVoyageUnknown_0x53:
+            return "Kindle Voyage (Unknown Variant 0x53)";
         case ValidKindleUnknown_0x07:
             return "Unknown Kindle (0x07)";
         case ValidKindleUnknown_0x0B:
@@ -691,7 +691,7 @@ int kindle_info_main(int argc, char *argv[])
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device == KindleVoyageWifi || device == KindleVoyageWifi3G || device == KindlePaperWhite2Wifi4GBInternational || device >= KindlePaperWhite2WifiJapan)
+    if(device == KindleVoyageWifi || device == KindlePaperWhite2Wifi4GBInternational || device >= KindleVoyageUnknown_0x2A)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);

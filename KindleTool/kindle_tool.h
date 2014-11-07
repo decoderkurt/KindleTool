@@ -179,10 +179,10 @@ typedef enum
     ValidKindleUnknown_0x16 = 0x16,
     ValidKindleUnknown_0x21 = 0x21,
     KindleVoyageWifi3G = 0x54,
-    ValidKindleIcewine_0x2A = 0x2A,
-    ValidKindleIcewine_0x4F = 0x4F,
-    ValidKindleIcewine_0x52 = 0x52,
-    ValidKindleIcewine_0x53 = 0x53,
+    KindleVoyageUnknown_0x2A = 0x2A,
+    KindleVoyageUnknown_0x4F = 0x4F,
+    KindleVoyageUnknown_0x52 = 0x52,
+    KindleVoyageUnknown_0x53 = 0x53,
     ValidKindleUnknown_0x07 = 0x07,
     ValidKindleUnknown_0x0B = 0x0B,
     ValidKindleUnknown_0x0C = 0x0C,
@@ -213,7 +213,7 @@ typedef enum
     /*
     Sauza = 0xFF,               // Kindle 4 Black
     Celeste = 0xFF,             // PW
-    Icewine = 0xEE,             // Dev/Proto? Kindle Voyage?
+    Icewine = 0xFF,             // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
     Pinot = 0xFF                // PW2
     Bourbon = 0xFF              // Kindle Basic
     */
@@ -240,7 +240,7 @@ typedef enum
 // Wario                      // Temp. Wario dev boards [Also a Platform]
 // Pinot (+ WFO variant)      // Kindle PW2
 // Bourbon                    // Kindle Basic
-// Icewine (on Wario)         // Kindle Voyage?
+// Icewine (on Wario)         // Kindle Voyage
 
 typedef struct
 {
