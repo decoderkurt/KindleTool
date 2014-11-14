@@ -188,7 +188,7 @@ typedef enum
     ValidKindleUnknown_0x0C = 0x0C,
     ValidKindleUnknown_0x0D = 0x0D,
     ValidKindleUnknown_0x99 = 0x99,
-    ValidKindleUnknown_0xDD = 0xDD,
+    KindleBasicUnknown_0xDD = 0xDD,
     KindleUnknown = 0x00
 } Device;
 

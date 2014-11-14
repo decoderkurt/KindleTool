@@ -88,8 +88,9 @@
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl & pw2gl
+		-d, --device basic          Alias for kt2
 		-d, --device voyage         Alias for kv & kvg
-		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2 & voyage
+		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic & voyage
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
