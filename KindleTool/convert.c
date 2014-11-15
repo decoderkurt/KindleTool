@@ -208,9 +208,16 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
         memcpy(&device, &data[hindex], sizeof(uint16_t));
         // Slightly hackish way to detect unknown devices, because I don't want to refactor convert_device_id()
         if(strcmp(convert_device_id(device), "Unknown") == 0)
+        {
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
+        }
         else
-            fprintf(stderr, "Device         %s\n", convert_device_id(device));
+        {
+            if(kt_with_unknown_devcodes)
+                fprintf(stderr, "Device         %s (0x%02X)\n", convert_device_id(device), device);
+            else
+                fprintf(stderr, "Device         %s\n", convert_device_id(device));
+        }
     }
     free(data);
 
@@ -335,7 +342,10 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.ota_update.md5_sum);
     fprintf(stderr, "Minimum OTA    %u\n", header->data.ota_update.source_revision);
     fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
-    fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
+    if(kt_with_unknown_devcodes)
+        fprintf(stderr, "Device         %s (0x%02X)\n", convert_device_id(header->data.ota_update.device), header->data.ota_update.device);
+    else
+        fprintf(stderr, "Device         %s\n", convert_device_id(header->data.ota_update.device));
     fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
     fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);  // Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
 
