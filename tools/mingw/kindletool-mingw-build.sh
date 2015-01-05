@@ -165,6 +165,7 @@ if [[ ! -d "${GMP_DIR}" ]] ; then
 	fi
 	tar -xvJf ./${GMP_DIR}.tar.xz
 	cd ${GMP_DIR}
+	autoreconf -fi
 	libtoolize
 	./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-cxx
 	make -j2

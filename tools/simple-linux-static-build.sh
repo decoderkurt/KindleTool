@@ -55,6 +55,7 @@ Build_Linux() {
 		fi
 		tar -xvJf ./${GMP_DIR}.tar.xz
 		cd ${GMP_DIR}
+		autoreconf -fi
 		libtoolize
 		./configure ABI=${GMPABI} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
 		make -j2
