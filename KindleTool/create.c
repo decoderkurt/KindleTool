@@ -1366,7 +1366,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "paperwhite2") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    unsigned int num_aliased_devices = 10 + (kt_with_unknown_devcodes * 4);
+                    unsigned int num_aliased_devices = 11 + (kt_with_unknown_devcodes * 3);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi;
                     info.devices[info.num_devices++] = KindlePaperWhite2WifiJapan;
@@ -1378,12 +1378,12 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBInternational;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GB;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBCanada;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x61;
-                        info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x5F;
                     }
                 }
                 else if(strcmp(optarg, "basic") == 0)
@@ -1413,7 +1413,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", 4);
-                    unsigned int num_aliased_devices = 22 + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 4) + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 4);
+                    unsigned int num_aliased_devices = 23 + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 3) + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 4);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = Kindle5TouchWifi;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3G;
@@ -1436,12 +1436,12 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi4GBInternational;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GB;
+                    info.devices[info.num_devices++] = KindlePaperWhite2Wifi3G4GBCanada;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x61;
-                        info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x5F;
                     }
                     info.devices[info.num_devices++] = KindleBasic;
                     if(kt_with_unknown_devcodes)
@@ -1500,7 +1500,7 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
                         strncpy(info.magic_number, "FC04", 4);
                     }
-                    // NOTE: Magic number switch to 'versionless' update types here...
+                    // NOTE: Magic number switch to 'versionless' update types here... FW >= 5.6.1 apparently dropped support for these...
                     else if(strcmp(optarg, "k5w") == 0)
                     {
                         info.devices[info.num_devices - 1] = Kindle5TouchWifi;
@@ -1599,6 +1599,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcmp(optarg, "pw2gl") == 0 || strcmp(optarg, "kpw2gl") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3G4GB;
+                        strncpy(info.magic_number, "FD04", 4);
+                    }
+                    else if(strcmp(optarg, "pw2gcl") == 0 || strcmp(optarg, "kpw2gcl") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindlePaperWhite2Wifi3G4GBCanada;
                         strncpy(info.magic_number, "FD04", 4);
                     }
                     else if(strcmp(optarg, "kt2") == 0 || strcmp(optarg, "bk") == 0)
