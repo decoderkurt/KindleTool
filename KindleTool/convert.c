@@ -29,7 +29,7 @@ int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output)
+int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output, char *header_md5)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -68,7 +68,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             else
             {
                 fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-                return kindle_convert_ota_update_v2(input, output, fake_sign); // No absolute size, so no struct to pass
+                return kindle_convert_ota_update_v2(input, output, fake_sign, header_md5); // No absolute size, so no struct to pass
             }
             break;
         case UpdateSignature:
@@ -93,7 +93,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             }
             else
             {
-                return kindle_convert(input, output, sig_output, fake_sign, 0, NULL);
+                return kindle_convert(input, output, sig_output, fake_sign, 0, NULL, header_md5);
             }
             break;
         case OTAUpdate:
@@ -105,7 +105,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             else
             {
                 fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
-                return kindle_convert_ota_update(&header, input, output, fake_sign);
+                return kindle_convert_ota_update(&header, input, output, fake_sign, header_md5);
             }
             break;
         case RecoveryUpdate:
@@ -117,7 +117,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             else
             {
                 fprintf(stderr, "Bundle Type    %s\n", "Recovery");
-                return kindle_convert_recovery(&header, input, output, fake_sign);
+                return kindle_convert_recovery(&header, input, output, fake_sign, header_md5);
             }
             break;
         case RecoveryUpdateV2:
@@ -129,7 +129,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
             else
             {
                 fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
-                return kindle_convert_recovery_v2(input, output, fake_sign);
+                return kindle_convert_recovery_v2(input, output, fake_sign, header_md5);
             }
             break;
         case UserDataPackage:
@@ -158,7 +158,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     return -1; // If we get here, there has been an error
 }
 
-int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign)
+int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex;
@@ -237,6 +237,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
+    strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);
     //num_metadata = *(uint16_t *)&data[hindex];
     memcpy(&num_metadata, &data[hindex], sizeof(uint16_t));
     //hindex += sizeof(uint16_t);       // Shut clang's sa up
@@ -331,7 +332,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     return 0;
 }
 
-int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
+int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     if(fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
@@ -340,6 +341,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     }
     dm((unsigned char *)header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.ota_update.md5_sum);
+    strncpy(header_md5, header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "Minimum OTA    %u\n", header->data.ota_update.source_revision);
     fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
     if(kt_with_unknown_devcodes)
@@ -357,7 +359,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign)
+int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     if(fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
@@ -366,6 +368,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     }
     dm((unsigned char *)header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.recovery_update.md5_sum);
+    strncpy(header_md5, header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
     fprintf(stderr, "Magic 1        %d\n", header->data.recovery_update.magic_1);
     fprintf(stderr, "Magic 2        %d\n", header->data.recovery_update.magic_2);
     fprintf(stderr, "Minor          %d\n", header->data.recovery_update.minor);
@@ -398,7 +401,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign)
+int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex;
@@ -430,6 +433,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
     dm((unsigned char *)pkg_md5_sum, MD5_HASH_LENGTH);
     hindex += MD5_HASH_LENGTH;
     fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
+    strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);
     //magic_1 = *(uint32_t *)&data[hindex];
     memcpy(&magic_1, &data[hindex], sizeof(uint32_t));
     hindex += sizeof(uint32_t);
@@ -527,6 +531,7 @@ int kindle_convert_main(int argc, char *argv[])
     unsigned int unwrap_only;
     unsigned int ext_offset;
     int fail;
+    char header_md5[MD5_HASH_LENGTH + 1];
 
     sig_output = NULL;
     unwrap_output = NULL;
@@ -731,7 +736,7 @@ int kindle_convert_main(int argc, char *argv[])
             {
                 fprintf(stderr, "Converting %s%s package '%s' to '%s' (%s, %s).\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
             }
-            if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output) < 0)
+            if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output, header_md5) < 0)
             {
                 fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
                 if(output != NULL && output != stdout)
@@ -886,6 +891,10 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *bin_input;
     int tgz_fd;
     FILE *tgz_output;
+    char header_md5[MD5_HASH_LENGTH + 1];
+    char actual_md5[MD5_HASH_LENGTH + 1];
+    memset(&header_md5, 0, sizeof(header_md5));
+    memset(&actual_md5, 0, sizeof(actual_md5));
 
     fake_sign = 0;
     bin_filename = NULL;
@@ -962,7 +971,7 @@ int kindle_extract_main(int argc, char *argv[])
         fclose(bin_input);
         return -1;
     }
-    tgz_fd = open(tgz_filename, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, 0600);
+    tgz_fd = open(tgz_filename, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
 #else
     tgz_fd = mkstemp(tgz_filename);
 #endif
@@ -972,7 +981,7 @@ int kindle_extract_main(int argc, char *argv[])
         fclose(bin_input);
         return -1;
     }
-    if((tgz_output = fdopen(tgz_fd, "wb")) == NULL)
+    if((tgz_output = fdopen(tgz_fd, "w+b")) == NULL)
     {
         fprintf(stderr, "Cannot open temp output '%s' for writing: %s.\n", tgz_filename, strerror(errno));
         fclose(bin_input);
@@ -982,7 +991,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     // Print a recap of what we're about to do
     fprintf(stderr, "Extracting %s package '%s' to '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
-    if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL) < 0)
+    if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_md5) < 0)
     {
         fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
         fclose(bin_input);
@@ -990,6 +999,27 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     fclose(bin_input);
+    // If it makes sense, check the integrity of the tarball, thanks to the md5 hash stored in the package's header...
+    if(!fake_sign && !IS_STGZ(bin_filename) && !IS_TGZ(bin_filename) && !IS_TARBALL(bin_filename))
+    {
+        // First, calculate the hash of what we've just extracted...
+        rewind(tgz_output);
+        if(md5_sum(tgz_output, actual_md5) < 0)
+        {
+            fprintf(stderr, "Error calculating MD5 of package.\n");
+            fclose(tgz_output);
+            unlink(tgz_filename);
+            return -1;
+        }
+        // ...And compare it against the one stored in the package's header.
+        if(strcmp(header_md5, actual_md5) != 0)
+        {
+            fprintf(stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_md5, actual_md5);
+            fclose(tgz_output);
+            unlink(tgz_filename);
+            return -1;
+        }
+    }
     fclose(tgz_output);
     if(libarchive_extract(tgz_filename, output_dir) < 0)
     {
