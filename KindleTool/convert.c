@@ -1000,7 +1000,7 @@ int kindle_extract_main(int argc, char *argv[])
     }
     fclose(bin_input);
     // If it makes sense, check the integrity of the tarball, thanks to the md5 hash stored in the package's header...
-    if(!fake_sign && !IS_STGZ(bin_filename) && !IS_TGZ(bin_filename) && !IS_TARBALL(bin_filename))
+    if(!fake_sign && strlen(header_md5) != 0)
     {
         // First, calculate the hash of what we've just extracted...
         rewind(tgz_output);
