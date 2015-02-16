@@ -891,10 +891,8 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *bin_input;
     int tgz_fd;
     FILE *tgz_output;
-    char header_md5[MD5_HASH_LENGTH + 1];
-    char actual_md5[MD5_HASH_LENGTH + 1];
-    memset(&header_md5, 0, sizeof(header_md5));
-    memset(&actual_md5, 0, sizeof(actual_md5));
+    char header_md5[MD5_HASH_LENGTH + 1] = {0};
+    char actual_md5[MD5_HASH_LENGTH + 1] = {0};
 
     fake_sign = 0;
     bin_filename = NULL;
@@ -946,9 +944,9 @@ int kindle_extract_main(int argc, char *argv[])
     }
 
     // Check that input properly ends in .bin or .stgz
-    if(!IS_BIN(bin_filename) && !IS_STGZ(bin_filename))
+    if(!IS_BIN(bin_filename) && !IS_STGZ(bin_filename) && !IS_TARBALL(bin_filename) && !IS_TGZ(bin_filename))
     {
-        fprintf(stderr, "Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n", bin_filename);
+        fprintf(stderr, "Input file '%s' is neither a '.bin' update package nor a '.stgz' or '.tar.gz'/'.tgz' userdata package.\n", bin_filename);
         return -1;
     }
     // NOTE: Do some sanity checks for output directory handling?
@@ -956,7 +954,7 @@ int kindle_extract_main(int argc, char *argv[])
     // but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
-        fprintf(stderr, "Cannot open input %s package '%s': %s.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, strerror(errno));
+        fprintf(stderr, "Cannot open input %s package '%s': %s.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename, strerror(errno));
         return -1;
     }
     // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
@@ -990,10 +988,10 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Print a recap of what we're about to do
-    fprintf(stderr, "Extracting %s package '%s' to '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename, output_dir);
+    fprintf(stderr, "Extracting %s package '%s' to '%s'.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename, output_dir);
     if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_md5) < 0)
     {
-        fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(bin_filename) ? "userdata" : "update"), bin_filename);
+        fprintf(stderr, "Error converting %s package '%s'.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename);
         fclose(bin_input);
         fclose(tgz_output);
         return -1;

@@ -984,7 +984,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
 {
     UpdateHeader header; // Header to write
 
-    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
+    memset(&header, 0, sizeof(UpdateHeader)); // Zero init
     strncpy(header.magic_number, "SP01", 4); // Write magic number
     header.data.signature.certificate_number = (uint32_t)info->certificate_number; // 4 byte certificate number
     if(fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) < MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE)
@@ -1008,7 +1008,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
 
     obfuscated_tgz = NULL;
 
-    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
+    memset(&header, 0, sizeof(UpdateHeader)); // Zero init
     strncpy(header.magic_number, info->magic_number, 4); // Magic number
     header.data.ota_update.source_revision = (uint32_t)info->source_revision; // Source
     header.data.ota_update.target_revision = (uint32_t)info->target_revision; // Target
@@ -1061,7 +1061,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
 
     obfuscated_tgz = NULL;
 
-    memset(&header, 0, sizeof(UpdateHeader)); // Set them to zero
+    memset(&header, 0, sizeof(UpdateHeader)); // Zero init
 
     strncpy(header.magic_number, info->magic_number, 4); // Magic number
     header.data.recovery_update.magic_1 = (uint32_t)info->magic_1; // Magic 1
@@ -1136,7 +1136,7 @@ int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *ou
     header_size = MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE;
     header = malloc(header_size);
     hindex = 0;
-    // So set everything to 0 first...
+    // Zero init everything first...
     memset(header, 0, header_size);
 
     strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
