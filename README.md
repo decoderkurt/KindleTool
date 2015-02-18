@@ -85,6 +85,10 @@
 		-d, --device kt2            Kindle Basic (2014)
 		-d, --device kv             Kindle Voyage WiFi
 		-d, --device kvg            Kindle Voyage WiFi+3G
+		-d, --device kindle2        Alias for k2 & k2i
+		-d, --device kindledx       Alias for dx, dxi & dxg
+		-d, --device kindle3        Alias for k3w, k3g & k3gb
+		-d, --device legacy         Alias for kindle2, kindledx & kindle3
 		-d, --device kindle4        Alias for k4 & k4b
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
