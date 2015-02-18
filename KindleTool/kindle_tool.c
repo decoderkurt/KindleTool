@@ -278,41 +278,41 @@ const char *convert_bundle_version(BundleVersion bundlev)
     }
 }
 
-BundleVersion get_bundle_version(char magic_number[4])
+BundleVersion get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
 {
-    if(!strncmp(magic_number, "FB02", 4) || !strncmp(magic_number, "FB01", 4))
+    if(!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FB01", MAGIC_NUMBER_LENGTH))
         return RecoveryUpdate;
-    else if(!strncmp(magic_number, "FB03", 4))
+    else if(!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
         return RecoveryUpdateV2;
-    else if(!strncmp(magic_number, "FC02", 4) || !strncmp(magic_number, "FD03", 4))
+    else if(!strncmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
         return OTAUpdate;
-    else if(!strncmp(magic_number, "FC04", 4) || !strncmp(magic_number, "FD04", 4) || !strncmp(magic_number, "FL01", 4))
+    else if(!strncmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH))
         return OTAUpdateV2;
-    else if(!strncmp(magic_number, "SP01", 4))
+    else if(!strncmp(magic_number, "SP01", MAGIC_NUMBER_LENGTH))
         return UpdateSignature;
-    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", 4))       // GZIP magic number
+    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))       // GZIP magic number
         return UserDataPackage;
     else
         return UnknownUpdate;
 }
 
-const char *convert_magic_number(char magic_number[4])
+const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 {
-    if(!strncmp(magic_number, "FB02", 4))
+    if(!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
         return "(Fullbin [signed?])";           // /mnt/us/update-full.bin
-    else if(!strncmp(magic_number, "FB03", 4))
+    else if(!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
         return "(Fullbin [OTA?, fwo?])";        // /mnt/us/update-%lld-fwo.bin
-    else if(!strncmp(magic_number, "FB", 2))
+    else if(!strncmp(magic_number, "FB", MAGIC_NUMBER_LENGTH/2))
         return "(Fullbin)";
-    else if(!strncmp(magic_number, "FC", 2))
+    else if(!strncmp(magic_number, "FC", MAGIC_NUMBER_LENGTH/2))
         return "(OTA [ota])";                   // /mnt/us/Update_%lld_%lld.bin
-    else if(!strncmp(magic_number, "FD", 2))
+    else if(!strncmp(magic_number, "FD", MAGIC_NUMBER_LENGTH/2))
         return "(Versionless [vls])";           // /mnt/us/Update_VLS_%lld.bin
-    else if(!strncmp(magic_number, "FL", 2))
+    else if(!strncmp(magic_number, "FL", MAGIC_NUMBER_LENGTH/2))
         return "(Language [lang])";             // /mnt/us/Update_LANG_%s.bin
-    else if(!strncmp(magic_number, "SP", 2))
+    else if(!strncmp(magic_number, "SP", MAGIC_NUMBER_LENGTH/2))
         return "(Signing Envelope)";
-    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", 4))
+    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
         return "(Userdata tarball)";
     else
         return "Unknown";
