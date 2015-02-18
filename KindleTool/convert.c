@@ -47,8 +47,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
         fprintf(stderr, "Cannot read input file: %s.\n", strerror(errno));
         return -1;
     }
-    // Slightly hackish way to detect unknown bundle types...
-    if(strcmp(convert_magic_number(header.magic_number), "Unknown") == 0)
+    if(get_bundle_version(header.magic_number) == UnknownUpdate)
     {
         // Cf. http://stackoverflow.com/questions/3555791
         fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1], (unsigned)(unsigned char)header.magic_number[2], (unsigned)(unsigned char)header.magic_number[3], MAGIC_NUMBER_LENGTH, header.magic_number);
