@@ -2,7 +2,9 @@ Recommended Compilation Directions
 
 Basically, you'll need a working toolchain, nettle, and libarchive >= 3.0.3 (with gzip support).
 
-If you don't want to bother, static binaries are available here: http://www.mobileread.com/forums/showthread.php?t=187880
+If you don't want to bother, static binaries are available:
+here for the latest releases: http://www.mobileread.com/forums/showthread.php?t=187880
+and here for the latest development snapshots, which are most likely the builds you'll be interested in: http://www.mobileread.com/forums/showthread.php?t=225030
 
 To compile for Linux:
 	1) Install the required (development) dependencies in the appropriate manner for your distro (i.e., use your PMS).
