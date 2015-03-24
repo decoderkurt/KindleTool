@@ -5,8 +5,10 @@ Basically, you'll need a working toolchain, nettle, and libarchive >= 3.0.3 (wit
 If you don't want to bother, static binaries are available here: http://www.mobileread.com/forums/showthread.php?t=187880
 
 To compile for Linux:
-	1) Install the dependency packages: zlib-dev, libarchive-dev, libssl-dev
-	1.5) Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and libarchive12
+	1) Install the required (development) dependencies in the appropriate manner for your distro (i.e., use your PMS).
+	1.5) For Debian/Ubuntu people: You'll need zlib1g-dev, libarchive-dev and nettle-dev
+	1.5) For Fedora people: You'll need zlib-devel, libarchive-devel and nettle-devel
+	1.5) For OpenSuse people: You'll need zlib-devel, libarchive-devel and libnettle-devel
 	2) Compile using "make" in the tool's directory
 	3) If you want to install it in /usr/local, run "make install". (I'd recommend using this through the checkinstall tool on Debian/Ubuntu).
 	2.5) If GCC throws a fit about libarchive, or if it fails to link with a bunch of undefined references to archive_* symbols, your libarchive version is too old.
@@ -21,11 +23,7 @@ To compile for OSX:
 To compile for Windows:
 	1) Get Cygwin
 	2) Install the required packages for a proper toolchain (gcc4, binutils, autoconf, automake, libtool, make, ...)
-	3) Install the packages: libnettle4 / libnettle-devel, zlib / zlib-devel, git, cmake, patch, pkg-config, libxml2-devel
-	4) Compile and install libarchive >= 3.0.3
-	4.1) I recommend a minimal build configured via
-		./configure --prefix=/usr --enable-static --enable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-	4.2) If you want to download it via wget from the Cygwin shell, you'll have to install wget & curl, and jump through a few hoops to setup the SSL CA certs... (cf. http://stackoverflow.com/questions/9224298/).
+	3) Install the packages: zlib / zlib-devel, libarchive13 / libarchive-devel, libnettle4 / libnettle-devel, git, cmake, patch, pkg-config, libxml2-devel
 	5) Compile using "make" in the tool's directory
 	6) Install it by running "make install"
 
