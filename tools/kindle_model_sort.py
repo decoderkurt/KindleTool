@@ -54,20 +54,21 @@ model_tuples = [
 	('ValidKindleUnknown_0x16', 0x16),
 	('ValidKindleUnknown_0x21', 0x21),
 	('KindlePaperWhite3', 0x90),
+	('KindlePaperWhite3Wifi_0G1', int('0G1', 32), 'A21RY355YUXQAF'),
+	('KindlePaperWhite3Unknown_0G2', int('0G2', 32), 'A6S0KGW65V1TV'),
+	('KindlePaperWhite3Unknown_0G4', int('0G4', 32), 'A3P87LH4DLAKE2'),
+	('KindlePaperWhite3Unknown_0G5', int('0G5', 32), 'A3OLIINW419WLP'),
+	('KindlePaperWhite3Unknown_0G6', int('0G6', 32), 'AOPKCG97868D2'),
+	('KindlePaperWhite3Unknown_0G7', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
 	('KindleUnknown', 0x00)
 ]
 # FIXME: PW3 is inaccurate, the device id potentially moved 2 chars to the right? First char (?) often (always?) seems to be 9? Might we sometime find our good old B there, too?
-# TODO: Handle those base32hex? device code values...
-#('KindlePaperWhite3Wifi_0G1', '?0G1', 'A21RY355YUXQAF')
-#('KindlePaperWhite3Unknown_0G2', '?0G2', 'A6S0KGW65V1TV')
-#('KindlePaperWhite3Unknown_0G4', '?0G4', 'A3P87LH4DLAKE2')
-#('KindlePaperWhite3Unknown_0G5', '?0G5', 'A3OLIINW419WLP')
-#('KindlePaperWhite3Unknown_0G6', '?0G6', 'AOPKCG97868D2')
-#('KindlePaperWhite3Unknown_0G7', '?0G7', 'A3MTNJ7FDYZOPO')
+#	 Still not sure if this should be interpreted in base32hex or base36...
 
 
 print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
+	# FIXME: Handle the base32hex? device ids in a better way?
 	print "{:<40} {:02X} {:10} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
 print '\nKindle models >= KindleVoyageUnknown_0x2A\n'
