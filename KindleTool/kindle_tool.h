@@ -189,6 +189,7 @@ typedef enum
     ValidKindleUnknown_0x0D = 0x0D,
     ValidKindleUnknown_0x99 = 0x99,
     KindleBasicUnknown_0xDD = 0xDD,
+    KindlePaperWhite3 = 0x90,           // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (FIXME: Inaccurate at best!)
     KindleUnknown = 0x00
 } Device;
 
@@ -216,6 +217,7 @@ typedef enum
     Icewine = 0xFF,             // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
     Pinot = 0xFF                // PW2
     Bourbon = 0xFF              // Kindle Basic
+    Muscat = 0xFF               // PW3
     */
 } Board;
 
@@ -241,6 +243,7 @@ typedef enum
 // Pinot (+ WFO variant)      // Kindle PW2
 // Bourbon                    // Kindle Basic
 // Icewine (on Wario)         // Kindle Voyage
+// Muscat                     // Kindle PW3
 
 typedef struct
 {

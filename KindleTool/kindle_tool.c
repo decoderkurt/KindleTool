@@ -212,6 +212,8 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (0x99)";
         case KindleBasicUnknown_0xDD:
             return "Kindle Basic (2014) (Unknown Variant 0xDD)";
+        case KindlePaperWhite3:
+            return "Kindle PaperWhite 3 (2015) (Any Variant)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -478,6 +480,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device kv             Kindle Voyage WiFi\n"
         "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
         "      -d, --device kvgb           Kindle Voyage WiFi+3G Europe\n"
+        "      -d, --device pw3            Kindle PaperWhite 3 (2015) (Any Variant)\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
         "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
         "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -488,7 +491,8 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl\n"
         "      -d, --device basic          Alias for kt2\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
-        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic & voyage\n"
+        "      -d, --device paperwhite3    Alias for pw3\n"
+        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage & paperwhite3\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
         "      \n"
@@ -694,7 +698,7 @@ int kindle_info_main(int argc, char *argv[])
     // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
     // the recovery MMC export option expects a 9 chars password, so, provide both...
 
-    // Handle the >= PW2 passwords while we're at it... Thanks to npoland for this one ;).
+    // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
