@@ -57,12 +57,13 @@ model_tuples = [
 	('KindleUnknown', 0x00)
 ]
 # FIXME: PW3 is inaccurate, the device id potentially moved 2 chars to the right? First char (?) often (always?) seems to be 9? Might we sometime find our good old B there, too?
-#('KindlePaperWhite3Wifi_0G1', ?0G1, 'A21RY355YUXQAF')
-#('KindlePaperWhite3Unknown_0G2', ?0G2, 'A6S0KGW65V1TV')
-#('KindlePaperWhite3Unknown_0G4', ?0G4, 'A3P87LH4DLAKE2')
-#('KindlePaperWhite3Unknown_0G5', ?0G5, 'A3OLIINW419WLP')
-#('KindlePaperWhite3Unknown_0G6', ?0G6, 'AOPKCG97868D2')
-#('KindlePaperWhite3Unknown_0G7', ?0G7, 'A3MTNJ7FDYZOPO')
+# TODO: Handle those base32hex? device code values...
+#('KindlePaperWhite3Wifi_0G1', '?0G1', 'A21RY355YUXQAF')
+#('KindlePaperWhite3Unknown_0G2', '?0G2', 'A6S0KGW65V1TV')
+#('KindlePaperWhite3Unknown_0G4', '?0G4', 'A3P87LH4DLAKE2')
+#('KindlePaperWhite3Unknown_0G5', '?0G5', 'A3OLIINW419WLP')
+#('KindlePaperWhite3Unknown_0G6', '?0G6', 'AOPKCG97868D2')
+#('KindlePaperWhite3Unknown_0G7', '?0G7', 'A3MTNJ7FDYZOPO')
 
 
 print 'Kindle models sorted by device code\n'
