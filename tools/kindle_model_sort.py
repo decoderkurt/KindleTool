@@ -91,7 +91,7 @@ for t in sorted(model_tuples, key=itemgetter(1)):
 	else:
 		print "{:<40} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
-print '\nKindle models >= KindleVoyageUnknown_0x2A\n'
+print '\nKindle models >= KindleVoyageUnknown_0x2A (i.e., Platform >= Wario)\n'
 cutoff_id = 0
 for i, v in enumerate(model_tuples):
 	if v[0] == 'KindleVoyageUnknown_0x2A':
