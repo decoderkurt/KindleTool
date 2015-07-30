@@ -2,6 +2,23 @@
 
 from operator import itemgetter
 
+# NOTE: Pilfered from https://code.activestate.com/recipes/65212/
+def baseN(num, base, numerals="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+	if num == 0:
+		return "0"
+
+	if num < 0:
+		return '-' + baseN((-1) * num, base, numerals)
+
+	if not 2 <= base <= len(numerals):
+		raise ValueError('Base must be between 2 and %d' % len(numerals))
+
+	left_digits = num // base
+	if left_digits == 0:
+		return numerals[num % base]
+	else:
+		return baseN(left_digits, base, numerals) + numerals[num % base]
+
 model_tuples = [
 	('Kindle1', 0x01, 'ATVPDKIKX0DER'),
 	('Kindle2US', 0x02, 'A3UN6WX5RRO2AG'),
@@ -68,8 +85,11 @@ model_tuples = [
 
 print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
-	# FIXME: Handle the base32hex? device ids in a better way?
-	print "{:<40} {:02X} {:10} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
+	# Handle the base32hex? device IDs in a dedicated manner...
+	if t[1] > 0xFF:
+		print "{:<40} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else '')
+	else:
+		print "{:<40} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
 print '\nKindle models >= KindleVoyageUnknown_0x2A\n'
 cutoff_id = 0
@@ -79,4 +99,7 @@ for i, v in enumerate(model_tuples):
 
 for t in model_tuples:
 	if t[1] >= cutoff_id:
-		print "{:<40} {:02X}".format(t[0], t[1])
+		if t[1] > 0xFF:
+			print "{:<40} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
+		else:
+			print "{:<40} {:02X}".format(t[0], t[1])
