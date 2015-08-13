@@ -212,8 +212,18 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (0x99)";
         case KindleBasicUnknown_0xDD:
             return "Kindle Basic (2014) (Unknown Variant 0xDD)";
-        case KindlePaperWhite3:
-            return "Kindle PaperWhite 3 (2015) (Any Variant)";
+        case KindlePaperWhite3Wifi:
+            return "Kindle PaperWhite 3 (2015) WiFi";
+        case KindlePaperWhite3Unknown_0G2:
+            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G2)";
+        case KindlePaperWhite3Unknown_0G4:
+            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G4)";
+        case KindlePaperWhite3Unknown_0G5:
+            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G5)";
+        case KindlePaperWhite3Unknown_0G6:
+            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G6)";
+        case KindlePaperWhite3Unknown_0G7:
+            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G7)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -480,7 +490,7 @@ int kindle_print_help(const char *prog_name)
         "      -d, --device kv             Kindle Voyage WiFi\n"
         "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
         "      -d, --device kvgb           Kindle Voyage WiFi+3G Europe\n"
-        "      -d, --device pw3            Kindle PaperWhite 3 (2015) (Any Variant)\n"
+        "      -d, --device pw3            Kindle PaperWhite 3 (2015) WiFi\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
         "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
         "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -655,7 +665,7 @@ int kindle_info_main(int argc, char *argv[])
 {
     char *serial_no;
     char md5[MD5_HASH_LENGTH];
-    char device_code[3];
+    char device_code[4];
     Device device;
     FILE *temp;
     unsigned int i;
@@ -695,12 +705,26 @@ int kindle_info_main(int argc, char *argv[])
         fclose(temp);
         return -1;
     }
-    // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
-    // the recovery MMC export option expects a 9 chars password, so, provide both...
 
-    // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
+    // Handle the new device ID position, since the PW3
+    if(strcmp(convert_device_id(device), "Unknown") == 0)
+    {
+        snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
+        device = (Device)strtoul(device_code, NULL, 32);
+        if(strcmp(convert_device_id(device), "Unknown") == 0)
+        {
+            fprintf(stderr, "Unknown device!\n");
+            fclose(temp);
+            return -1;
+        }
+        else
+        {
+            fprintf(stderr, "Device uses the new device ID scheme\n");
+        }
+    }
+    // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
     if(device == KindleVoyageWifi || device == KindlePaperWhite2Wifi4GBInternational || device >= KindleVoyageUnknown_0x2A)
     {
@@ -712,6 +736,8 @@ int kindle_info_main(int argc, char *argv[])
         fprintf(stderr, "Platform is pre Wario\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
     }
+    // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
+    // the recovery MMC export option expects a 9 chars password, so, provide both...
     fclose(temp);
     return 0;
 }

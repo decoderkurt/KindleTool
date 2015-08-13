@@ -189,7 +189,13 @@ typedef enum
     ValidKindleUnknown_0x0D = 0x0D,
     ValidKindleUnknown_0x99 = 0x99,
     KindleBasicUnknown_0xDD = 0xDD,
-    KindlePaperWhite3 = 0x90,           // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (FIXME: Inaccurate at best!)
+    /* KindlePaperWhite3 = 0x90, */     // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (NOTE: This is a bogus ID, the proper one is now in chars 4 to 6 of the S/N)
+    KindlePaperWhite3Wifi = 0x201,              // 0G1
+    KindlePaperWhite3Unknown_0G2 = 0x202,       // 0G2
+    KindlePaperWhite3Unknown_0G4 = 0x204,       // 0G4
+    KindlePaperWhite3Unknown_0G5 = 0x205,       // 0G5
+    KindlePaperWhite3Unknown_0G6 = 0x206,       // 0G6
+    KindlePaperWhite3Unknown_0G7 = 0x207,       // 0G7
     KindleUnknown = 0x00
 } Device;
 

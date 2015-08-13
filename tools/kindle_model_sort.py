@@ -70,7 +70,6 @@ model_tuples = [
 	('KindleBasicUnknown_0xDD', 0xDD, 'A9N06WOIL49CA'),
 	('ValidKindleUnknown_0x16', 0x16),
 	('ValidKindleUnknown_0x21', 0x21),
-	('KindlePaperWhite3', 0x90, '\o/ BOGUS! \o/'),
 	('KindlePaperWhite3Wifi', int('0G1', 32), 'A21RY355YUXQAF'),
 	('KindlePaperWhite3Unknown_0G2', int('0G2', 32), 'A6S0KGW65V1TV'),
 	('KindlePaperWhite3Unknown_0G4', int('0G4', 32), 'A3P87LH4DLAKE2'),
@@ -79,13 +78,11 @@ model_tuples = [
 	('KindlePaperWhite3Unknown_0G7', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
 	('KindleUnknown', 0x00)
 ]
-# FIXME: PW3 is inaccurate, the device id potentially moved 2 chars to the right? First char (?) often (always?) seems to be 9? Might we sometime find our good old B there, too?
-#	 Still not sure if this should be interpreted in base32hex or base36...
 
 
 print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
-	# Handle the base32hex? device IDs in a dedicated manner...
+	# Handle the base32hex device IDs in a dedicated manner...
 	if t[1] > 0xFF:
 		print "{:<40} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else '')
 	else:

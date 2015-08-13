@@ -86,7 +86,7 @@
 		-d, --device kv             Kindle Voyage WiFi
 		-d, --device kvg            Kindle Voyage WiFi+3G
 		-d, --device kvgb           Kindle Voyage WiFi+3G Europe
-		-d, --device pw3            Kindle PaperWhite 3 (2015) (Any Variant)
+		-d, --device pw3            Kindle PaperWhite 3 (2015) WiFi
 		-d, --device kindle2        Alias for k2 & k2i
 		-d, --device kindledx       Alias for dx, dxi & dxg
 		-d, --device kindle3        Alias for k3w, k3g & k3gb
