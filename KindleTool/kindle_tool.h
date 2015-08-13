@@ -351,6 +351,7 @@ const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
 const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
+char *to_base(int64_t, unsigned int);
 struct rsa_private_key get_default_key(void);
 int kindle_print_help(const char *);
 int kindle_print_version(const char *);

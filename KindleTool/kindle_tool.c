@@ -354,6 +354,35 @@ int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE
     return 0;
 }
 
+// Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
+char *to_base(int64_t num, unsigned int base)
+{
+    char *tbl = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char buf[66] = {'\0'};
+    char *out;
+    uint64_t n;
+    unsigned int i, len = 0, neg = 0;
+    if(base > 36)
+    {
+        fprintf(stderr, "base %d too large\n", base);
+        return 0;
+    }
+
+    // safe against most negative integer
+    n = ((neg = num < 0)) ? (uint64_t) (~num) + 1 : (uint64_t) num;
+
+    do { buf[len++] = tbl[n % base]; } while(n /= base);
+
+    out = malloc(len + neg + 1);
+    memset(out, 0, len + neg + 1);
+    for(i = neg; len > 0; i++)
+        out[i] = buf[--len];
+    if(neg)
+        out[0] = '-';
+
+    return out;
+}
+
 struct rsa_private_key get_default_key(void)
 {
     // Make nettle happy... (Array created from the bin2h output of pkcs1-conv on our pem file)
