@@ -388,7 +388,10 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     }
     else
     {
-        fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_update.device));
+        if(kt_with_unknown_devcodes)
+            fprintf(stderr, "Device         %s (0x%02X)\n", convert_device_id(header->data.recovery_update.device), header->data.recovery_update.device);
+        else
+            fprintf(stderr, "Device         %s\n", convert_device_id(header->data.recovery_update.device));
     }
 
     if(output == NULL)
@@ -478,7 +481,10 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
         if(strcmp(convert_device_id(device), "Unknown") == 0)
             fprintf(stderr, "Device         Unknown (0x%02X)\n", device);
         else
-            fprintf(stderr, "Device         %s\n", convert_device_id(device));
+            if(kt_with_unknown_devcodes)
+                fprintf(stderr, "Device         %s (0x%02X)\n", convert_device_id(device), device);
+            else
+                fprintf(stderr, "Device         %s\n", convert_device_id(device));
         hindex += sizeof(uint16_t);
     }
     free(data);
