@@ -221,7 +221,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
                     dev_id = to_base(device, 32);
                     char *pad = "000";
                     // NOTE: 0 padding a string with actual zeroes is fun.... (cf. https://stackoverflow.com/questions/4133318)
-                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", (strlen(pad) < strlen(dev_id)) ? 0 : strlen(pad) - strlen(dev_id), pad, dev_id, device);
+                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id, device);
                     free(dev_id);
                 }
                 else
