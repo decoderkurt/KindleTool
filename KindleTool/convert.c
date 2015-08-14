@@ -964,8 +964,8 @@ int kindle_extract_main(int argc, char *argv[])
     FILE *bin_input;
     int tgz_fd;
     FILE *tgz_output;
-    char header_md5[MD5_HASH_LENGTH + 1] = {0};
-    char actual_md5[MD5_HASH_LENGTH + 1] = {0};
+    char header_md5[MD5_HASH_LENGTH + 1] = {'\0'};
+    char actual_md5[MD5_HASH_LENGTH + 1] = {'\0'};
 
     fake_sign = 0;
     bin_filename = NULL;

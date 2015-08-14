@@ -694,7 +694,7 @@ int kindle_info_main(int argc, char *argv[])
 {
     char *serial_no;
     char md5[MD5_HASH_LENGTH];
-    char device_code[4];
+    char device_code[4] = {'\0'};
     Device device;
     FILE *temp;
     unsigned int i;
