@@ -369,7 +369,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
             char *dev_id;
             dev_id = to_base(header->data.ota_update.device, 32);
             char *pad = "000";
-            fprintf(stderr, " (%.*s%s -> 0x%02X)\n", (strlen(pad) < strlen(dev_id)) ? 0 : strlen(pad) - strlen(dev_id), pad, dev_id, header->data.ota_update.device);
+            fprintf(stderr, " (%.*s%s -> 0x%02X)\n", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id, header->data.ota_update.device);
             free(dev_id);
         }
         else
@@ -432,7 +432,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
                     char *dev_id;
                     dev_id = to_base(header->data.recovery_update.device, 32);
                     char *pad = "000";
-                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", (strlen(pad) < strlen(dev_id)) ? 0 : strlen(pad) - strlen(dev_id), pad, dev_id, header->data.recovery_update.device);
+                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id, header->data.recovery_update.device);
                     free(dev_id);
                 }
                 else
@@ -542,7 +542,7 @@ int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fak
                     char *dev_id;
                     dev_id = to_base(device, 32);
                     char *pad = "000";
-                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", (strlen(pad) < strlen(dev_id)) ? 0 : strlen(pad) - strlen(dev_id), pad, dev_id, device);
+                    fprintf(stderr, " (%.*s%s -> 0x%02X)\n", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id, device);
                     free(dev_id);
                 }
                 else
