@@ -19,6 +19,7 @@
 //
 
 #include "kindle_tool.h"
+#include "kindle_table.h"
 
 // Ugly global.
 unsigned int kt_with_unknown_devcodes;
@@ -28,7 +29,7 @@ void md(unsigned char *bytes, size_t length)
     unsigned int i;
     for(i = 0; i < length; i++)
     {
-        bytes[i] = (unsigned char)((bytes[i] >> 4 | bytes[i] << 4) & 0xFF) ^ 0x7A;
+        bytes[i] = (unsigned char)ptog[bytes[i]];
     }
 }
 
@@ -37,8 +38,7 @@ void dm(unsigned char *bytes, size_t length)
     unsigned int i;
     for(i = 0; i < length; i++)
     {
-        bytes[i] = (bytes[i] ^ 0x7A);
-        bytes[i] = (unsigned char)(bytes[i] >> 4 | bytes[i] << 4) & 0xFF;
+        bytes[i] = (unsigned char)gtop[bytes[i]];
     }
 }
 
