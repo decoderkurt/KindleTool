@@ -1,7 +1,8 @@
+#!/usr/bin/env luajit
 --[[
-    Table generator for Amazon byte mangle, de-mangle algorithum.
+    Table generator for Amazon byte mangle, de-mangle algorithm.
     Output is to stdout, the result is the body of kindle_tool.h
-    
+
     Each bit-wise operator used was tested in the commented examples.
     In lua the only data-type is double and the bitop package uses
     the 53 bit integer field of double as a 32 bit array.
@@ -17,8 +18,8 @@ end
 
 function print2x (x) return "0x"..tohex(x, 2) end
 
-function col4 (w, x, y, z) 
-  return string.format('%s\t%s\t\t%s\t%s\n', 
+function col4 (w, x, y, z)
+  return string.format('%s\t%s\t\t%s\t%s\n',
          print2x(w), print2x(x), print2x(y), print2x(z)) end
 
 -- printx(bit.band(0x12345678, 0x0f))        --> 0x00000008
@@ -34,7 +35,7 @@ function col4 (w, x, y, z)
 --> 0x000000fd
 
 -- swap nibbles in a byte
-function swap_nibbles (x) 
+function swap_nibbles (x)
   return bor(rshift(band(x, 0xF0), 4), lshift(band(x, 0x0F), 4)) end
 
 -- obscure nibbles in a byte
@@ -58,7 +59,7 @@ end
 local hdl = io.output() -- stdout
 
 --[[
-print('plain', 'obfiscated', 'dm-tbl', 'dm-func')
+print('plain', 'obfuscated', 'dm-tbl', 'dm-func')
 for i = 0, 255, 1 do
   local md = md_tbl[i]
   hdl:write(col4(i, md, dm_tbl[md], dm_nibbles(md)))
@@ -66,9 +67,9 @@ end
 ]]
 
 -- Header, plain to garbled
-hd_ptog = '/*  index by plain, result garbled */\nuint8_t ptog[] = {\n'
+hd_ptog = '/*  index by plain, result garbled */\nstatic const uint8_t ptog[] = {\n'
 -- Header, garbled to plain
-hd_gtop = '\n/*  index by garbled, result plain */\nuint8_t gtop[] = {\n'
+hd_gtop = '\n/*  index by garbled, result plain */\nstatic const uint8_t gtop[] = {\n'
 
 -- lines ('C' doesn't like trailing commas)
 lns = '\t%4s, %4s, %4s, %4s, %4s, %4s, %4s, %4s,\n'
@@ -97,6 +98,6 @@ hdl:write(string.format(lnl,
     print2x(dm_tbl[248]), print2x(dm_tbl[249]), print2x(dm_tbl[250]), print2x(dm_tbl[251]),
     print2x(dm_tbl[252]), print2x(dm_tbl[253]), print2x(dm_tbl[254]), print2x(dm_tbl[255])
 ))
-    
+
 hdl:flush()
 hdl:close()
