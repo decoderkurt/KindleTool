@@ -315,7 +315,6 @@ const char *convert_platform_id(Platform);
 const char *convert_board_id(Board);
 BundleVersion get_bundle_version(char *);
 int md5_sum(FILE *, char *);
-struct rsa_private_key get_default_key(void);
 
 int kindle_convert_main(int, char **);
 
