@@ -22,6 +22,7 @@
 
 // This was pretty much just lifted straight off from nettle's tools/pkcs1-conv.c,
 // Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
+// Copyright (C) 2014 Niels Möller
 // with a very few tweaks to better suit our needs...
 enum object_type
 {
