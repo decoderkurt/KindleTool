@@ -249,7 +249,8 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
     free(data);
 
     // Now get the data
-    data = malloc(num_devices * sizeof(uint16_t));      // NOTE: This upsets clang's sa... While theoretically dangerous, I don't *think* we do anything wrong with it...
+    size_t devices_size = num_devices * sizeof(uint16_t);       // NOTE: This is stored in a temp var for the express purpose of shutting up clang's sa (uint16_t > uchar, which freaks clang. Would be dangerous if it were the other way around)...
+    data = malloc(devices_size);
     read_size = fread(data, sizeof(uint16_t), num_devices, input);
     for(hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t))
     {
