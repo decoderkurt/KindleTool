@@ -6,8 +6,6 @@
 #ifndef KINDLETABLE
 #define KINDLETABLE
 
-#include <stdint.h>
-
 /*  index by plain, result garbled */
 static const uint8_t ptog[] = {
     0x7a, 0x6a, 0x5a, 0x4a, 0x3a, 0x2a, 0x1a, 0x0a,
