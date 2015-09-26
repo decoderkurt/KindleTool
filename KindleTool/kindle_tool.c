@@ -496,6 +496,7 @@ static int kindle_obfuscate_main(int argc, char *argv[])
     FILE *output;
     input = stdin;
     output = stdout;
+
     // Skip command
     argv++;
     argc--;
@@ -534,6 +535,7 @@ static int kindle_deobfuscate_main(int argc, char *argv[])
     FILE *output;
     input = stdin;
     output = stdout;
+
     // Skip command
     argv++;
     argc--;
@@ -574,6 +576,7 @@ static int kindle_info_main(int argc, char *argv[])
     Device device;
     FILE *temp;
     unsigned int i;
+
     // Skip command
     argv++;
     argc--;

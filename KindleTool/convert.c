@@ -211,7 +211,7 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const uns
 static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
-    size_t hindex;
+    size_t hindex = 0;
     uint64_t source_revision;
     uint64_t target_revision;
     uint16_t num_devices;
@@ -230,7 +230,6 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
     // First read the set block size and determine how much to resize
     data = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(unsigned char));
     read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
-    hindex = 0;
 
     // NOTE: Use memcpy to avoid unaligned accesses on ARM...
     // (Because for some reason, even the A8 eats dirt (the alignment trap throws a SIGILL) on some vld1.64 :64 instructions,
@@ -509,7 +508,7 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
 static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
-    size_t hindex;
+    size_t hindex = 0;
     uint64_t target_revision;
     char *pkg_md5_sum;
     uint32_t magic_1;
@@ -527,7 +526,6 @@ static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned 
     // Its size is set, there's just some wonky padding involved. Read it all!
     data = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
     read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
-    hindex = 0;
 
     hindex += sizeof(uint32_t); // Padding
     //target_revision = *(uint64_t *)&data[hindex];
@@ -640,34 +638,24 @@ int kindle_convert_main(int argc, char *argv[])
         { NULL, 0, NULL, 0 }
     };
     FILE *input;
-    FILE *output;
-    FILE *sig_output;
-    FILE *unwrap_output;
+    FILE *output = NULL;
+    FILE *sig_output = NULL;
+    FILE *unwrap_output = NULL;
     const char *in_name;
     char *out_name = NULL;
     char *sig_name = NULL;
     char *unwrapped_name = NULL;
     size_t len;
     struct stat st;
-    int info_only;
-    int keep_ori;
-    int extract_sig;
-    unsigned int fake_sign;
-    unsigned int unwrap_only;
-    unsigned int ext_offset;
-    int fail;
+    int info_only = 0;
+    int keep_ori = 0;
+    int extract_sig = 0;
+    unsigned int fake_sign = 0;
+    unsigned int unwrap_only = 0;
+    unsigned int ext_offset = 0;
+    int fail = 1;
     char header_md5[MD5_HASH_LENGTH + 1];
 
-    sig_output = NULL;
-    unwrap_output = NULL;
-    output = NULL;
-    info_only = 0;
-    keep_ori = 0;
-    extract_sig = 0;
-    fake_sign = 0;
-    unwrap_only = 0;
-    ext_offset = 0;
-    fail = 1;
     while((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1)
     {
         switch(opt)
@@ -1008,20 +996,17 @@ int kindle_extract_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { NULL, 0, NULL, 0 }
     };
-    unsigned int fake_sign;
+    unsigned int fake_sign = 0;
 
-    char *bin_filename;
+    char *bin_filename = NULL;
     char tgz_filename[] = KT_TMPDIR "/kindletool_extract_tgz_XXXXXX";
-    char *output_dir;
+    char *output_dir = NULL;
     FILE *bin_input;
     int tgz_fd;
     FILE *tgz_output;
     char header_md5[MD5_HASH_LENGTH + 1] = {'\0'};
     char actual_md5[MD5_HASH_LENGTH + 1] = {'\0'};
 
-    fake_sign = 0;
-    bin_filename = NULL;
-    output_dir = NULL;
     while((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1)
     {
         switch(opt)

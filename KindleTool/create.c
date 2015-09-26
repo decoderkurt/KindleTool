@@ -951,7 +951,7 @@ static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz,
 {
     size_t header_size;
     unsigned char *header;
-    size_t hindex;
+    size_t hindex = 0;
     int i;
     FILE *demunged_tgz;
     size_t str_len;
@@ -961,7 +961,6 @@ static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz,
     // First part of the set sized data
     header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
     header = malloc(header_size);
-    hindex = 0;
     strncpy((char *)header, info->magic_number, MAGIC_NUMBER_LENGTH);
     hindex += MAGIC_NUMBER_LENGTH;
     memcpy(&header[hindex], &info->source_revision, sizeof(uint64_t)); // Source
@@ -1202,7 +1201,7 @@ static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, F
 {
     size_t header_size;
     unsigned char *header;
-    size_t hindex;
+    size_t hindex = 0;
     int i;
     FILE *demunged_tgz;
     unsigned char recovery_num_devices;
@@ -1212,7 +1211,6 @@ static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, F
     // Its total size is fixed, but some stuff inside are variable/padded...
     header_size = MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE;
     header = malloc(header_size);
-    hindex = 0;
     // Zero init everything first...
     memset(header, 0, header_size);
 
@@ -1324,8 +1322,8 @@ int kindle_create_main(int argc, char *argv[])
         { NULL, 0, NULL, 0 }
     };
     UpdateInformation info = {"\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0, 0, NULL };
-    FILE *input;
-    FILE *output;
+    FILE *input = NULL;
+    FILE *output = stdout;
     int i;
     unsigned int ui;
     char *output_filename = NULL;
@@ -1334,24 +1332,15 @@ int kindle_create_main(int argc, char *argv[])
     char *tarball_filename = NULL;
     char *valid_update_file_pattern = NULL;
     int tarball_fd = -1;
-    unsigned int keep_archive;
-    unsigned int skip_archive;
-    unsigned int fake_sign;
-    unsigned int userdata_only;
-    unsigned int legacy;
+    unsigned int keep_archive = 0;
+    unsigned int skip_archive = 0;
+    unsigned int fake_sign = 0;
+    unsigned int userdata_only = 0;
+    unsigned int legacy = 0;
     unsigned int real_blocksize;
     struct archive_entry *entry;
     struct archive *match;
     int r;
-
-    // Defaults
-    output = stdout;
-    input = NULL;
-    keep_archive = 0;
-    skip_archive = 0;
-    fake_sign = 0;
-    userdata_only = 0;
-    legacy = 0;
 
     // Skip command
     argv++;
