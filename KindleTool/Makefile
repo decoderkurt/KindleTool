@@ -1,9 +1,9 @@
 CC?=gcc
 STRIP?=strip
 DEBUG_CFLAGS=-Og -march=native -fno-omit-frame-pointer -pipe -g3
-DARWIN_DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
+CLANG_DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
 OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
-DARWIN_OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
+CLANG_OPT_CFLAGS=-O2 -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS=-O2 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
 MINGW_CFLAGS=-O2 -march=i686 -mtune=generic -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
@@ -76,10 +76,10 @@ ifeq "$(DEBUG)" "true"
 	OUT_DIR=Debug
 	# Clang doesn't support -Og...
 	ifeq "$(OSTYPE)" "Darwin"
-		CFLAGS:=$(DARWIN_DEBUG_CFLAGS)
+		CFLAGS:=$(CLANG_DEBUG_CFLAGS)
 	else
 		ifeq "$(CC)" "clang"
-			CFLAGS:=$(DARWIN_DEBUG_CFLAGS)
+			CFLAGS:=$(CLANG_DEBUG_CFLAGS)
 		else
 			CFLAGS:=$(DEBUG_CFLAGS)
 		endif
@@ -88,9 +88,13 @@ else
 	OUT_DIR=Release
 	# Don't default to stuff that'll make clang unhappy on OS X
 	ifeq "$(OSTYPE)" "Darwin"
-		CFLAGS?=$(DARWIN_OPT_CFLAGS)
+		CFLAGS?=$(CLANG_OPT_CFLAGS)
 	else
-		CFLAGS?=$(OPT_CFLAGS)
+		ifeq "$(CC)" "clang"
+			CFLAGS?=$(CLANG_OPT_CFLAGS)
+		else
+			CFLAGS?=$(OPT_CFLAGS)
+		endif
 	endif
 endif
 
