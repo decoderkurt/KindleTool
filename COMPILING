@@ -32,3 +32,7 @@ To compile for Windows:
 	BIS) Alternatively, you can also build a native version with a MinGW or MinGW-w64 toolchain.
 		On a native MinGW+MSYS toolchain, you'll probably have to tweak the Makefile, but it should handle a Linux cross toolchain properly with the mingw target ;).
 		Check the tools/mingw directory for more details.
+
+----
+
+If you need more complex examples, the various scripts found in the tools directory are what I personally use.
