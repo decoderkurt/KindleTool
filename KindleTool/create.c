@@ -19,14 +19,29 @@
 //
 
 #include "kindle_tool.h"
+#include "create.h"
 
-static int metadata_filter(struct archive *, void *, struct archive_entry *);
-static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
+static const char *convert_bundle_version(BundleVersion bundlev)
+{
+    switch(bundlev)
+    {
+        case UpdateSignature:
+            return "Signature";
+        case OTAUpdateV2:
+            return "OTA V2";
+        case OTAUpdate:
+            return "OTA V1";
+        case RecoveryUpdate:
+            return "Recovery";
+        case RecoveryUpdateV2:
+            return "Recovery V2";
+        case UnknownUpdate:
+        default:
+            return "Unknown";
+    }
+}
 
-int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file)
+static int sign_file(FILE *in_file, struct rsa_private_key *rsa_pkey, FILE *sigout_file)
 {
     unsigned char buffer[BUFFER_SIZE];
     size_t len;
@@ -435,7 +450,7 @@ cleanup:
 }
 
 // Archiving code inspired from libarchive tar/write.c ;).
-int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, struct rsa_private_key *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
+static int kindle_create_package_archive(const int outfd, char **filename, const unsigned int total_files, struct rsa_private_key *rsa_pkey_file, const unsigned int legacy, const unsigned int real_blocksize)
 {
     struct archive *a;
     struct kttar *kttar, kttar_storage;
@@ -739,7 +754,7 @@ cleanup:
     return 1;
 }
 
-int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     unsigned char buffer[BUFFER_SIZE];
     size_t count;
@@ -870,7 +885,7 @@ int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const 
     return -1;
 }
 
-int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     size_t header_size;
     unsigned char *header;
@@ -980,7 +995,7 @@ int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *output)
+static int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *output)
 {
     UpdateHeader header; // Header to write
 
@@ -1001,7 +1016,7 @@ int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FILE *outp
     return 0;
 }
 
-int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -1054,7 +1069,7 @@ int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *out
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -1121,7 +1136,7 @@ int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *outpu
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
 {
     size_t header_size;
     unsigned char *header;

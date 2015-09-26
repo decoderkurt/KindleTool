@@ -19,8 +19,60 @@
 //
 
 #include "kindle_tool.h"
+#include "convert.h"
 
-int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
+static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
+{
+    if(!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
+        return "(Fullbin [signed?])";           // /mnt/us/update-full.bin
+    else if(!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
+        return "(Fullbin [OTA?, fwo?])";        // /mnt/us/update-%lld-fwo.bin
+    else if(!strncmp(magic_number, "FB", MAGIC_NUMBER_LENGTH/2))
+        return "(Fullbin)";
+    else if(!strncmp(magic_number, "FC", MAGIC_NUMBER_LENGTH/2))
+        return "(OTA [ota])";                   // /mnt/us/Update_%lld_%lld.bin
+    else if(!strncmp(magic_number, "FD", MAGIC_NUMBER_LENGTH/2))
+        return "(Versionless [vls])";           // /mnt/us/Update_VLS_%lld.bin
+    else if(!strncmp(magic_number, "FL", MAGIC_NUMBER_LENGTH/2))
+        return "(Language [lang])";             // /mnt/us/Update_LANG_%s.bin
+    else if(!strncmp(magic_number, "SP", MAGIC_NUMBER_LENGTH/2))
+        return "(Signing Envelope)";
+    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
+        return "(Userdata tarball)";
+    else
+        return "Unknown";
+}
+
+// Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
+static char *to_base(int64_t num, unsigned int base)
+{
+    char *tbl = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char buf[66] = {'\0'};
+    char *out;
+    uint64_t n;
+    unsigned int i, len = 0, neg = 0;
+    if(base > 36)
+    {
+        fprintf(stderr, "base %d too large\n", base);
+        return 0;
+    }
+
+    // safe against most negative integer
+    n = ((neg = num < 0)) ? (uint64_t) (~num) + 1 : (uint64_t) num;
+
+    do { buf[len++] = tbl[n % base]; } while(n /= base);
+
+    out = malloc(len + neg + 1);
+    memset(out, 0, len + neg + 1);
+    for(i = neg; len > 0; i++)
+        out[i] = buf[--len];
+    if(neg)
+        out[0] = '-';
+
+    return out;
+}
+
+static int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
 {
     if(fread(header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH, input) < 1 || ferror(input) != 0)
     {
@@ -29,7 +81,7 @@ int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output, char *header_md5)
+static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output, char *header_md5)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -156,7 +208,7 @@ int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned i
     return -1; // If we get here, there has been an error
 }
 
-int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex;
@@ -289,7 +341,7 @@ int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int f
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
+static int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
 {
     CertificateNumber cert_num;
     char *cert_name;
@@ -348,7 +400,7 @@ int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *output)
     return 0;
 }
 
-int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     if(fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
@@ -392,7 +444,7 @@ int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, c
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     if(fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
@@ -454,7 +506,7 @@ int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, con
     return demunger(input, output, 0, fake_sign);
 }
 
-int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex;
@@ -870,7 +922,7 @@ int kindle_convert_main(int argc, char *argv[])
 }
 
 // Heavily inspired from libarchive's tar/read.c ;)
-int libarchive_extract(const char *filename, const char *prefix)
+static int libarchive_extract(const char *filename, const char *prefix)
 {
     struct archive *a;
     struct archive_entry *entry;

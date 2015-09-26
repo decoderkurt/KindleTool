@@ -303,40 +303,6 @@ typedef struct
     } data;
 } UpdateHeader;
 
-typedef struct
-{
-    char magic_number[MAGIC_NUMBER_LENGTH];
-    BundleVersion version;
-    struct rsa_private_key sign_pkey;
-    uint64_t source_revision;
-    uint64_t target_revision;
-    uint32_t magic_1;
-    uint32_t magic_2;
-    uint32_t minor;
-    uint16_t num_devices;
-    Device *devices;
-    Platform platform;
-    Board board;
-    uint32_t header_rev;
-    CertificateNumber certificate_number;
-    unsigned char optional;
-    unsigned char critical;
-    uint16_t num_meta;
-    char **metastrings;
-} UpdateInformation;
-
-// This is modeled after libarchive's bsdtar...
-struct kttar
-{
-    unsigned char *buff;
-    size_t buff_size;
-    char **to_sign_and_bundle_list;
-    char **tweaked_to_sign_and_bundle_list;
-    unsigned int sign_and_bundle_index;
-    unsigned int has_script;
-    size_t tweak_pointer_index;
-};
-
 // Ugly global. Used to cache the state of the KT_WITH_UNKNOWN_DEVCODES env var...
 extern unsigned int kt_with_unknown_devcodes;
 
@@ -347,37 +313,14 @@ int demunger(FILE *, FILE *, size_t, const unsigned int);
 const char *convert_device_id(Device);
 const char *convert_platform_id(Platform);
 const char *convert_board_id(Board);
-const char *convert_bundle_version(BundleVersion);
 BundleVersion get_bundle_version(char *);
-const char *convert_magic_number(char *);
 int md5_sum(FILE *, char *);
-char *to_base(int64_t, unsigned int);
 struct rsa_private_key get_default_key(void);
-int kindle_print_help(const char *);
-int kindle_print_version(const char *);
-int kindle_deobfuscate_main(int, char **);
-int kindle_obfuscate_main(int, char **);
-int kindle_info_main(int, char **);
 
-int kindle_read_bundle_header(UpdateHeader *, FILE *);
-int kindle_convert(FILE *, FILE *, FILE *, const unsigned int, const unsigned int, FILE *, char *);
-int kindle_convert_ota_update_v2(FILE *, FILE *, const unsigned int, char *);
-int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
-int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const unsigned int, char *);
-int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const unsigned int, char *);
-int kindle_convert_recovery_v2(FILE *, FILE *, const unsigned int, char *);
 int kindle_convert_main(int, char **);
-int libarchive_extract(const char *, const char *);
+
 int kindle_extract_main(int, char **);
 
-int sign_file(FILE *, struct rsa_private_key *, FILE *);
-int kindle_create_package_archive(const int, char **, const unsigned int, struct rsa_private_key *, const unsigned int, const unsigned int);
-int kindle_create(UpdateInformation *, FILE *, FILE *, const unsigned int);
-int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
-int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
-int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *, const unsigned int);
-int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const unsigned int);
-int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
 int kindle_create_main(int, char **);
 
 int nettle_rsa_privkey_from_pem(char *, struct rsa_private_key *);

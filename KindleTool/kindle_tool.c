@@ -21,6 +21,12 @@
 #include "kindle_tool.h"
 #include "kindle_table.h"
 
+static int kindle_print_help(const char *);
+static int kindle_print_version(const char *);
+static int kindle_deobfuscate_main(int, char **);
+static int kindle_obfuscate_main(int, char **);
+static int kindle_info_main(int, char **);
+
 // Ugly global.
 unsigned int kt_with_unknown_devcodes;
 
@@ -270,26 +276,6 @@ const char *convert_board_id(Board board)
     }
 }
 
-const char *convert_bundle_version(BundleVersion bundlev)
-{
-    switch(bundlev)
-    {
-        case UpdateSignature:
-            return "Signature";
-        case OTAUpdateV2:
-            return "OTA V2";
-        case OTAUpdate:
-            return "OTA V1";
-        case RecoveryUpdate:
-            return "Recovery";
-        case RecoveryUpdateV2:
-            return "Recovery V2";
-        case UnknownUpdate:
-        default:
-            return "Unknown";
-    }
-}
-
 BundleVersion get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
 {
     if(!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FB01", MAGIC_NUMBER_LENGTH))
@@ -306,28 +292,6 @@ BundleVersion get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
         return UserDataPackage;
     else
         return UnknownUpdate;
-}
-
-const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
-{
-    if(!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
-        return "(Fullbin [signed?])";           // /mnt/us/update-full.bin
-    else if(!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
-        return "(Fullbin [OTA?, fwo?])";        // /mnt/us/update-%lld-fwo.bin
-    else if(!strncmp(magic_number, "FB", MAGIC_NUMBER_LENGTH/2))
-        return "(Fullbin)";
-    else if(!strncmp(magic_number, "FC", MAGIC_NUMBER_LENGTH/2))
-        return "(OTA [ota])";                   // /mnt/us/Update_%lld_%lld.bin
-    else if(!strncmp(magic_number, "FD", MAGIC_NUMBER_LENGTH/2))
-        return "(Versionless [vls])";           // /mnt/us/Update_VLS_%lld.bin
-    else if(!strncmp(magic_number, "FL", MAGIC_NUMBER_LENGTH/2))
-        return "(Language [lang])";             // /mnt/us/Update_LANG_%s.bin
-    else if(!strncmp(magic_number, "SP", MAGIC_NUMBER_LENGTH/2))
-        return "(Signing Envelope)";
-    else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
-        return "(Userdata tarball)";
-    else
-        return "Unknown";
 }
 
 int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)])
@@ -352,35 +316,6 @@ int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE
     base16_encode_update((uint8_t *)output_string, MD5_DIGEST_SIZE, digest);
 
     return 0;
-}
-
-// Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
-char *to_base(int64_t num, unsigned int base)
-{
-    char *tbl = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    char buf[66] = {'\0'};
-    char *out;
-    uint64_t n;
-    unsigned int i, len = 0, neg = 0;
-    if(base > 36)
-    {
-        fprintf(stderr, "base %d too large\n", base);
-        return 0;
-    }
-
-    // safe against most negative integer
-    n = ((neg = num < 0)) ? (uint64_t) (~num) + 1 : (uint64_t) num;
-
-    do { buf[len++] = tbl[n % base]; } while(n /= base);
-
-    out = malloc(len + neg + 1);
-    memset(out, 0, len + neg + 1);
-    for(i = neg; len > 0; i++)
-        out[i] = buf[--len];
-    if(neg)
-        out[0] = '-';
-
-    return out;
 }
 
 struct rsa_private_key get_default_key(void)
@@ -434,7 +369,7 @@ struct rsa_private_key get_default_key(void)
     return rsa_pkey;
 }
 
-int kindle_print_help(const char *prog_name)
+static int kindle_print_help(const char *prog_name)
 {
     printf(
         "usage:\n"
@@ -601,7 +536,7 @@ int kindle_print_help(const char *prog_name)
     return 0;
 }
 
-int kindle_print_version(const char *prog_name)
+static int kindle_print_version(const char *prog_name)
 {
     printf("%s (KindleTool) %s built by %s with ", prog_name, KT_VERSION, KT_USERATHOST);
 #ifdef __clang__
@@ -614,7 +549,7 @@ int kindle_print_version(const char *prog_name)
     return 0;
 }
 
-int kindle_obfuscate_main(int argc, char *argv[])
+static int kindle_obfuscate_main(int argc, char *argv[])
 {
     FILE *input;
     FILE *output;
@@ -652,7 +587,7 @@ int kindle_obfuscate_main(int argc, char *argv[])
     return 0;
 }
 
-int kindle_deobfuscate_main(int argc, char *argv[])
+static int kindle_deobfuscate_main(int argc, char *argv[])
 {
     FILE *input;
     FILE *output;
@@ -690,7 +625,7 @@ int kindle_deobfuscate_main(int argc, char *argv[])
     return 0;
 }
 
-int kindle_info_main(int argc, char *argv[])
+static int kindle_info_main(int argc, char *argv[])
 {
     char *serial_no;
     char md5[MD5_HASH_LENGTH];
