@@ -1,5 +1,5 @@
 //
-//  kindle_tool.h
+//  create.h
 //  KindleTool
 //
 //  Copyright (C) 2011-2015  Yifan Lu
@@ -64,7 +64,6 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-
 static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
 
 static int kindle_create_package_archive(const int, char **, const unsigned int, struct rsa_private_key *, const unsigned int, const unsigned int);

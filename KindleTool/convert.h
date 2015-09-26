@@ -1,5 +1,5 @@
 //
-//  kindle_tool.h
+//  convert.h
 //  KindleTool
 //
 //  Copyright (C) 2011-2015  Yifan Lu
@@ -22,7 +22,9 @@
 #define KINDLECONVERT
 
 static const char *convert_magic_number(char *);
+
 static char *to_base(int64_t, unsigned int);
+
 static int kindle_read_bundle_header(UpdateHeader *, FILE *);
 static int kindle_convert(FILE *, FILE *, FILE *, const unsigned int, const unsigned int, FILE *, char *);
 static int kindle_convert_ota_update_v2(FILE *, FILE *, const unsigned int, char *);
@@ -30,6 +32,7 @@ static int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
 static int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const unsigned int, char *);
 static int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const unsigned int, char *);
 static int kindle_convert_recovery_v2(FILE *, FILE *, const unsigned int, char *);
+
 static int libarchive_extract(const char *, const char *);
 
 #endif

@@ -19,16 +19,8 @@
 //
 
 #include "kindle_tool.h"
+#include "kindle_main.h"
 #include "kindle_table.h"
-
-static int kindle_print_help(const char *);
-static int kindle_print_version(const char *);
-static int kindle_deobfuscate_main(int, char **);
-static int kindle_obfuscate_main(int, char **);
-static int kindle_info_main(int, char **);
-
-// Ugly global.
-unsigned int kt_with_unknown_devcodes;
 
 void md(unsigned char *bytes, size_t length)
 {
