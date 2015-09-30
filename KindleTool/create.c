@@ -1480,22 +1480,22 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "paperwhite3") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 1 + (kt_with_unknown_devcodes * 5);
+                    unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 4);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindlePaperWhite3Wifi;
+                    info.devices[info.num_devices++] = KindlePaperWhite3Wifi3GJapan;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G2;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G4;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G5;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G6;
-                        info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G7;
                     }
                 }
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 25 + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 3) + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 3) + (kt_with_unknown_devcodes * 5);
+                    unsigned int num_aliased_devices = 26 + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 3) + kt_with_unknown_devcodes + (kt_with_unknown_devcodes * 3) + (kt_with_unknown_devcodes * 4);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = Kindle5TouchWifi;
                     info.devices[info.num_devices++] = Kindle5TouchWifi3G;
@@ -1538,13 +1538,13 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
                     }
                     info.devices[info.num_devices++] = KindlePaperWhite3Wifi;
+                    info.devices[info.num_devices++] = KindlePaperWhite3Wifi3GJapan;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G2;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G4;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G5;
                         info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G6;
-                        info.devices[info.num_devices++] = KindlePaperWhite3Unknown_0G7;
                     }
                 }
                 else if(kt_with_unknown_devcodes && (strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0))
@@ -1760,6 +1760,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcmp(optarg, "pw3") == 0 || strcmp(optarg, "kpw3") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite3Wifi;
+                        strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+                    }
+                    else if(strcmp(optarg, "pw3gj") == 0 || strcmp(optarg, "kpw3gj") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindlePaperWhite3Wifi3GJapan;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
                     else if(strcmp(optarg, "none") == 0)

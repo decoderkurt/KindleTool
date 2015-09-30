@@ -75,7 +75,7 @@ model_tuples = [
 	('KindlePaperWhite3Unknown_0G4', int('0G4', 32), 'A3P87LH4DLAKE2'),
 	('KindlePaperWhite3Unknown_0G5', int('0G5', 32), 'A3OLIINW419WLP'),
 	('KindlePaperWhite3Unknown_0G6', int('0G6', 32), 'AOPKCG97868D2'),
-	('KindlePaperWhite3Unknown_0G7', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
+	('KindlePaperWhite3Wifi3GJapan', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
 	('KindleUnknown', 0x00)
 ]
 
