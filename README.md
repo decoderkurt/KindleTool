@@ -56,32 +56,32 @@
 		-d, --device dx             Kindle DX US
 		-d, --device dxi            Kindle DX International
 		-d, --device dxg            Kindle DX Graphite
-		-d, --device k3w            Kindle 3 Wifi
-		-d, --device k3g            Kindle 3 Wifi+3G
-		-d, --device k3gb           Kindle 3 Wifi+3G Europe
+		-d, --device k3w            Kindle 3 WiFi
+		-d, --device k3g            Kindle 3 WiFi+3G
+		-d, --device k3gb           Kindle 3 WiFi+3G Europe
 		-d, --device k4             Kindle 4 (No Touch) Silver (2011)
 		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
-		-d, --device k5w            Kindle 5 (Kindle Touch) Wifi
-		-d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G
-		-d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe
+		-d, --device k5w            Kindle 5 (Kindle Touch) WiFi
+		-d, --device k5g            Kindle 5 (Kindle Touch) WiFi+3G
+		-d, --device k5gb           Kindle 5 (Kindle Touch) WiFi+3G Europe
 		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown Variant (4th device code found in Touch official updates).
-		-d, --device pw             Kindle PaperWhite Wifi
-		-d, --device pwg            Kindle PaperWhite Wifi+3G
-		-d, --device pwgc           Kindle PaperWhite Wifi+3G Canada
-		-d, --device pwgb           Kindle PaperWhite Wifi+3G Europe
-		-d, --device pwgj           Kindle PaperWhite Wifi+3G Japan
-		-d, --device pwgbr          Kindle PaperWhite Wifi+3G Brazil
-		-d, --device pw2            Kindle PaperWhite 2 (2013) Wifi
-		-d, --device pw2j           Kindle PaperWhite 2 (2013) Wifi Japan
-		-d, --device pw2g           Kindle PaperWhite 2 (2013) Wifi+3G
-		-d, --device pw2gc          Kindle PaperWhite 2 (2013) Wifi+3G Canada
-		-d, --device pw2gb          Kindle PaperWhite 2 (2013) Wifi+3G Europe
-		-d, --device pw2gr          Kindle PaperWhite 2 (2013) Wifi+3G Russia
-		-d, --device pw2gj          Kindle PaperWhite 2 (2013) Wifi+3G Japan
-		-d, --device pw2il          Kindle PaperWhite 2 (2013) Wifi (4GB) International
-		-d, --device pw2gbl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe
-		-d, --device pw2gl          Kindle PaperWhite 2 (2013) Wifi+3G (4GB)
-		-d, --device pw2gcl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Canada
+		-d, --device pw             Kindle PaperWhite WiFi
+		-d, --device pwg            Kindle PaperWhite WiFi+3G
+		-d, --device pwgc           Kindle PaperWhite WiFi+3G Canada
+		-d, --device pwgb           Kindle PaperWhite WiFi+3G Europe
+		-d, --device pwgj           Kindle PaperWhite WiFi+3G Japan
+		-d, --device pwgbr          Kindle PaperWhite WiFi+3G Brazil
+		-d, --device pw2            Kindle PaperWhite 2 (2013) WiFi
+		-d, --device pw2j           Kindle PaperWhite 2 (2013) WiFi Japan
+		-d, --device pw2g           Kindle PaperWhite 2 (2013) WiFi+3G
+		-d, --device pw2gc          Kindle PaperWhite 2 (2013) WiFi+3G Canada
+		-d, --device pw2gb          Kindle PaperWhite 2 (2013) WiFi+3G Europe
+		-d, --device pw2gr          Kindle PaperWhite 2 (2013) WiFi+3G Russia
+		-d, --device pw2gj          Kindle PaperWhite 2 (2013) WiFi+3G Japan
+		-d, --device pw2il          Kindle PaperWhite 2 (2013) WiFi (4GB) International
+		-d, --device pw2gbl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe
+		-d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)
+		-d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada
 		-d, --device kt2            Kindle Basic (2014)
 		-d, --device kv             Kindle Voyage WiFi
 		-d, --device kvg            Kindle Voyage WiFi+3G

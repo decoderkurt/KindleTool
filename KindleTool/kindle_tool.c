@@ -122,73 +122,73 @@ const char *convert_device_id(Device dev)
             return "Kindle DX International";
         case KindleDXGraphite:
             return "Kindle DX Graphite";
-        case Kindle3Wifi:
-            return "Kindle 3 Wifi";
-        case Kindle3Wifi3G:
-            return "Kindle 3 Wifi+3G";
-        case Kindle3Wifi3GEurope:
-            return "Kindle 3 Wifi+3G Europe";
+        case Kindle3WiFi:
+            return "Kindle 3 WiFi";
+        case Kindle3WiFi3G:
+            return "Kindle 3 WiFi+3G";
+        case Kindle3WiFi3GEurope:
+            return "Kindle 3 WiFi+3G Europe";
         case Kindle4NonTouch:
             return "Kindle 4 Non-Touch Silver (2011)";
-        case Kindle5TouchWifi:
-            return "Kindle 5 Touch Wifi";
-        case Kindle5TouchWifi3G:
-            return "Kindle 5 Touch Wifi+3G";
-        case Kindle5TouchWifi3GEurope:
-            return "Kindle 5 Touch Wifi+3G Europe";
+        case Kindle5TouchWiFi:
+            return "Kindle 5 Touch WiFi";
+        case Kindle5TouchWiFi3G:
+            return "Kindle 5 Touch WiFi+3G";
+        case Kindle5TouchWiFi3GEurope:
+            return "Kindle 5 Touch WiFi+3G Europe";
         case Kindle5TouchUnknown:
             return "Kindle 5 Touch (Unknown Variant)";
         case Kindle4NonTouchBlack:
             return "Kindle 4 Non-Touch Black (2012)";
-        case KindlePaperWhiteWifi:
-            return "Kindle PaperWhite Wifi";
-        case KindlePaperWhiteWifi3G:
-            return "Kindle PaperWhite Wifi+3G";
-        case KindlePaperWhiteWifi3GCanada:
-            return "Kindle PaperWhite Wifi+3G Canada";
-        case KindlePaperWhiteWifi3GEurope:
-            return "Kindle PaperWhite Wifi+3G Europe";
-        case KindlePaperWhiteWifi3GJapan:
-            return "Kindle PaperWhite Wifi+3G Japan";
-        case KindlePaperWhiteWifi3GBrazil:
-            return "Kindle PaperWhite Wifi+3G Brazil";
-        case KindlePaperWhite2Wifi:
-            return "Kindle PaperWhite 2 (2013) Wifi";
-        case KindlePaperWhite2WifiJapan:
-            return "Kindle PaperWhite 2 (2013) Wifi Japan";
-        case KindlePaperWhite2Wifi3G:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G";
-        case KindlePaperWhite2Wifi3GCanada:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G Canada";
-        case KindlePaperWhite2Wifi3GEurope:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G Europe";
-        case KindlePaperWhite2Wifi3GRussia:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G Russia";
-        case KindlePaperWhite2Wifi3GJapan:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G Japan";
-        case KindlePaperWhite2Wifi4GBInternational:
-            return "Kindle PaperWhite 2 (2013) Wifi (4GB) International";
-        case KindlePaperWhite2Wifi3G4GBEurope:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe";
+        case KindlePaperWhiteWiFi:
+            return "Kindle PaperWhite WiFi";
+        case KindlePaperWhiteWiFi3G:
+            return "Kindle PaperWhite WiFi+3G";
+        case KindlePaperWhiteWiFi3GCanada:
+            return "Kindle PaperWhite WiFi+3G Canada";
+        case KindlePaperWhiteWiFi3GEurope:
+            return "Kindle PaperWhite WiFi+3G Europe";
+        case KindlePaperWhiteWiFi3GJapan:
+            return "Kindle PaperWhite WiFi+3G Japan";
+        case KindlePaperWhiteWiFi3GBrazil:
+            return "Kindle PaperWhite WiFi+3G Brazil";
+        case KindlePaperWhite2WiFi:
+            return "Kindle PaperWhite 2 (2013) WiFi";
+        case KindlePaperWhite2WiFiJapan:
+            return "Kindle PaperWhite 2 (2013) WiFi Japan";
+        case KindlePaperWhite2WiFi3G:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G";
+        case KindlePaperWhite2WiFi3GCanada:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G Canada";
+        case KindlePaperWhite2WiFi3GEurope:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G Europe";
+        case KindlePaperWhite2WiFi3GRussia:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G Russia";
+        case KindlePaperWhite2WiFi3GJapan:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G Japan";
+        case KindlePaperWhite2WiFi4GBInternational:
+            return "Kindle PaperWhite 2 (2013) WiFi (4GB) International";
+        case KindlePaperWhite2WiFi3G4GBEurope:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe";
         case KindlePaperWhite2Unknown_0xF4:
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0xF4)";
         case KindlePaperWhite2Unknown_0xF9:
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0xF9)";
-        case KindlePaperWhite2Wifi3G4GB:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G (4GB)";
+        case KindlePaperWhite2WiFi3G4GB:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB)";
         case KindlePaperWhite2Unknown_0x61:
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x61)";
-        case KindlePaperWhite2Wifi3G4GBCanada:
-            return "Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Canada";
+        case KindlePaperWhite2WiFi3G4GBCanada:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada";
         case KindleBasic:
             return "Kindle Basic (2014)";
-        case KindleVoyageWifi:
+        case KindleVoyageWiFi:
             return "Kindle Voyage WiFi";
         case ValidKindleUnknown_0x16:
             return "Unknown Kindle (0x16)";
         case ValidKindleUnknown_0x21:
             return "Unknown Kindle (0x21)";
-        case KindleVoyageWifi3G:
+        case KindleVoyageWiFi3G:
             return "Kindle Voyage WiFi+3G";
         case KindleVoyageUnknown_0x2A:
             return "Kindle Voyage (Unknown Variant 0x2A)";
@@ -196,7 +196,7 @@ const char *convert_device_id(Device dev)
             return "Kindle Voyage (Unknown Variant 0x4F)";
         case KindleVoyageUnknown_0x52:
             return "Kindle Voyage (Unknown Variant 0x52)";
-        case KindleVoyageWifi3GEurope:
+        case KindleVoyageWiFi3GEurope:
             return "Kindle Voyage WiFi+3G Europe";
         case ValidKindleUnknown_0x07:
             return "Unknown Kindle (0x07)";
@@ -210,7 +210,7 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (0x99)";
         case KindleBasicUnknown_0xDD:
             return "Kindle Basic (2014) (Unknown Variant 0xDD)";
-        case KindlePaperWhite3Wifi:
+        case KindlePaperWhite3WiFi:
             return "Kindle PaperWhite 3 (2015) WiFi";
         case KindlePaperWhite3Unknown_0G2:
             return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G2)";
@@ -220,7 +220,7 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G5)";
         case KindlePaperWhite3Unknown_0G6:
             return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G6)";
-        case KindlePaperWhite3Wifi3GJapan:
+        case KindlePaperWhite3WiFi3GJapan:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Japan";
         case KindleUnknown:
         default:
@@ -365,32 +365,32 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device dx             Kindle DX US\n"
         "      -d, --device dxi            Kindle DX International\n"
         "      -d, --device dxg            Kindle DX Graphite\n"
-        "      -d, --device k3w            Kindle 3 Wifi\n"
-        "      -d, --device k3g            Kindle 3 Wifi+3G\n"
-        "      -d, --device k3gb           Kindle 3 Wifi+3G Europe\n"
+        "      -d, --device k3w            Kindle 3 WiFi\n"
+        "      -d, --device k3g            Kindle 3 WiFi+3G\n"
+        "      -d, --device k3gb           Kindle 3 WiFi+3G Europe\n"
         "      -d, --device k4             Kindle 4 (No Touch) Silver (2011)\n"
         "      -d, --device k4b            Kindle 4 (No Touch) Black (2012)\n"
-        "      -d, --device k5w            Kindle 5 (Kindle Touch) Wifi\n"
-        "      -d, --device k5g            Kindle 5 (Kindle Touch) Wifi+3G\n"
-        "      -d, --device k5gb           Kindle 5 (Kindle Touch) Wifi+3G Europe\n"
+        "      -d, --device k5w            Kindle 5 (Kindle Touch) WiFi\n"
+        "      -d, --device k5g            Kindle 5 (Kindle Touch) WiFi+3G\n"
+        "      -d, --device k5gb           Kindle 5 (Kindle Touch) WiFi+3G Europe\n"
         "      -d, --device k5u            Kindle 5 (Kindle Touch) Unknown Variant (4th device code found in Touch official updates).\n"
-        "      -d, --device pw             Kindle PaperWhite Wifi\n"
-        "      -d, --device pwg            Kindle PaperWhite Wifi+3G\n"
-        "      -d, --device pwgc           Kindle PaperWhite Wifi+3G Canada\n"
-        "      -d, --device pwgb           Kindle PaperWhite Wifi+3G Europe\n"
-        "      -d, --device pwgj           Kindle PaperWhite Wifi+3G Japan\n"
-        "      -d, --device pwgbr          Kindle PaperWhite Wifi+3G Brazil\n"
-        "      -d, --device pw2            Kindle PaperWhite 2 (2013) Wifi\n"
-        "      -d, --device pw2j           Kindle PaperWhite 2 (2013) Wifi Japan\n"
-        "      -d, --device pw2g           Kindle PaperWhite 2 (2013) Wifi+3G\n"
-        "      -d, --device pw2gc          Kindle PaperWhite 2 (2013) Wifi+3G Canada\n"
-        "      -d, --device pw2gb          Kindle PaperWhite 2 (2013) Wifi+3G Europe\n"
-        "      -d, --device pw2gr          Kindle PaperWhite 2 (2013) Wifi+3G Russia\n"
-        "      -d, --device pw2gj          Kindle PaperWhite 2 (2013) Wifi+3G Japan\n"
-        "      -d, --device pw2il          Kindle PaperWhite 2 (2013) Wifi (4GB) International\n"
-        "      -d, --device pw2gbl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Europe\n"
-        "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) Wifi+3G (4GB)\n"
-        "      -d, --device pw2gcl         Kindle PaperWhite 2 (2013) Wifi+3G (4GB) Canada\n"
+        "      -d, --device pw             Kindle PaperWhite WiFi\n"
+        "      -d, --device pwg            Kindle PaperWhite WiFi+3G\n"
+        "      -d, --device pwgc           Kindle PaperWhite WiFi+3G Canada\n"
+        "      -d, --device pwgb           Kindle PaperWhite WiFi+3G Europe\n"
+        "      -d, --device pwgj           Kindle PaperWhite WiFi+3G Japan\n"
+        "      -d, --device pwgbr          Kindle PaperWhite WiFi+3G Brazil\n"
+        "      -d, --device pw2            Kindle PaperWhite 2 (2013) WiFi\n"
+        "      -d, --device pw2j           Kindle PaperWhite 2 (2013) WiFi Japan\n"
+        "      -d, --device pw2g           Kindle PaperWhite 2 (2013) WiFi+3G\n"
+        "      -d, --device pw2gc          Kindle PaperWhite 2 (2013) WiFi+3G Canada\n"
+        "      -d, --device pw2gb          Kindle PaperWhite 2 (2013) WiFi+3G Europe\n"
+        "      -d, --device pw2gr          Kindle PaperWhite 2 (2013) WiFi+3G Russia\n"
+        "      -d, --device pw2gj          Kindle PaperWhite 2 (2013) WiFi+3G Japan\n"
+        "      -d, --device pw2il          Kindle PaperWhite 2 (2013) WiFi (4GB) International\n"
+        "      -d, --device pw2gbl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe\n"
+        "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)\n"
+        "      -d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada\n"
         "      -d, --device kt2            Kindle Basic (2014)\n"
         "      -d, --device kv             Kindle Voyage WiFi\n"
         "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
@@ -635,7 +635,7 @@ static int kindle_info_main(int argc, char *argv[])
     }
     // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device == KindleVoyageWifi || device == KindlePaperWhite2Wifi4GBInternational || device >= KindleVoyageUnknown_0x2A)
+    if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageUnknown_0x2A)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
