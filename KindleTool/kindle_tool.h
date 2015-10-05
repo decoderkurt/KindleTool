@@ -194,7 +194,7 @@ typedef enum
     KindlePaperWhite3Unknown_0G2 = 0x202,       // 0G2
     KindlePaperWhite3Unknown_0G4 = 0x204,       // 0G4
     KindlePaperWhite3Unknown_0G5 = 0x205,       // 0G5
-    KindlePaperWhite3Unknown_0G6 = 0x206,       // 0G6
+    KindlePaperWhite3WiFi3GCanada = 0x206,      // 0G6
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
     KindleUnknown = 0x00
 } Device;
