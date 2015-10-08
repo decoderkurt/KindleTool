@@ -212,8 +212,8 @@ const char *convert_device_id(Device dev)
             return "Kindle Basic (2014) (Unknown Variant 0xDD)";
         case KindlePaperWhite3WiFi:
             return "Kindle PaperWhite 3 (2015) WiFi";
-        case KindlePaperWhite3Unknown_0G2:
-            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G2)";
+        case KindlePaperWhite3WiFi3G:
+            return "Kindle PaperWhite 3 (2015) WiFi+3G";
         case KindlePaperWhite3Unknown_0G4:
             return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G4)";
         case KindlePaperWhite3Unknown_0G5:
@@ -396,6 +396,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
         "      -d, --device kvgb           Kindle Voyage WiFi+3G Europe\n"
         "      -d, --device pw3            Kindle PaperWhite 3 (2015) WiFi\n"
+        "      -d, --device pw3g           Kindle PaperWhite 3 (2015) WiFi+3G\n"
         "      -d, --device pw3gj          Kindle PaperWhite 3 (2015) WiFi+3G Japan\n"
         "      -d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
@@ -408,7 +409,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl\n"
         "      -d, --device basic          Alias for kt2\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
-        "      -d, --device paperwhite3    Alias for pw3, pw3gj & pw3gc\n"
+        "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj & pw3gc\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage & paperwhite3\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
