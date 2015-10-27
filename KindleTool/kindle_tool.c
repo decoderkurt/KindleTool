@@ -216,8 +216,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 3 (2015) WiFi+3G";
         case KindlePaperWhite3Unknown_0G4:
             return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G4)";
-        case KindlePaperWhite3Unknown_0G5:
-            return "Kindle PaperWhite 3 (2015) (Unknown Variant 0G5)";
+        case KindlePaperWhite3WiFi3GEurope:
+            return "Kindle PaperWhite 3 (2015) WiFi+3G Europe";
         case KindlePaperWhite3WiFi3GCanada:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Canada";
         case KindlePaperWhite3WiFi3GJapan:
@@ -399,6 +399,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw3g           Kindle PaperWhite 3 (2015) WiFi+3G\n"
         "      -d, --device pw3gj          Kindle PaperWhite 3 (2015) WiFi+3G Japan\n"
         "      -d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada\n"
+        "      -d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
         "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
         "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -409,7 +410,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl\n"
         "      -d, --device basic          Alias for kt2\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
-        "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj & pw3gc\n"
+        "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage & paperwhite3\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
