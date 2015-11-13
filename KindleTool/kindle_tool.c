@@ -208,8 +208,8 @@ const char *convert_device_id(Device dev)
             return "Unknown Kindle (0x0D)";
         case ValidKindleUnknown_0x99:
             return "Unknown Kindle (0x99)";
-        case KindleBasicUnknown_0xDD:
-            return "Kindle Basic (2014) (Unknown Variant 0xDD)";
+        case KindleBasicKiwi:
+            return "Kindle Basic (2014) Australia";
         case KindlePaperWhite3WiFi:
             return "Kindle PaperWhite 3 (2015) WiFi";
         case KindlePaperWhite3WiFi3G:
@@ -392,6 +392,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)\n"
         "      -d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada\n"
         "      -d, --device kt2            Kindle Basic (2014)\n"
+        "      -d, --device kt2a           Kindle Basic (2014) Australia\n"
         "      -d, --device kv             Kindle Voyage WiFi\n"
         "      -d, --device kvg            Kindle Voyage WiFi+3G\n"
         "      -d, --device kvgb           Kindle Voyage WiFi+3G Europe\n"
@@ -408,7 +409,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl\n"
-        "      -d, --device basic          Alias for kt2\n"
+        "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage & paperwhite3\n"
