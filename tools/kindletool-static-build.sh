@@ -4,6 +4,10 @@ OSTYPE="$(uname -s)"
 ARCH="$(uname -m)"
 KERNREL="$(uname -r)"
 
+## Setup parallellization... Shamelessly stolen from crosstool-ng ;).
+AUTO_JOBS=$(($(getconf _NPROCESSORS_ONLN 2> /dev/null || echo 0) + 1))
+JOBSFLAGS="-j${AUTO_JOBS}"
+
 ## Linux!
 Build_Linux() {
 	echo "* Preparing a static KindleTool build on Linux . . ."
@@ -13,9 +17,10 @@ Build_Linux() {
 		export GMPABI="64"
 		# Mangle i686 builds on my desktop...
 		if [[ "${KERNREL}" == *-niluje* ]] && [[ "${KERNREL}" != *-hardened* ]] ; then
-			export CFLAGS="-march=i686 -m32 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
-			export CXXFLAGS="-march=i686 -m32 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+			export CFLAGS="-march=i686 -mtune=generic -m32 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+			export CXXFLAGS="-march=i686 -mtune=generic -m32 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 			export GMPABI="32"
+			ARCH="i686"
 		fi
 	else
 		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
@@ -59,7 +64,7 @@ Build_Linux() {
 		autoreconf -fi
 		libtoolize
 		./configure ABI=${GMPABI} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
-		make -j2
+		make ${JOBSFLAGS}
 		make install
 		cd ..
 	fi
@@ -78,7 +83,7 @@ Build_Linux() {
 			sed -e '/SUBDIRS/s/testsuite examples//' -i Makefile.in
 			autoreconf -fi
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
@@ -93,7 +98,7 @@ Build_Linux() {
 			sed -e '/SUBDIRS/s/testsuite examples//' -i Makefile.in
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
@@ -112,7 +117,7 @@ Build_Linux() {
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
 			cd ..
@@ -128,7 +133,7 @@ Build_Linux() {
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
 			cd ..
@@ -164,7 +169,7 @@ EOF
 		if [[ "${ARCH}" == "x86_64" ]] ; then
 			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
 		else
-			export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
+			export CFLAGS="-march=i686 -mtune=generic -m32 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
 		fi
 	fi
 	cd KindleTool/KindleTool
@@ -337,7 +342,7 @@ Build_OSX() {
 		tar -xvJf ./${GMP_DIR}.tar.xz
 		cd ${GMP_DIR}
 		./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
-		make -j2
+		make ${JOBSFLAGS}
 		make install
 		cd ..
 	fi
@@ -356,7 +361,7 @@ Build_OSX() {
 			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
 			autoreconf -fi
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
@@ -371,7 +376,7 @@ Build_OSX() {
 			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
 			sh ./.bootstrap
 			./configure --prefix="${KT_SYSROOT}" --libdir="${KT_SYSROOT}/lib" --enable-static --disable-shared --enable-public-key --disable-openssl --disable-documentation
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
@@ -389,7 +394,7 @@ Build_OSX() {
 			cd ${LIBARCHIVE_DIR}
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
@@ -403,7 +408,7 @@ Build_OSX() {
 			sed -e 's/-Werror //' -i '' ./Makefile.am
 			./build/autogen.sh
 			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
-			make -j2
+			make ${JOBSFLAGS}
 			make install
 			cd ..
 		fi
