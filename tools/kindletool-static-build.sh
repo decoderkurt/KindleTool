@@ -2,6 +2,7 @@
 
 OSTYPE="$(uname -s)"
 ARCH="$(uname -m)"
+KERNREL="$(uname -r)"
 
 ## Linux!
 Build_Linux() {
@@ -10,6 +11,12 @@ Build_Linux() {
 		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE"
 		export GMPABI="64"
+		# Mangle i686 builds on my desktop...
+		if [[ "${KERNREL}" == *-niluje* ]] && [[ "${KERNREL}" != *-hardened* ]] ; then
+			export CFLAGS="-march=i686 -m32 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+			export CXXFLAGS="-march=i686 -m32 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
+			export GMPABI="32"
+		fi
 	else
 		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
 		export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE"
