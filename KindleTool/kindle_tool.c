@@ -176,8 +176,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 2 (2013) (Unknown Variant 0xF9)";
         case KindlePaperWhite2WiFi3G4GB:
             return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB)";
-        case KindlePaperWhite2Unknown_0x61:
-            return "Kindle PaperWhite 2 (2013) (Unknown Variant 0x61)";
+        case KindlePaperWhite2WiFi3G4GBBrazil:
+            return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Brazil";
         case KindlePaperWhite2WiFi3G4GBCanada:
             return "Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada";
         case KindleBasic:
@@ -391,6 +391,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw2gbl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe\n"
         "      -d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)\n"
         "      -d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada\n"
+        "      -d, --device pw2gbrl        Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Brazil\n"
         "      -d, --device kt2            Kindle Basic (2014)\n"
         "      -d, --device kt2a           Kindle Basic (2014) Australia\n"
         "      -d, --device kv             Kindle Voyage WiFi\n"
@@ -408,7 +409,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device kindle4        Alias for k4 & k4b\n"
         "      -d, --device touch          Alias for k5w, k5g & k5gb\n"
         "      -d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr\n"
-        "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl\n"
+        "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl\n"
         "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb\n"

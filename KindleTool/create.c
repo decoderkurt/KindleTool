@@ -1433,7 +1433,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "paperwhite2") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 11 + (kt_with_unknown_devcodes * 3);
+                    unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFiJapan;
@@ -1446,11 +1446,11 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GB;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBCanada;
+                    info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBBrazil;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
-                        info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x61;
                     }
                 }
                 else if(strcmp(optarg, "basic") == 0)
@@ -1494,7 +1494,7 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 11 + (kt_with_unknown_devcodes * 3) + 2 + 3 + (kt_with_unknown_devcodes * 3) + 5 + kt_with_unknown_devcodes;
+                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 12 + (kt_with_unknown_devcodes * 2) + 2 + 3 + (kt_with_unknown_devcodes * 3) + 5 + kt_with_unknown_devcodes;
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = Kindle5TouchWiFi;
                     info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
@@ -1518,11 +1518,11 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GB;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBCanada;
+                    info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBBrazil;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
-                        info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0x61;
                     }
                     info.devices[info.num_devices++] = KindleBasic;
                     info.devices[info.num_devices++] = KindleBasicKiwi;
@@ -1733,6 +1733,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcmp(optarg, "pw2gcl") == 0 || strcmp(optarg, "kpw2gcl") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBCanada;
+                        strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+                    }
+                    else if(strcmp(optarg, "pw2gbrl") == 0 || strcmp(optarg, "kpw2gbrl") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBBrazil;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
                     else if(strcmp(optarg, "kt2") == 0 || strcmp(optarg, "bk") == 0)

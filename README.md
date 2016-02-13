@@ -82,6 +82,7 @@
 		-d, --device pw2gbl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe
 		-d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)
 		-d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada
+		-d, --device pw2gbrl        Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Brazil
 		-d, --device kt2            Kindle Basic (2014)
 		-d, --device kt2a           Kindle Basic (2014) Australia
 		-d, --device kv             Kindle Voyage WiFi
@@ -99,7 +100,7 @@
 		-d, --device kindle4        Alias for k4 & k4b
 		-d, --device touch          Alias for k5w, k5g & k5gb
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
-		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl & pw2gcl
+		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl
 		-d, --device basic          Alias for kt2 & kt2a
 		-d, --device voyage         Alias for kv, kvg & kvgb
 		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb
