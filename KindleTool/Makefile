@@ -80,6 +80,8 @@ ifeq "$(DEBUG)" "true"
 	else
 		ifeq "$(CC)" "clang"
 			CFLAGS:=$(CLANG_DEBUG_CFLAGS)
+		else ifeq "$(lastword $(subst /, ,$(CC)))" "ccc-analyzer"
+			CFLAGS:=$(CLANG_DEBUG_CFLAGS)
 		else
 			CFLAGS:=$(DEBUG_CFLAGS)
 		endif
@@ -91,6 +93,8 @@ else
 		CFLAGS?=$(CLANG_OPT_CFLAGS)
 	else
 		ifeq "$(CC)" "clang"
+			CFLAGS?=$(CLANG_OPT_CFLAGS)
+		else ifeq "$(lastword $(subst /, ,$(CC)))" "ccc-analyzer"
 			CFLAGS?=$(CLANG_OPT_CFLAGS)
 		else
 			CFLAGS?=$(OPT_CFLAGS)
