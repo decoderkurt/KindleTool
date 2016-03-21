@@ -1859,7 +1859,7 @@ int kindle_create_main(int argc, char *argv[])
                         // Check if we passed an hex device code...
                         char *endptr;
                         Device dev_code = (Device)strtoul(optarg, &endptr, 16);
-                        // Check that it even remotely looks like a device code first... (0 to 0VF)
+                        // Check that it even remotely looks like a device code first... (01 to 0VF)
                         if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3EF)
                         {
                             fprintf(stderr, "Unknown or invalid device %s.\n", optarg);
