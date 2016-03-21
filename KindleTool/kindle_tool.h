@@ -196,6 +196,13 @@ typedef enum
     KindlePaperWhite3WiFi3GEurope = 0x205,      // 0G5
     KindlePaperWhite3WiFi3GCanada = 0x206,      // 0G6
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
+    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3. Despite the Wario platform tag on that release, those are most likely upcoming Duet PW devices (Whisky?)...
+    ValidDuetPaperWhiteUnknown_0JB = 0x26B,     // 0JB
+    ValidDuetPaperWhiteUnknown_0JC = 0x26C,     // 0JC
+    ValidDuetPaperWhiteUnknown_0JD = 0x26D,     // 0JD
+    ValidDuetPaperWhiteUnknown_0JE = 0x26E,     // 0JE
+    ValidDuetPaperWhiteUnknown_0JF = 0x26F,     // 0JF
+    ValidDuetPaperWhiteUnknown_0JG = 0x270,     // 0JG
     KindleUnknown = 0x00
 } Device;
 

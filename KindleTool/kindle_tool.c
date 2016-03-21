@@ -222,6 +222,18 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 3 (2015) WiFi+3G Canada";
         case KindlePaperWhite3WiFi3GJapan:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Japan";
+        case ValidDuetPaperWhiteUnknown_0JB:
+            return "Unknown Duet PaperWhite (0JB)";
+        case ValidDuetPaperWhiteUnknown_0JC:
+            return "Unknown Duet PaperWhite (0JC)";
+        case ValidDuetPaperWhiteUnknown_0JD:
+            return "Unknown Duet PaperWhite (0JD)";
+        case ValidDuetPaperWhiteUnknown_0JE:
+            return "Unknown Duet PaperWhite (0JE)";
+        case ValidDuetPaperWhiteUnknown_0JF:
+            return "Unknown Duet PaperWhite (0JF)";
+        case ValidDuetPaperWhiteUnknown_0JG:
+            return "Unknown Duet PaperWhite (0JG)";
         case KindleUnknown:
         default:
             return "Unknown";
