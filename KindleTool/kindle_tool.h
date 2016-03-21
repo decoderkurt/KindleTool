@@ -263,7 +263,7 @@ typedef enum
 // Bourbon                    // Kindle Basic
 // Icewine (on Wario)         // Kindle Voyage
 // Muscat                     // Kindle PW3
-// Whisky                     // ?? (Upcoming duet device, PW or Voyage line)
+// Whisky                     // ?? (Upcoming duet device, PW or Voyage line) [w/ pageturn buttons, accelerometers, no haptic feedback, but listed in a PW3 update??!]
 // Woody                      // ?? (Upcoming duet device, Basic line)
 
 typedef struct
