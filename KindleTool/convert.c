@@ -268,11 +268,11 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
             fprintf(stderr, "%s", convert_device_id(device));
         if(kt_with_unknown_devcodes)
         {
+            if(!is_unknown)
+                fprintf(stderr, " (");
             // Handle the new device ID scheme...
             if(device > 0xFF)
             {
-                if(!is_unknown)
-                    fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(device, 32);
                 char *pad = "000";
@@ -422,11 +422,11 @@ static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *ou
         fprintf(stderr, "%s", convert_device_id(header->data.ota_update.device));
     if(kt_with_unknown_devcodes)
     {
+        if(!is_unknown)
+            fprintf(stderr, " (");
         // Handle the new device ID scheme...
         if(header->data.ota_update.device > 0xFF)
         {
-            if(!is_unknown)
-                fprintf(stderr, " (");
             char *dev_id;
             dev_id = to_base(header->data.ota_update.device, 32);
             char *pad = "000";
@@ -491,11 +491,11 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
             fprintf(stderr, "%s", convert_device_id(header->data.recovery_update.device));
         if(kt_with_unknown_devcodes)
         {
+            if(!is_unknown)
+                fprintf(stderr, " (");
             // Handle the new device ID scheme...
             if(header->data.recovery_update.device > 0xFF)
             {
-                if(!is_unknown)
-                    fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(header->data.recovery_update.device, 32);
                 char *pad = "000";
@@ -602,11 +602,11 @@ static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned 
             fprintf(stderr, "%s", convert_device_id(device));
         if(kt_with_unknown_devcodes)
         {
+            if(!is_unknown)
+                fprintf(stderr, " (");
             // Handle the new device ID scheme...
             if(device > 0xFF)
             {
-                if(!is_unknown)
-                    fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(device, 32);
                 char *pad = "000";
