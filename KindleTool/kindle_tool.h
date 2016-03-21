@@ -209,6 +209,10 @@ typedef enum
     YoshimeProto = 0x05,       // Early PW proto? (NB: Platform AKA Yoshime)
     Yoshime = 0x06,            // Kindle PW (NB: Platform AKA Yoshime3)
     Wario = 0x07               // Kindle PW2
+    // Other potentially relevant (OTA|Recovery)v2 ready platforms:
+    /*
+    Duet = 0xFF                // Upcoming generation w/ falcon storage?
+    */
 } Platform;
 
 typedef enum
@@ -218,12 +222,14 @@ typedef enum
     Whitney = 0x05              // Kindle Touch
     // Other potentially relevant (OTA|Recovery)v2 ready boards:
     /*
-    Sauza = 0xFF,               // Kindle 4 Black
-    Celeste = 0xFF,             // PW
-    Icewine = 0xFF,             // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
+    Sauza = 0xFF                // Kindle 4 Black
+    Celeste = 0xFF              // PW
+    Icewine = 0xFF              // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
     Pinot = 0xFF                // PW2
     Bourbon = 0xFF              // Kindle Basic
     Muscat = 0xFF               // PW3
+    Whisky = 0xFF               // ?? (in the PaperWhite or Voyage line, or similar)
+    Woody = 0xFF                // ?? (in the Basic line? (no 3G))
     */
 } Board;
 
@@ -250,6 +256,8 @@ typedef enum
 // Bourbon                    // Kindle Basic
 // Icewine (on Wario)         // Kindle Voyage
 // Muscat                     // Kindle PW3
+// Whisky                     // ?? (Upcoming duet device, PW or Voyage line)
+// Woody                      // ?? (Upcoming duet device, Basic line)
 
 typedef struct
 {
