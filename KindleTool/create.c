@@ -2046,7 +2046,7 @@ int kindle_create_main(int argc, char *argv[])
             // OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
             if(info.devices[0] > Kindle3WiFi3GEurope && (strncmp(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH) != 0 && strncmp(info.magic_number, "FD03", MAGIC_NUMBER_LENGTH) != 0))
             {
-                // FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5, so fix it silently.
+                // FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5 and up, so fix it silently.
                 strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
             }
         }
@@ -2062,20 +2062,10 @@ int kindle_create_main(int argc, char *argv[])
         // Same thing with recovery updates v2
         if(info.version == RecoveryUpdateV2)
         {
-            unsigned int override_magicnum = 0;
-            // Prevent some device models from messing with our magic number...
-            if(info.num_devices >= 1)
-                for(i = 0; i < info.num_devices; i++)
-                {
-                    if(info.devices[i] > Kindle3WiFi3GEurope)
-                        override_magicnum = 1;
-                }
-            else
-                // Don't blow up if we haven't set any device, we don't yet have a magic number set in this instance
-                override_magicnum = 1;
-            if(override_magicnum && (strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0))
+            // Make sure we have a sane magic number... We either don't yet have one set when not specifying any device, or what's set corresponds to OTA update types when specifying anything since the K4...
+            if(strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0)
             {
-                // NOTE: This effectively prevents us from setting a custom magic number.
+                // NOTE: This effectively prevents us from setting a custom magic number. Which is not really something you'd want to do in this case anyway...
                 strncpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
             }
         }
