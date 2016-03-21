@@ -2062,8 +2062,18 @@ int kindle_create_main(int argc, char *argv[])
         // Same thing with recovery updates v2
         if(info.version == RecoveryUpdateV2)
         {
-            // Don't blow up if we haven't set the device, it defaults to none/null
-            if((info.num_devices < 1 || info.devices[0] > Kindle3WiFi3GEurope) && (strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0))
+            unsigned int override_magicnum = 0;
+            // Prevent some device models from messing with our magic number...
+            if(info.num_devices >= 1)
+                for(i = 0; i < info.num_devices; i++)
+                {
+                    if(info.devices[i] > Kindle3WiFi3GEurope)
+                        override_magicnum = 1;
+                }
+            else
+                // Don't blow up if we haven't set any device, we don't yet have a magic number set in this instance
+                override_magicnum = 1;
+            if(override_magicnum && (strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0))
             {
                 // NOTE: This effectively prevents us from setting a custom magic number.
                 strncpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
