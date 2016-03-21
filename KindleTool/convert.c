@@ -256,12 +256,13 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
     {
         //device = *(uint16_t *)&data[hindex];
         memcpy(&device, &data[hindex], sizeof(uint16_t));
+        fprintf(stderr, "Device         ");
         // Slightly hackish way to detect unknown devices...
         unsigned int is_unknown = 0;
         if(strcmp(convert_device_id(device), "Unknown") == 0)
         {
             is_unknown = 1;
-            fprintf(stderr, "Unknown (0x%02X", device);
+            fprintf(stderr, "Unknown (");
         }
         else
             fprintf(stderr, "%s", convert_device_id(device));
@@ -270,22 +271,18 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
             // Handle the new device ID scheme...
             if(device > 0xFF)
             {
-                if(is_unknown)
-                    fprintf(stderr, " <- ");
-                else
+                if(!is_unknown)
                     fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(device, 32);
                 char *pad = "000";
                 // NOTE: 0 padding a string with actual zeroes is fun.... (cf. https://stackoverflow.com/questions/4133318)
-                fprintf(stderr, "%.*s%s", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
+                fprintf(stderr, "%.*s%s -> ", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
                 free(dev_id);
-                if(!is_unknown)
-                    fprintf(stderr, " -> 0x%02X", device);
             }
         }
         if(is_unknown || kt_with_unknown_devcodes)
-            fprintf(stderr, ")");
+            fprintf(stderr, "0x%02X)", device);
         fprintf(stderr, "\n");
     }
     free(data);
@@ -419,7 +416,7 @@ static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *ou
     if(strcmp(convert_device_id(header->data.ota_update.device), "Unknown") == 0)
     {
         is_unknown = 1;
-        fprintf(stderr, "Unknown (0x%02X", header->data.ota_update.device);
+        fprintf(stderr, "Unknown (");
     }
     else
         fprintf(stderr, "%s", convert_device_id(header->data.ota_update.device));
@@ -428,21 +425,17 @@ static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *ou
         // Handle the new device ID scheme...
         if(header->data.ota_update.device > 0xFF)
         {
-            if(is_unknown)
-                fprintf(stderr, " <- ");
-            else
+            if(!is_unknown)
                 fprintf(stderr, " (");
             char *dev_id;
             dev_id = to_base(header->data.ota_update.device, 32);
             char *pad = "000";
-            fprintf(stderr, "%.*s%s", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
+            fprintf(stderr, "%.*s%s -> ", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
             free(dev_id);
-            if(!is_unknown)
-                fprintf(stderr, " -> 0x%02X", header->data.ota_update.device);
         }
     }
     if(is_unknown || kt_with_unknown_devcodes)
-        fprintf(stderr, ")");
+        fprintf(stderr, "0x%02X)", header->data.ota_update.device);
     fprintf(stderr, "\n");
     fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
     fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);  // Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
@@ -492,7 +485,7 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
         if(strcmp(convert_device_id(header->data.recovery_update.device), "Unknown") == 0)
         {
             is_unknown = 1;
-            fprintf(stderr, "Unknown (0x%02X", header->data.recovery_update.device);
+            fprintf(stderr, "Unknown (");
         }
         else
             fprintf(stderr, "%s", convert_device_id(header->data.recovery_update.device));
@@ -501,21 +494,17 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
             // Handle the new device ID scheme...
             if(header->data.recovery_update.device > 0xFF)
             {
-                if(is_unknown)
-                    fprintf(stderr, " <- ");
-                else
+                if(!is_unknown)
                     fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(header->data.recovery_update.device, 32);
                 char *pad = "000";
-                fprintf(stderr, "%.*s%s", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
+                fprintf(stderr, "%.*s%s -> ", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
                 free(dev_id);
-                if(!is_unknown)
-                    fprintf(stderr, " -> 0x%02X", header->data.recovery_update.device);
             }
         }
         if(is_unknown || kt_with_unknown_devcodes)
-            fprintf(stderr, ")");
+            fprintf(stderr, "0x%02X)", header->data.recovery_update.device);
         fprintf(stderr, "\n");
     }
 
@@ -607,7 +596,7 @@ static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned 
         if(strcmp(convert_device_id(device), "Unknown") == 0)
         {
             is_unknown = 1;
-            fprintf(stderr, "Unknown (0x%02X", device);
+            fprintf(stderr, "Unknown (");
         }
         else
             fprintf(stderr, "%s", convert_device_id(device));
@@ -616,21 +605,17 @@ static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned 
             // Handle the new device ID scheme...
             if(device > 0xFF)
             {
-                if(is_unknown)
-                    fprintf(stderr, " <- ");
-                else
+                if(!is_unknown)
                     fprintf(stderr, " (");
                 char *dev_id;
                 dev_id = to_base(device, 32);
                 char *pad = "000";
-                fprintf(stderr, "%.*s%s", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
+                fprintf(stderr, "%.*s%s -> ", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
                 free(dev_id);
-                if(!is_unknown)
-                    fprintf(stderr, " -> 0x%02X", device);
             }
         }
         if(is_unknown || kt_with_unknown_devcodes)
-            fprintf(stderr, ")");
+            fprintf(stderr, "0x%02X)", device);
         fprintf(stderr, "\n");
         hindex += sizeof(uint16_t);
     }
