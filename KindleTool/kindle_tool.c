@@ -588,11 +588,12 @@ static int kindle_deobfuscate_main(int argc, char *argv[])
 
 static int kindle_info_main(int argc, char *argv[])
 {
-    char *serial_no;
-    char md5[MD5_HASH_LENGTH];
+    char serial_no[SERIAL_NO_LENGTH+1] = {'\0'};   // Leave an extra space for the LF...
+    struct md5_ctx md5;
+    uint8_t digest[MD5_DIGEST_SIZE];
+    char hash[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)];
     char device_code[4] = {'\0'};
     Device device;
-    FILE *temp;
     unsigned int i;
 
     // Skip command
@@ -603,13 +604,14 @@ static int kindle_info_main(int argc, char *argv[])
         fprintf(stderr, "Missing argument. You must pass a serial number.\n");
         return -1;
     }
-    serial_no = argv[0];
-    temp = tmpfile();
+    // Don't manipulate argv directly, make a copy of it first...
+    strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);
     if(strlen(serial_no) != SERIAL_NO_LENGTH)
     {
         fprintf(stderr, "Serial number must be 16 digits long (no spaces). Example: %s\n", "B0NNXXXXXXXXXXXX");
         return -1;
     }
+    // Make it fully uppercase
     for(i = 0; i < SERIAL_NO_LENGTH; i++)
     {
         if(islower((int)serial_no[i]))
@@ -617,21 +619,15 @@ static int kindle_info_main(int argc, char *argv[])
             serial_no[i] = (char)toupper((int)serial_no[i]);
         }
     }
-    // Find root password
-    if(fprintf(temp, "%s\n", serial_no) < SERIAL_NO_LENGTH)
-    {
-        fprintf(stderr, "Cannot write serial to temporary file: %s.\n", strerror(errno));
-        fclose(temp);
-        return -1;
-    }
-    rewind(temp);
-    if(md5_sum(temp, md5) < 0)
-    {
-        fprintf(stderr, "Cannot calculate MD5 of serial number.\n");
-        fclose(temp);
-        return -1;
-    }
+    // We need to terminate the string with a LF, no matter the system (probably to match the procfs usid format)...
+    serial_no[SERIAL_NO_LENGTH] = '\n';
+    // The root password is based on the MD5 hash of the S/N, so, hash it first.
+    md5_init(&md5);
+    md5_update(&md5, SERIAL_NO_LENGTH+1, (uint8_t *)serial_no);
+    md5_digest(&md5, MD5_DIGEST_SIZE, digest);
+    base16_encode_update((uint8_t *)hash, MD5_DIGEST_SIZE, digest);
 
+    // And finally, do the device dance...
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
     // Handle the new device ID position, since the PW3
@@ -642,7 +638,6 @@ static int kindle_info_main(int argc, char *argv[])
         if(strcmp(convert_device_id(device), "Unknown") == 0)
         {
             fprintf(stderr, "Unknown device!\n");
-            fclose(temp);
             return -1;
         }
         else
@@ -655,16 +650,15 @@ static int kindle_info_main(int argc, char *argv[])
     if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageUnknown_0x2A)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
-        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[13], "fiona", 4, &md5[13]);
+        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[13], "fiona", 4, &hash[13]);
     }
     else
     {
         fprintf(stderr, "Platform is pre Wario\n");
-        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &md5[7], "fiona", 4, &md5[7]);
+        fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[7], "fiona", 4, &hash[7]);
     }
     // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
     // the recovery MMC export option expects a 9 chars password, so, provide both...
-    fclose(temp);
     return 0;
 }
 
