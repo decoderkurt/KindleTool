@@ -608,7 +608,7 @@ static int kindle_info_main(int argc, char *argv[])
     strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);
     if(strlen(serial_no) != SERIAL_NO_LENGTH)
     {
-        fprintf(stderr, "Serial number must be 16 digits long (no spaces). Example: %s\n", "B0NNXXXXXXXXXXXX");
+        fprintf(stderr, "Serial number must be composed of 16 characters (without spaces). For example: %s\n", "B0NNXXXXXXXXXXXX");
         return -1;
     }
     // Make it fully uppercase
