@@ -620,7 +620,7 @@ static int kindle_info_main(int argc, char *argv[])
         }
     }
     // We need to terminate the string with a LF, no matter the system (probably to match the procfs usid format)...
-    serial_no[SERIAL_NO_LENGTH] = '\n';
+    serial_no[SERIAL_NO_LENGTH] = '\xA';
     // The root password is based on the MD5 hash of the S/N, so, hash it first.
     md5_init(&md5);
     md5_update(&md5, SERIAL_NO_LENGTH+1, (uint8_t *)serial_no);
