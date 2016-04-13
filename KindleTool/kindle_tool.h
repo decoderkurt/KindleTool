@@ -197,13 +197,13 @@ typedef enum
     KindlePaperWhite3WiFi3GEurope = 0x205,      // 0G5
     KindlePaperWhite3WiFi3GCanada = 0x206,      // 0G6
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
-    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3. Despite the Wario platform tag on that release, those are most likely upcoming Duet PW devices (Whisky?)...
-    ValidDuetPaperWhiteUnknown_0JB = 0x26B,     // 0JB
-    ValidDuetPaperWhiteUnknown_0JC = 0x26C,     // 0JC
-    ValidDuetPaperWhiteUnknown_0JD = 0x26D,     // 0JD
-    ValidDuetPaperWhiteUnknown_0JE = 0x26E,     // 0JE
-    ValidDuetPaperWhiteUnknown_0JF = 0x26F,     // 0JF
-    ValidDuetPaperWhiteUnknown_0JG = 0x270,     // 0JG
+    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3. Despite the Wario platform tag on that release, those are most likely the upcoming Kindle Oasis (Whisky board on the Duet platform), released spring 2016 on FW 5.TBD...
+    KindleOasisUnknown_0JB = 0x26B,     // 0JB
+    KindleOasisUnknown_0JC = 0x26C,     // 0JC
+    KindleOasisUnknown_0JD = 0x26D,     // 0JD
+    KindleOasisUnknown_0JE = 0x26E,     // 0JE
+    KindleOasisUnknown_0JF = 0x26F,     // 0JF
+    KindleOasisUnknown_0JG = 0x270,     // 0JG
     KindleUnknown = 0x00
 } Device;
 
@@ -219,7 +219,7 @@ typedef enum
     Wario = 0x07               // Kindle PW2
     // Other potentially relevant (OTA|Recovery)v2 ready platforms:
     /*
-    Duet = 0xFF                // Upcoming generation w/ falcon storage?
+    Duet = 0xFF                // Upcoming generation w/ falcon storage? (Oasis)
     */
 } Platform;
 
@@ -236,7 +236,7 @@ typedef enum
     Pinot = 0xFF                // PW2
     Bourbon = 0xFF              // Kindle Basic
     Muscat = 0xFF               // PW3
-    Whisky = 0xFF               // ?? (in the PaperWhite or Voyage line, or similar)
+    Whisky = 0xFF               // Kindle Oasis
     Woody = 0xFF                // ?? (in the Basic line? (no 3G))
     */
 } Board;
@@ -264,7 +264,7 @@ typedef enum
 // Bourbon                    // Kindle Basic
 // Icewine (on Wario)         // Kindle Voyage
 // Muscat                     // Kindle PW3
-// Whisky                     // ?? (Upcoming Duet device, PW or Voyage line) [w/ pageturn buttons, accelerometers, no haptic feedback, but listed in a PW3 update??!]
+// Whisky                     // Kindle Oasis
 // Woody                      // ?? (Upcoming Duet device, Basic line)
 
 typedef struct

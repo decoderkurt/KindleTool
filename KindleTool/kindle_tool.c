@@ -222,18 +222,18 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 3 (2015) WiFi+3G Canada";
         case KindlePaperWhite3WiFi3GJapan:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Japan";
-        case ValidDuetPaperWhiteUnknown_0JB:
-            return "Unknown Duet PaperWhite (0JB)";
-        case ValidDuetPaperWhiteUnknown_0JC:
-            return "Unknown Duet PaperWhite (0JC)";
-        case ValidDuetPaperWhiteUnknown_0JD:
-            return "Unknown Duet PaperWhite (0JD)";
-        case ValidDuetPaperWhiteUnknown_0JE:
-            return "Unknown Duet PaperWhite (0JE)";
-        case ValidDuetPaperWhiteUnknown_0JF:
-            return "Unknown Duet PaperWhite (0JF)";
-        case ValidDuetPaperWhiteUnknown_0JG:
-            return "Unknown Duet PaperWhite (0JG)";
+        case KindleOasisUnknown_0JB:
+            return "Kindle Oasis (Unknown Variant 0JB)";
+        case KindleOasisUnknown_0JC:
+            return "Kindle Oasis (Unknown Variant 0JC)";
+        case KindleOasisUnknown_0JD:
+            return "Kindle Oasis (Unknown Variant 0JD)";
+        case KindleOasisUnknown_0JE:
+            return "Kindle Oasis (Unknown Variant 0JE)";
+        case KindleOasisUnknown_0JF:
+            return "Kindle Oasis (Unknown Variant 0JF)";
+        case KindleOasisUnknown_0JG:
+            return "Kindle Oasis (Unknown Variant 0JG)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -425,7 +425,8 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb\n"
-        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage & paperwhite3\n"
+        "      -d, --device oasis          Alias for a series of as yet unidentified variants\n"
+        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3 & oasis\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
         "      \n"

@@ -76,12 +76,12 @@ model_tuples = [
 	('KindlePaperWhite3WiFi3GEurope', int('0G5', 32), 'A3OLIINW419WLP'),
 	('KindlePaperWhite3WiFi3GCanada', int('0G6', 32), 'AOPKCG97868D2'),
 	('KindlePaperWhite3WiFi3GJapan', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
-	('ValidDuetPaperWhiteUnknown_0JB', int('0JB', 32)),
-	('ValidDuetPaperWhiteUnknown_0JC', int('0JC', 32)),
-	('ValidDuetPaperWhiteUnknown_0JD', int('0JD', 32)),
-	('ValidDuetPaperWhiteUnknown_0JE', int('0JE', 32)),
-	('ValidDuetPaperWhiteUnknown_0JF', int('0JF', 32)),
-	('ValidDuetPaperWhiteUnknown_0JG', int('0JG', 32)),
+	('KindleOasisUnknown_0JB', int('0JB', 32)),
+	('KindleOasisUnknown_0JC', int('0JC', 32)),
+	('KindleOasisUnknown_0JD', int('0JD', 32)),
+	('KindleOasisUnknown_0JE', int('0JE', 32)),
+	('KindleOasisUnknown_0JF', int('0JF', 32)),
+	('KindleOasisUnknown_0JG', int('0JG', 32)),
 	('KindleUnknown', 0x00)
 ]
 
