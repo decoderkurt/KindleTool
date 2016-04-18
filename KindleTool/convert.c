@@ -1080,22 +1080,11 @@ int kindle_extract_main(int argc, char *argv[])
         fprintf(stderr, "Cannot open input %s package '%s': %s.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename, strerror(errno));
         return -1;
     }
-    // Use a non-racy tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
+    // Use a non-racey tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
     // We always create them in P_tmpdir (usually /tmp or /var/tmp), and rely on the OS implementation to handle the umask,
     // it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
-    // NOTE: Probably not as race-proof on MinGW, according to libarchive...
-#if defined(_WIN32) && !defined(__CYGWIN__)
-    // Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
-    if(_mktemp(tgz_filename) == NULL)
-    {
-        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
-        fclose(bin_input);
-        return -1;
-    }
-    tgz_fd = open(tgz_filename, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
-#else
+    // NOTE: Probably still racey on MinGW, according to libarchive, but, meh, and we're not multithreaded... See the ifdef in kindle_tool.h for more details.
     tgz_fd = mkstemp(tgz_filename);
-#endif
     if(tgz_fd == -1)
     {
         fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));

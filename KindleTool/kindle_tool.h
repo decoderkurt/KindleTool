@@ -88,9 +88,49 @@
 #define IS_UIMAGE(filename) (strncmp(filename+(strlen(filename)-6), "uImage", 6) == 0)
 
 // Don't break tempfiles on Win32... (it doesn't like paths starting with // because that means an 'extended' path (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
-// Geekmaster update: Don't put tempfile on drive root ("/" gives permission violation), but use "./" (current dir) instead.
+// Geekmaster update: Don't put tempfiles on the root drive (unprivileged users can't write there), use "./" (current dir) instead.
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define KT_TMPDIR "."
+// NOTE: Also handle the rest of the tempfiles mess in a quick'n dirty way...
+// Namely: - We can't use MinGW's mkstemp until 5.0 comes out (the implementation in 4.0.1 unlinks on close, which is unexpected)
+//         - MSVCRT's tmpfile() creates files in the root drive, which, as we've already mentioned, is a recipe for disaster...
+// Whip crude hacks around both of these issues without having to resort to GetTempPathW() and deal with wchar_t...
+// Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
+static inline int kt_win_mkstemp(char *template)
+{
+    if(_mktemp(template) == NULL)
+    {
+        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
+        return -1;
+    }
+    // NOTE: Don't use _O_TEMPORARY, we expect to handle the unlink ourselves!
+    // NOTE: And while we probably could use _O_NOINHERIT, we do not, for a question of feature parity:
+    //       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23, and we routinely run on stuff much older than that...
+    return open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
+}
+
+static inline FILE *kt_win_tmpfile(void)
+{
+    char *template = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
+    if(_mktemp(template) == NULL)
+    {
+        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
+        return NULL;
+    }
+    return fopen(template, "w+bx");
+}
+
+// NOTE: Override the functions the hard way, shutting up GCC in the proces...
+#ifdef mkstemp
+#undef mkstemp
+#endif
+#define mkstemp kt_win_mkstemp
+
+#ifdef tmpfile
+#undef tmpfile
+#endif
+#define tmpfile kt_win_tmpfile
+// --
 #else
 #define KT_TMPDIR P_tmpdir
 #endif
