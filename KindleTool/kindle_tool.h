@@ -96,7 +96,7 @@
 //         - MSVCRT's tmpfile() creates files in the root drive, which, as we've already mentioned, is a recipe for disaster...
 // Whip crude hacks around both of these issues without having to resort to GetTempPathW() and deal with wchar_t...
 // Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
-inline int kt_win_mkstemp(char *template)
+int kt_win_mkstemp(char *template)
 {
     if(_mktemp(template) == NULL)
     {
@@ -110,7 +110,7 @@ inline int kt_win_mkstemp(char *template)
 }
 
 // Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
-inline FILE *kt_win_tmpfile(void)
+FILE *kt_win_tmpfile(void)
 {
     char template[] = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
     int fd = -1;
