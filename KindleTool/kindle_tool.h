@@ -118,7 +118,7 @@ static inline FILE *kt_win_tmpfile(void)
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         return NULL;
     }
-    int fd = _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
+    int fd = _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY | _O_TEMPORARY, _S_IREAD | _S_IWRITE);
     if(fd == -1)
     {
         fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
