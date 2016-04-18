@@ -109,6 +109,7 @@ static inline int kt_win_mkstemp(char *template)
     return open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
 }
 
+// Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
 static inline FILE *kt_win_tmpfile(void)
 {
     char *template = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
@@ -117,7 +118,23 @@ static inline FILE *kt_win_tmpfile(void)
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         return NULL;
     }
-    return fopen(template, "w+bx");
+    int fd = open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
+    if(fd == -1)
+    {
+        fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
+        return NULL;
+    }
+    FILE *fp = fdopen(fd, "w+b");
+    if(fp != NULL)
+        return fp;
+    else
+    {
+        // We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd... Which means we have to fudge errno to keep the one from fdopen...
+        int saved_errno = errno;
+        close(fd);
+        errno = saved_errno;
+    }
+    return NULL;
 }
 
 // NOTE: Override the functions the hard way, shutting up GCC in the proces...
