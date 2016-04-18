@@ -586,7 +586,7 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
         fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
         goto cleanup;
     }
-    if((bundlefile = fdopen(bundle_fd, "wb+")) == NULL)
+    if((bundlefile = fdopen(bundle_fd, "w+b")) == NULL)
     {
         fprintf(stderr, "Cannot open temp bundlefile '%s' for writing: %s.\n", bundle_filename, strerror(errno));
         close(bundle_fd);

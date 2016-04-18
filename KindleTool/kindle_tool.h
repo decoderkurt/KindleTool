@@ -106,7 +106,7 @@ static inline int kt_win_mkstemp(char *template)
     // NOTE: Don't use _O_TEMPORARY, we expect to handle the unlink ourselves!
     // NOTE: And while we probably could use _O_NOINHERIT, we do not, for a question of feature parity:
     //       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23, and we routinely run on stuff much older than that...
-    return open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
+    return _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
 }
 
 // Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
@@ -118,20 +118,20 @@ static inline FILE *kt_win_tmpfile(void)
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
         return NULL;
     }
-    int fd = open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
+    int fd = _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
     if(fd == -1)
     {
         fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
         return NULL;
     }
-    FILE *fp = fdopen(fd, "w+b");
+    FILE *fp = _fdopen(fd, "w+b");
     if(fp != NULL)
         return fp;
     else
     {
         // We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd... Which means we have to fudge errno to keep the one from fdopen...
         int saved_errno = errno;
-        close(fd);
+        _close(fd);
         errno = saved_errno;
     }
     return NULL;
