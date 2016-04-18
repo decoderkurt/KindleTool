@@ -91,52 +91,10 @@
 // Geekmaster update: Don't put tempfiles on the root drive (unprivileged users can't write there), use "./" (current dir) instead.
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define KT_TMPDIR "."
-// NOTE: Also handle the rest of the tempfiles mess in a quick'n dirty way...
-// Namely: - We can't use MinGW's mkstemp until 5.0 comes out (the implementation in 4.0.1 unlinks on close, which is unexpected)
-//         - MSVCRT's tmpfile() creates files in the root drive, which, as we've already mentioned, is a recipe for disaster...
-// Whip crude hacks around both of these issues without having to resort to GetTempPathW() and deal with wchar_t...
-// Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
-int kt_win_mkstemp(char *template)
-{
-    if(_mktemp(template) == NULL)
-    {
-        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
-        return -1;
-    }
-    // NOTE: Don't use _O_TEMPORARY, we expect to handle the unlink ourselves!
-    // NOTE: And while we probably could use _O_NOINHERIT, we do not, for a question of feature parity:
-    //       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23, and we routinely run on stuff much older than that...
-    return _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
-}
 
-// Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
-FILE *kt_win_tmpfile(void)
-{
-    char template[] = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
-    int fd = -1;
-    if(_mktemp(template) == NULL)
-    {
-        fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
-        return NULL;
-    }
-    fd = _open(template, _O_CREAT | _O_EXCL | _O_TEMPORARY | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
-    if(fd == -1)
-    {
-        fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
-        return NULL;
-    }
-    FILE *fp = _fdopen(fd, "w+b");
-    if(fp != NULL)
-        return fp;
-    else
-    {
-        // We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd... Which means we have to fudge errno to keep the one from fdopen...
-        int saved_errno = errno;
-        _close(fd);
-        errno = saved_errno;
-    }
-    return NULL;
-}
+// NOTE: cf. kindle_tool.c
+int kt_win_mkstemp(char *);
+FILE *kt_win_tmpfile(void);
 
 // NOTE: Override the functions the hard way, shutting up GCC in the proces...
 #ifdef mkstemp
