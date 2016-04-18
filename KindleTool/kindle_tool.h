@@ -112,7 +112,7 @@ static inline int kt_win_mkstemp(char *template)
 // Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
 static inline FILE *kt_win_tmpfile(void)
 {
-    char *template = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
+    char template[] = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
     if(_mktemp(template) == NULL)
     {
         fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
