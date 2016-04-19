@@ -189,6 +189,7 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         */
 #if defined(_WIN32) && !defined(__CYGWIN__)
         // NOTE: Exclude our own tempfiles, since we create them in PWD, because otherwise, depending on what the user uses as input (i.e., * or .), we might inadvertently snarf them up...
+        //       Right now, the only one susceptible of being part of our directory walking is our own tarball temporary file...
         if(archive_match_exclude_pattern(matching, "^kindletool_create_tarball_*") != ARCHIVE_OK)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
 #endif
