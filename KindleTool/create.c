@@ -187,6 +187,11 @@ static int metadata_filter(struct archive *a, void *_data __attribute__((unused)
         if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK)
             fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
         */
+#if defined(_WIN32) && !defined(__CYGWIN__)
+        // NOTE: Exclude our own tempfiles, since we create them in PWD, because otherwise, depending on what the user uses as input (i.e., * or .), we might inadvertently snarf them up...
+        if(archive_match_exclude_pattern(matching, "^kindletool_create_tarball_*") != ARCHIVE_OK)
+            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
+#endif
 
         r = archive_match_path_excluded(matching, entry);
         if(r < 0)
