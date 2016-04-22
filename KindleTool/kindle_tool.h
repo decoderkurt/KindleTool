@@ -226,7 +226,7 @@ typedef enum
 typedef enum
 {
     Plat_Unspecified = 0x00,
-    MarioDeprecated = 0x01,    // Kindle 1 (and Kindle 2)
+    MarioDeprecated = 0x01,    // Kindle 2
     Luigi = 0x02,              // Kindle 3
     Banjo = 0x03,              // ??
     Yoshi = 0x04,              // Kindle Touch (and Kindle 4)
@@ -259,7 +259,8 @@ typedef enum
 
 // For reference, list of boards (AFAICT, in chronological order):
 // ADS                        // K1 proto? (w/ ETH)
-// Mario                      // Kindle 1? (w/ ETH) [Also a platform]
+// Fiona                      // Kindle 1
+// Mario                      // Kindle 2? (w/ ETH) [Also a platform]
 // Nell/NellSL/NellWW         // DX & DXG & DXi?
 // Turing/TuringWW            // Kindle 2 & Kindle 2 International
 // Luigi/Luigi3               // ?? (r3 w/ ETH) [Also a platform]
