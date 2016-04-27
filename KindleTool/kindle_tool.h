@@ -213,13 +213,20 @@ typedef enum
     KindlePaperWhite3WiFi3GEurope = 0x205,      // 0G5
     KindlePaperWhite3WiFi3GCanada = 0x206,      // 0G6
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
-    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3. Despite the Wario platform tag on that release, those are most likely the upcoming Kindle Oasis (Whisky board on the Duet platform), released spring 2016 on FW 5.TBD...
-    KindleOasisUnknown_0JB = 0x26B,     // 0JB
-    KindleOasisUnknown_0JC = 0x26C,     // 0JC
-    KindleOasisUnknown_0JD = 0x26D,     // 0JD
-    KindleOasisUnknown_0JE = 0x26E,     // 0JE
-    KindleOasisUnknown_0JF = 0x26F,     // 0JF
-    KindleOasisUnknown_0JG = 0x270,     // 0JG
+    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3...
+    KindlePW3Unknown_0JB = 0x26B,     // 0JB
+    KindlePW3Unknown_0JC = 0x26C,     // 0JC
+    KindlePW3Unknown_0JD = 0x26D,     // 0JD
+    KindlePW3Unknown_0JE = 0x26E,     // 0JE
+    KindlePW3Unknown_0JF = 0x26F,     // 0JF
+    KindlePW3Unknown_0JG = 0x270,     // 0JG
+    // Kindle Oasis, released late spring 2016 on FW 5.7.1.1
+    KindleOasisUnknown_0GC = 0x20C,     // 0GC
+    KindleOasisUnknown_0GD = 0x20D,     // 0GD
+    KindleOasisUnknown_0GP = 0x219,     // 0GP
+    KindleOasisUnknown_0GQ = 0x21A,     // 0GQ
+    KindleOasisUnknown_0GR = 0x21B,     // 0GR
+    KindleOasisUnknown_0GS = 0x21C,     // 0GS
     KindleUnknown = 0x00
 } Device;
 
@@ -232,7 +239,8 @@ typedef enum
     Yoshi = 0x04,              // Kindle Touch (and Kindle 4)
     YoshimeProto = 0x05,       // Early PW proto? (NB: Platform AKA Yoshime)
     Yoshime = 0x06,            // Kindle PW (NB: Platform AKA Yoshime3)
-    Wario = 0x07               // Kindle PW2
+    Wario = 0x07,              // Kindle PW2, Basic, Voyage, PW3
+    Duet = 0x08                // Kindle Oasis
     // Other potentially relevant (OTA|Recovery)v2 ready platforms:
     /*
     Duet = 0xFF                // Upcoming generation w/ falcon storage? (Oasis)
@@ -241,7 +249,7 @@ typedef enum
 
 typedef enum
 {
-    Board_Unspecified = 0x00,   // Used on the PW (skip board check)
+    Board_Unspecified = 0x00,   // Used since the PW (skip board check)
     Tequila = 0x03,             // Kindle 4 Silver
     Whitney = 0x05              // Kindle Touch
     // Other potentially relevant (OTA|Recovery)v2 ready boards:
@@ -282,7 +290,7 @@ typedef enum
 // Icewine (on Wario)         // Kindle Voyage
 // Muscat                     // Kindle PW3
 // Whisky                     // Kindle Oasis
-// Woody                      // ?? (Upcoming Duet device, Basic line)
+// Woody                      // ?? (Upcoming Duet device, Basic line?)
 
 typedef struct
 {

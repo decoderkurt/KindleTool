@@ -271,18 +271,30 @@ const char *convert_device_id(Device dev)
             return "Kindle PaperWhite 3 (2015) WiFi+3G Canada";
         case KindlePaperWhite3WiFi3GJapan:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Japan";
-        case KindleOasisUnknown_0JB:
-            return "Kindle Oasis (Unknown Variant 0JB)";
-        case KindleOasisUnknown_0JC:
-            return "Kindle Oasis (Unknown Variant 0JC)";
-        case KindleOasisUnknown_0JD:
-            return "Kindle Oasis (Unknown Variant 0JD)";
-        case KindleOasisUnknown_0JE:
-            return "Kindle Oasis (Unknown Variant 0JE)";
-        case KindleOasisUnknown_0JF:
-            return "Kindle Oasis (Unknown Variant 0JF)";
-        case KindleOasisUnknown_0JG:
-            return "Kindle Oasis (Unknown Variant 0JG)";
+        case KindlePW3Unknown_0JB:
+            return "Kindle PW3? (Unknown Variant 0JB)";
+        case KindlePW3Unknown_0JC:
+            return "Kindle PW3? (Unknown Variant 0JC)";
+        case KindlePW3Unknown_0JD:
+            return "Kindle PW3? (Unknown Variant 0JD)";
+        case KindlePW3Unknown_0JE:
+            return "Kindle PW3? (Unknown Variant 0JE)";
+        case KindlePW3Unknown_0JF:
+            return "Kindle PW3? (Unknown Variant 0JF)";
+        case KindlePW3Unknown_0JG:
+            return "Kindle PW3? (Unknown Variant 0JG)";
+        case KindleOasisUnknown_0GC:
+            return "Kindle Oasis (Unknown Variant 0GC)";
+        case KindleOasisUnknown_0GD:
+            return "Kindle Oasis (Unknown Variant 0GD)";
+        case KindleOasisUnknown_0GP:
+            return "Kindle Oasis (Unknown Variant 0GP)";
+        case KindleOasisUnknown_0GQ:
+            return "Kindle Oasis (Unknown Variant 0GQ)";
+        case KindleOasisUnknown_0GR:
+            return "Kindle Oasis (Unknown Variant 0GR)";
+        case KindleOasisUnknown_0GS:
+            return "Kindle Oasis (Unknown Variant 0GS)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -309,6 +321,8 @@ const char *convert_platform_id(Platform plat)
             return "Yoshime (Yoshime3)";
         case Wario:
             return "Wario";
+        case Duet:
+            return "Duet";
         default:
             return "Unknown";
     }
