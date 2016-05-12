@@ -504,6 +504,7 @@ static int kindle_print_help(const char *prog_name)
         "      -p, --platform yoshime-p    Yoshime (Prototype).\n"
         "      -p, --platform yoshime      Yoshime (Also known as Yoshime3, mostly devices shipped on FW >= 5.2).\n"
         "      -p, --platform wario        Wario (mostly devices shipped on FW >= 5.4).\n"
+        "      -p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).\n"
         "      \n"
         "    Boards:\n"
         "      Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.\n"
