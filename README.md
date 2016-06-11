@@ -93,6 +93,7 @@
 		-d, --device pw3gj          Kindle PaperWhite 3 (2015) WiFi+3G Japan
 		-d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada
 		-d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe
+		-d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico
 		-d, --device kindle2        Alias for k2 & k2i
 		-d, --device kindledx       Alias for dx, dxi & dxg
 		-d, --device kindle3        Alias for k3w, k3g & k3gb
@@ -103,7 +104,7 @@
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl
 		-d, --device basic          Alias for kt2 & kt2a
 		-d, --device voyage         Alias for kv, kvg & kvgb
-		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc & pw3gb
+		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb & pw3gm
 		-d, --device oasis          Alias for a series of as yet unidentified variants
 		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3 & oasis
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).

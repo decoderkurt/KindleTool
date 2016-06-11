@@ -72,7 +72,7 @@ model_tuples = [
 	('ValidKindleUnknown_0x21', 0x21),
 	('KindlePaperWhite3WiFi', int('0G1', 32), 'A21RY355YUXQAF'),
 	('KindlePaperWhite3WiFi3G', int('0G2', 32), 'A6S0KGW65V1TV'),
-	('KindlePaperWhite3Unknown_0G4', int('0G4', 32), 'A3P87LH4DLAKE2'),
+	('KindlePaperWhite3WiFi3GMexico', int('0G4', 32), 'A3P87LH4DLAKE2'),
 	('KindlePaperWhite3WiFi3GEurope', int('0G5', 32), 'A3OLIINW419WLP'),
 	('KindlePaperWhite3WiFi3GCanada', int('0G6', 32), 'AOPKCG97868D2'),
 	('KindlePaperWhite3WiFi3GJapan', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
