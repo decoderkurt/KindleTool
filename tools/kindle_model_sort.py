@@ -82,7 +82,7 @@ model_tuples = [
 	('KindlePW3Unknown_0JE', int('0JE', 32)),
 	('KindlePW3Unknown_0JF', int('0JF', 32)),
 	('KindlePW3Unknown_0JG', int('0JG', 32)),
-	('KindleOasisUnknown_0GC', int('0GC', 32)),
+	('KindleOasisWiFi', int('0GC', 32)),
 	('KindleOasisUnknown_0GD', int('0GD', 32)),
 	('KindleOasisUnknown_0GP', int('0GP', 32)),
 	('KindleOasisUnknown_0GQ', int('0GQ', 32)),

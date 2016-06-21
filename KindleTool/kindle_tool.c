@@ -283,8 +283,8 @@ const char *convert_device_id(Device dev)
             return "Kindle PW3? (Unknown Variant 0JF)";
         case KindlePW3Unknown_0JG:
             return "Kindle PW3? (Unknown Variant 0JG)";
-        case KindleOasisUnknown_0GC:
-            return "Kindle Oasis (Unknown Variant 0GC)";
+        case KindleOasisWiFi:
+            return "Kindle Oasis WiFi";
         case KindleOasisUnknown_0GD:
             return "Kindle Oasis (Unknown Variant 0GD)";
         case KindleOasisUnknown_0GP:
@@ -478,6 +478,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada\n"
         "      -d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe\n"
         "      -d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico\n"
+        "      -d, --device oz             Kindle Oasis WiFi\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
         "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
         "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -489,7 +490,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg & kvgb\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb & pw3gm\n"
-        "      -d, --device oasis          Alias for a series of as yet unidentified variants\n"
+        "      -d, --device oasis          Alias for oz\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3 & oasis\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
