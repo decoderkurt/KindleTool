@@ -105,7 +105,7 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const uns
         fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1], (unsigned)(unsigned char)header.magic_number[2], (unsigned)(unsigned char)header.magic_number[3], MAGIC_NUMBER_LENGTH, header.magic_number);
     }
     else
-        fprintf(stderr, "Bundle         %.*s%s%s\n", MAGIC_NUMBER_LENGTH, header.magic_number, (get_bundle_version(header.magic_number) == UserDataPackage ? "" : " "), convert_magic_number(header.magic_number));
+        fprintf(stderr, "Bundle         %.*s %s\n", MAGIC_NUMBER_LENGTH, (get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP" : header.magic_number), convert_magic_number(header.magic_number));
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
     {
