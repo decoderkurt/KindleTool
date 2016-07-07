@@ -1499,10 +1499,24 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
                     }
                 }
+                else if(strcmp(optarg, "basic2") == 0)
+                {
+                    strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+                    unsigned int num_aliased_devices = 0 + (kt_with_unknown_devcodes * 3);
+                    // NOTE: With no known device for now, push that to the branch, because realloc(ptr, 0) means free(ptr)...
+                    //info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    if(kt_with_unknown_devcodes)
+                    {
+                        info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0ES;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0K9;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0KA;
+                    }
+                }
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 12 + (kt_with_unknown_devcodes * 2) + 2 + 4 + (kt_with_unknown_devcodes * 2) + 6 + (kt_with_unknown_devcodes * 6) + 1 + (kt_with_unknown_devcodes * 5);
+                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 12 + (kt_with_unknown_devcodes * 2) + 2 + 4 + (kt_with_unknown_devcodes * 2) + 6 + (kt_with_unknown_devcodes * 6) + 1 + (kt_with_unknown_devcodes * 5) + 0 + (kt_with_unknown_devcodes * 3);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     // K5
                     info.devices[info.num_devices++] = Kindle5TouchWiFi;
@@ -1574,6 +1588,13 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleOasisUnknown_0GQ;
                         info.devices[info.num_devices++] = KindleOasisUnknown_0GR;
                         info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
+                    }
+                    // KT3
+                    if(kt_with_unknown_devcodes)
+                    {
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0ES;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0K9;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0KA;
                     }
                 }
                 else if(kt_with_unknown_devcodes && (strcmp(optarg, "unknown") == 0 || strcmp(optarg, "datamined") == 0))

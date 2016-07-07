@@ -295,6 +295,12 @@ const char *convert_device_id(Device dev)
             return "Kindle Oasis (Unknown Variant 0GR)";
         case KindleOasisUnknown_0GS:
             return "Kindle Oasis (Unknown Variant 0GS)";
+        case KindleBasic2Unknown_0KA:
+            return "Kindle Basic 2 (2016) (Unknown Variant 0KA)";
+        case KindleBasic2Unknown_0K9:
+            return "Kindle Basic 2 (2016) (Unknown Variant 0K9)";
+        case KindleBasic2Unknown_0ES:
+            return "Kindle Basic 2 (2016) (Unknown Variant 0ES)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -494,7 +500,8 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device voyage         Alias for kv, kvg, kvgb & kvgj\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb & pw3gm\n"
         "      -d, --device oasis          Alias for oz\n"
-        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3 & oasis\n"
+        "      -d, --device basic2         Alias for a set of as yet unidentified variants\n"
+        "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis & basic2\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
         "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
         "      \n"

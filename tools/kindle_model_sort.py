@@ -88,6 +88,9 @@ model_tuples = [
 	('KindleOasisUnknown_0GQ', int('0GQ', 32)),
 	('KindleOasisUnknown_0GR', int('0GR', 32)),
 	('KindleOasisUnknown_0GS', int('0GS', 32)),
+	('KindleBasic2Unknown_0ES', int('0ES', 32) - 32),	# 0x1BC
+	('KindleBasic2Unknown_0K9', int('0K9', 32) - 32),	# 0x269
+	('KindleBasic2Unknown_0KA', int('0KA', 32) - 32),	# 0x26A
 	('KindleUnknown', 0x00)
 ]
 
