@@ -1946,6 +1946,8 @@ int kindle_create_main(int argc, char *argv[])
                     info.platform = Wario;
                 else if(strcmp(optarg, "duet") == 0)
                     info.platform = Duet;
+                else if(strcmp(optarg, "heisenberg") == 0)
+                    info.platform = Heisenberg;
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);

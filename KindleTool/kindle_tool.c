@@ -323,6 +323,8 @@ const char *convert_platform_id(Platform plat)
             return "Wario";
         case Duet:
             return "Duet";
+        case Heisenberg:
+            return "Heisenberg";
         default:
             return "Unknown";
     }
@@ -508,6 +510,7 @@ static int kindle_print_help(const char *prog_name)
         "      -p, --platform yoshime      Yoshime (Also known as Yoshime3, mostly devices shipped on FW >= 5.2).\n"
         "      -p, --platform wario        Wario (mostly devices shipped on FW >= 5.4).\n"
         "      -p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).\n"
+        "      -p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).\n"
         "      \n"
         "    Boards:\n"
         "      Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.\n"
