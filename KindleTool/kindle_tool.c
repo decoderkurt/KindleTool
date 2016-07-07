@@ -718,7 +718,7 @@ static int kindle_info_main(int argc, char *argv[])
     }
     // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageUnknown_0x2A)
+    if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[13], "fiona", 4, &hash[13]);
