@@ -1451,14 +1451,14 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "voyage") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 3 + (kt_with_unknown_devcodes * 3);
+                    unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 2);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindleVoyageWiFi;
                     info.devices[info.num_devices++] = KindleVoyageWiFi3G;
                     info.devices[info.num_devices++] = KindleVoyageWiFi3GEurope;
+                    info.devices[info.num_devices++] = KindleVoyageWiFi3GJapan;
                     if(kt_with_unknown_devcodes)
                     {
-                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x2A;
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
                     }
@@ -1502,19 +1502,22 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcmp(optarg, "kindle5") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 12 + (kt_with_unknown_devcodes * 2) + 2 + 3 + (kt_with_unknown_devcodes * 3) + 6 + (kt_with_unknown_devcodes * 6) + 1 + (kt_with_unknown_devcodes * 5);
+                    unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes + 6 + 12 + (kt_with_unknown_devcodes * 2) + 2 + 4 + (kt_with_unknown_devcodes * 2) + 6 + (kt_with_unknown_devcodes * 6) + 1 + (kt_with_unknown_devcodes * 5);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+                    // K5
                     info.devices[info.num_devices++] = Kindle5TouchWiFi;
                     info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
                     info.devices[info.num_devices++] = Kindle5TouchWiFi3GEurope;
                     if(kt_with_unknown_devcodes)
                         info.devices[info.num_devices++] = Kindle5TouchUnknown;
+                    // PW1
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi;
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi3G;
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GCanada;
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GJapan;
                     info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GBrazil;
+                    // PW2
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFiJapan;
                     info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G;
@@ -1532,23 +1535,27 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
                         info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
                     }
+                    // KT2
                     info.devices[info.num_devices++] = KindleBasic;
                     info.devices[info.num_devices++] = KindleBasicKiwi;
+                    // KV
                     info.devices[info.num_devices++] = KindleVoyageWiFi;
                     info.devices[info.num_devices++] = KindleVoyageWiFi3G;
                     info.devices[info.num_devices++] = KindleVoyageWiFi3GEurope;
+                    info.devices[info.num_devices++] = KindleVoyageWiFi3GJapan;
                     if(kt_with_unknown_devcodes)
                     {
-                        info.devices[info.num_devices++] = KindleVoyageUnknown_0x2A;
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
                     }
+                    // PW3 Black
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GJapan;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GCanada;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3G;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GMexico;
+                    // PW3 White
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindlePW3Unknown_0JB;
@@ -1558,6 +1565,7 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindlePW3Unknown_0JF;
                         info.devices[info.num_devices++] = KindlePW3Unknown_0JG;
                     }
+                    // OZ
                     info.devices[info.num_devices++] = KindleOasisWiFi;
                     if(kt_with_unknown_devcodes)
                     {
@@ -1786,6 +1794,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcmp(optarg, "kvgb") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindleVoyageWiFi3GEurope;
+                        strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+                    }
+                    else if(strcmp(optarg, "kvgj") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindleVoyageWiFi3GJapan;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
                     else if(strcmp(optarg, "pw3") == 0 || strcmp(optarg, "kpw3") == 0)

@@ -88,6 +88,7 @@
 		-d, --device kv             Kindle Voyage WiFi
 		-d, --device kvg            Kindle Voyage WiFi+3G
 		-d, --device kvgb           Kindle Voyage WiFi+3G Europe
+		-d, --device kvgj           Kindle Voyage WiFi+3G Japan
 		-d, --device pw3            Kindle PaperWhite 3 (2015) WiFi
 		-d, --device pw3g           Kindle PaperWhite 3 (2015) WiFi+3G
 		-d, --device pw3gj          Kindle PaperWhite 3 (2015) WiFi+3G Japan
@@ -104,7 +105,7 @@
 		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl
 		-d, --device basic          Alias for kt2 & kt2a
-		-d, --device voyage         Alias for kv, kvg & kvgb
+		-d, --device voyage         Alias for kv, kvg, kvgb & kvgj
 		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb & pw3gm
 		-d, --device oasis          Alias for oz
 		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3 & oasis
