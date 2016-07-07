@@ -213,13 +213,13 @@ typedef enum
     KindlePaperWhite3WiFi3GEurope = 0x205,      // 0G5
     KindlePaperWhite3WiFi3GCanada = 0x206,      // 0G6
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
-    // Here be dragons... Appeared w/ FW 5.7.3.1 for the PW3...
-    KindlePW3Unknown_0JB = 0x26B,     // 0JB
-    KindlePW3Unknown_0JC = 0x26C,     // 0JC
-    KindlePW3Unknown_0JD = 0x26D,     // 0JD
-    KindlePW3Unknown_0JE = 0x26E,     // 0JE
-    KindlePW3Unknown_0JF = 0x26F,     // 0JF
-    KindlePW3Unknown_0JG = 0x270,     // 0JG
+    // Kindle PaperWhite 3, White, appeared w/ FW 5.7.3.1, released summer 2016 on FW 5.7.x?
+    KindlePaperWhite3WhiteWiFi = 0x26B,         // 0KB  FIXME: The letter jump breaks my assumption that this is base 32 encoded ;'(.
+    KindlePW3WhiteUnknown_0KC = 0x26C,          // 0KC
+    KindlePW3WhiteUnknown_0KD = 0x26D,          // 0KD
+    KindlePW3WhiteUnknown_0KE = 0x26E,          // 0KE
+    KindlePW3WhiteUnknown_0KF = 0x26F,          // 0KF
+    KindlePW3WhiteUnknown_0KG = 0x270,          // 0KG
     // Kindle Oasis, released late spring 2016 on FW 5.7.1.1
     KindleOasisWiFi = 0x20C,            // 0GC
     KindleOasisWiFi3G = 0x20D,          // 0GD

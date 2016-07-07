@@ -4,6 +4,11 @@ from operator import itemgetter
 
 # NOTE: Pilfered from https://code.activestate.com/recipes/65212/
 def baseN(num, base, numerals="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+	# FIXME: Special snowflake the PW3 White & the KT3 for now, because I couldn't figure out anything universal...
+	if ((base == 32) and ((num >= whitepw3_first_id and num <= whitepw3_last_id) or (num == kt3_off_id) or (num >= kt3_first_id and num <= kt3_last_id))):
+		# NOTE: Appears so far to only be off by one letter...
+		num += 32
+
 	if num == 0:
 		return "0"
 
@@ -76,12 +81,12 @@ model_tuples = [
 	('KindlePaperWhite3WiFi3GEurope', int('0G5', 32), 'A3OLIINW419WLP'),
 	('KindlePaperWhite3WiFi3GCanada', int('0G6', 32), 'AOPKCG97868D2'),
 	('KindlePaperWhite3WiFi3GJapan', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
-	('KindlePW3Unknown_0JB', int('0JB', 32)),
-	('KindlePW3Unknown_0JC', int('0JC', 32)),
-	('KindlePW3Unknown_0JD', int('0JD', 32)),
-	('KindlePW3Unknown_0JE', int('0JE', 32)),
-	('KindlePW3Unknown_0JF', int('0JF', 32)),
-	('KindlePW3Unknown_0JG', int('0JG', 32)),
+	('KindlePaperWhite3WhiteWiFi', int('0KB', 32) - 32),
+	('KindlePW3WhiteUnknown_0KC', int('0KC', 32) - 32),
+	('KindlePW3WhiteUnknown_0KD', int('0KD', 32) - 32),
+	('KindlePW3WhiteUnknown_0KE', int('0KE', 32) - 32),
+	('KindlePW3WhiteUnknown_0KF', int('0KF', 32) - 32),
+	('KindlePW3WhiteUnknown_0KG', int('0KG', 32) - 32),
 	('KindleOasisWiFi', int('0GC', 32)),
 	('KindleOasisWiFi3G', int('0GD', 32)),
 	('KindleOasisUnknown_0GP', int('0GP', 32)),
@@ -94,6 +99,26 @@ model_tuples = [
 	('KindleUnknown', 0x00)
 ]
 
+# We have some crappy workarounds that depend on the precise IDs of a few specific models...
+wario_cutoff_id = 0
+whitepw3_first_id = 0
+whitepw3_last_id = 0
+kt3_off_id = 0
+kt3_first_id = 0
+kt3_last_id = 0
+for i, v in enumerate(model_tuples):
+	if v[0] == 'KindleVoyageUnknown_0x2A':
+		wario_cutoff_id = v[1]
+	if v[0] == 'KindlePaperWhite3WhiteWiFi':
+		whitepw3_first_id = v[1]
+	if v[0] == 'KindlePW3WhiteUnknown_0KG':
+		whitepw3_last_id = v[1]
+	if v[0] == 'KindleBasic2Unknown_0ES':
+		kt3_off_id = v[1]
+	if v[0] == 'KindleBasic2Unknown_0K9':
+		kt3_first_id = v[1]
+	if v[0] == 'KindleBasic2Unknown_0KA':
+		kt3_last_id = v[1]
 
 print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
@@ -104,14 +129,14 @@ for t in sorted(model_tuples, key=itemgetter(1)):
 		print "{:<40} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
 print '\nKindle models >= KindleVoyageUnknown_0x2A (i.e., Platform >= Wario)\n'
-cutoff_id = 0
-for i, v in enumerate(model_tuples):
-	if v[0] == 'KindleVoyageUnknown_0x2A':
-		cutoff_id = v[1]
-
 for t in model_tuples:
-	if t[1] >= cutoff_id:
+	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
 			print "{:<40} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
 		else:
 			print "{:<40} {:02X}".format(t[0], t[1])
+
+print '\nKindle models with a weird device code decoding (i.e., White PW3 & KT3)\n'
+for t in model_tuples:
+	if (t[1] >= whitepw3_first_id and t[1] <= whitepw3_last_id) or (t[1] == kt3_off_id) or (t[1] >= kt3_first_id and t[1] <= kt3_last_id):
+		print "{:<40} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))

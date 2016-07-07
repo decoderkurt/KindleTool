@@ -57,6 +57,13 @@ static char *to_base(int64_t num, unsigned int base)
         return 0;
     }
 
+    // FIXME: Special snowflake the PW3 White & the KT3 for now, because I couldn't figure out anything universal...
+    if((base == 32) && ((num >= KindlePaperWhite3WhiteWiFi && num <= KindlePW3WhiteUnknown_0KG) || (num == KindleBasic2Unknown_0ES) || (num >= KindleBasic2Unknown_0K9 && num <= KindleBasic2Unknown_0KA)))
+    {
+        // NOTE: Appears so far to only be off by one letter...
+        num += 32;
+    }
+
     // safe against most negative integer
     n = ((neg = num < 0)) ? (uint64_t) (~num) + 1 : (uint64_t) num;
 
