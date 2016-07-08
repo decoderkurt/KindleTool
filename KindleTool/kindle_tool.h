@@ -251,11 +251,11 @@ typedef enum
 typedef enum
 {
     Board_Unspecified = 0x00,   // Used since the PW (skip board check)
-    Tequila = 0x03,             // Kindle 4 Silver
+    Tequila = 0x03,             // Silver Kindle 4
     Whitney = 0x05              // Kindle Touch
     // Other potentially relevant (OTA|Recovery)v2 ready boards:
     /*
-    Sauza = 0xFF                // Kindle 4 Black
+    Sauza = 0xFF                // Black Kindle 4
     Celeste = 0xFF              // PW
     Icewine = 0xFF              // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
     Pinot = 0xFF                // PW2
@@ -278,8 +278,8 @@ typedef enum
 // Yoshi                      // ?? [Also a platform]
 // Primer                     // Deprecated proto
 // Harv                       // K4 proto?
-// Tequila (is WFO)           // Kindle 4 Silver
-// Sauza                      // Kindle 4 Black? (NOT in chronological order)
+// Tequila (is WFO)           // Silver Kindle 4
+// Sauza                      // Black Kindle 4? (NOT in chronological order)
 // Finkle                     // Touch proto?
 // Whitney (+ WFO variant)    // Kindle Touch
 // Yoshime                    // Temp. Yoshime dev board [Also a Platform, which we call YoshimeProto]

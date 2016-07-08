@@ -178,7 +178,7 @@ const char *convert_device_id(Device dev)
         case Kindle3WiFi3GEurope:
             return "Kindle 3 WiFi+3G Europe";
         case Kindle4NonTouch:
-            return "Kindle 4 Non-Touch Silver (2011)";
+            return "Silver Kindle 4 Non-Touch (2011)";
         case Kindle5TouchWiFi:
             return "Kindle 5 Touch WiFi";
         case Kindle5TouchWiFi3G:
@@ -188,7 +188,7 @@ const char *convert_device_id(Device dev)
         case Kindle5TouchUnknown:
             return "Kindle 5 Touch (Unknown Variant)";
         case Kindle4NonTouchBlack:
-            return "Kindle 4 Non-Touch Black (2012)";
+            return "Black Kindle 4 Non-Touch (2012)";
         case KindlePaperWhiteWiFi:
             return "Kindle PaperWhite WiFi";
         case KindlePaperWhiteWiFi3G:
@@ -272,17 +272,17 @@ const char *convert_device_id(Device dev)
         case KindlePaperWhite3WiFi3GJapan:
             return "Kindle PaperWhite 3 (2015) WiFi+3G Japan";
         case KindlePaperWhite3WhiteWiFi:
-            return "Kindle PaperWhite 3 White (2015) WiFi";
+            return "White Kindle PaperWhite 3 (2016) WiFi";
         case KindlePW3WhiteUnknown_0KC:
-            return "Kindle PaperWhite 3 White (Unknown Variant 0KC)";
+            return "White Kindle PaperWhite 3 (Unknown Variant 0KC)";
         case KindlePW3WhiteUnknown_0KD:
-            return "Kindle PaperWhite 3 White (Unknown Variant 0KD)";
+            return "White Kindle PaperWhite 3 (Unknown Variant 0KD)";
         case KindlePW3WhiteUnknown_0KE:
-            return "Kindle PaperWhite 3 White (Unknown Variant 0KE)";
+            return "White Kindle PaperWhite 3 (Unknown Variant 0KE)";
         case KindlePW3WhiteUnknown_0KF:
-            return "Kindle PaperWhite 3 White (Unknown Variant 0KF)";
+            return "White Kindle PaperWhite 3 (Unknown Variant 0KF)";
         case KindlePW3WhiteUnknown_0KG:
-            return "Kindle PaperWhite 3 White (Unknown Variant 0KG)";
+            return "White Kindle PaperWhite 3 (Unknown Variant 0KG)";
         case KindleOasisWiFi:
             return "Kindle Oasis WiFi";
         case KindleOasisWiFi3G:
@@ -451,8 +451,8 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device k3w            Kindle 3 WiFi\n"
         "      -d, --device k3g            Kindle 3 WiFi+3G\n"
         "      -d, --device k3gb           Kindle 3 WiFi+3G Europe\n"
-        "      -d, --device k4             Kindle 4 (No Touch) Silver (2011)\n"
-        "      -d, --device k4b            Kindle 4 (No Touch) Black (2012)\n"
+        "      -d, --device k4             Silver Kindle 4 (No Touch) (2011)\n"
+        "      -d, --device k4b            Black Kindle 4 (No Touch) (2012)\n"
         "      -d, --device k5w            Kindle 5 (Kindle Touch) WiFi\n"
         "      -d, --device k5g            Kindle 5 (Kindle Touch) WiFi+3G\n"
         "      -d, --device k5gb           Kindle 5 (Kindle Touch) WiFi+3G Europe\n"
@@ -487,7 +487,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada\n"
         "      -d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe\n"
         "      -d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico\n"
-        "      -d, --device pw3w           Kindle PaperWhite 3 White (2015) WiFi\n"
+        "      -d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi\n"
         "      -d, --device oz             Kindle Oasis WiFi\n"
         "      -d, --device ozg            Kindle Oasis WiFi+3G\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"

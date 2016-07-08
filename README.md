@@ -59,8 +59,8 @@
 		-d, --device k3w            Kindle 3 WiFi
 		-d, --device k3g            Kindle 3 WiFi+3G
 		-d, --device k3gb           Kindle 3 WiFi+3G Europe
-		-d, --device k4             Kindle 4 (No Touch) Silver (2011)
-		-d, --device k4b            Kindle 4 (No Touch) Black (2012)
+		-d, --device k4             Silver Kindle 4 (No Touch) (2011)
+		-d, --device k4b            Black Kindle 4 (No Touch) (2012)
 		-d, --device k5w            Kindle 5 (Kindle Touch) WiFi
 		-d, --device k5g            Kindle 5 (Kindle Touch) WiFi+3G
 		-d, --device k5gb           Kindle 5 (Kindle Touch) WiFi+3G Europe
@@ -95,7 +95,7 @@
 		-d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada
 		-d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe
 		-d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico
-		-d, --device pw3w           Kindle PaperWhite 3 White (2015) WiFi
+		-d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi
 		-d, --device oz             Kindle Oasis WiFi
 		-d, --device ozg            Kindle Oasis WiFi+3G
 		-d, --device kindle2        Alias for k2 & k2i
