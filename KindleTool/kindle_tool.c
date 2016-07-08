@@ -302,8 +302,8 @@ const char *convert_device_id(Device dev)
             return "Kindle Basic 2 (2016) (Unknown Variant 0KA)";
         case KindleBasic2Unknown_0K9:
             return "Kindle Basic 2 (2016) (Unknown Variant 0K9)";
-        case KindleBasic2Unknown_0ES:
-            return "Kindle Basic 2 (2016) (Unknown Variant 0ES)";
+        case KindleBasic2Unknown_0DT:
+            return "Kindle Basic 2 (2016) (Unknown Variant 0DT)";
         case KindleUnknown:
         default:
             return "Unknown";

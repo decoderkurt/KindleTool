@@ -231,7 +231,7 @@ typedef enum
     KindleOasisUnknown_0GR = 0x21B,     // 0GR
     KindleOasisUnknown_0GS = 0x21C,     // 0GS
     // Kindle Basic 2, released summer 2016 on FW 5.(7|8).x?
-    KindleBasic2Unknown_0ES = 0x1BC,    // 0ES??
+    KindleBasic2Unknown_0DT = 0x1BC,    // 0DT??    FIXME: Confirming that one will probably make or break my base 32 tweaks...
     KindleBasic2Unknown_0K9 = 0x269,    // 0K9?
     KindleBasic2Unknown_0KA = 0x26A,    // 0KA?
     KindleUnknown = 0x00

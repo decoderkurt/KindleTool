@@ -1511,7 +1511,7 @@ int kindle_create_main(int argc, char *argv[])
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-                        info.devices[info.num_devices++] = KindleBasic2Unknown_0ES;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0DT;
                         info.devices[info.num_devices++] = KindleBasic2Unknown_0K9;
                         info.devices[info.num_devices++] = KindleBasic2Unknown_0KA;
                     }
@@ -1595,7 +1595,7 @@ int kindle_create_main(int argc, char *argv[])
                     // KT3
                     if(kt_with_unknown_devcodes)
                     {
-                        info.devices[info.num_devices++] = KindleBasic2Unknown_0ES;
+                        info.devices[info.num_devices++] = KindleBasic2Unknown_0DT;
                         info.devices[info.num_devices++] = KindleBasic2Unknown_0K9;
                         info.devices[info.num_devices++] = KindleBasic2Unknown_0KA;
                     }

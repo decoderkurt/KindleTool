@@ -49,7 +49,8 @@ static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 // Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
 static char *to_base(int64_t num, unsigned int base)
 {
-    char *tbl = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // FIXME: Custom base with the "J" skipped. Appears to take care of the White PW3 & KT3 weirdness so far...
+    char *tbl = "0123456789ABCDEFGHIKLMNOPQRSTUVWXYZ";
     char buf[66] = {'\0'};
     char *out;
     uint64_t n;
@@ -58,13 +59,6 @@ static char *to_base(int64_t num, unsigned int base)
     {
         fprintf(stderr, "base %d too large\n", base);
         return 0;
-    }
-
-    // FIXME: Special snowflake the PW3 White & the KT3 for now, because I couldn't figure out anything universal...
-    if((base == 32) && ((num >= KindlePaperWhite3WhiteWiFi && num <= KindlePW3WhiteUnknown_0KG) || (num == KindleBasic2Unknown_0ES) || (num >= KindleBasic2Unknown_0K9 && num <= KindleBasic2Unknown_0KA)))
-    {
-        // NOTE: Appears so far to only be off by one letter...
-        num += 32;
     }
 
     // safe against most negative integer

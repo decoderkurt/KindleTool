@@ -3,12 +3,8 @@
 from operator import itemgetter
 
 # NOTE: Pilfered from https://code.activestate.com/recipes/65212/
-def baseN(num, base, numerals="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
-	# FIXME: Special snowflake the PW3 White & the KT3 for now, because I couldn't figure out anything universal...
-	if ((base == 32) and ((num >= whitepw3_first_id and num <= whitepw3_last_id) or (num == kt3_off_id) or (num >= kt3_first_id and num <= kt3_last_id))):
-		# NOTE: Appears so far to only be off by one letter...
-		num += 32
-
+# FIXME: Custom base with the "J" skipped. Appears to take care of the White PW3 weirdness so far...
+def baseN(num, base, numerals="0123456789ABCDEFGHIKLMNOPQRSTUVWXYZ"):
 	if num == 0:
 		return "0"
 
@@ -23,6 +19,19 @@ def baseN(num, base, numerals="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
 		return numerals[num % base]
 	else:
 		return baseN(left_digits, base, numerals) + numerals[num % base]
+
+# NOTE: Pilfered from https://stackoverflow.com/questions/1119722/
+# FIXME: Again, custom base with the "J" skipped...
+BASE_LIST = tuple("0123456789ABCDEFGHIKLMNOPQRSTUVW")
+BASE_DICT = dict((c, v) for v, c in enumerate(BASE_LIST))
+BASE_LEN = len(BASE_LIST)
+
+def devCode(str):
+    num = 0
+    for char in str:
+        num = num * BASE_LEN + BASE_DICT[char]
+    return num
+
 
 model_tuples = [
 	('Kindle1', 0x01, 'ATVPDKIKX0DER'),
@@ -75,27 +84,27 @@ model_tuples = [
 	('KindleBasicKiwi', 0xDD, 'A9N06WOIL49CA'),
 	('ValidKindleUnknown_0x16', 0x16),
 	('ValidKindleUnknown_0x21', 0x21),
-	('KindlePaperWhite3WiFi', int('0G1', 32), 'A21RY355YUXQAF'),
-	('KindlePaperWhite3WiFi3G', int('0G2', 32), 'A6S0KGW65V1TV'),
-	('KindlePaperWhite3WiFi3GMexico', int('0G4', 32), 'A3P87LH4DLAKE2'),
-	('KindlePaperWhite3WiFi3GEurope', int('0G5', 32), 'A3OLIINW419WLP'),
-	('KindlePaperWhite3WiFi3GCanada', int('0G6', 32), 'AOPKCG97868D2'),
-	('KindlePaperWhite3WiFi3GJapan', int('0G7', 32), 'A3MTNJ7FDYZOPO'),
-	('KindlePaperWhite3WhiteWiFi', int('0KB', 32) - 32),
-	('KindlePW3WhiteUnknown_0KC', int('0KC', 32) - 32),
-	('KindlePW3WhiteUnknown_0KD', int('0KD', 32) - 32),
-	('KindlePW3WhiteUnknown_0KE', int('0KE', 32) - 32),
-	('KindlePW3WhiteUnknown_0KF', int('0KF', 32) - 32),
-	('KindlePW3WhiteUnknown_0KG', int('0KG', 32) - 32),
-	('KindleOasisWiFi', int('0GC', 32)),
-	('KindleOasisWiFi3G', int('0GD', 32)),
-	('KindleOasisUnknown_0GP', int('0GP', 32)),
-	('KindleOasisUnknown_0GQ', int('0GQ', 32)),
-	('KindleOasisUnknown_0GR', int('0GR', 32)),
-	('KindleOasisUnknown_0GS', int('0GS', 32)),
-	('KindleBasic2Unknown_0ES', int('0ES', 32) - 32),	# 0x1BC
-	('KindleBasic2Unknown_0K9', int('0K9', 32) - 32),	# 0x269
-	('KindleBasic2Unknown_0KA', int('0KA', 32) - 32),	# 0x26A
+	('KindlePaperWhite3WiFi', devCode('0G1'), 'A21RY355YUXQAF'),
+	('KindlePaperWhite3WiFi3G', devCode('0G2'), 'A6S0KGW65V1TV'),
+	('KindlePaperWhite3WiFi3GMexico', devCode('0G4'), 'A3P87LH4DLAKE2'),
+	('KindlePaperWhite3WiFi3GEurope', devCode('0G5'), 'A3OLIINW419WLP'),
+	('KindlePaperWhite3WiFi3GCanada', devCode('0G6'), 'AOPKCG97868D2'),
+	('KindlePaperWhite3WiFi3GJapan', devCode('0G7'), 'A3MTNJ7FDYZOPO'),
+	('KindlePaperWhite3WhiteWiFi', devCode('0KB')),
+	('KindlePW3WhiteUnknown_0KC', devCode('0KC')),
+	('KindlePW3WhiteUnknown_0KD', devCode('0KD')),
+	('KindlePW3WhiteUnknown_0KE', devCode('0KE')),
+	('KindlePW3WhiteUnknown_0KF', devCode('0KF')),
+	('KindlePW3WhiteUnknown_0KG', devCode('0KG')),
+	('KindleOasisWiFi', devCode('0GC')),
+	('KindleOasisWiFi3G', devCode('0GD')),
+	('KindleOasisUnknown_0GP', devCode('0GP')),
+	('KindleOasisUnknown_0GQ', devCode('0GQ')),
+	('KindleOasisUnknown_0GR', devCode('0GR')),
+	('KindleOasisUnknown_0GS', devCode('0GS')),
+	('KindleBasic2Unknown_0DT', devCode('0DT')),	# 0x1BC
+	('KindleBasic2Unknown_0K9', devCode('0K9')),	# 0x269
+	('KindleBasic2Unknown_0KA', devCode('0KA')),	# 0x26A
 	('KindleUnknown', 0x00)
 ]
 
@@ -113,7 +122,7 @@ for i, v in enumerate(model_tuples):
 		whitepw3_first_id = v[1]
 	if v[0] == 'KindlePW3WhiteUnknown_0KG':
 		whitepw3_last_id = v[1]
-	if v[0] == 'KindleBasic2Unknown_0ES':
+	if v[0] == 'KindleBasic2Unknown_0DT':
 		kt3_off_id = v[1]
 	if v[0] == 'KindleBasic2Unknown_0K9':
 		kt3_first_id = v[1]
