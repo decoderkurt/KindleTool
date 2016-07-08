@@ -1562,14 +1562,14 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
                         info.devices[info.num_devices++] = KindleVoyageUnknown_0x52;
                     }
-                    // PW3 Black
+                    // Black PW3
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GJapan;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GCanada;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3G;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GEurope;
                     info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GMexico;
-                    // PW3 White
+                    // White PW3
                     info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi;
                     if(kt_with_unknown_devcodes)
                     {
@@ -1579,7 +1579,7 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindlePW3WhiteUnknown_0KF;
                         info.devices[info.num_devices++] = KindlePW3WhiteUnknown_0KG;
                     }
-                    // OZ
+                    // Oasis
                     info.devices[info.num_devices++] = KindleOasisWiFi;
                     info.devices[info.num_devices++] = KindleOasisWiFi3G;
                     if(kt_with_unknown_devcodes)
@@ -1832,7 +1832,7 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = KindleVoyageWiFi3GJapan;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
-                    // PW3 Black
+                    // Black PW3
                     else if(strcmp(optarg, "pw3") == 0 || strcmp(optarg, "kpw3") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi;
@@ -1863,19 +1863,19 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3GMexico;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
-                    // PW3 White
+                    // White PW3
                     else if(strcmp(optarg, "pw3w") == 0 || strcmp(optarg, "kpw3w") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
                     // Oasis
-                    else if(strcmp(optarg, "oz") == 0 || strcmp(optarg, "koz") == 0)
+                    else if(strcmp(optarg, "koa") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindleOasisWiFi;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
-                    else if(strcmp(optarg, "ozg") == 0 || strcmp(optarg, "kozg") == 0)
+                    else if(strcmp(optarg, "koag") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindleOasisWiFi3G;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
