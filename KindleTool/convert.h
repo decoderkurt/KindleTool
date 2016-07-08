@@ -2,7 +2,10 @@
 //  convert.h
 //  KindleTool
 //
-//  Copyright (C) 2011-2015  Yifan Lu
+//  Copyright (C) 2011-2012  Yifan Lu
+//  Copyright (C) 2012-2016  NiLuJe
+//  Concept based on an original Python implementation by Igor Skochinsky & Jean-Yves Avenard,
+//    cf., http://www.mobileread.com/forums/showthread.php?t=63225
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
