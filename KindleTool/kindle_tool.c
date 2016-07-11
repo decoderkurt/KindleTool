@@ -92,7 +92,7 @@ void dm(unsigned char *bytes, size_t length)
     }
 }
 
-int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sign)
+int munger(FILE *input, FILE *output, size_t length, const bool fake_sign)
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
@@ -125,7 +125,7 @@ int munger(FILE *input, FILE *output, size_t length, const unsigned int fake_sig
     return 0;
 }
 
-int demunger(FILE *input, FILE *output, size_t length, const unsigned int fake_sign)
+int demunger(FILE *input, FILE *output, size_t length, const bool fake_sign)
 {
     unsigned char bytes[BUFFER_SIZE];
     size_t bytes_read;
@@ -620,7 +620,7 @@ static int kindle_obfuscate_main(int argc, char *argv[])
             return -1;
         }
     }
-    if(munger(input, output, 0, 0) < 0)
+    if(munger(input, output, 0, false) < 0)
     {
         fprintf(stderr, "Cannot obfuscate.\n");
         fclose(input);
@@ -659,7 +659,7 @@ static int kindle_deobfuscate_main(int argc, char *argv[])
             return -1;
         }
     }
-    if(demunger(input, output, 0, 0) < 0)
+    if(demunger(input, output, 0, false) < 0)
     {
         fprintf(stderr, "Cannot deobfuscate.\n");
         fclose(input);

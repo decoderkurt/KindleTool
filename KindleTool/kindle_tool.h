@@ -356,8 +356,8 @@ extern unsigned int kt_with_unknown_devcodes;
 
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);
-int munger(FILE *, FILE *, size_t, const unsigned int);
-int demunger(FILE *, FILE *, size_t, const unsigned int);
+int munger(FILE *, FILE *, size_t, const bool);
+int demunger(FILE *, FILE *, size_t, const bool);
 const char *convert_device_id(Device);
 const char *convert_platform_id(Platform);
 const char *convert_board_id(Board);

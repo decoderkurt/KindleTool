@@ -54,7 +54,7 @@ struct kttar
     char **to_sign_and_bundle_list;
     char **tweaked_to_sign_and_bundle_list;
     unsigned int sign_and_bundle_index;
-    unsigned int has_script;
+    bool has_script;
     size_t tweak_pointer_index;
 };
 
@@ -67,15 +67,15 @@ static int metadata_filter(struct archive *, void *, struct archive_entry *);
 static int write_file(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int write_entry(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
 static int copy_file_data_block(struct kttar *, struct archive *, struct archive *, struct archive_entry *);
-static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, int, char *, const unsigned int);
+static int create_from_archive_read_disk(struct kttar *, struct archive *, char *, bool, char *, const unsigned int);
 
 static int kindle_create_package_archive(const int, char **, const unsigned int, struct rsa_private_key *, const unsigned int, const unsigned int);
-static int kindle_create(UpdateInformation *, FILE *, FILE *, const unsigned int);
-static int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
+static int kindle_create(UpdateInformation *, FILE *, FILE *, const bool);
+static int kindle_create_ota_update_v2(UpdateInformation *, FILE *, FILE *, const bool);
 static int kindle_create_signature(UpdateInformation *, FILE *, FILE *);
-static int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *, const unsigned int);
-static int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const unsigned int);
-static int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const unsigned int);
+static int kindle_create_ota_update(UpdateInformation *, FILE *, FILE *, const bool);
+static int kindle_create_recovery(UpdateInformation *, FILE *, FILE *, const bool);
+static int kindle_create_recovery_v2(UpdateInformation *, FILE *, FILE *, const bool);
 
 #endif
 

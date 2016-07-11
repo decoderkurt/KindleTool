@@ -85,7 +85,7 @@ static int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
     return 0;
 }
 
-static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const unsigned int fake_sign, const unsigned int unwrap_only, FILE *unwrap_output, char *header_md5)
+static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const bool fake_sign, const bool unwrap_only, FILE *unwrap_output, char *header_md5)
 {
     UpdateHeader header;
     BundleVersion bundle_version;
@@ -212,7 +212,7 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const uns
     return -1; // If we get here, there has been an error
 }
 
-static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const bool fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex = 0;
@@ -262,10 +262,10 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const unsigne
         memcpy(&device, &data[hindex], sizeof(uint16_t));
         fprintf(stderr, "Device         ");
         // Slightly hackish way to detect unknown devices...
-        unsigned int is_unknown = 0;
+        bool is_unknown = false;
         if(strcmp(convert_device_id(device), "Unknown") == 0)
         {
-            is_unknown = 1;
+            is_unknown = true;
             fprintf(stderr, "Unknown (");
         }
         else
@@ -402,7 +402,7 @@ static int kindle_convert_signature(UpdateHeader *header, FILE *input, FILE *out
     return 0;
 }
 
-static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *output, const bool fake_sign, char *header_md5)
 {
     if(fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE)
     {
@@ -416,10 +416,10 @@ static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *ou
     fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
     fprintf(stderr, "Device         ");
     // Slightly hackish way to detect unknown devices...
-    unsigned int is_unknown = 0;
+    bool is_unknown = false;
     if(strcmp(convert_device_id(header->data.ota_update.device), "Unknown") == 0)
     {
-        is_unknown = 1;
+        is_unknown = true;
         fprintf(stderr, "Unknown (");
     }
     else
@@ -452,7 +452,7 @@ static int kindle_convert_ota_update(UpdateHeader *header, FILE *input, FILE *ou
     return demunger(input, output, 0, fake_sign);
 }
 
-static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *output, const bool fake_sign, char *header_md5)
 {
     if(fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) < RECOVERY_UPDATE_BLOCK_SIZE)
     {
@@ -485,10 +485,10 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
     {
         fprintf(stderr, "Device         ");
         // Slightly hackish way to detect unknown devices...
-        unsigned int is_unknown = 0;
+        bool is_unknown = false;
         if(strcmp(convert_device_id(header->data.recovery_update.device), "Unknown") == 0)
         {
-            is_unknown = 1;
+            is_unknown = true;
             fprintf(stderr, "Unknown (");
         }
         else
@@ -520,7 +520,7 @@ static int kindle_convert_recovery(UpdateHeader *header, FILE *input, FILE *outp
     return demunger(input, output, 0, fake_sign);
 }
 
-static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned int fake_sign, char *header_md5)
+static int kindle_convert_recovery_v2(FILE *input, FILE *output, const bool fake_sign, char *header_md5)
 {
     unsigned char *data;
     size_t hindex = 0;
@@ -596,10 +596,10 @@ static int kindle_convert_recovery_v2(FILE *input, FILE *output, const unsigned 
         memcpy(&device, &data[hindex], sizeof(uint16_t));
         fprintf(stderr, "Device         ");
         // Slightly hackish way to detect unknown devices...
-        unsigned int is_unknown = 0;
+        bool is_unknown = false;
         if(strcmp(convert_device_id(device), "Unknown") == 0)
         {
-            is_unknown = 1;
+            is_unknown = true;
             fprintf(stderr, "Unknown (");
         }
         else
@@ -664,13 +664,13 @@ int kindle_convert_main(int argc, char *argv[])
     char *unwrapped_name = NULL;
     size_t len;
     struct stat st;
-    int info_only = 0;
-    int keep_ori = 0;
-    int extract_sig = 0;
-    unsigned int fake_sign = 0;
-    unsigned int unwrap_only = 0;
+    bool info_only = false;
+    bool keep_ori = false;
+    bool extract_sig = false;
+    bool fake_sign = false;
+    bool unwrap_only = false;
     unsigned int ext_offset = 0;
-    int fail = 1;
+    bool fail = true;
     char header_md5[MD5_HASH_LENGTH + 1];
 
     while((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1)
@@ -678,22 +678,22 @@ int kindle_convert_main(int argc, char *argv[])
         switch(opt)
         {
             case 'i':
-                info_only = 1;
+                info_only = true;
                 break;
             case 'k':
-                keep_ori = 1;
+                keep_ori = true;
                 break;
             case 'c':
                 output = stdout;
                 break;
             case 's':
-                extract_sig = 1;
+                extract_sig = true;
                 break;
             case 'u':
-                fake_sign = 1;
+                fake_sign = true;
                 break;
             case 'w':
-                unwrap_only = 1;
+                unwrap_only = true;
                 break;
             case ':':
                 fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);
@@ -713,14 +713,14 @@ int kindle_convert_main(int argc, char *argv[])
     if(info_only)
     {
         output = NULL;
-        extract_sig = 0;
-        unwrap_only = 0;
+        extract_sig = false;
+        unwrap_only = false;
     }
     // Don't try to extract or unwrap the signature of an unsiged package
     if(fake_sign)
     {
-        extract_sig = 0;
-        unwrap_only = 0;
+        extract_sig = false;
+        unwrap_only = false;
     }
     // Don't try to output anywhere if we only want to unwrap the package
     if(unwrap_only)
@@ -733,13 +733,13 @@ int kindle_convert_main(int argc, char *argv[])
         // Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
         while(optind < argc)
         {
-            fail = 0;
+            fail = false;
             in_name = argv[optind++];
             // Check that a valid package input properly ends in .bin or .stgz, unless we just want to parse the header
             if(!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name)))
             {
                 fprintf(stderr, "Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n", in_name);
-                fail = 1;
+                fail = true;
                 continue;   // It's fatal, go away
             }
             // Set the appropriate file extension offset...
@@ -757,7 +757,7 @@ int kindle_convert_main(int argc, char *argv[])
                 if((output = fopen(out_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
-                    fail = 1;
+                    fail = true;
                     free(out_name);
                     continue;   // It's fatal, go away
                 }
@@ -772,7 +772,7 @@ int kindle_convert_main(int argc, char *argv[])
                 if((sig_output = fopen(sig_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
-                    fail = 1;
+                    fail = true;
                     if(!info_only && !unwrap_only && output != stdout)
                     {
                         if(output != NULL)
@@ -800,7 +800,7 @@ int kindle_convert_main(int argc, char *argv[])
                 if((unwrap_output = fopen(unwrapped_name, "wb")) == NULL)
                 {
                     fprintf(stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
-                    fail = 1;
+                    fail = true;
                     free(unwrapped_name);
                     if(extract_sig)
                     {
@@ -817,7 +817,7 @@ int kindle_convert_main(int argc, char *argv[])
             if((input = fopen(in_name, "rb")) == NULL)
             {
                 fprintf(stderr, "Cannot open input '%s' for reading.\n", in_name);
-                fail = 1;
+                fail = true;
                 if(!info_only && !unwrap_only && output != stdout)
                 {
                     // Don't leave 0-byte files behind...
@@ -871,7 +871,7 @@ int kindle_convert_main(int argc, char *argv[])
                 fprintf(stderr, "Error converting %s package '%s'.\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
                 if(output != NULL && output != stdout)
                     unlink(out_name); // Clean up our mess, if we made one
-                fail = 1;
+                fail = true;
             }
             if(output != stdout && !info_only && !keep_ori && !fail) // If output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
                 unlink(in_name);
@@ -1013,7 +1013,7 @@ int kindle_extract_main(int argc, char *argv[])
         { "unsigned", no_argument, NULL, 'u' },
         { NULL, 0, NULL, 0 }
     };
-    unsigned int fake_sign = 0;
+    bool fake_sign = false;
 
     char *bin_filename = NULL;
     char tgz_filename[] = KT_TMPDIR "/kindletool_extract_tgz_XXXXXX";
@@ -1029,7 +1029,7 @@ int kindle_extract_main(int argc, char *argv[])
         switch(opt)
         {
             case 'u':
-                fake_sign = 1;
+                fake_sign = true;
                 break;
             case ':':
                 fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);

@@ -323,11 +323,11 @@ static int copy_file_data_block(struct kttar *kttar, struct archive *a, struct a
 }
 
 // Helper function to populate & write entries from a read_disk_open loop, tailored to our needs (helps avoiding code duplication, since we're doing this in two passes)
-static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, int first_pass, char *signame, const unsigned int real_blocksize)
+static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a, char *input_filename, bool first_pass, char *signame, const unsigned int real_blocksize)
 {
     int r;
-    unsigned int is_exec = 0;
-    unsigned int is_kernel = 0;
+    bool is_exec = false;
+    bool is_kernel = false;
     char *original_path = NULL;
     char *tweaked_path = NULL;
 
@@ -427,30 +427,30 @@ static int create_from_archive_read_disk(struct kttar *kttar, struct archive *a,
             {
                 archive_entry_set_perm(entry, 0755);
                 // It's a script, keep track of it
-                is_exec = 1;
+                is_exec = true;
                 kttar->has_script = is_exec;
-                is_kernel = 0;
+                is_kernel = false;
             }
             // If we have a regular file, and it's a kernel, and we're a recovery update, keep track of it
             else if(archive_entry_filetype(entry) == AE_IFREG && real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(archive_entry_pathname(entry)))
             {
                 archive_entry_set_perm(entry, 0644);
-                is_exec = 0;
+                is_exec = false;
                 // It's a kernel, keep track of it
-                is_kernel = 1;
+                is_kernel = true;
             }
             // If we have a directory, make it searchable...
             else if(archive_entry_filetype(entry) == AE_IFDIR)
             {
                 archive_entry_set_perm(entry, 0755);
-                is_exec = 0;
-                is_kernel = 0;
+                is_exec = false;
+                is_kernel = false;
             }
             else
             {
                 archive_entry_set_perm(entry, 0644);
-                is_exec = 0;
-                is_kernel = 0;
+                is_exec = false;
+                is_kernel = false;
             }
 
             // Non-regular files get archived with zero size.
@@ -583,7 +583,7 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
         }
 
         // Populate & write our entries from read_disk_open's directory walking...
-        if(create_from_archive_read_disk(kttar, a, filename[i], 1, NULL, real_blocksize) != 0)
+        if(create_from_archive_read_disk(kttar, a, filename[i], true, NULL, real_blocksize) != 0)
             goto cleanup;
     }
 
@@ -736,7 +736,7 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
 
         // And now, for the fun part! Append our sigfile to the archive...
         // Populate & write our entries...
-        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, 0, signame, real_blocksize) != 0)
+        if(create_from_archive_read_disk(kttar, a, sigabsolutepath, false, signame, real_blocksize) != 0)
         {
             unlink(sigabsolutepath);
             goto cleanup;
@@ -806,7 +806,7 @@ cleanup:
     return 1;
 }
 
-static int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output, const bool fake_sign)
 {
     unsigned char buffer[BUFFER_SIZE];
     size_t count;
@@ -937,7 +937,7 @@ static int kindle_create(UpdateInformation *info, FILE *input_tgz, FILE *output,
     return -1;
 }
 
-static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const bool fake_sign)
 {
     size_t header_size;
     unsigned char *header;
@@ -987,7 +987,7 @@ static int kindle_create_ota_update_v2(UpdateInformation *info, FILE *input_tgz,
             free(header);
             return -1;
         }
-        demunger(input_tgz, demunged_tgz, 0, 0);
+        demunger(input_tgz, demunged_tgz, 0, false);
         rewind(input_tgz);
         rewind(demunged_tgz);
         if(md5_sum(demunged_tgz, (char *)&header[hindex]) < 0)
@@ -1067,7 +1067,7 @@ static int kindle_create_signature(UpdateInformation *info, FILE *input_bin, FIL
     return 0;
 }
 
-static int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FILE *output, const bool fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -1088,7 +1088,7 @@ static int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FI
             fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             return -1;
         }
-        demunger(input_tgz, obfuscated_tgz, 0, 0);
+        demunger(input_tgz, obfuscated_tgz, 0, false);
         rewind(input_tgz);
         rewind(obfuscated_tgz);
         if(md5_sum(obfuscated_tgz, header.data.ota_update.md5_sum) < 0)
@@ -1120,7 +1120,7 @@ static int kindle_create_ota_update(UpdateInformation *info, FILE *input_tgz, FI
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-static int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE *output, const bool fake_sign)
 {
     UpdateHeader header;
     FILE *obfuscated_tgz;
@@ -1155,7 +1155,7 @@ static int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE
             fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
             return -1;
         }
-        demunger(input_tgz, obfuscated_tgz, 0, 0);
+        demunger(input_tgz, obfuscated_tgz, 0, false);
         rewind(input_tgz);
         rewind(obfuscated_tgz);
         if(md5_sum(obfuscated_tgz, header.data.recovery_update.md5_sum) < 0)
@@ -1187,7 +1187,7 @@ static int kindle_create_recovery(UpdateInformation *info, FILE *input_tgz, FILE
     return munger(input_tgz, output, 0, fake_sign);
 }
 
-static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const unsigned int fake_sign)
+static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, FILE *output, const bool fake_sign)
 {
     size_t header_size;
     unsigned char *header;
@@ -1220,7 +1220,7 @@ static int kindle_create_recovery_v2(UpdateInformation *info, FILE *input_tgz, F
             free(header);
             return -1;
         }
-        demunger(input_tgz, demunged_tgz, 0, 0);
+        demunger(input_tgz, demunged_tgz, 0, false);
         rewind(input_tgz);
         rewind(demunged_tgz);
         if(md5_sum(demunged_tgz, (char *)&header[hindex]) < 0)
@@ -1323,12 +1323,12 @@ int kindle_create_main(int argc, char *argv[])
     char *tarball_filename = NULL;
     char *valid_update_file_pattern = NULL;
     int tarball_fd = -1;
-    unsigned int keep_archive = 0;
-    unsigned int skip_archive = 0;
-    unsigned int fake_sign = 0;
-    unsigned int userdata_only = 0;
+    bool keep_archive = false;
+    bool skip_archive = false;
+    bool fake_sign = false;
+    bool userdata_only = false;
     bool enforce_ota = false;
-    unsigned int legacy = 0;
+    bool legacy = false;
     unsigned int real_blocksize;
     struct archive_entry *entry;
     struct archive *match;
@@ -2080,19 +2080,19 @@ int kindle_create_main(int argc, char *argv[])
                 info.metastrings[info.num_meta - 1] = strdup(optarg);
                 break;
             case 'a':
-                keep_archive = 1;
+                keep_archive = true;
                 break;
             case 'u':
-                fake_sign = 1;
+                fake_sign = true;
                 break;
             case 'U':
-                userdata_only = 1;
+                userdata_only = true;
                 break;
             case 'O':
                 enforce_ota = true;
                 break;
             case 'C':
-                legacy = 1;
+                legacy = true;
                 break;
             case ':':
                 fprintf(stderr, "Missing argument for switch '%c'.\n", optopt);
@@ -2231,7 +2231,7 @@ int kindle_create_main(int argc, char *argv[])
     // If we don't actually build an archive, legacy mode makes no sense
     if(skip_archive)
     {
-        legacy = 0;
+        legacy = false;
     }
 
     if(optind < argc)
@@ -2330,7 +2330,7 @@ int kindle_create_main(int argc, char *argv[])
         if(IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0]))
         {
             // NOTE: There's no real check besides the file extension...
-            skip_archive = 1;
+            skip_archive = true;
             // Use it as our tarball...
             tarball_filename = strdup(input_list[0]);
         }
