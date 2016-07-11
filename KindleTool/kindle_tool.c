@@ -554,6 +554,7 @@ static int kindle_print_help(const char *prog_name)
         "      -a, --archive               Keep the intermediate archive.\n"
         "      -u, --unsigned              Build an unsigned & mangled userdata package.\n"
         "      -U, --userdata              Build an userdata package (can only be used with the sig update type).\n"
+        "      -O, --ota                   Build a versioned OTA bundle (can only be used with the ota2 update type).\n"
         "      -C, --legacy                Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:\n"
         "                                    every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths\n"
         "                                    relative to the path passed on the commandline, like if we had chdir'ed into it.\n"

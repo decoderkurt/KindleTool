@@ -159,6 +159,7 @@
 		-a, --archive               Keep the intermediate archive.
 		-u, --unsigned              Build an unsigned & mangled userdata package.
 		-U, --userdata              Build an userdata package (can only be used with the sig update type).
+		-O, --ota                   Build a versioned OTA bundle (can only be used with the ota2 update type).
 		-C, --legacy                Emulate the behaviour of yifanlu's KindleTool regarding directories. By default, we behave like tar:
                                       every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths
                                       relative to the path passed on the commandline, like if we had chdir'ed into it.

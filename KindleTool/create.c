@@ -1308,6 +1308,7 @@ int kindle_create_main(int argc, char *argv[])
         { "archive", no_argument, NULL, 'a' },
         { "unsigned", no_argument, NULL, 'u' },
         { "userdata", no_argument, NULL, 'U' },
+        { "ota", no_argument, NULL, 'O' },
         { "legacy", no_argument, NULL, 'C' },
         { NULL, 0, NULL, 0 }
     };
@@ -1326,6 +1327,7 @@ int kindle_create_main(int argc, char *argv[])
     unsigned int skip_archive = 0;
     unsigned int fake_sign = 0;
     unsigned int userdata_only = 0;
+    bool enforce_ota = false;
     unsigned int legacy = 0;
     unsigned int real_blocksize;
     struct archive_entry *entry;
@@ -1383,7 +1385,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auUC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auUOC", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -2086,6 +2088,9 @@ int kindle_create_main(int argc, char *argv[])
             case 'U':
                 userdata_only = 1;
                 break;
+            case 'O':
+                enforce_ota = true;
+                break;
             case 'C':
                 legacy = 1;
                 break;
@@ -2116,6 +2121,21 @@ int kindle_create_main(int argc, char *argv[])
     }
     else
     {
+        // Did we want to enforce an OTA bundle type?
+        if(enforce_ota)
+        {
+            // Only makes sense for ota2...
+            if(info.version != OTAUpdateV2)
+            {
+                fprintf(stderr, "Invalid update type (%s). Enforcing the versioned OTA bundle type only makes sense for OTA V2.\n", convert_bundle_version(info.version));
+                goto do_error;
+            }
+            // We of course need the versioned ota bundle type...
+            strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+            // But also a source & target version!
+            info.source_revision = 2443670049;       // FW 5.5.0
+            info.target_revision = 1 + 2990510001;   // FW 5.8.1.0.1
+        }
         // Musn't be *only* a sig envelope...
         if(info.version == UpdateSignature)
         {
