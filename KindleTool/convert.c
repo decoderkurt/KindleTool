@@ -49,13 +49,13 @@ static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 // Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
 static char *to_base(int64_t num, unsigned int base)
 {
-    // FIXME: Custom base with the "J" skipped. Appears to take care of the White PW3 & KT3 weirdness so far...
-    char *tbl = "0123456789ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
+    char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     char buf[66] = {'\0'};
     char *out;
     uint64_t n;
     unsigned int i, len = 0, neg = 0;
-    if(base > 36)
+    if(base > strlen(tbl))
     {
         fprintf(stderr, "base %d too large\n", base);
         return 0;

@@ -290,20 +290,20 @@ const char *convert_device_id(Device dev)
             return "Kindle Oasis WiFi";
         case KindleOasisWiFi3G:
             return "Kindle Oasis WiFi+3G";
-        case KindleOasisUnknown_0GP:
-            return "Kindle Oasis (Unknown Variant 0GP)";
-        case KindleOasisUnknown_0GQ:
-            return "Kindle Oasis (Unknown Variant 0GQ)";
         case KindleOasisUnknown_0GR:
             return "Kindle Oasis (Unknown Variant 0GR)";
         case KindleOasisUnknown_0GS:
             return "Kindle Oasis (Unknown Variant 0GS)";
+        case KindleOasisUnknown_0GT:
+            return "Kindle Oasis (Unknown Variant 0GT)";
+        case KindleOasisWiFi3GEurope:
+            return "Kindle Oasis WiFi+3G Europe";
         case KindleBasic2Unknown_0KA:
             return "Kindle Basic 2 (2016) (Unknown Variant 0KA)";
         case KindleBasic2Unknown_0K9:
             return "Kindle Basic 2 (2016) (Unknown Variant 0K9)";
-        case KindleBasic2Unknown_0DT:
-            return "Kindle Basic 2 (2016) (Unknown Variant 0DT)";
+        case KindleBasic2Unknown_0DU:
+            return "Kindle Basic 2 (2016) (Unknown Variant 0DU)";
         case KindleUnknown:
         default:
             return "Unknown";
@@ -493,6 +493,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi\n"
         "      -d, --device koa            Kindle Oasis WiFi\n"
         "      -d, --device koag           Kindle Oasis WiFi+3G\n"
+        "      -d, --device koagb          Kindle Oasis WiFi+3G Europe\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
         "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
         "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -504,7 +505,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg, kvgb & kvgj\n"
         "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm & pw3w\n"
-        "      -d, --device oasis          Alias for koa & koag\n"
+        "      -d, --device oasis          Alias for koa, koag & koagb\n"
         "      -d, --device basic2         Alias for a set of as yet unidentified variants\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis & basic2\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
