@@ -21,7 +21,7 @@ def baseN(num, base, numerals="0123456789ABCDEFGHJKLMNPQRSTUVWXYZ"):
 		return baseN(left_digits, base, numerals) + numerals[num % base]
 
 # NOTE: Pilfered from https://stackoverflow.com/questions/1119722/
-BASE_LIST = tuple("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ")
+BASE_LIST = tuple("0123456789ABCDEFGHJKLMNPQRSTUVWX")
 BASE_DICT = dict((c, v) for v, c in enumerate(BASE_LIST))
 BASE_LEN = len(BASE_LIST)
 
@@ -134,4 +134,4 @@ print '\nKindle models with new device code decoding (i.e., >= PW3)\n'
 for t in model_tuples:
 	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
-			print "{:<40} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
+			print "{:<40} {:04X} (0{:<2} <-> {:04X})".format(t[0], t[1], baseN(t[1], 32), devCode(baseN(t[1], 32)))
