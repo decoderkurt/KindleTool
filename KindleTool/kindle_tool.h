@@ -219,7 +219,7 @@ typedef enum
     KindlePaperWhite3WiFi3GJapan = 0x207,       // 0G7
     // Kindle PaperWhite 3, White, appeared w/ FW 5.7.3.1, released summer 2016 on FW 5.7.x?
     KindlePaperWhite3WhiteWiFi = 0x26B,         // 0KB
-    KindlePW3WhiteUnknown_0KC = 0x26C,          // 0KC?
+    KindlePaperWhite3WhiteWiFi3GJapan = 0x26C,  // 0KC
     KindlePW3WhiteUnknown_0KD = 0x26D,          // 0KD?
     KindlePW3WhiteUnknown_0KE = 0x26E,          // 0KE?
     KindlePW3WhiteUnknown_0KF = 0x26F,          // 0KF?
