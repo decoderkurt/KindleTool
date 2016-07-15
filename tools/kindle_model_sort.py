@@ -103,7 +103,7 @@ model_tuples = [
 	('KindleOasisWiFi3GEurope', 0x21C),				# 0GU
 	('KindleBasic2Unknown_0DU', 0x1BC),
 	('KindleBasic2', 0x269),					# 0K9
-	('KindleBasic2Unknown_0KA', 0x26A),
+	('KindleBasic2White', 0x26A),					# 0KA
 	('KindleUnknown', 0x00)
 ]
 

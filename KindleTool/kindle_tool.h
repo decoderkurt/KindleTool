@@ -233,8 +233,8 @@ typedef enum
     KindleOasisWiFi3GEurope = 0x21C,    // 0GU
     // Kindle Basic 2, released summer 2016 on FW 5.8.0
     KindleBasic2Unknown_0DU = 0x1BC,    // 0DU??    FIXME: Confirming that one will probably make or break my base 32 tweaks...
-    KindleBasic2 = 0x269,               // 0K9  (Black)
-    KindleBasic2Unknown_0KA = 0x26A,    // 0KA?
+    KindleBasic2 = 0x269,               // 0K9 (Black)
+    KindleBasic2White = 0x26A,          // 0KA (White)
     KindleUnknown = 0x00
 } Device;
 
