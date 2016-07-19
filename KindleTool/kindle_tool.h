@@ -202,7 +202,7 @@ typedef enum
     KindleVoyageWiFi3G = 0x54,
     KindleVoyageWiFi3GJapan = 0x2A,
     KindleVoyageUnknown_0x4F = 0x4F,
-    KindleVoyageUnknown_0x52 = 0x52,
+    KindleVoyageWiFi3GMexico = 0x52,
     KindleVoyageWiFi3GEurope = 0x53,
     ValidKindleUnknown_0x07 = 0x07,
     ValidKindleUnknown_0x0B = 0x0B,
