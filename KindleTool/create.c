@@ -2153,7 +2153,7 @@ int kindle_create_main(int argc, char *argv[])
             strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
             // But also a source & target version!
             info.source_revision = 2443670049;       // FW 5.5.0
-            info.target_revision = 1 + 2990510001;   // FW 5.8.1.0.1
+            info.target_revision = 1 + 3018920018;   // FW 5.8.2
             // NOTE: Don't expece those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
         }
         // Musn't be *only* a sig envelope...
