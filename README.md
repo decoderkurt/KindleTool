@@ -105,6 +105,7 @@
 		-d, --device koa            Kindle Oasis WiFi
 		-d, --device koag           Kindle Oasis WiFi+3G
 		-d, --device koagb          Kindle Oasis WiFi+3G Europe
+		-d, --device koagbi         Kindle Oasis WiFi+3G International
 		-d, --device kt3            Kindle Basic 2 (2016)
 		-d, --device kt3w           White Kindle Basic 2 (2016)
 		-d, --device kindle2        Alias for k2 & k2i
@@ -117,8 +118,8 @@
 		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl
 		-d, --device basic          Alias for kt2 & kt2a
 		-d, --device voyage         Alias for kv, kvg, kvgb, kvgj & kvgm
-		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3w & pw3wgj
-		-d, --device oasis          Alias for koa, koag & koagb
+		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib
+		-d, --device oasis          Alias for koa, koag, koagb & koagbi
 		-d, --device basic2         Alias for kt3 & kt3w
 		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis & basic2
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).

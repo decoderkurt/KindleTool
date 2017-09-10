@@ -229,7 +229,7 @@ typedef enum
     // Kindle Oasis, released late spring 2016 on FW 5.7.1.1
     KindleOasisWiFi = 0x20C,            // 0GC
     KindleOasisWiFi3G = 0x20D,          // 0GD
-    KindleOasisUnknown_0GR = 0x219,     // 0GR?
+    KindleOasisWiFi3GInternational = 0x219,     // 0GR
     KindleOasisUnknown_0GS = 0x21A,     // 0GS?
     KindleOasisUnknown_0GT = 0x21B,     // 0GT?
     KindleOasisWiFi3GEurope = 0x21C,    // 0GU

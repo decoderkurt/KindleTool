@@ -99,7 +99,7 @@ model_tuples = [
 	('KindlePaperWhite3WiFi32GBJapanWhite', 0x294),		# 0LL
 	('KindleOasisWiFi', 0x20C),					# 0GC
 	('KindleOasisWiFi3G', 0x20D),					# 0GD
-	('KindleOasisUnknown_0GR', 0x219),
+	('KindleOasisWiFi3GInternational', 0x219),	# 0GR
 	('KindleOasisUnknown_0GS', 0x21A),
 	('KindleOasisUnknown_0GT', 0x21B),
 	('KindleOasisWiFi3GEurope', 0x21C),				# 0GU
@@ -120,20 +120,20 @@ print 'Kindle models sorted by device code\n'
 for t in sorted(model_tuples, key=itemgetter(1)):
 	# Handle the base32hex device IDs in a dedicated manner...
 	if t[1] > 0xFF:
-		print "{:<40} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else '')
+		print "{:<45} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else '')
 	else:
-		print "{:<40} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
+		print "{:<45} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
 
 print '\nKindle models >= KindleVoyageUnknown_0x2A (i.e., Platform >= Wario)\n'
 for t in model_tuples:
 	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
-			print "{:<40} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
+			print "{:<45} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
 		else:
-			print "{:<40} {:02X}".format(t[0], t[1])
+			print "{:<45} {:02X}".format(t[0], t[1])
 
 print '\nKindle models with new device code decoding (i.e., >= PW3)\n'
 for t in model_tuples:
 	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
-			print "{:<40} {:04X} (0{:<2} <-> {:04X})".format(t[0], t[1], baseN(t[1], 32), devCode(baseN(t[1], 32)))
+			print "{:<45} {:04X} (0{:<2} <-> {:04X})".format(t[0], t[1], baseN(t[1], 32), devCode(baseN(t[1], 32)))

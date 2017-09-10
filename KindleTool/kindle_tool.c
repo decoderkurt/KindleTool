@@ -294,8 +294,8 @@ const char *convert_device_id(Device dev)
             return "Kindle Oasis WiFi";
         case KindleOasisWiFi3G:
             return "Kindle Oasis WiFi+3G";
-        case KindleOasisUnknown_0GR:
-            return "Kindle Oasis (Unknown Variant 0GR)";
+        case KindleOasisWiFi3GInternational:
+            return "Kindle Oasis WiFi+3G International";
         case KindleOasisUnknown_0GS:
             return "Kindle Oasis (Unknown Variant 0GS)";
         case KindleOasisUnknown_0GT:
@@ -504,6 +504,7 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device koa            Kindle Oasis WiFi\n"
         "      -d, --device koag           Kindle Oasis WiFi+3G\n"
         "      -d, --device koagb          Kindle Oasis WiFi+3G Europe\n"
+        "      -d, --device koagbi         Kindle Oasis WiFi+3G International\n"
         "      -d, --device kt3            Kindle Basic 2 (2016)\n"
         "      -d, --device kt3w           White Kindle Basic 2 (2016)\n"
         "      -d, --device kindle2        Alias for k2 & k2i\n"
@@ -516,8 +517,8 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl\n"
         "      -d, --device basic          Alias for kt2 & kt2a\n"
         "      -d, --device voyage         Alias for kv, kvg, kvgb, kvgj & kvgm\n"
-        "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3w & pw3wgj\n"
-        "      -d, --device oasis          Alias for koa, koag & koagb\n"
+        "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib\n"
+        "      -d, --device oasis          Alias for koa, koag, koagb & koagbi\n"
         "      -d, --device basic2         Alias for kt3 & kt3w\n"
         "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis & basic2\n"
         "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
