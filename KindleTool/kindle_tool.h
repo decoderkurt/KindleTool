@@ -221,8 +221,8 @@ typedef enum
     KindlePaperWhite3WhiteWiFi = 0x26B,         // 0KB
     KindlePaperWhite3WhiteWiFi3GJapan = 0x26C,  // 0KC
     KindlePW3WhiteUnknown_0KD = 0x26D,          // 0KD?
-    KindlePW3WhiteUnknown_0KE = 0x26E,          // 0KE?
-    KindlePW3WhiteUnknown_0KF = 0x26F,          // 0KF?
+    KindlePaperWhite3WhiteWiFi3GInternational = 0x26E,          // 0KE
+    KindlePaperWhite3WhiteWiFi3GInternationalBis = 0x26F,       // 0KF
     KindlePW3WhiteUnknown_0KG = 0x270,          // 0KG?
     KindlePaperWhite3BlackWiFi32GBJapan = 0x293,// 0LK
     KindlePaperWhite3WhiteWiFi32GBJapan = 0x294,// 0LL
