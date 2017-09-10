@@ -287,9 +287,9 @@ const char *convert_device_id(Device dev)
         case KindlePW3WhiteUnknown_0KG:
             return "White Kindle PaperWhite 3 (Unknown Variant 0KG)";
         case KindlePaperWhite3BlackWiFi32GBJapan:
-            return "Kindle PaperWhite 3 (2017) WiFi (32GB) Japan";
+            return "Kindle PaperWhite 3 (2016) WiFi (32GB) Japan";
         case KindlePaperWhite3WhiteWiFi32GBJapan:
-            return "White Kindle PaperWhite 3 (2017) WiFi (32GB) Japan";
+            return "White Kindle PaperWhite 3 (2016) WiFi (32GB) Japan";
         case KindleOasisWiFi:
             return "Kindle Oasis WiFi";
         case KindleOasisWiFi3G:
@@ -495,10 +495,10 @@ static int kindle_print_help(const char *prog_name)
         "      -d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada\n"
         "      -d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe\n"
         "      -d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico\n"
-        "      -d, --device pw3jl          Kindle PaperWhite 3 (2017) WiFi (32GB) Japan\n"
+        "      -d, --device pw3jl          Kindle PaperWhite 3 (2016) WiFi (32GB) Japan\n"
         "      -d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi\n"
         "      -d, --device pw3wgj         White Kindle PaperWhite 3 (2016) WiFi+3G Japan\n"
-        "      -d, --device pw3wjl         White Kindle PaperWhite 3 (2017) WiFi (32GB) Japan\n"
+        "      -d, --device pw3wjl         White Kindle PaperWhite 3 (2016) WiFi (32GB) Japan\n"
         "      -d, --device koa            Kindle Oasis WiFi\n"
         "      -d, --device koag           Kindle Oasis WiFi+3G\n"
         "      -d, --device koagb          Kindle Oasis WiFi+3G Europe\n"
