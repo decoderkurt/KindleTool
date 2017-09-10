@@ -1898,12 +1898,12 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi32GBJapan;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
-                    else if(strcmp(optarg, "pw3wi") == 0 || strcmp(optarg, "kpw3wi") == 0)
+                    else if(strcmp(optarg, "pw3wgi") == 0 || strcmp(optarg, "kpw3wgi") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GInternational;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
-                    else if(strcmp(optarg, "pw3wib") == 0 || strcmp(optarg, "kpw3wib") == 0)
+                    else if(strcmp(optarg, "pw3wgib") == 0 || strcmp(optarg, "kpw3wgib") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GInternationalBis;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);

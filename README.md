@@ -100,8 +100,8 @@
 		-d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi
 		-d, --device pw3wgj         White Kindle PaperWhite 3 (2016) WiFi+3G Japan
 		-d, --device pw3wjl         White Kindle PaperWhite 3 (2016) WiFi (32GB) Japan
-		-d, --device pw3wi          White Kindle PaperWhite 3 (2016) WiFi+3G International
-		-d, --device pw3wib         White Kindle PaperWhite 3 (2016) WiFi+3G International (Bis)
+		-d, --device pw3wgi         White Kindle PaperWhite 3 (2016) WiFi+3G International
+		-d, --device pw3wgib        White Kindle PaperWhite 3 (2016) WiFi+3G International (Bis)
 		-d, --device koa            Kindle Oasis WiFi
 		-d, --device koag           Kindle Oasis WiFi+3G
 		-d, --device koagb          Kindle Oasis WiFi+3G Europe
