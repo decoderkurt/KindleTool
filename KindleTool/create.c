@@ -1316,7 +1316,6 @@ int kindle_create_main(int argc, char *argv[])
     FILE *input = NULL;
     FILE *output = stdout;
     int i;
-    char sourceRevFlag=0, targetRevFlag=0;
     unsigned int ui;
     char *output_filename = NULL;
     char **input_list = NULL;
@@ -1329,6 +1328,8 @@ int kindle_create_main(int argc, char *argv[])
     bool fake_sign = false;
     bool userdata_only = false;
     bool enforce_ota = false;
+    bool enforce_source_rev = false;
+    bool enforce_target_rev = false;
     bool legacy = false;
     unsigned int real_blocksize;
     struct archive_entry *entry;
@@ -2063,11 +2064,11 @@ int kindle_create_main(int argc, char *argv[])
                 break;
             case 's':
                 info.source_revision = strtoull(optarg, NULL, 0);
-                sourceRevFlag = 1;
+                enforce_source_rev = true;
                 break;
             case 't':
                 info.target_revision = strtoull(optarg, NULL, 0);
-                targetRevFlag = 1;
+                enforce_target_rev = true;
                 break;
             case '1':
                 info.magic_1 = (uint32_t) atoi(optarg);
@@ -2155,10 +2156,12 @@ int kindle_create_main(int argc, char *argv[])
             // We of course need the versioned ota bundle type...
             strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
             // But also a source & target version!
-            if( sourceRevFlag == 0 ){
+            if(!enforce_source_rev)
+            {
                 info.source_revision = 2443670049;       // FW 5.5.0
             }
-            if( targetRevFlag == 0 ){
+            if(!enforce_target_rev)
+            {
                 info.target_revision = 1 + 3202090019;   // FW 5.8.10
             }
             // NOTE: Don't expece those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
