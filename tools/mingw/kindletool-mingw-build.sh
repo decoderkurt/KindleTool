@@ -128,14 +128,14 @@ mkdir -p "${TC_BUILD_DIR}"
 KT_TOOLS_DIR="${PWD}/.."
 cd "${TC_BUILD_DIR}"
 
-ZLIB_VER="1.2.8"
+ZLIB_VER="1.2.11"
 ZLIB_DIR="zlib-${ZLIB_VER}"
 ZLIB_FILE="zlib${ZLIB_VER//.}.zip"
-GMP_VER="6.1.1"
+GMP_VER="6.1.2"
 GMP_DIR="gmp-${GMP_VER%a}"
-NETTLE_VER="3.2"
+NETTLE_VER="3.3"
 NETTLE_DIR="nettle-${NETTLE_VER}"
-LIBARCHIVE_VER="3.2.1"
+LIBARCHIVE_VER="3.3.2"
 LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 if [[ ! -d "${ZLIB_DIR}" ]] ; then
