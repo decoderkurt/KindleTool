@@ -224,8 +224,8 @@ typedef enum
     KindlePW3WhiteUnknown_0KE = 0x26E,          // 0KE?
     KindlePW3WhiteUnknown_0KF = 0x26F,          // 0KF?
     KindlePW3WhiteUnknown_0KG = 0x270,          // 0KG?
-    KindlePW3_32GB_Color1 = 0x293,          // 32GB Japan Manga
-    KindlePW3_32GB_Color2 = 0x294,          // 32GB Japan Manga
+    KindlePaperWhite3BlackWiFi32GBJapan = 0x293,// 0LK
+    KindlePaperWhite3WhiteWiFi32GBJapan = 0x294,// 0LL
     // Kindle Oasis, released late spring 2016 on FW 5.7.1.1
     KindleOasisWiFi = 0x20C,            // 0GC
     KindleOasisWiFi3G = 0x20D,          // 0GD

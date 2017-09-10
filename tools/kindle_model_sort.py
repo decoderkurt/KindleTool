@@ -95,6 +95,8 @@ model_tuples = [
 	('KindlePW3WhiteUnknown_0KE', 0x26E),
 	('KindlePW3WhiteUnknown_0KF', 0x26F),
 	('KindlePW3WhiteUnknown_0KG', 0x270),
+	('KindlePaperWhite3WiFi32GBJapanBlack', 0x293),		# 0LK
+	('KindlePaperWhite3WiFi32GBJapanWhite', 0x294),		# 0LL
 	('KindleOasisWiFi', 0x20C),					# 0GC
 	('KindleOasisWiFi3G', 0x20D),					# 0GD
 	('KindleOasisUnknown_0GR', 0x219),
