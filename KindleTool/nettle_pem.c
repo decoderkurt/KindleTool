@@ -289,15 +289,14 @@ static int load_pem(struct nettle_buffer *buffer, FILE *f, struct rsa_private_ke
                     if(memcmp(marker, "PUBLIC KEY", 10) == 0)
                     {
                         type = GENERAL_PUBLIC_KEY;
-                        break;
                     }
+                    break;
                 case 14:
                     if(memcmp(marker, "RSA PUBLIC KEY", 14) == 0)
                     {
                         type = RSA_PUBLIC_KEY;
-                        break;
                     }
-
+                    break;
                 case 15:
                     if(memcmp(marker, "RSA PRIVATE KEY", 15) == 0)
                     {
