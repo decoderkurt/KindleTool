@@ -2193,7 +2193,7 @@ int kindle_create_main(int argc, char *argv[])
             }
             if(!enforce_target_rev)
             {
-                info.target_revision = 1 + 3243010037;   // FW 5.8.11
+                info.target_revision = 1 + 3243010037;   // FW 5.8.11 (FWIW, 5.9.2 is 3250710044)
             }
             // NOTE: Don't expect those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
         }
