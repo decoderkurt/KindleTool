@@ -106,21 +106,21 @@ model_tuples = [
 	('KindleBasic2Unknown_0DU', 0x1BC),
 	('KindleBasic2', 0x269),					# 0K9
 	('KindleBasic2White', 0x26A),					# 0KA
-	('KindleOasis2Unknown_0x295', 0x295),				# ??
-	('KindleOasis2Unknown_0x296', 0x296),				# ??
-	('KindleOasis2Unknown_0x297', 0x297),				# ??
-	('KindleOasis2Unknown_0x298', 0x298),				# ??
-	('KindleOasis2Unknown_0x2E1', 0x2E1),				# ??
-	('KindleOasis2Unknown_0x2E2', 0x2E2),				# ??
-	('KindleOasis2Unknown_0x2E6', 0x2E6),				# ??
-	('KindleOasis2Unknown_0x2E7', 0x2E7),				# ??
-	('KindleOasis2Unknown_0x2E8', 0x2E8),				# ??
-	('KindleOasis2Unknown_0x341', 0x341),				# ??
-	('KindleOasis2Unknown_0x342', 0x342),				# ??
-	('KindleOasis2Unknown_0x343', 0x343),				# ??
-	('KindleOasis2Unknown_0x344', 0x344),				# ??
-	('KindleOasis2Unknown_0x347', 0x347),				# ??
-	('KindleOasis2Unknown_0x34A', 0x34A),				# ??
+	('KindleOasis2Unknown_0LM', 0x295),				# 0LM?
+	('KindleOasis2Unknown_0LN', 0x296),				# 0LN?
+	('KindleOasis2Unknown_0LP', 0x297),				# 0LP?
+	('KindleOasis2Unknown_0LQ', 0x298),				# 0LQ?
+	('KindleOasis2Unknown_0P1', 0x2E1),				# 0P1?
+	('KindleOasis2Unknown_0P2', 0x2E2),				# 0P2?
+	('KindleOasis2Unknown_0P6', 0x2E6),				# 0P6?
+	('KindleOasis2Unknown_0P7', 0x2E7),				# 0P7?
+	('KindleOasis2WiFi8GB', 0x2E8),					# 0P8
+	('KindleOasis2WiFi3G32GB', 0x341),				# 0S1
+	('KindleOasis2Unknown_0S2', 0x342),				# 0S2?
+	('KindleOasis2Unknown_0S3', 0x343),				# 0S3?
+	('KindleOasis2Unknown_0S4', 0x344),				# 0S4?
+	('KindleOasis2Unknown_0S7', 0x347),				# 0S7?
+	('KindleOasis2WiFi32GB', 0x34A),				# 0SA
 	('KindleUnknown', 0x00)
 ]
 
