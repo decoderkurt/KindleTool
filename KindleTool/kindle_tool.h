@@ -237,6 +237,21 @@ typedef enum
     KindleBasic2Unknown_0DU = 0x1BC,    // 0DU??    FIXME: Confirming that one will probably make or break my base 32 tweaks...
     KindleBasic2 = 0x269,               // 0K9 (Black)
     KindleBasic2White = 0x26A,          // 0KA (White)
+    KindleOasis2Unknown_0x295 = 0x295,  // ??
+    KindleOasis2Unknown_0x296 = 0x296,  // ??
+    KindleOasis2Unknown_0x297 = 0x297,  // ??
+    KindleOasis2Unknown_0x298 = 0x298,  // ??
+    KindleOasis2Unknown_0x2E1 = 0x2E1,  // ??
+    KindleOasis2Unknown_0x2E2 = 0x2E2,  // ??
+    KindleOasis2Unknown_0x2E6 = 0x2E6,  // ??
+    KindleOasis2Unknown_0x2E7 = 0x2E7,  // ??
+    KindleOasis2Unknown_0x2E8 = 0x2E8,  // ??
+    KindleOasis2Unknown_0x341 = 0x341,  // ??
+    KindleOasis2Unknown_0x342 = 0x342,  // ??
+    KindleOasis2Unknown_0x343 = 0x343,  // ??
+    KindleOasis2Unknown_0x344 = 0x344,  // ??
+    KindleOasis2Unknown_0x347 = 0x347,  // ??
+    KindleOasis2Unknown_0x34A = 0x34A,  // ??
     KindleUnknown = 0x00
 } Device;
 
