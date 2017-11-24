@@ -237,7 +237,7 @@ typedef enum
     KindleBasic2Unknown_0DU = 0x1BC,    // 0DU??    FIXME: Confirming that one will probably make or break my base 32 tweaks...
     KindleBasic2 = 0x269,               // 0K9 (Black)
     KindleBasic2White = 0x26A,          // 0KA (White)
-    // Kindle Oasis 2, released winter 2017 on FW 5.9.x (TODO: Exact version? First update I saw appears to be 5.9.2, but I completely missed the launch)
+    // Kindle Oasis 2, released winter 2017 on FW 5.9.0.6
     KindleOasis2Unknown_0LM = 0x295,    // 0LM?
     KindleOasis2Unknown_0LN = 0x296,    // 0LN?
     KindleOasis2Unknown_0LP = 0x297,    // 0LP?
