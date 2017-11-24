@@ -108,6 +108,9 @@
 		-d, --device koagbi         Kindle Oasis WiFi+3G International
 		-d, --device kt3            Kindle Basic 2 (2016)
 		-d, --device kt3w           White Kindle Basic 2 (2016)
+		-d, --device koa2w8         Kindle Oasis 2 (2017) WiFi (8GB)"
+		-d, --device koa2g32        Kindle Oasis 2 (2017) WiFi+3G (32GB)"
+		-d, --device koa2w32        Kindle Oasis 2 (2017) WiFi (32GB)"
 		-d, --device kindle2        Alias for k2 & k2i
 		-d, --device kindledx       Alias for dx, dxi & dxg
 		-d, --device kindle3        Alias for k3w, k3g & k3gb
@@ -121,7 +124,8 @@
 		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib
 		-d, --device oasis          Alias for koa, koag, koagb & koagbi
 		-d, --device basic2         Alias for kt3 & kt3w
-		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis & basic2
+		-d, --device oasis2         Alias for koa2w8, koa2g32 & koa2w32"
+		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2 & oasis2"
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
@@ -138,6 +142,7 @@
 		-p, --platform wario        Wario (mostly devices shipped on FW >= 5.4).
 		-p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).
 		-p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).
+		-p, --platform zelda        Zelda (mostly devices shipped on FW >= 5.9).
 
 	Boards:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.
