@@ -2193,7 +2193,7 @@ int kindle_create_main(int argc, char *argv[])
             {
                 info.target_revision = 1 + 3202090019;   // FW 5.8.10
             }
-            // NOTE: Don't expece those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
+            // NOTE: Don't expect those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
         }
         // Musn't be *only* a sig envelope...
         if(info.version == UpdateSignature)
