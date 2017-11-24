@@ -338,6 +338,8 @@ const char *convert_platform_id(Platform plat)
             return "Duet";
         case Heisenberg:
             return "Heisenberg";
+        case Zelda:
+            return "Zelda";
         default:
             return "Unknown";
     }
@@ -537,6 +539,7 @@ static int kindle_print_help(const char *prog_name)
         "      -p, --platform wario        Wario (mostly devices shipped on FW >= 5.4).\n"
         "      -p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).\n"
         "      -p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).\n"
+        "      -p, --platform zelda        Zelda (mostly devices shipped on FW >= 5.9).\n"
         "      \n"
         "    Boards:\n"
         "      Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.\n"

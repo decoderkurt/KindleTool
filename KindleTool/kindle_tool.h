@@ -251,7 +251,8 @@ typedef enum
     Yoshime = 0x06,            // Kindle PW (NB: Platform AKA Yoshime3)
     Wario = 0x07,              // Kindle PW2, Basic, Voyage, PW3
     Duet = 0x08,               // Kindle Oasis
-    Heisenberg = 0x09          // Kindle Basic 2 (8th gen)
+    Heisenberg = 0x09,         // Kindle Basic 2 (8th gen)
+    Zelda = 0x0A               // Kindle Oasis 2
 } Platform;
 
 typedef enum
@@ -270,6 +271,7 @@ typedef enum
     Whisky = 0xFF               // Kindle Oasis
     Woody = 0xFF                // ?? (in the Basic line? (no 3G))
     Eanab = 0xFF                // Kindle Basic 2
+    Cognac = 0xFF               // Kindle Oasis 2
     */
 } Board;
 
@@ -300,6 +302,7 @@ typedef enum
 // Whisky                     // Kindle Oasis
 // Woody                      // ?? (Dev/Proto? Duet platform, Basic line)
 // Eanab                      // Kindle Basic 2
+// Cognac                     // Kindle Oasis 2
 
 typedef struct
 {

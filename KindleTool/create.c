@@ -2054,6 +2054,8 @@ int kindle_create_main(int argc, char *argv[])
                     info.platform = Duet;
                 else if(strcmp(optarg, "heisenberg") == 0)
                     info.platform = Heisenberg;
+                else if(strcmp(optarg, "zelda") == 0)
+                    info.platform = Zelda;
                 else
                 {
                     fprintf(stderr, "Unknown platform %s.\n", optarg);
