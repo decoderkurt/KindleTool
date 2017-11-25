@@ -343,7 +343,7 @@ Build_OSX() {
 		cd ${GMP_DIR}
 		# Don't target my host cpu...
 		my_host="core2-$(clang --version | grep Target | awk '{print $2}' | cut -d- -f2-)"
-		./configure --host=${my_host} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx
+		./configure --host=${my_host} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx --with-pic
 		make ${JOBSFLAGS}
 		make install
 		cd ..
