@@ -24,7 +24,7 @@ Build_Linux() {
 
 	GMP_VER="6.1.2"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.3"
+	NETTLE_VER="3.4"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
 	LIBARCHIVE_VER="3.3.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
