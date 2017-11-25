@@ -43,7 +43,7 @@ else
 	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 fi
 
-# Check for a recent nettle version...
+# Check for a recent nettle version (Note that nettle >= 3.4 is preferred, especially on 64bits hosts)...
 if pkg-config --atleast-version=2.6 nettle ; then
 	HAS_PC_NETTLE="true"
 	# Check for hogweed, since we need it, and static, to properly pull in gmp

@@ -181,6 +181,12 @@ static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info
     }
 }
 
+static inline int base64_decode_in_place (struct base64_decode_ctx *ctx, size_t *dst_length, size_t length, uint8_t *data)
+{
+    return base64_decode_update(ctx, dst_length, data, length, (const char *) data);
+}
+
+
 static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *length)
 {
     struct base64_decode_ctx ctx;
@@ -188,7 +194,7 @@ static int decode_base64(struct nettle_buffer *buffer, size_t start, size_t *len
     base64_decode_init(&ctx);
 
     /* Decode in place */
-    if(base64_decode_update(&ctx, length, buffer->contents + start, *length, buffer->contents + start) && base64_decode_final(&ctx))
+    if (base64_decode_in_place(&ctx, length, *length, buffer->contents + start) && base64_decode_final(&ctx))
         return 1;
     else
     {

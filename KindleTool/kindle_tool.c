@@ -427,7 +427,7 @@ int md5_sum(FILE *input, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE
     }
     md5_digest(&md5, MD5_DIGEST_SIZE, digest);
     // And build the hex checksum the nettle way ;)
-    base16_encode_update((uint8_t *)output_string, MD5_DIGEST_SIZE, digest);
+    base16_encode_update(output_string, MD5_DIGEST_SIZE, digest);
 
     return 0;
 }
@@ -760,7 +760,7 @@ static int kindle_info_main(int argc, char *argv[])
     md5_init(&md5);
     md5_update(&md5, SERIAL_NO_LENGTH+1, (uint8_t *)serial_no);
     md5_digest(&md5, MD5_DIGEST_SIZE, digest);
-    base16_encode_update((uint8_t *)hash, MD5_DIGEST_SIZE, digest);
+    base16_encode_update(hash, MD5_DIGEST_SIZE, digest);
 
     // And finally, do the device dance...
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
