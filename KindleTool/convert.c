@@ -50,7 +50,7 @@ static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 static char *to_base(int64_t num, unsigned int base)
 {
     // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-    char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     char buf[66] = {'\0'};
     char *out;
     uint64_t n;
@@ -74,6 +74,35 @@ static char *to_base(int64_t num, unsigned int base)
         out[0] = '-';
 
     return out;
+}
+
+// Pilfered and mangled from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C++
+static unsigned long int from_base(char *num, unsigned int base)
+{
+    // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
+    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    unsigned long int result = 0;
+
+    if(base > strlen(tbl))
+    {
+        fprintf(stderr, "base %d too large\n", base);
+        return 0;
+    }
+
+    size_t pos;
+    for(pos = 0; pos < strlen(num); ++pos)
+    {
+        size_t tbl_pos = 0;
+        for(tbl_pos = 0; tbl_pos < strlen(tbl); ++tbl_pos)
+        {
+            if(num[pos] == tbl[tbl_pos])
+            {
+                result = result * base + tbl_pos;
+            }
+        }
+    }
+
+    return result;
 }
 
 static int kindle_read_bundle_header(UpdateHeader *header, FILE *input)
@@ -291,6 +320,12 @@ static int kindle_convert_ota_update_v2(FILE *input, FILE *output, const bool fa
                 char *pad = "000";
                 // NOTE: 0 padding a string with actual zeroes is fun.... (cf. https://stackoverflow.com/questions/4133318)
                 fprintf(stderr, "%.*s%s -> ", ((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id), pad, dev_id);
+                // NOTE: Can't touch the formatting of this, MRPI relies on it... So relegate this to a debug only feature...
+                /*
+                // Check that our base conversions work both ways...
+                unsigned long int dev_code = from_base(dev_id, 32);
+                fprintf(stderr, "0x%03lX -> ", dev_code);
+                */
                 free(dev_id);
             }
         }
