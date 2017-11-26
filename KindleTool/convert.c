@@ -106,10 +106,19 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const boo
     if(get_bundle_version(header.magic_number) == UnknownUpdate)
     {
         // Cf. http://stackoverflow.com/questions/3555791
-        fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n", (unsigned)(unsigned char)header.magic_number[0], (unsigned)(unsigned char)header.magic_number[1], (unsigned)(unsigned char)header.magic_number[2], (unsigned)(unsigned char)header.magic_number[3], MAGIC_NUMBER_LENGTH, header.magic_number);
+        fprintf(stderr, "Bundle         Unknown (0x%02X%02X%02X%02X [%.*s])\n",
+                (unsigned)(unsigned char)header.magic_number[0],
+                (unsigned)(unsigned char)header.magic_number[1],
+                (unsigned)(unsigned char)header.magic_number[2],
+                (unsigned)(unsigned char)header.magic_number[3],
+                MAGIC_NUMBER_LENGTH, header.magic_number
+        );
     }
     else
-        fprintf(stderr, "Bundle         %.*s %s\n", MAGIC_NUMBER_LENGTH, (get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP" : header.magic_number), convert_magic_number(header.magic_number));
+        fprintf(stderr, "Bundle         %.*s %s\n",
+                MAGIC_NUMBER_LENGTH, (get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP" : header.magic_number),
+                convert_magic_number(header.magic_number)
+        );
     bundle_version = get_bundle_version(header.magic_number);
     switch(bundle_version)
     {
@@ -856,15 +865,30 @@ int kindle_convert_main(int argc, char *argv[])
             // Print a recap of what we're doing
             if(info_only)
             {
-                fprintf(stderr, "Checking %s%s package '%s'.\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name);
+                fprintf(stderr, "Checking %s%s package '%s'.\n",
+                        (fake_sign ? "fake " : ""),
+                        (IS_STGZ(in_name) ? "userdata" : "update"),
+                        in_name
+                );
             }
             else if(unwrap_only)
             {
-                fprintf(stderr, "Unwrapping %s package '%s' to '%s'.\n", (IS_STGZ(in_name) ? "userdata" : "update"), in_name, unwrapped_name);
+                fprintf(stderr, "Unwrapping %s package '%s' to '%s'.\n",
+                        (IS_STGZ(in_name) ? "userdata" : "update"),
+                        in_name,
+                        unwrapped_name
+                );
             }
             else
             {
-                fprintf(stderr, "Converting %s%s package '%s' to '%s' (%s, %s).\n", (fake_sign ? "fake " : ""), (IS_STGZ(in_name) ? "userdata" : "update"), in_name, out_name, (extract_sig ? "with sig" : "without sig"), (keep_ori ? "keep input" : "delete input"));
+                fprintf(stderr, "Converting %s%s package '%s' to '%s' (%s, %s).\n",
+                        (fake_sign ? "fake " : ""),
+                        (IS_STGZ(in_name) ? "userdata" : "update"),
+                        in_name,
+                        out_name,
+                        (extract_sig ? "with sig" : "without sig"),
+                        (keep_ori ? "keep input" : "delete input")
+                );
             }
             if(kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output, header_md5) < 0)
             {
@@ -1082,7 +1106,11 @@ int kindle_extract_main(int argc, char *argv[])
     // but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
     if((bin_input = fopen(bin_filename, "rb")) == NULL)
     {
-        fprintf(stderr, "Cannot open input %s package '%s': %s.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename, strerror(errno));
+        fprintf(stderr, "Cannot open input %s package '%s': %s.\n",
+                ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
+                bin_filename,
+                strerror(errno)
+        );
         return -1;
     }
     // Use a non-racey tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
@@ -1105,10 +1133,17 @@ int kindle_extract_main(int argc, char *argv[])
         return -1;
     }
     // Print a recap of what we're about to do
-    fprintf(stderr, "Extracting %s package '%s' to '%s'.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename, output_dir);
+    fprintf(stderr, "Extracting %s package '%s' to '%s'.\n",
+            ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
+            bin_filename,
+            output_dir
+    );
     if(kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_md5) < 0)
     {
-        fprintf(stderr, "Error converting %s package '%s'.\n", ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"), bin_filename);
+        fprintf(stderr, "Error converting %s package '%s'.\n",
+                ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
+                bin_filename
+        );
         fclose(bin_input);
         fclose(tgz_output);
         return -1;
