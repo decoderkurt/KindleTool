@@ -47,7 +47,8 @@ int kt_win_mkstemp(char *template)
 // Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
 FILE *kt_win_tmpfile(void)
 {
-    char template[] = KT_TMPDIR "/kindletool_tmpfile_XXXXXX";
+    char template[PATH_MAX];
+    snprintf(template, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_tmpfile_XXXXXX");
     int fd = -1;
     if(_mktemp(template) == NULL)
     {
@@ -807,6 +808,31 @@ int main(int argc, char *argv[])
         kt_with_unknown_devcodes = 0;
     else
         kt_with_unknown_devcodes = 1;
+
+    // Try to use a sane temp directory, and remember it
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    char win_tmpdir[PATH_MAX];
+    DWORD ret;
+    ret = GetTempPath(PATH_MAX, win_tmpdir);
+    if(ret > 0 && ret < PATH_MAX)
+    {
+        strcpy(kt_tempdir, win_tmpdir);
+    }
+#else
+    const char *posix_tmpdir = getenv("TMPDIR");
+    if(posix_tmpdir != NULL)
+    {
+        strcpy(kt_tempdir, posix_tmpdir);
+    }
+#endif
+    // Check that our supposedly sane temp directory actually exists...
+    struct stat st;
+    stat(kt_tempdir, &st);
+    if(!S_ISDIR(st.st_mode))
+    {
+        // ... and if it doesn't, use our fallback directory and hope for the best
+        strcpy(kt_tempdir, KT_TMPDIR);
+    }
 
     prog_name = argv[0];
     // Discard program name for easier parsing

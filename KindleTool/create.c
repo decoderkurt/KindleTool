@@ -532,10 +532,12 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
     uint8_t bundlefile_status = 0;
     size_t pathlen;
     char *signame = NULL;
-    char sigabsolutepath[] = KT_TMPDIR "/kindletool_create_sig_XXXXXX";
+    char sigabsolutepath[PATH_MAX];
+    snprintf(sigabsolutepath, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_create_sig_XXXXXX");
     int sigfd;
     char *pathnamecpy = NULL;
-    char bundle_filename[] = KT_TMPDIR "/kindletool_create_idx_XXXXXX";
+    char bundle_filename[PATH_MAX];
+    snprintf(bundle_filename, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_create_idx_XXXXXX");
     int bundle_fd = -1;
     FILE *bundlefile = NULL;
     struct stat st;
@@ -681,7 +683,7 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
             }
             // Create our sigfile in a tempfile
             // We have to make sure mkstemp's template is reset first...
-            strcpy(sigabsolutepath, KT_TMPDIR "/kindletool_create_sig_XXXXXX");
+            snprintf(sigabsolutepath, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_create_sig_XXXXXX");
             sigfd = mkstemp(sigabsolutepath);
             if(sigfd == -1)
             {
@@ -2474,7 +2476,9 @@ int kindle_create_main(int argc, char *argv[])
     if(!skip_archive)
     {
         // We need a proper mkstemp template
-        tarball_filename = strdup(KT_TMPDIR "/kindletool_create_tarball_XXXXXX");
+        char tartmpfile[PATH_MAX];
+        snprintf(tartmpfile, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_create_tarball_XXXXXX");
+        tarball_filename = strdup(tartmpfile);
         tarball_fd = mkstemp(tarball_filename);
         if(tarball_fd == -1)
         {

@@ -1016,7 +1016,8 @@ int kindle_extract_main(int argc, char *argv[])
     bool fake_sign = false;
 
     char *bin_filename = NULL;
-    char tgz_filename[] = KT_TMPDIR "/kindletool_extract_tgz_XXXXXX";
+    char tgz_filename[PATH_MAX];
+    snprintf(tgz_filename, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_extract_tgz_XXXXXX");
     char *output_dir = NULL;
     FILE *bin_input;
     int tgz_fd;

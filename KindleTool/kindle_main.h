@@ -24,8 +24,9 @@
 #ifndef KINDLEMAIN
 #define KINDLEMAIN
 
-// Ugly global.
+// Ugly globals.
 unsigned int kt_with_unknown_devcodes;
+char kt_tempdir[PATH_MAX];
 
 static int kindle_print_help(const char *);
 static int kindle_print_version(const char *);

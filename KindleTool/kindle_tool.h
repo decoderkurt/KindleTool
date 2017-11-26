@@ -39,6 +39,7 @@
 
 // libarchive does not pull that in for us anymore ;).
 #if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
@@ -92,7 +93,9 @@
 #define IS_UIMAGE(filename) (strncmp(filename+(strlen(filename)-6), "uImage", 6) == 0)
 
 // Don't break tempfiles on Win32... (it doesn't like paths starting with // because that means an 'extended' path (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
-// Geekmaster update: Don't put tempfiles on the root drive (unprivileged users can't write there), use "./" (current dir) instead.
+// Note that this is only used as a last resort, if for some reason GetTempPath returns something we can't use...
+// In any case, don't even try to put tempfiles on the root drive (because unprivileged users can't write there), so use "./" (current dir) instead as a crappy workaround.
+// NOTE: Geekmaster also experimented with using "../" (parent dir), which may or may not be a better idea...
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define KT_TMPDIR "."
 
@@ -110,7 +113,7 @@ FILE *kt_win_tmpfile(void);
 #undef tmpfile
 #endif
 #define tmpfile kt_win_tmpfile
-// --
+// -> POSIX, assume P_tmpdir (usually /tmp) is a sane fallback.
 #else
 #define KT_TMPDIR P_tmpdir
 #endif
@@ -374,6 +377,9 @@ typedef struct
 
 // Ugly global. Used to cache the state of the KT_WITH_UNKNOWN_DEVCODES env var...
 extern unsigned int kt_with_unknown_devcodes;
+
+// And another to store the tmpdir...
+extern char kt_tempdir[PATH_MAX];
 
 void md(unsigned char *, size_t);
 void dm(unsigned char *, size_t);
