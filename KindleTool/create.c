@@ -2046,18 +2046,21 @@ int kindle_create_main(int argc, char *argv[])
                         }
                         fclose(kindle_usid);
                         // Get the device code...
-                        char device_code[4];
+                        char device_code[4] = {'\0'};
                         snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
                         Device dev_code = (Device)strtoul(device_code, NULL, 16);
-                        // Unless we're feeling adventurous, check if it's a valid device...
-                        if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                        // First check if it looks like a valid device...
+                        if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
                         {
-                            // NOTE: We'll get thrown here on valid >= PW3 devices, too, because of the new device id scheme.
-                            //       Handling these cases would require a C implementation of the custom Base32 encoding,
-                            //       which is way too many LOCs for a feature which is basically useless on those devices anyway (because OTAv2).
+                            // ... try the new device ID scheme if it doesn't...
                             snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
-                            fprintf(stderr, "Device %s (or 0x%02X) is either unknown, or relying on the new device id scheme, which this feature doesn't support.\n", device_code, dev_code);
-                            goto do_error;
+                            dev_code = (Device)from_base(device_code, 32);
+                            // ... And finally, unless we're feeling adventurous, check if it's really a valid device...
+                            if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                            {
+                                fprintf(stderr, "Unknown device %s (0x%03X).\n", device_code, dev_code);
+                                goto do_error;
+                            }
                         }
                         else
                         {

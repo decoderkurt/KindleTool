@@ -764,28 +764,29 @@ static int kindle_info_main(int argc, char *argv[])
     base16_encode_update(hash, MD5_DIGEST_SIZE, digest);
 
     // And finally, do the device dance...
-    bool device_uses_new_id_scheme = false;
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
-    // Handle the new device ID position, since the PW3
+    // Handle the new device ID scheme, used since the PW3
     if(strcmp(convert_device_id(device), "Unknown") == 0)
     {
+        fprintf(stderr, "Couldn't identify device %s (0x%02X), trying the new identification scheme...\n", device_code, device);
         snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
-        // NOTE: We can't actually get the proper device id, because we don't have a C implementation of the custom base32 we need...
-        //       That means we have to forgo the device check, so warn about that...
-        fprintf(stderr, "Couldn't match that serial to a specific device model, assuming it's valid and using the new device ID scheme (ID: %s)\n", device_code);
-        device_uses_new_id_scheme = true;
+        device = (Device)from_base(device_code, 32);
+        if(strcmp(convert_device_id(device), "Unknown") == 0) {
+            fprintf(stderr, "Unknown device %s (0x%03X).\n", device_code, device);
+            return -1;
+        }
     }
     // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device_uses_new_id_scheme || device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan)
+    if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan)
     {
-        fprintf(stderr, "Platform is Wario or newer\n");
+        fprintf(stderr, "Platform is Wario or newer [%s]\n", convert_device_id(device));
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[13], "fiona", 4, &hash[13]);
     }
     else
     {
-        fprintf(stderr, "Platform is pre Wario\n");
+        fprintf(stderr, "Platform is pre Wario [%s]\n", convert_device_id(device));
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[7], "fiona", 4, &hash[7]);
     }
     // Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,

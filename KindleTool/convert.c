@@ -77,7 +77,7 @@ static char *to_base(int64_t num, unsigned int base)
 }
 
 // Pilfered and mangled from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C++
-static unsigned long int from_base(char *num, unsigned int base)
+unsigned long int from_base(char *num, unsigned int base)
 {
     // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
     const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
