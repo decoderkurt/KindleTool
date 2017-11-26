@@ -376,6 +376,7 @@ typedef struct
 } UpdateHeader;
 
 // Ugly global. Used to cache the state of the KT_WITH_UNKNOWN_DEVCODES env var...
+// NOTE: While this looks like the ideal candidate to be a bool, we can't do that because we use its value in unsigned operations and I can't be arsed to add a bunch of casts there (because for some mystical reason, bool is signed :?)
 extern unsigned int kt_with_unknown_devcodes;
 
 // And another to store the tmpdir...
