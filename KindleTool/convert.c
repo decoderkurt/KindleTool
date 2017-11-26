@@ -89,6 +89,7 @@ unsigned long int from_base(char *num, unsigned int base)
         return 0;
     }
 
+    // Hi, my name is Neo. I know pointers! (Or not.)
     size_t pos;
     for(pos = 0; pos < strlen(num); ++pos)
     {
