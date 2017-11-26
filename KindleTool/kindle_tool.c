@@ -742,9 +742,9 @@ static int kindle_info_main(int argc, char *argv[])
     }
     // Don't manipulate argv directly, make a copy of it first...
     strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);
-    if(strlen(serial_no) != SERIAL_NO_LENGTH)
+    if(strlen(serial_no) < SERIAL_NO_LENGTH || strlen(argv[0]) > SERIAL_NO_LENGTH)
     {
-        fprintf(stderr, "Serial number must be composed of 16 characters (without spaces). For example: %s\n", "B0NNXXXXXXXXXXXX");
+        fprintf(stderr, "Serial number must be composed of exactly 16 characters (without spaces). For example: %s\n", "B0NNXXXXXXXXXXXX");
         return -1;
     }
     // Make it fully uppercase
@@ -764,26 +764,21 @@ static int kindle_info_main(int argc, char *argv[])
     base16_encode_update(hash, MD5_DIGEST_SIZE, digest);
 
     // And finally, do the device dance...
+    bool device_uses_new_id_scheme = false;
     snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
     device = (Device)strtoul(device_code, NULL, 16);
     // Handle the new device ID position, since the PW3
     if(strcmp(convert_device_id(device), "Unknown") == 0)
     {
         snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
-        device = (Device)strtoul(device_code, NULL, 32);
-        if(strcmp(convert_device_id(device), "Unknown") == 0)
-        {
-            fprintf(stderr, "Unknown device!\n");
-            return -1;
-        }
-        else
-        {
-            fprintf(stderr, "Device uses the new device ID scheme\n");
-        }
+        // NOTE: We can't actually get the proper device id, because we don't have a C implementation of the custom base32 we need...
+        //       That means we have to forgo the device check, so warn about that...
+        fprintf(stderr, "Couldn't match that serial to a specific device model, assuming it's valid and using the new device ID scheme (ID: %s)\n", device_code);
+        device_uses_new_id_scheme = true;
     }
     // Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
     // NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-    if(device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan)
+    if(device_uses_new_id_scheme || device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan)
     {
         fprintf(stderr, "Platform is Wario or newer\n");
         fprintf(stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[13], "fiona", 4, &hash[13]);
