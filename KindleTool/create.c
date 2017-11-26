@@ -2448,6 +2448,9 @@ int kindle_create_main(int argc, char *argv[])
                 fprintf(stderr, "archive_match_path_excluded() failed: %s.\n", archive_error_string(match));
             }
             fprintf(stderr, "Your output file '%s' needs to follow the proper naming scheme (%s) in order to be picked up by the Kindle.\n", output_filename, (fake_sign || userdata_only) ? "data.stgz" : "update*.bin");
+#if defined(_WIN32) && !defined(__CYGWIN__)
+            fprintf(stderr, "As an added quirk, on Windows, make sure you're using UNIX-style forward slashes ('/') in your output file path, and not Windows-style backward slashes ('\\').\n");
+#endif
             archive_entry_free(entry);
             archive_match_free(match);
             goto do_error;
