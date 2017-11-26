@@ -718,7 +718,18 @@ static int kindle_create_package_archive(const int outfd, char **filename, const
                 // Only flag kernels in recovery update...
                 // FWIW, the format is as follows: file_type_id md5sum file_name blocksize file_display_name
                 // where the id is 1 for kernel images (in recovery updates only), 129 for install scripts, and 128 for assets, and the blocksize is based on the file size relative to the update type blocksize.
-                if(fprintf(bundlefile, "%d %s %s %lld %s_ktool_file\n", ((real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 : 128)), md5, kttar->tweaked_to_sign_and_bundle_list[i], (long long) st.st_size / real_blocksize, basename(pathnamecpy)) < 0)
+                if(fprintf(
+                    bundlefile, "%d %s %s %lld %s_ktool_file\n",
+                    (
+                        (real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(kttar->to_sign_and_bundle_list[i]) ? 1 :
+                        (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) || IS_SHELL(kttar->to_sign_and_bundle_list[i])) ? 129 :
+                        128)
+                    ),
+                    md5,
+                    kttar->tweaked_to_sign_and_bundle_list[i],
+                    (long long) st.st_size / real_blocksize,
+                    basename(pathnamecpy)
+                ) < 0)
                 {
                     fprintf(stderr, "Cannot write to index file.\n");
                     // Cleanup a bit before crapping out
