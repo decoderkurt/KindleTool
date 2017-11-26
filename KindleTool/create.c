@@ -2087,7 +2087,7 @@ int kindle_create_main(int argc, char *argv[])
                         // NOTE: The range is 01 to 0VF for now, update as needed!
                         if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3EF)
                         {
-                            fprintf(stderr, "Unknown or invalid device %s.\n", optarg);
+                            fprintf(stderr, "Unknown or invalid device %s (make sure you passed a proper hexadecimal value, not a serial number fragment).\n", optarg);
                             goto do_error;
                         }
                         // Unless we're feeling adventurous, check if it's a valid device...
