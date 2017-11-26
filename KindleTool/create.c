@@ -2081,9 +2081,10 @@ int kindle_create_main(int argc, char *argv[])
                     else
                     {
                         // Check if we passed an hex device code...
+                        // NOTE: We can't validate serial number fragments using the new device ID scheme because we lack the proper base32 implementation, so we *only* accept hex values.
                         char *endptr;
                         Device dev_code = (Device)strtoul(optarg, &endptr, 16);
-                        // Check that it even remotely looks like a device code first...
+                        // Check that it even remotely looks like a device code, old or new, first...
                         // NOTE: The range is 01 to 0VF for now, update as needed!
                         if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3EF)
                         {
