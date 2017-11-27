@@ -94,12 +94,12 @@ unsigned long int from_base(char *num, unsigned int base)
     char *p;
     for(p = num; *p; p++)
     {
-        size_t tbl_pos = 0;
-        for(tbl_pos = 0; tbl_pos < strlen(tbl); ++tbl_pos)
+        size_t i = 0;
+        for(i = 0; tbl[i]; i++)
         {
-            if(*p == tbl[tbl_pos])
+            if(*p == tbl[i])
             {
-                result = result * base + tbl_pos;
+                result = result * base + i;
             }
         }
     }
