@@ -57,7 +57,7 @@ static char *to_base(int64_t num, unsigned int base)
     unsigned int i, len = 0, neg = 0;
     if(base > strlen(tbl))
     {
-        fprintf(stderr, "base %d too large\n", base);
+        fprintf(stderr, "base %d is unsupported (too large).\n", base);
         return 0;
     }
 
@@ -86,7 +86,7 @@ unsigned long int from_base(char *num, unsigned int base)
 
     if(base > strlen(tbl))
     {
-        fprintf(stderr, "base %d too large\n", base);
+        fprintf(stderr, "base %d is unsupported (too large).\n", base);
         return 0;
     }
 
