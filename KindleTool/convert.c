@@ -100,6 +100,7 @@ unsigned long int from_base(char *num, unsigned int base)
             if(*p == tbl[i])
             {
                 result = result * base + i;
+                break;
             }
         }
     }
