@@ -2224,7 +2224,7 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 if(strlen(optarg) > 0xFFFF)
                 {
-                    fprintf(stderr, "Metastring too long. Max length: %d, input length: %lu\n", 0xFFFF, strlen(optarg));
+                    fprintf(stderr, "Metastring too long. Max length: %d, input length: %zu\n", 0xFFFF, strlen(optarg));
                     goto do_error;
                 }
                 info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char *));
