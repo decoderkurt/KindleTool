@@ -2083,40 +2083,49 @@ int kindle_create_main(int argc, char *argv[])
                     }
                     else
                     {
-                        // Check if we passed an hex device code...
-                        // NOTE: We can't validate serial number fragments using the new device ID scheme because we lack the proper base32 implementation, so we *only* accept hex values.
+                        // Check if we passed a device code, be it as a ready-to-use hex value or a to-be-decoded serial fragment...
                         char *endptr;
                         Device dev_code = (Device)strtoul(optarg, &endptr, 16);
                         // Check that it even remotely looks like a device code, old or new, first...
                         // NOTE: The range is 01 to 0VF for now, update as needed!
-                        if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3EF)
+                        if(*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3AF)
                         {
-                            fprintf(stderr, "Unknown or invalid device %s (make sure you passed a proper hexadecimal value, not a serial number fragment).\n", optarg);
-                            goto do_error;
-                        }
-                        // Unless we're feeling adventurous, check if it's a valid device...
-                        if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
-                        {
-                            fprintf(stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
-                            goto do_error;
+                            // That was either an out of range hexadecimal value, or not an hexadecimal value at all...
+                            if(strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                            {
+                                // ... in which case, try to see if that was a serial fragment following the new device id scheme...
+                                dev_code = (Device)from_base(optarg, 32);
+                                // Unless we're feeling adventurous, check if it's a valid device...
+                                if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
+                                {
+                                    fprintf(stderr, "Unknown device %s (0x%03X).\n", optarg, dev_code);
+                                    goto do_error;
+                                }
+                            }
                         }
                         else
                         {
-                            // Yay, known valid device code :)
-                            info.devices[info.num_devices - 1] = dev_code;
-                            // Roughly guess a decent magic number...
-                            if(dev_code < Kindle4NonTouch)
+                            // Okay, that looked like an in-range hex value, make sure it matches an hex-only device id if we're not bypassing device checks...
+                            if(!kt_with_unknown_devcodes && strcmp(convert_device_id(dev_code), "Unknown") == 0)
                             {
-                                strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+                                fprintf(stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
+                                goto do_error;
                             }
-                            else if(dev_code == Kindle4NonTouch || dev_code == Kindle4NonTouchBlack)
-                            {
-                                strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
-                            }
-                            else
-                            {
-                                strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                            }
+                        }
+                        // Yay, known valid device code :)
+                        info.devices[info.num_devices - 1] = dev_code;
+                        // Roughly guess a decent magic number...
+                        if(dev_code < Kindle4NonTouch)
+                        {
+                            strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+                        }
+                        else if(dev_code == Kindle4NonTouch || dev_code == Kindle4NonTouchBlack)
+                        {
+                            strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+                        }
+                        else
+                        {
+                            strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                         }
                     }
                 }
