@@ -92,10 +92,10 @@ unsigned long int from_base(char *num, unsigned int base)
 
     // Hi, my name is Neo. I know pointers! (Or not.)
     char *p;
-    for(p = num; *p; p++)
+    for(p = num; *p != '\0'; p++)
     {
         size_t i = 0;
-        for(i = 0; tbl[i]; i++)
+        for(i = 0; tbl[i] != '\0'; i++)
         {
             if(*p == tbl[i])
             {
