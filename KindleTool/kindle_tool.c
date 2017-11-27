@@ -817,7 +817,7 @@ int main(int argc, char *argv[])
     }
 #else
     const char *posix_tmpdir = getenv("TMPDIR");
-    if(posix_tmpdir != NULL)
+    if(posix_tmpdir != NULL && strlen(posix_tmpdir) < PATH_MAX)
     {
         strcpy(kt_tempdir, posix_tmpdir);
     }
