@@ -50,7 +50,7 @@ static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 static char *to_base(int64_t num, unsigned int base)
 {
     // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
     char buf[66] = {'\0'};
     char *out;
     uint64_t n;
@@ -81,7 +81,7 @@ static char *to_base(int64_t num, unsigned int base)
 unsigned long int from_base(char *num, unsigned int base)
 {
     // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const char *tbl = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
     unsigned long int result = 0;
 
     if(base > strlen(tbl))

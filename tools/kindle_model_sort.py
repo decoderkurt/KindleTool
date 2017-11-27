@@ -4,7 +4,7 @@ from operator import itemgetter
 
 # NOTE: Pilfered from https://code.activestate.com/recipes/65212/
 # FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-def baseN(num, base, numerals="0123456789ABCDEFGHJKLMNPQRSTUVWXYZ"):
+def baseN(num, base, numerals="0123456789ABCDEFGHJKLMNPQRSTUVWX"):
 	if num == 0:
 		return "0"
 
