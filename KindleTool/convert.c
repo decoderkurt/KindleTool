@@ -77,6 +77,7 @@ static char *to_base(int64_t num, unsigned int base)
 }
 
 // Pilfered and mangled from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C++
+// NOTE: Eh, turns out to be basically the same implemention I used for kindle_model_sort.py...
 unsigned long int from_base(char *num, unsigned int base)
 {
     // FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
@@ -90,13 +91,13 @@ unsigned long int from_base(char *num, unsigned int base)
     }
 
     // Hi, my name is Neo. I know pointers! (Or not.)
-    size_t pos;
-    for(pos = 0; pos < strlen(num); ++pos)
+    char *p;
+    for(p = num; *p; p++)
     {
         size_t tbl_pos = 0;
         for(tbl_pos = 0; tbl_pos < strlen(tbl); ++tbl_pos)
         {
-            if(num[pos] == tbl[tbl_pos])
+            if(*p == tbl[tbl_pos])
             {
                 result = result * base + tbl_pos;
             }
