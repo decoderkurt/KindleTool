@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef KINDLECREATE
-#define KINDLECREATE
+#ifndef __KINDLETOOL_CREATE_H
+#define __KINDLETOOL_CREATE_H
 
 typedef struct
 {

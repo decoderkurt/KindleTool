@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef KINDLETOOL
-#define KINDLETOOL
+#ifndef __KINDLETOOL_H
+#define __KINDLETOOL_H
 
 #include <stdint.h>
 #include <stdbool.h>

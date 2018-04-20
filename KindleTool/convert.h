@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef KINDLECONVERT
-#define KINDLECONVERT
+#ifndef __KINDLETOOL_CONVERT_H
+#define __KINDLETOOL_CONVERT_H
 
 static const char *convert_magic_number(char *);
 

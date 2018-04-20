@@ -29,8 +29,8 @@
    The look-up tables where generated and tested by: tools/TableGen.lua
 */
 
-#ifndef KINDLETABLE
-#define KINDLETABLE
+#ifndef __KINDLETOOL_TABLE_H
+#define __KINDLETOOL_TABLE_H
 
 /*  index by plain, result garbled */
 static const uint8_t ptog[] = {

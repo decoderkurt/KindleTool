@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef KINDLEMAIN
-#define KINDLEMAIN
+#ifndef __KINDLETOOL_MAIN_H
+#define __KINDLETOOL_MAIN_H
 
 // Ugly globals.
 unsigned int kt_with_unknown_devcodes;
