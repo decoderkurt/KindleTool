@@ -23,9 +23,11 @@
 #ifndef __KINDLETOOL_H
 #define __KINDLETOOL_H
 
+// NOTE: Mainly to shut KDevelop up without any actual impact...
+//       We do build MinGW w/ _GNU_SOURCE though.
 #if defined(__linux__)
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
 #endif
 #endif
 
