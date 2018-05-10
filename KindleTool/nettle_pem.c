@@ -180,7 +180,7 @@ static int read_pem(struct nettle_buffer *buffer, FILE *f, struct pem_info *info
     }
 }
 
-static inline int base64_decode_in_place (struct base64_decode_ctx *ctx, size_t *dst_length, size_t length, uint8_t *data)
+static inline int base64_decode_in_place(struct base64_decode_ctx *ctx, size_t *dst_length, size_t length, uint8_t *data)
 {
     return base64_decode_update(ctx, dst_length, data, length, (const char *) data);
 }
@@ -306,13 +306,12 @@ static int load_pem(struct nettle_buffer *buffer, FILE *f, struct rsa_private_ke
                     if(memcmp(marker, "RSA PRIVATE KEY", 15) == 0)
                     {
                         type = RSA_PRIVATE_KEY;
-                        break;
                     }
-                    if(memcmp(marker, "DSA PRIVATE KEY", 15) == 0)
+                    else if(memcmp(marker, "DSA PRIVATE KEY", 15) == 0)
                     {
                         type = DSA_PRIVATE_KEY;
-                        break;
                     }
+                    break;
             }
 
             if(!type)
