@@ -2289,7 +2289,7 @@ int kindle_create_main(int argc, char *argv[])
             }
             if(!enforce_target_rev)
             {
-                info.target_revision = 1 + 3278760045;   // FW 5.9.4 (KOA2, because it appears to sport the highest OTA build number across the whole range of devices supporting FW 5.9.4)
+                info.target_revision = 1 + 3301990004;   // FW 5.9.5.2 (KOA2)
             }
             // NOTE: Don't expect those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
         }
