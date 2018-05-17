@@ -192,7 +192,6 @@ if [[ "${USE_STABLE_NETTLE}" == "true" ]] ; then
 		cd ..
 	fi
 else
-	# Build from git to benefit from the more x86_64 friendly API changes
 	if [[ ! -d "nettle-git" ]] ; then
 		echo "* Building nettle . . ."
 		echo ""
@@ -244,25 +243,25 @@ fi
 
 # Build KT package credits
 cat > ../../CREDITS << EOF
-* kindletool.exe: KindleTool, Copyright (C) 2011-2012  Yifan Lu & Copyright (C) 2012-2016  NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+* kindletool.exe: KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
-  |->   zlib, Copyright (C) 1995-2014 Jean-loup Gailly and Mark Adler,
+  |->   zlib, Copyright (C) 1995-2018 Jean-loup Gailly and Mark Adler,
   |   Licensed under the zlib license (http://zlib.net/zlib_license.html)
   |   (http://zlib.net/)
   |
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
   |
-  |->   GMP, GNU MP Library, Copyright 1991-2014 Free Software Foundation, Inc.,
+  |->   GMP, GNU MP Library, Copyright 1991-2018 Free Software Foundation, Inc.,
   |   licensed under the GNU Lesser General Public License version 3+ (http://www.gnu.org/licenses/lgpl.html).
   |   (http://gmplib.org/)
   |
-  |->   nettle, Copyright (C) 2001-2014 Niels Möller,
+  |->   nettle, Copyright (C) 2001-2018 Niels Möller,
   |   licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
   |   (http://www.lysator.liu.se/~nisse/nettle)
   |
-  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009-2014 by the mingw-w64 project,
+  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009-2018 by the mingw-w64 project,
       Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/p/mingw-w64/code/HEAD/tree/stable/v3.x/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
       (http://mingw-w64.sourceforge.net/)
 EOF

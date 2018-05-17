@@ -88,7 +88,6 @@ Build_Linux() {
 			cd ..
 		fi
 	else
-		# Build from git to benefit from the more x86_64 friendly API changes
 		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
@@ -144,18 +143,18 @@ Build_Linux() {
 	cat > CREDITS << EOF
 * kindletool:
 
-KindleTool, Copyright (C) 2011-2015  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
   |
-  |->   GMP, GNU MP Library, Copyright 1991-2014 Free Software Foundation, Inc.,
+  |->   GMP, GNU MP Library, Copyright 1991-2018 Free Software Foundation, Inc.,
   |   licensed under the GNU Lesser General Public License version 3+ (http://www.gnu.org/licenses/lgpl.html).
   |   (http://gmplib.org/)
   |
-  \`->   nettle, Copyright (C) 2001-2014 Niels Möller,
+  \`->   nettle, Copyright (C) 2001-2018 Niels Möller,
       licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
       (http://www.lysator.liu.se/~nisse/nettle)
 EOF
@@ -167,9 +166,9 @@ EOF
 	if [[ "$(whoami)" == "niluje" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
 		if [[ "${ARCH}" == "x86_64" ]] ; then
-			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
+			export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -frename-registers -fweb -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@tyrande on Gentoo\"'"
 		else
-			export CFLAGS="-march=i686 -mtune=generic -m32 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@ajulutsikael on Gentoo\"'"
+			export CFLAGS="-march=i686 -mtune=generic -m32 -pipe -O2 -fomit-frame-pointer -fno-stack-protector -U_FORTIFY_SOURCE -DKT_USERATHOST='\"niluje@tyrande on Gentoo\"'"
 		fi
 	fi
 	cd KindleTool/KindleTool
@@ -251,7 +250,7 @@ Build_Cygwin() {
 	cat > CREDITS << EOF
 * kindletool.exe:
 
-KindleTool, Copyright (C) 2011-2015  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
@@ -265,7 +264,7 @@ EOF
 	# Fake user@host tag
 	if [[ "$(whoami)" == "NiLuJe" ]] ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Ajulutsikael on $(uname -s)\"'"
+		export CFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer -DKT_USERATHOST='\"NiLuJe@Tyrande on $(uname -s)\"'"
 	fi
 	cd KindleTool/KindleTool
 	# Disable dynamic libraries...
@@ -368,7 +367,6 @@ Build_OSX() {
 			cd ..
 		fi
 	else
-		# Build from git to benefit from the more x86_64 friendly API changes
 		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
@@ -423,18 +421,18 @@ Build_OSX() {
 	cat > Release/CREDITS << EOF
 * kindletool:
 
-KindleTool, Copyright (C) 2011-2012  Yifan Lu & Copyright (C) 2012-2016  NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
   |
-  |->   GMP, GNU MP Library, Copyright 1991-2014 Free Software Foundation, Inc.,
+  |->   GMP, GNU MP Library, Copyright 1991-2018 Free Software Foundation, Inc.,
   |   licensed under the GNU Lesser General Public License version 3+ (http://www.gnu.org/licenses/lgpl.html).
   |   (http://gmplib.org/)
   |
-  \`->   nettle, Copyright (C) 2001-2014 Niels Möller,
+  \`->   nettle, Copyright (C) 2001-2018 Niels Möller,
       licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
       (http://www.lysator.liu.se/~nisse/nettle)
 EOF
@@ -445,7 +443,7 @@ EOF
 	# Fake user@host tag
 	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' > /dev/null 2>&1 ; then
 		export KT_NO_USERATHOST_TAG="true"
-		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@ajulutsikael on Mac OS X $(sw_vers -productVersion)\"'"
+		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@tyrande on Mac OS X $(sw_vers -productVersion)\"'"
 	fi
 	cd KindleTool/KindleTool
 	rm -rf lib includes
