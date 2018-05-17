@@ -1535,11 +1535,12 @@ int kindle_create_main(int argc, char *argv[])
                 else if(strcasecmp(optarg, "oasis2") == 0)
                 {
                     strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-                    const unsigned int num_aliased_devices = 3 + (kt_with_unknown_devcodes * 12);
+                    const unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 11);
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     info.devices[info.num_devices++] = KindleOasis2WiFi8GB;
                     info.devices[info.num_devices++] = KindleOasis2WiFi3G32GB;
                     info.devices[info.num_devices++] = KindleOasis2WiFi32GB;
+                    info.devices[info.num_devices++] = KindleOasis2WiFi3G32GBEurope;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0LM;
@@ -1550,7 +1551,6 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P2;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P6;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P7;
-                        info.devices[info.num_devices++] = KindleOasis2Unknown_0S2;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S3;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S4;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S7;
@@ -1568,7 +1568,7 @@ int kindle_create_main(int argc, char *argv[])
                         12 + (kt_with_unknown_devcodes * 2) +   // PW3
                         4  + (kt_with_unknown_devcodes * 2) +   // Oasis
                         2  + (kt_with_unknown_devcodes * 1) +   // KT3
-                        3  + (kt_with_unknown_devcodes * 12);   // Oasis 2
+                        4  + (kt_with_unknown_devcodes * 11);   // Oasis 2
                     info.devices = realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
                     // K5
                     info.devices[info.num_devices++] = Kindle5TouchWiFi;
@@ -1654,6 +1654,7 @@ int kindle_create_main(int argc, char *argv[])
                     info.devices[info.num_devices++] = KindleOasis2WiFi8GB;
                     info.devices[info.num_devices++] = KindleOasis2WiFi3G32GB;
                     info.devices[info.num_devices++] = KindleOasis2WiFi32GB;
+                    info.devices[info.num_devices++] = KindleOasis2WiFi3G32GBEurope;
                     if(kt_with_unknown_devcodes)
                     {
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0LM;
@@ -1664,7 +1665,6 @@ int kindle_create_main(int argc, char *argv[])
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P2;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P6;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0P7;
-                        info.devices[info.num_devices++] = KindleOasis2Unknown_0S2;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S3;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S4;
                         info.devices[info.num_devices++] = KindleOasis2Unknown_0S7;
@@ -2018,6 +2018,11 @@ int kindle_create_main(int argc, char *argv[])
                     else if(strcasecmp(optarg, "koa2w32") == 0)
                     {
                         info.devices[info.num_devices - 1] = KindleOasis2WiFi32GB;
+                        strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+                    }
+                    else if(strcasecmp(optarg, "koa2g32b") == 0)
+                    {
+                        info.devices[info.num_devices - 1] = KindleOasis2WiFi3G32GBEurope;
                         strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
                     }
                     // N/A
