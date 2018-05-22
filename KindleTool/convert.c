@@ -41,6 +41,8 @@ static const char *convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
         return "(Signing Envelope)";
     else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
         return "(Userdata tarball)";
+    else if(!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH))
+        return "(Android update)";
     else
         return "Unknown";
 }
@@ -147,7 +149,7 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const boo
     }
     else
         fprintf(stderr, "Bundle         %.*s %s\n",
-                MAGIC_NUMBER_LENGTH, (get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP" : header.magic_number),
+                MAGIC_NUMBER_LENGTH, (get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP" : get_bundle_version(header.magic_number) == AndroidUpdate ? "ZIP" : header.magic_number),
                 convert_magic_number(header.magic_number)
         );
     bundle_version = get_bundle_version(header.magic_number);
@@ -242,6 +244,11 @@ static int kindle_convert(FILE *input, FILE *output, FILE *sig_output, const boo
                 }
             }
             // Usually, nothing more to do...
+            return 0;
+            break;
+        case AndroidUpdate:
+            fprintf(stderr, "Nothing more to do!\n");
+            // Usually, nothing more to do... On extract, archive_read_open_file will gracefully fail with an unrecognized format error, which tracks, given that we only support tarball + gzip ;).
             return 0;
             break;
         case UnknownUpdate:

@@ -160,6 +160,7 @@ typedef enum
     RecoveryUpdate,
     RecoveryUpdateV2,
     UserDataPackage,            // Actually just a gzipped tarball, but easier to implement this way...
+    AndroidUpdate,              // Actually a JAR, designed for the weird Kindle X Migu Chinese exclusive
     UnknownUpdate = -1
 } BundleVersion;
 

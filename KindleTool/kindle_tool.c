@@ -404,6 +404,8 @@ BundleVersion get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
         return UpdateSignature;
     else if(!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))       // GZIP magic number
         return UserDataPackage;
+    else if(!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH))       // ZIP magic number
+        return AndroidUpdate;
     else
         return UnknownUpdate;
 }
