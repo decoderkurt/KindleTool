@@ -42,6 +42,9 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <limits.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <time.h>
 #if defined(__linux__)
 #include <linux/limits.h>
 #endif

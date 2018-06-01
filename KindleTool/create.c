@@ -1399,7 +1399,7 @@ int kindle_create_main(int argc, char *argv[])
     }
 
     // Arguments
-    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auUOC", opts, &opt_index)) != -1)
+    while((opt = getopt_long(argc, argv, "d:k:b:s:t:1:2:m:p:B:h:c:o:r:x:auUOCX", opts, &opt_index)) != -1)
     {
         switch(opt)
         {
@@ -2233,6 +2233,37 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char *));
                 info.metastrings[info.num_meta - 1] = strdup(optarg);
+                break;
+            case 'X':
+                info.num_meta += 3U;
+                info.metastrings = realloc(info.metastrings, info.num_meta * sizeof(char *));
+                char metabuff[128];
+                // Start with PackagedWith
+                snprintf(metabuff, sizeof(metabuff), "PackagedWith=KindleTool %s built by %s", KT_VERSION, KT_USERATHOST);
+                info.metastrings[info.num_meta - 3] = strdup(metabuff);
+                // Then PackagedBy
+                // Get hostname
+                char nodename[HOST_NAME_MAX];
+                if (gethostname(nodename, HOST_NAME_MAX) != 0) {
+                    snprintf(nodename, sizeof(nodename), "%s", "unknown");
+                }
+                // Get username
+                struct passwd *pwd;
+                if ((pwd = getpwuid(geteuid())) != NULL) {
+                    snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", pwd->pw_name, nodename);
+                } else {
+                    snprintf(metabuff, sizeof(metabuff), "PackagedBy=%ld@%s", (long) geteuid(), nodename);
+                }
+                info.metastrings[info.num_meta - 2] = strdup(metabuff);
+                // And finally PackagedOn
+                // Get UTC time
+                time_t now = time(NULL);
+                struct tm *gmt;
+                gmt = gmtime(&now);
+                char sz_time[22];
+                strftime(sz_time, sizeof(sz_time), "%Y-%m-%d @ %H:%M:%S", gmt);
+                snprintf(metabuff, sizeof(metabuff), "PackagedOn=%s", sz_time);
+                info.metastrings[info.num_meta - 1] = strdup(metabuff);
                 break;
             case 'a':
                 keep_archive = true;
