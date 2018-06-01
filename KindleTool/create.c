@@ -2243,22 +2243,32 @@ int kindle_create_main(int argc, char *argv[])
                 snprintf(metabuff, sizeof(metabuff), "PackagedWith=KindleTool %s built by %s", KT_VERSION, KT_USERATHOST);
                 info.metastrings[info.num_meta++] = strdup(metabuff);
                 // Then PackagedBy
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                DWORD len;
                 // Get hostname
-                char nodename[HOST_NAME_MAX];
-                if (gethostname(nodename, HOST_NAME_MAX) != 0) {
+                char nodename[256];
+                len = sizeof(nodename);
+
+                if (!GetComputerName(nodename, &len)) {
                     snprintf(nodename, sizeof(nodename), "%s", "unknown");
                 }
-                // Get username
-#if defined(_WIN32) && !defined(__CYGWIN__)
-                static char username[100];
 
-                DWORD len = sizeof(username);
+                // Get username
+                char username[100];
+                len = sizeof(username);
+
                 if (!GetUserName(username, &len)) {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=????@%s", nodename);
                 } else {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", username, nodename);
                 }
 #else
+                // Get hostname
+                char nodename[HOST_NAME_MAX];
+                if (gethostname(nodename, HOST_NAME_MAX) != 0) {
+                    snprintf(nodename, sizeof(nodename), "%s", "unknown");
+                }
+                // Get username
                 struct passwd *pwd;
                 if ((pwd = getpwuid(geteuid())) != NULL) {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", pwd->pw_name, nodename);
