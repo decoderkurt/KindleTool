@@ -2249,12 +2249,23 @@ int kindle_create_main(int argc, char *argv[])
                     snprintf(nodename, sizeof(nodename), "%s", "unknown");
                 }
                 // Get username
+#if defined(_WIN32) && !defined(__CYGWIN__)
+                static char username[100];
+
+                DWORD len = sizeof(username);
+                if (!GetUserName(username, &len)) {
+                    snprintf(metabuff, sizeof(metabuff), "PackagedBy=????@%s", nodename);
+                } else {
+                    snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", username, nodename);
+                }
+#else
                 struct passwd *pwd;
                 if ((pwd = getpwuid(geteuid())) != NULL) {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", pwd->pw_name, nodename);
                 } else {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%ld@%s", (long) geteuid(), nodename);
                 }
+#endif
                 info.metastrings[info.num_meta++] = strdup(metabuff);
                 // And finally PackagedOn
                 // Get UTC time

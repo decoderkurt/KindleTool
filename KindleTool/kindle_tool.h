@@ -43,7 +43,9 @@
 #include <getopt.h>
 #include <limits.h>
 #include <sys/types.h>
+#if !defined(_WIN32) && !defined(__CYGWIN__)
 #include <pwd.h>
+#endif
 #include <time.h>
 #if defined(__linux__)
 #include <linux/limits.h>
