@@ -2249,7 +2249,8 @@ int kindle_create_main(int argc, char *argv[])
                 char nodename[256];
                 len = sizeof(nodename);
 
-                if (!GetComputerName(nodename, &len)) {
+                if(!GetComputerName(nodename, &len))
+                {
                     snprintf(nodename, sizeof(nodename), "%s", "somewhere");
                 }
 
@@ -2257,24 +2258,31 @@ int kindle_create_main(int argc, char *argv[])
                 char username[100];
                 len = sizeof(username);
 
-                if (!GetUserName(username, &len)) {
+                if(!GetUserName(username, &len))
+                {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=someone@%s", nodename);
-                } else {
+                }
+                else
+                {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", username, nodename);
                 }
 #else
                 // Get hostname
                 // NOTE: macOS defaults to the fqdn, and AFAICT, we can't simply wrangle the short one from gethostname()...
                 char nodename[HOST_NAME_MAX];
-                if (gethostname(nodename, HOST_NAME_MAX) != 0) {
+                if(gethostname(nodename, HOST_NAME_MAX) != 0)
+                {
                     snprintf(nodename, sizeof(nodename), "%s", "somewhere");
                 }
                 // Get username
                 // NOTE: getlogin() is a cheap-ass way of achieving roughly the same thing.
                 struct passwd *pwd;
-                if ((pwd = getpwuid(geteuid())) != NULL) {
+                if((pwd = getpwuid(geteuid())) != NULL)
+                {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", pwd->pw_name, nodename);
-                } else {
+                }
+                else
+                {
                     snprintf(metabuff, sizeof(metabuff), "PackagedBy=%ld@%s", (long) geteuid(), nodename);
                 }
 #endif
