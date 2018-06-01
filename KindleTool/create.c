@@ -2263,7 +2263,7 @@ int kindle_create_main(int argc, char *argv[])
                 gmt = gmtime(&now);
                 char sz_time[22];
                 strftime(sz_time, sizeof(sz_time), "%Y-%m-%d @ %H:%M:%S", gmt);
-                snprintf(metabuff, sizeof(metabuff), "PackagedOn=%s", sz_time);
+                snprintf(metabuff, sizeof(metabuff), "PackagedOn=%s UTC", sz_time);
                 info.metastrings[info.num_meta++] = strdup(metabuff);
                 break;
             case 'a':
