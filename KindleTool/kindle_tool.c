@@ -604,6 +604,7 @@ static int kindle_print_help(const char *prog_name)
         "      -r, --crit <uchar>          OTA V2 updates only. One byte optional data expressed as a number. Default is 0.\n"
         "      -x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple \"--meta\" options supported.\n"
         "                                    Format of metastring must be: key=value\n"
+        "      -X, --packaging             OTA V2 updates only. Adds PackagedWith, PackagedBy & PackagedOn metastrings, storing packaging metadata.\n"
         "      -a, --archive               Keep the intermediate archive.\n"
         "      -u, --unsigned              Build an unsigned & mangled userdata package.\n"
         "      -U, --userdata              Build an userdata package (can only be used with the sig update type).\n"

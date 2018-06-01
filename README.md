@@ -171,6 +171,7 @@
 		-r, --crit <uchar>          OTA V2 updates only. One byte optional data expressed as a number. Default is 0.
 		-x, --meta <str>            OTA V2 updates only. An optional string to add. Multiple "--meta" options supported.
                                       Format of metastring must be: key=value
+		-X, --packaging             OTA V2 updates only. Adds PackagedWith, PackagedBy & PackagedOn metastrings, storing packaging metadata.
 		-a, --archive               Keep the intermediate archive.
 		-u, --unsigned              Build an unsigned & mangled userdata package.
 		-U, --userdata              Build an userdata package (can only be used with the sig update type).
