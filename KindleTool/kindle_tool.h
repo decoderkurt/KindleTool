@@ -133,6 +133,11 @@ FILE *kt_win_tmpfile(void);
 #define KT_TMPDIR P_tmpdir
 #endif
 
+// HOST_NAME_MAX is undefined on macOS, it instead kindly asks you to query _SC_HOST_NAME_MAX via sysconf()...
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 256
+#endif
+
 // Bundlefile status bitmasks
 #define BUNDLE_OPEN 1           // 1 << 0       (bit 0)
 #define BUNDLE_CREATED 2        // 1 << 1       (bit 1)
