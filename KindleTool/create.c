@@ -2197,11 +2197,35 @@ int kindle_create_main(int argc, char *argv[])
                 }
                 break;
             case 's':
-                info.source_revision = strtoull(optarg, NULL, 0);
+                // Handle "min" as a special value
+                if(strcasecmp(optarg, "min") == 0)
+                {
+                    info.source_revision = 0;
+                }
+                else
+                {
+                    info.source_revision = strtoull(optarg, NULL, 0);
+                }
                 enforce_source_rev = true;
                 break;
             case 't':
-                info.target_revision = strtoull(optarg, NULL, 0);
+                // And, arguably more useful, handle "max" as a special value
+                if(strcasecmp(optarg, "max") == 0)
+                {
+                    // NOTE: Given the way we handle commands vs. args, by now, info.version should be accurate.
+                    if(info.version == OTAUpdateV2 || info.version == RecoveryUpdateV2)
+                    {
+                        info.target_revision = UINT64_MAX;
+                    }
+                    else
+                    {
+                        info.target_revision = UINT32_MAX;
+                    }
+                }
+                else
+                {
+                    info.target_revision = strtoull(optarg, NULL, 0);
+                }
                 enforce_target_rev = true;
                 break;
             case '1':
