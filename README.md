@@ -159,10 +159,10 @@
                                       FB01, FB02 = recovery; FB03 = recovery2; FC02, FD03 = ota; FC04, FD04, FL01 = ota2; SP01 = sig
 		-s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.
                                       Lowest version of device that package supports. Default is 0.
-                                      Also acccepts "min" for 0.
+                                      Also acccepts min for 0.
 		-t, --tgtrev <ulong|uint>   OTA & Recovery V2 updates only. Target revision. OTA V1 uses uint, OTA V2 & Recovery V2 uses ulong.
                                       Highest version of device that package supports. Default is ulong/uint max value.
-                                      Also acccepts "max" for the appropriate maximum value for the chosen update package type.
+                                      Also acccepts max for the appropriate maximum value for the chosen update package type.
 		-h, --hdrrev <uint>         Recovery V2 & Recovery FB02 updates only. Header Revision. Default is 0.
 		-1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.
 		-2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.
