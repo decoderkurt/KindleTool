@@ -113,6 +113,8 @@ uses
 .br
 Lowest version of device that package supports. Default is
 .IR 0 .
+.br
+Also acccepts \fI"\fBmin\fI"\fR for \fI0\fR.
 .TP
 .BR \-t ", " \-\-tgtrev " uint"
 .BR OTA " and " "Recovery V2"
@@ -127,6 +129,8 @@ uses
 Highest version of device that package supports. Default is
 .I ulong/uint max
 value.
+.br
+Also acccepts \fI"\fBmax\fI"\fR for the appropriate maximum value for the chosen update package type.
 .TP
 .BR \-h ", " \-\-hdrrev " uint"
 .BR "Recovery FB02" " and " "Recovery V2" " only."
