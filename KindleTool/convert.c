@@ -238,7 +238,8 @@ static int
 			break;
 		case AndroidUpdate:
 			fprintf(stderr, "Nothing more to do!\n");
-			// Usually, nothing more to do... On extract, archive_read_open_file will gracefully fail with an unrecognized format error, which tracks, given that we only support tarball + gzip ;).
+			// Usually, nothing more to do... On extract, archive_read_open_file will gracefully fail
+			// with an unrecognized format error, which tracks, given that we only support tarball + gzip ;).
 			return 0;
 			break;
 		case UnknownUpdate:
@@ -274,8 +275,8 @@ static int
 	read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
 
 	// NOTE: Use memcpy to avoid unaligned accesses on ARM...
-	// (Because for some reason, even the A8 eats dirt (the alignment trap throws a SIGILL) on some vld1.64 :64 instructions,
-	// and my non-existent understanding of ARM assembly & GCC innards is no help at all ;D).
+	//       Because for some reason, even the A8 eats dirt (the alignment trap throws a SIGILL) on some vld1.64 :64
+	//       instructions, and my non-existent understanding of ARM assembly & GCC innards is no help at all ;D.
 	//source_revision = *(uint64_t *)&data[hindex];
 	memcpy(&source_revision, &data[hindex], sizeof(uint64_t));
 	hindex += sizeof(uint64_t);
@@ -291,12 +292,11 @@ static int
 	free(data);
 
 	// Now get the data
-	size_t devices_size =
-	    num_devices *
-	    sizeof(
-		uint16_t);    // NOTE: This is stored in a temp var for the express purpose of shutting up clang's sa (uint16_t > uchar, which freaks clang. Would be dangerous if it were the other way around)...
-	data      = malloc(devices_size);
-	read_size = fread(data, sizeof(uint16_t), num_devices, input);
+	// NOTE: This is stored in a temp var for the express purpose of shutting up clang's sa
+	//       (uint16_t > uchar, which freaks clang. Would be dangerous if it were the other way around)...
+	size_t devices_size = num_devices * sizeof(uint16_t);
+	data                = malloc(devices_size);
+	read_size           = fread(data, sizeof(uint16_t), num_devices, input);
 	for (hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t)) {
 		//device = *(uint16_t *)&data[hindex];
 		memcpy(&device, &data[hindex], sizeof(uint16_t));
@@ -306,17 +306,20 @@ static int
 		if (strcmp(convert_device_id(device), "Unknown") == 0) {
 			is_unknown = true;
 			fprintf(stderr, "Unknown (");
-		} else
+		} else {
 			fprintf(stderr, "%s", convert_device_id(device));
+		}
 		if (kt_with_unknown_devcodes) {
-			if (!is_unknown)
+			if (!is_unknown) {
 				fprintf(stderr, " (");
+			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
 				char* dev_id;
 				dev_id    = to_base(device, 32);
 				char* pad = "000";
-				// NOTE: 0 padding a string with actual zeroes is fun.... (cf. https://stackoverflow.com/questions/4133318)
+				// NOTE: 0 padding a string with actual zeroes is fun....
+				//       (cf. https://stackoverflow.com/questions/4133318)
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))
@@ -324,17 +327,19 @@ static int
 					    : (int) strlen(pad) - (int) strlen(dev_id),
 					pad,
 					dev_id);
-				// NOTE: Can't touch the formatting of this, MRPI relies on it... So relegate this to a debug only feature...
+				// NOTE: Can't touch the formatting of this, MRPI relies on it...
+				//       So relegate this to a debug only feature...
 				/*
-                // Check that our base conversions work both ways...
-                unsigned long int dev_code = from_base(dev_id, 32);
-                fprintf(stderr, "0x%03lX -> ", dev_code);
-                */
+				// Check that our base conversions work both ways...
+				unsigned long int dev_code = from_base(dev_id, 32);
+				fprintf(stderr, "0x%03lX -> ", dev_code);
+				*/
 				free(dev_id);
 			}
 		}
-		if (is_unknown || kt_with_unknown_devcodes)
+		if (is_unknown || kt_with_unknown_devcodes) {
 			fprintf(stderr, "0x%02X)", device);
+		}
 		fprintf(stderr, "\n");
 	}
 	free(data);
@@ -345,9 +350,8 @@ static int
 	hindex    = 0;
 
 	// NOTE: Here, the alignment is identical between critical & data, so we can get away with it safely.
-	critical =
-	    *(uint8_t*) &data
-		[hindex];    // Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
+	critical = *(uint8_t*) &data[hindex];
+	// Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
 	hindex += sizeof(uint8_t);
 	fprintf(stderr, "Critical       %hhu\n", critical);
 	padding = *(uint8_t*) &data[hindex];    // Print the (garbage?) padding byte found in official updates...
@@ -464,11 +468,13 @@ static int
 	if (strcmp(convert_device_id(header->data.ota_update.device), "Unknown") == 0) {
 		is_unknown = true;
 		fprintf(stderr, "Unknown (");
-	} else
+	} else {
 		fprintf(stderr, "%s", convert_device_id(header->data.ota_update.device));
+	}
 	if (kt_with_unknown_devcodes) {
-		if (!is_unknown)
+		if (!is_unknown) {
 			fprintf(stderr, " (");
+		}
 		// Handle the new device ID scheme...
 		if (header->data.ota_update.device > 0xFF) {
 			char* dev_id;
@@ -483,8 +489,9 @@ static int
 			free(dev_id);
 		}
 	}
-	if (is_unknown || kt_with_unknown_devcodes)
+	if (is_unknown || kt_with_unknown_devcodes) {
 		fprintf(stderr, "0x%02X)", header->data.ota_update.device);
+	}
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
 	fprintf(stderr,
@@ -519,17 +526,19 @@ static int
 	if (header->data.recovery_h2_update.header_rev == 2) {
 		fprintf(stderr, "Header Rev     %d\n", header->data.recovery_h2_update.header_rev);
 		// Slightly ugly way to detect unknown platforms...
-		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0)
+		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
-		else
+		} else {
 			fprintf(stderr,
 				"Platform       %s\n",
 				convert_platform_id(header->data.recovery_h2_update.platform));
+		}
 		// Same shtick for unknown boards...
-		if (strcmp(convert_board_id(header->data.recovery_h2_update.board), "Unknown") == 0)
+		if (strcmp(convert_board_id(header->data.recovery_h2_update.board), "Unknown") == 0) {
 			fprintf(stderr, "Board          Unknown (0x%02X)\n", header->data.recovery_h2_update.board);
-		else
+		} else {
 			fprintf(stderr, "Board          %s\n", convert_board_id(header->data.recovery_h2_update.board));
+		}
 	} else {
 		fprintf(stderr, "Device         ");
 		// Slightly hackish way to detect unknown devices...
@@ -537,11 +546,13 @@ static int
 		if (strcmp(convert_device_id(header->data.recovery_update.device), "Unknown") == 0) {
 			is_unknown = true;
 			fprintf(stderr, "Unknown (");
-		} else
+		} else {
 			fprintf(stderr, "%s", convert_device_id(header->data.recovery_update.device));
+		}
 		if (kt_with_unknown_devcodes) {
-			if (!is_unknown)
+			if (!is_unknown) {
 				fprintf(stderr, " (");
+			}
 			// Handle the new device ID scheme...
 			if (header->data.recovery_update.device > 0xFF) {
 				char* dev_id;
@@ -557,8 +568,9 @@ static int
 				free(dev_id);
 			}
 		}
-		if (is_unknown || kt_with_unknown_devcodes)
+		if (is_unknown || kt_with_unknown_devcodes) {
 			fprintf(stderr, "0x%02X)", header->data.recovery_update.device);
+		}
 		fprintf(stderr, "\n");
 	}
 
@@ -629,7 +641,8 @@ static int
 	//board = *(uint32_t *)&data[hindex];
 	memcpy(&board, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
-	// Slightly hackish way to detect unknown boards (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
+	// Slightly hackish way to detect unknown boards
+	// (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
 	if (strcmp(convert_board_id(board), "Unknown") == 0)
 		fprintf(stderr, "Board          %s (0x%02X)\n", convert_board_id(board), board);
 	else
@@ -649,11 +662,13 @@ static int
 		if (strcmp(convert_device_id(device), "Unknown") == 0) {
 			is_unknown = true;
 			fprintf(stderr, "Unknown (");
-		} else
+		} else {
 			fprintf(stderr, "%s", convert_device_id(device));
+		}
 		if (kt_with_unknown_devcodes) {
-			if (!is_unknown)
+			if (!is_unknown) {
 				fprintf(stderr, " (");
+			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
 				char* dev_id;
@@ -669,8 +684,9 @@ static int
 				free(dev_id);
 			}
 		}
-		if (is_unknown || kt_with_unknown_devcodes)
+		if (is_unknown || kt_with_unknown_devcodes) {
 			fprintf(stderr, "0x%02X)", device);
+		}
 		fprintf(stderr, "\n");
 		hindex += sizeof(uint16_t);
 	}
@@ -771,11 +787,13 @@ int
 	}
 
 	if (optind < argc) {
-		// Iterate over non-options (the file(s) we passed) (stdout output is probably pretty dumb when passing multiple files...)
+		// Iterate over non-options (the file(s) we passed)
+		// (stdout output is probably pretty dumb when passing multiple files...)
 		while (optind < argc) {
 			fail    = false;
 			in_name = argv[optind++];
-			// Check that a valid package input properly ends in .bin or .stgz, unless we just want to parse the header
+			// Check that a valid package input properly ends in .bin or .stgz,
+			// unless we just want to parse the header
 			if (!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name))) {
 				fprintf(
 				    stderr,
@@ -789,9 +807,8 @@ int
 				ext_offset = 1;
 			else
 				ext_offset = 0;
-			if (!info_only && !unwrap_only &&
-			    output != stdout)    // Not info only, not unwrap only AND not stdout
-			{
+			// Not info only, not unwrap only AND not stdout
+			if (!info_only && !unwrap_only && output != stdout) {
 				len      = strlen(in_name);
 				out_name = malloc(len + 1 + (13 - ext_offset));
 				memcpy(out_name, in_name, len - (4 + ext_offset));
@@ -804,8 +821,8 @@ int
 					continue;    // It's fatal, go away
 				}
 			}
-			if (extract_sig)    // We want the payload sig (implies not info only)
-			{
+			// We want the payload sig (implies not info only)
+			if (extract_sig) {
 				len      = strlen(in_name);
 				sig_name = malloc(len + 1 + (1 - ext_offset));
 				memcpy(sig_name, in_name, len - (4 + ext_offset));
@@ -825,8 +842,8 @@ int
 					continue;    // It's fatal, go away
 				}
 			}
-			if (unwrap_only)    // We want an unwrapped package (implies not info only)
-			{
+			// We want an unwrapped package (implies not info only)
+			if (unwrap_only) {
 				len            = strlen(in_name);
 				unwrapped_name = malloc(len + 1 + (10 - ext_offset));
 				memcpy(unwrapped_name, in_name, len - (4 + ext_offset));
@@ -916,24 +933,25 @@ int
 					unlink(out_name);    // Clean up our mess, if we made one
 				fail = true;
 			}
-			if (output != stdout && !info_only && !keep_ori &&
-			    !fail)    // If output was some file, and we didn't ask to keep it, and we didn't fail to convert it, delete the original
+			// If output was some file, and we didn't ask to keep it, and we didn't fail to convert it,
+			// delete the original
+			if (output != stdout && !info_only && !keep_ori && !fail) {
 				unlink(in_name);
+			}
 
 			// Clean up behind us
-			if (!info_only && !unwrap_only) {
+			if (!info_only && !unwrap_only)
 				free(out_name);
-			}
-			if (output != NULL && output != stdout) {
+			if (output != NULL && output != stdout)
 				fclose(output);
-			}
 			if (input != NULL)
 				fclose(input);
 			if (sig_output != NULL)
 				fclose(sig_output);
 			if (unwrap_output != NULL)
 				fclose(unwrap_output);
-			// Remove empty sigs (since we have to open the fd before calling kindle_convert, we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
+			// Remove empty sigs (since we have to open the fd before calling kindle_convert,
+			// we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
 			if (extract_sig) {
 				stat(sig_name, &st);
 				if (st.st_size == 0)
@@ -978,7 +996,8 @@ static int
 
 	// Select which attributes we want to restore.
 	flags = ARCHIVE_EXTRACT_TIME;
-	// Don't preserve permissions, as most files in kindle packages will be owned by root, and if the perms are effed up, it gets annoying.
+	// Don't preserve permissions, as most files in kindle packages will be owned by root,
+	// and if the perms are effed up, it gets annoying.
 	// We could also just rewrite every entry in the archive with sane permissions, but that seems a bit overkill.
 	//flags |= ARCHIVE_EXTRACT_PERM;
 	//flags |= ARCHIVE_EXTRACT_ACL;
@@ -990,8 +1009,9 @@ static int
 	archive_read_support_format_gnutar(a);
 	archive_read_support_filter_gzip(a);
 
-	if (filename != NULL && strcmp(filename, "-") == 0)
+	if (filename != NULL && strcmp(filename, "-") == 0) {
 		filename = NULL;
+	}
 	if ((r = archive_read_open_filename(a, filename, 10240))) {
 		fprintf(stderr, "archive_read_open_file() failure: %s.\n", archive_error_string(a));
 		archive_read_free(a);
@@ -1017,7 +1037,8 @@ static int
 		archive_entry_copy_pathname(entry, fixed_path);
 
 		// archive_read_extract should take care of everything for us...
-		// (creating a write_disk archive, setting a standard lookup, the flags we asked for, writing our entry header & content, and destroying the write_disk archive ;))
+		// (creating a write_disk archive, setting a standard lookup, the flags we asked for,
+		// writing our entry header & content, and destroying the write_disk archive ;))
 		r = archive_read_extract(a, entry, flags);
 		if (r != ARCHIVE_OK) {
 			fprintf(stderr, "archive_read_extract() failed: %s.\n", archive_error_string(a));
@@ -1106,8 +1127,10 @@ int
 		return -1;
 	}
 	// NOTE: Do some sanity checks for output directory handling?
-	// The 'rewrite pathname entry' cheap method we currently use is pretty 'dumb' (it assumes the path is correct, creating it if need be),
-	// but the other (more correct?) way to handle this (chdir) would need some babysitting (cf. bsdtar's *_chdir() in tar/util.c)...
+	// The 'rewrite pathname entry' cheap method we currently use is pretty 'dumb'
+	// (it assumes the path is correct, creating it if need be),
+	// but the other (more correct?) way to handle this (chdir) would need some babysitting
+	// (cf. bsdtar's *_chdir() in tar/util.c)...
 	if ((bin_input = fopen(bin_filename, "rb")) == NULL) {
 		fprintf(stderr,
 			"Cannot open input %s package '%s': %s.\n",
@@ -1120,7 +1143,8 @@ int
 	// Use a non-racey tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
 	// We always create them in P_tmpdir (usually /tmp or /var/tmp), and rely on the OS implementation to handle the umask,
 	// it'll cost us less LOC that way since I don't really want to introduce a dedicated utility function for tempfile handling...
-	// NOTE: Probably still racey on MinGW, according to libarchive, but, meh, and we're not multithreaded... See the ifdef in kindle_tool.h for more details.
+	// NOTE: Probably still racey on MinGW, according to libarchive, but, meh, and we're not multithreaded...
+	//       See the ifdef in kindle_tool.h for more details.
 	tgz_fd = mkstemp(tgz_filename);
 	if (tgz_fd == -1) {
 		fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
