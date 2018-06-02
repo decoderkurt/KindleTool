@@ -69,7 +69,8 @@
 #	include <nettle/rsa.h>
 #	include <nettle/sha2.h>
 
-// Die in a slightly more graceful manner than by spewing a whole lot of warnings & errors if we're not building against at least libarchive 3.0.3
+// Die in a slightly more graceful manner than by spewing a whole lot of warnings & errors
+// if we're not building against at least libarchive 3.0.3
 #	if ARCHIVE_VERSION_NUMBER < 3000003
 #		error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #	endif
@@ -107,9 +108,12 @@
 #	define IS_DAT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".dat", 4) == 0)
 #	define IS_UIMAGE(filename) (strncmp(filename + (strlen(filename) - 6), "uImage", 6) == 0)
 
-// Don't break tempfiles on Win32... (it doesn't like paths starting with // because that means an 'extended' path (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32, and we prepend our own constants with / because it's /tmp on POSIX...)
+// Don't break tempfiles on Win32... It doesn't like paths starting with // because that means an 'extended' path
+// (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32,
+// and we prepend our own constants with / because it's /tmp on POSIX...
 // Note that this is only used as a last resort, if for some reason GetTempPath returns something we can't use...
-// In any case, don't even try to put tempfiles on the root drive (because unprivileged users can't write there), so use "./" (current dir) instead as a crappy workaround.
+// In any case, don't even try to put tempfiles on the root drive (because unprivileged users can't write there),
+// so use "./" (current dir) instead as a crappy workaround.
 // NOTE: Geekmaster also experimented with using "../" (parent dir), which may or may not be a better idea...
 #	if defined(_WIN32) && !defined(__CYGWIN__)
 #		define KT_TMPDIR "."
@@ -235,10 +239,9 @@ typedef enum
 	ValidKindleUnknown_0x99               = 0x99,
 	KindleBasicKiwi                       = 0xDD,
 	/* KindlePaperWhite3 = 0x90, */    // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (NOTE: This is a bogus ID, the proper one is now found at chars 4 to 6 of the S/N)
-	KindlePaperWhite3WiFi   = 0x201,    // 0G1
-	KindlePaperWhite3WiFi3G = 0x202,    // 0G2
-	KindlePaperWhite3WiFi3GMexico =
-	    0x204,    // 0G4  NOTE: This, as well as all the other "Brazil" variants, might be better flagged as "Southern America"?
+	KindlePaperWhite3WiFi   = 0x201,          // 0G1
+	KindlePaperWhite3WiFi3G = 0x202,          // 0G2
+	KindlePaperWhite3WiFi3GMexico = 0x204,    // 0G4  NOTE: Might be better flagged as "Southern America"?
 	KindlePaperWhite3WiFi3GEurope = 0x205,    // 0G5
 	KindlePaperWhite3WiFi3GCanada = 0x206,    // 0G6
 	KindlePaperWhite3WiFi3GJapan  = 0x207,    // 0G7
@@ -259,10 +262,9 @@ typedef enum
 	KindleOasisUnknown_0GT         = 0x21B,    // 0GT?
 	KindleOasisWiFi3GEurope        = 0x21C,    // 0GU
 	// Kindle Basic 2, released summer 2016 on FW 5.8.0
-	KindleBasic2Unknown_0DU =
-	    0x1BC,    // 0DU??    FIXME: Confirming that one will probably make or break my base 32 tweaks...
-	KindleBasic2      = 0x269,    // 0K9 (Black)
-	KindleBasic2White = 0x26A,    // 0KA (White)
+	KindleBasic2Unknown_0DU = 0x1BC,    // 0DU??  FIXME: A good ID to check the sanity of my base32 tweaks...
+	KindleBasic2            = 0x269,    // 0K9 (Black)
+	KindleBasic2White       = 0x26A,    // 0KA (White)
 	// Kindle Oasis 2, released winter 2017 on FW 5.9.0.6
 	KindleOasis2Unknown_0LM      = 0x295,    // 0LM?
 	KindleOasis2Unknown_0LN      = 0x296,    // 0LN?
@@ -302,19 +304,19 @@ typedef enum
 	Board_Unspecified = 0x00,    // Used since the PW (skip board check)
 	Tequila           = 0x03,    // Silver Kindle 4
 	Whitney           = 0x05     // Kindle Touch
-				     // Other potentially relevant (OTA|Recovery)v2 ready boards:
-				     /*
-    Sauza = 0xFF                // Black Kindle 4
-    Celeste = 0xFF              // PW
-    Icewine = 0xFF              // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
-    Pinot = 0xFF                // PW2
-    Bourbon = 0xFF              // Kindle Basic
-    Muscat = 0xFF               // PW3
-    Whisky = 0xFF               // Kindle Oasis
-    Woody = 0xFF                // ?? (in the Basic line? (no 3G))
-    Eanab = 0xFF                // Kindle Basic 2
-    Cognac = 0xFF               // Kindle Oasis 2
-    */
+	                             // Other potentially relevant (OTA|Recovery)v2 ready boards:
+	/*
+	Sauza             = 0xFF     // Black Kindle 4
+	Celeste           = 0xFF     // PW
+	Icewine           = 0xFF     // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
+	Pinot             = 0xFF     // PW2
+	Bourbon           = 0xFF     // Kindle Basic
+	Muscat            = 0xFF     // PW3
+	Whisky            = 0xFF     // Kindle Oasis
+	Woody             = 0xFF     // ?? (in the Basic line? (no 3G))
+	Eanab             = 0xFF     // Kindle Basic 2
+	Cognac            = 0xFF     // Kindle Oasis 2
+	*/
 } Board;
 
 // For reference, list of boards (AFAICT, in chronological order):
@@ -399,7 +401,9 @@ typedef struct
 } UpdateHeader;
 
 // Ugly global. Used to cache the state of the KT_WITH_UNKNOWN_DEVCODES env var...
-// NOTE: While this looks like the ideal candidate to be a bool, we can't do that because we use its value in unsigned operations and I can't be arsed to add a bunch of casts there (because for some mystical reason, bool is signed :?)
+// NOTE: While this looks like the ideal candidate to be a bool,
+//       we can't do that because we use its value in unsigned operations,
+//       and I can't be arsed to add a bunch of casts there (because for some mystical reason, bool is signed :?)
 extern unsigned int kt_with_unknown_devcodes;
 
 // And another to store the tmpdir...

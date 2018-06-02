@@ -25,8 +25,10 @@
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 // NOTE: Handle the rest of the Win32 tempfiles mess in a quick'n dirty way...
-// Namely: - We can't use MinGW's mkstemp until 5.0 comes out (the implementation in 4.0.1 unlinks on close, which is unexpected)
-//         - MSVCRT's tmpfile() creates files in the root drive, which, as we've already mentioned, is a recipe for disaster...
+// Namely: - We can't use MinGW's mkstemp until 5.0 comes out
+//           (the implementation in 4.0.1 unlinks on close, which is unexpected)
+//         - MSVCRT's tmpfile() creates files in the root drive,
+//           which, as we've already mentioned, is a recipe for disaster...
 // Whip crude hacks around both of these issues while staying oblivious to the wchar_t potential mess...
 // Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
 int
@@ -38,7 +40,8 @@ int
 	}
 	// NOTE: Don't use _O_TEMPORARY, we expect to handle the unlink ourselves!
 	// NOTE: And while we probably could use _O_NOINHERIT, we do not, for a question of feature parity:
-	//       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23, and we routinely run on stuff much older than that...
+	//       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23,
+	//       and we routinely run on stuff much older than that...
 	return _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
 }
 
@@ -62,7 +65,8 @@ FILE*
 	if (fp != NULL)
 		return fp;
 	else {
-		// We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd... Which means we have to fudge errno to keep the one from fdopen...
+		// We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd...
+		// Which means we have to fudge errno to keep the one from fdopen...
 		int saved_errno = errno;
 		_close(fd);
 		errno = saved_errno;
@@ -100,8 +104,9 @@ int
 		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) >
 	       0) {
 		// Don't munge if we asked for a fake package
-		if (!fake_sign)
+		if (!fake_sign) {
 			md(bytes, bytes_read);
+		}
 		bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
 		if (ferror(output) != 0) {
 			fprintf(stderr, "Error munging, cannot write to output: %s.\n", strerror(errno));
@@ -134,8 +139,9 @@ int
 		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) >
 	       0) {
 		// Don't demunge if we supplied a fake package
-		if (!fake_sign)
+		if (!fake_sign) {
 			dm(bytes, bytes_read);
+		}
 		bytes_written = fwrite(bytes, sizeof(unsigned char), bytes_read, output);
 		if (ferror(output) != 0) {
 			fprintf(stderr, "Error demunging, cannot write to output: %s.\n", strerror(errno));
@@ -823,7 +829,8 @@ int
 	const char* prog_name;
 	const char* cmd;
 
-	// Do we want to use unknown devcodes? Very lame test, only check if the var actually exists, we don't check the value...
+	// Do we want to use unknown devcodes?
+	// Very lame test, only check if the var actually exists, we don't check the value...
 	if (getenv("KT_WITH_UNKNOWN_DEVCODES") == NULL)
 		kt_with_unknown_devcodes = 0;
 	else
