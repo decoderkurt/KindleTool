@@ -495,10 +495,8 @@ static int
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
 	// Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
-	fprintf(stderr,
-		"Padding Byte   %hhu (0x%02X)\n",
-		header->data.ota_update.unused,
-		header->data.ota_update.unused);
+	fprintf(
+	    stderr, "Padding Byte   %hhu (0x%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);
 
 	if (output == NULL) {
 		return 0;

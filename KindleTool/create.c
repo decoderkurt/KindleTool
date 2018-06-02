@@ -834,8 +834,7 @@ static int
 				return -1;
 			}
 			// Create the update
-			if (kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0)
-			{
+			if (kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0) {
 				fprintf(stderr, "Error creating update package.\n");
 				fclose(temp);
 				return -1;
@@ -843,8 +842,7 @@ static int
 			rewind(temp);    // Rewind the file before reading back
 			if (!fake_sign) {
 				// Write the signature (unless we asked for an unsigned package)
-				if (kindle_create_signature(info, temp, output) < 0)
-				{
+				if (kindle_create_signature(info, temp, output) < 0) {
 					fprintf(stderr, "Error signing update package.\n");
 					fclose(temp);
 					return -1;
