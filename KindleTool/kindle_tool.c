@@ -830,13 +830,14 @@ int
 	const char* cmd;
 
 	// Do we want to use unknown devcodes?
-	// Very lame test, only check if the var actually exists, we don't check the value...
-	if (getenv("KT_WITH_UNKNOWN_DEVCODES") == NULL)
+	// Very lame test, we only check if the var actually exists, we don't check the value...
+	if (getenv("KT_WITH_UNKNOWN_DEVCODES") == NULL) {
 		kt_with_unknown_devcodes = 0;
-	else
+	} else {
 		kt_with_unknown_devcodes = 1;
+	}
 
-		// Try to use a sane temp directory, and remember it
+	// Try to use a sane temp directory, and remember it
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	// NOTE: Not dealing with the whole TCHAR/WCHAR mess, so, lalalalala, here be dragons!
 	char  win_tmpdir[PATH_MAX];

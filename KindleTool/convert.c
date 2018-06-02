@@ -167,8 +167,8 @@ static int
 				return 0;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
-				return kindle_convert_ota_update_v2(
-				    input, output, fake_sign, header_md5);    // No absolute size, so no struct to pass
+				// No absolute size, so no struct to pass
+				return kindle_convert_ota_update_v2(input, output, fake_sign, header_md5);
 			}
 			break;
 		case UpdateSignature:
@@ -376,8 +376,8 @@ static int
 		metastring_length = (uint16_t) meta_strlen;
 		metastring        = malloc(metastring_length);
 		read_size         = fread(metastring, sizeof(char), metastring_length, input);
-		dm((unsigned char*) metastring,
-		   metastring_length);    // Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
+		// Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
+		dm((unsigned char*) metastring, metastring_length);
 		fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
 		free(metastring);
 	}
@@ -494,11 +494,11 @@ static int
 	}
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Optional       %hhu\n", header->data.ota_update.optional);
+	// Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
 	fprintf(stderr,
 		"Padding Byte   %hhu (0x%02X)\n",
 		header->data.ota_update.unused,
-		header->data.ota_update
-		    .unused);    // Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
+		header->data.ota_update.unused);
 
 	if (output == NULL) {
 		return 0;

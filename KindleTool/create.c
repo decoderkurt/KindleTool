@@ -833,7 +833,8 @@ static int
 				fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
 				return -1;
 			}
-			if (kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0)    // Create the update
+			// Create the update
+			if (kindle_create_ota_update_v2(info, input_tgz, temp, fake_sign) < 0)
 			{
 				fprintf(stderr, "Error creating update package.\n");
 				fclose(temp);
@@ -841,8 +842,8 @@ static int
 			}
 			rewind(temp);    // Rewind the file before reading back
 			if (!fake_sign) {
-				if (kindle_create_signature(info, temp, output) <
-				    0)    // Write the signature (unless we asked for an unsigned package)
+				// Write the signature (unless we asked for an unsigned package)
+				if (kindle_create_signature(info, temp, output) < 0)
 				{
 					fprintf(stderr, "Error signing update package.\n");
 					fclose(temp);
@@ -850,7 +851,7 @@ static int
 				}
 				rewind(temp);    // Rewind the file before writing it to output
 			}
-			// write the update
+			// Write the update
 			while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0) {
 				if (fwrite(buffer, sizeof(unsigned char), count, output) < count) {
 					fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
@@ -1024,7 +1025,8 @@ static int
 		hindex += sizeof(uint8_t);
 		memcpy(&header[hindex], &((uint8_t*) &str_len)[0], sizeof(uint8_t));
 		hindex += sizeof(uint8_t);
-		md((unsigned char*) info->metastrings[i], str_len);    // Obfuscate meta string
+		// Obfuscate meta string
+		md((unsigned char*) info->metastrings[i], str_len);
 		// FIXME: Should this really be munged? Following otaup would point to yes,
 		//        but I've never seen an update with meta strings in the wild,
 		//        and the aforementionned issue with the string length doesn't help...
