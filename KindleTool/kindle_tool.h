@@ -21,92 +21,92 @@
 */
 
 #ifndef __KINDLETOOL_H
-#	define __KINDLETOOL_H
+#define __KINDLETOOL_H
 
 // NOTE: Mainly to shut KDevelop up without any actual impact...
 //       We do build MinGW w/ _GNU_SOURCE though.
-#	if defined(__linux__)
-#		ifndef _DEFAULT_SOURCE
-#			define _DEFAULT_SOURCE
-#		endif
+#if defined(__linux__)
+#	ifndef _DEFAULT_SOURCE
+#		define _DEFAULT_SOURCE
 #	endif
+#endif
 
-#	include <ctype.h>
-#	include <errno.h>
-#	include <fcntl.h>
-#	include <getopt.h>
-#	include <limits.h>
-#	include <stdbool.h>
-#	include <stdint.h>
-#	include <stdio.h>
-#	include <stdlib.h>
-#	include <string.h>
-#	include <sys/types.h>
-#	include <unistd.h>
-#	if !defined(_WIN32) && !defined(__CYGWIN__)
-#		include <pwd.h>
-#	endif
-#	include <time.h>
-#	if defined(__linux__)
-#		include <linux/limits.h>
-#	endif
-#	include <libgen.h>
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <getopt.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#if !defined(_WIN32) && !defined(__CYGWIN__)
+#	include <pwd.h>
+#endif
+#include <time.h>
+#if defined(__linux__)
+#	include <linux/limits.h>
+#endif
+#include <libgen.h>
 
 // libarchive does not pull that in for us anymore ;).
-#	if defined(_WIN32) && !defined(__CYGWIN__)
-#		define WIN32_LEAN_AND_MEAN
-#		include <windows.h>
-#	endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#	define WIN32_LEAN_AND_MEAN
+#	include <windows.h>
+#endif
 
-#	include <archive.h>
-#	include <archive_entry.h>
+#include <archive.h>
+#include <archive_entry.h>
 
-#	include <gmp.h>
-#	include <nettle/base16.h>
-#	include <nettle/base64.h>
-#	include <nettle/buffer.h>
-#	include <nettle/md5.h>
-#	include <nettle/rsa.h>
-#	include <nettle/sha2.h>
+#include <gmp.h>
+#include <nettle/base16.h>
+#include <nettle/base64.h>
+#include <nettle/buffer.h>
+#include <nettle/md5.h>
+#include <nettle/rsa.h>
+#include <nettle/sha2.h>
 
 // Die in a slightly more graceful manner than by spewing a whole lot of warnings & errors
 // if we're not building against at least libarchive 3.0.3
-#	if ARCHIVE_VERSION_NUMBER < 3000003
-#		error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
-#	endif
+#if ARCHIVE_VERSION_NUMBER < 3000003
+#	error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
+#endif
 
-#	define BUFFER_SIZE 1024
-#	define BLOCK_SIZE 64
-#	define RECOVERY_BLOCK_SIZE 131072
+#define BUFFER_SIZE 1024
+#define BLOCK_SIZE 64
+#define RECOVERY_BLOCK_SIZE 131072
 
-#	define MAGIC_NUMBER_LENGTH 4
-#	define MD5_HASH_LENGTH 32
+#define MAGIC_NUMBER_LENGTH 4
+#define MD5_HASH_LENGTH 32
 
-#	define OTA_UPDATE_BLOCK_SIZE 60
-#	define OTA_UPDATE_V2_BLOCK_SIZE 18
-#	define OTA_UPDATE_V2_PART_2_BLOCK_SIZE 36
-#	define RECOVERY_UPDATE_BLOCK_SIZE 131068
-#	define UPDATE_SIGNATURE_BLOCK_SIZE 60
+#define OTA_UPDATE_BLOCK_SIZE 60
+#define OTA_UPDATE_V2_BLOCK_SIZE 18
+#define OTA_UPDATE_V2_PART_2_BLOCK_SIZE 36
+#define RECOVERY_UPDATE_BLOCK_SIZE 131068
+#define UPDATE_SIGNATURE_BLOCK_SIZE 60
 
-#	define CERTIFICATE_DEV_SIZE 128
-#	define CERTIFICATE_1K_SIZE 128
-#	define CERTIFICATE_2K_SIZE 256
+#define CERTIFICATE_DEV_SIZE 128
+#define CERTIFICATE_1K_SIZE 128
+#define CERTIFICATE_2K_SIZE 256
 
-#	define INDEX_FILE_NAME "update-filelist.dat"
+#define INDEX_FILE_NAME "update-filelist.dat"
 
-#	define SERIAL_NO_LENGTH 16
+#define SERIAL_NO_LENGTH 16
 
-#	define DEFAULT_BYTES_PER_BLOCK (20 * 512)
+#define DEFAULT_BYTES_PER_BLOCK (20 * 512)
 
-#	define IS_SCRIPT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".ffs", 4) == 0)
-#	define IS_SHELL(filename) (strncasecmp(filename + (strlen(filename) - 3), ".sh", 3) == 0)
-#	define IS_SIG(filename) (strncasecmp(filename + (strlen(filename) - 4), ".sig", 4) == 0)
-#	define IS_BIN(filename) (strncasecmp(filename + (strlen(filename) - 4), ".bin", 4) == 0)
-#	define IS_STGZ(filename) (strncasecmp(filename + (strlen(filename) - 5), ".stgz", 5) == 0)
-#	define IS_TGZ(filename) (strncasecmp(filename + (strlen(filename) - 4), ".tgz", 4) == 0)
-#	define IS_TARBALL(filename) (strncasecmp(filename + (strlen(filename) - 7), ".tar.gz", 7) == 0)
-#	define IS_DAT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".dat", 4) == 0)
-#	define IS_UIMAGE(filename) (strncmp(filename + (strlen(filename) - 6), "uImage", 6) == 0)
+#define IS_SCRIPT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".ffs", 4) == 0)
+#define IS_SHELL(filename) (strncasecmp(filename + (strlen(filename) - 3), ".sh", 3) == 0)
+#define IS_SIG(filename) (strncasecmp(filename + (strlen(filename) - 4), ".sig", 4) == 0)
+#define IS_BIN(filename) (strncasecmp(filename + (strlen(filename) - 4), ".bin", 4) == 0)
+#define IS_STGZ(filename) (strncasecmp(filename + (strlen(filename) - 5), ".stgz", 5) == 0)
+#define IS_TGZ(filename) (strncasecmp(filename + (strlen(filename) - 4), ".tgz", 4) == 0)
+#define IS_TARBALL(filename) (strncasecmp(filename + (strlen(filename) - 7), ".tar.gz", 7) == 0)
+#define IS_DAT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".dat", 4) == 0)
+#define IS_UIMAGE(filename) (strncmp(filename + (strlen(filename) - 6), "uImage", 6) == 0)
 
 // Don't break tempfiles on Win32... It doesn't like paths starting with // because that means an 'extended' path
 // (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32,
@@ -115,56 +115,56 @@
 // In any case, don't even try to put tempfiles on the root drive (because unprivileged users can't write there),
 // so use "./" (current dir) instead as a crappy workaround.
 // NOTE: Geekmaster also experimented with using "../" (parent dir), which may or may not be a better idea...
-#	if defined(_WIN32) && !defined(__CYGWIN__)
-#		define KT_TMPDIR "."
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#	define KT_TMPDIR "."
 
 // NOTE: cf. kindle_tool.c
 int   kt_win_mkstemp(char*);
 FILE* kt_win_tmpfile(void);
 
 // NOTE: Override the functions the hard way, shutting up GCC in the proces...
-#		ifdef mkstemp
-#			undef mkstemp
-#		endif
-#		define mkstemp kt_win_mkstemp
-
-#		ifdef tmpfile
-#			undef tmpfile
-#		endif
-#		define tmpfile kt_win_tmpfile
-// -> POSIX, assume P_tmpdir (usually /tmp) is a sane fallback.
-#	else
-#		define KT_TMPDIR P_tmpdir
+#	ifdef mkstemp
+#		undef mkstemp
 #	endif
+#	define mkstemp kt_win_mkstemp
+
+#	ifdef tmpfile
+#		undef tmpfile
+#	endif
+#	define tmpfile kt_win_tmpfile
+// -> POSIX, assume P_tmpdir (usually /tmp) is a sane fallback.
+#else
+#	define KT_TMPDIR P_tmpdir
+#endif
 
 // HOST_NAME_MAX is undefined on macOS, it instead kindly asks you to query _SC_HOST_NAME_MAX via sysconf()...
-#	ifndef HOST_NAME_MAX
-#		define HOST_NAME_MAX 256
-#	endif
+#ifndef HOST_NAME_MAX
+#	define HOST_NAME_MAX 256
+#endif
 
 // Bundlefile status bitmasks
-#	define BUNDLE_OPEN 1       // 1 << 0       (bit 0)
-#	define BUNDLE_CREATED 2    // 1 << 1       (bit 1)
+#define BUNDLE_OPEN 1       // 1 << 0       (bit 0)
+#define BUNDLE_CREATED 2    // 1 << 1       (bit 1)
 
 // Version tag fallback
-#	ifndef KT_VERSION
-#		define KT_VERSION "v1.6.5-GIT"
-#	endif
+#ifndef KT_VERSION
+#	define KT_VERSION "v1.6.5-GIT"
+#endif
 
 // user@host tag fallback
-#	ifndef KT_USERATHOST
-#		define KT_USERATHOST "someone@somewhere on something"
-#	endif
+#ifndef KT_USERATHOST
+#	define KT_USERATHOST "someone@somewhere on something"
+#endif
 
 // nettle version fallback
-#	ifndef NETTLE_VERSION
-#		define NETTLE_VERSION ">= 2.6"
-#	endif
+#ifndef NETTLE_VERSION
+#	define NETTLE_VERSION ">= 2.6"
+#endif
 
 // GCC version checks... (We check !clang in addition to GCC, because Clang 'helpfully' defines __GNUC__ ...)
-#	if !defined(__clang__) && defined(__GNUC__)
-#		define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#	endif
+#if !defined(__clang__) && defined(__GNUC__)
+#	define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#endif
 
 typedef enum
 {
@@ -239,8 +239,8 @@ typedef enum
 	ValidKindleUnknown_0x99               = 0x99,
 	KindleBasicKiwi                       = 0xDD,
 	/* KindlePaperWhite3 = 0x90, */    // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (NOTE: This is a bogus ID, the proper one is now found at chars 4 to 6 of the S/N)
-	KindlePaperWhite3WiFi   = 0x201,          // 0G1
-	KindlePaperWhite3WiFi3G = 0x202,          // 0G2
+	KindlePaperWhite3WiFi         = 0x201,    // 0G1
+	KindlePaperWhite3WiFi3G       = 0x202,    // 0G2
 	KindlePaperWhite3WiFi3GMexico = 0x204,    // 0G4  NOTE: Might be better flagged as "Southern America"?
 	KindlePaperWhite3WiFi3GEurope = 0x205,    // 0G5
 	KindlePaperWhite3WiFi3GCanada = 0x206,    // 0G6
@@ -304,8 +304,8 @@ typedef enum
 	Board_Unspecified = 0x00,    // Used since the PW (skip board check)
 	Tequila           = 0x03,    // Silver Kindle 4
 	Whitney           = 0x05     // Kindle Touch
-	                             // Other potentially relevant (OTA|Recovery)v2 ready boards:
-	/*
+				     // Other potentially relevant (OTA|Recovery)v2 ready boards:
+				     /*
 	Sauza             = 0xFF     // Black Kindle 4
 	Celeste           = 0xFF     // PW
 	Icewine           = 0xFF     // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
@@ -316,7 +316,7 @@ typedef enum
 	Woody             = 0xFF     // ?? (in the Basic line? (no 3G))
 	Eanab             = 0xFF     // Kindle Basic 2
 	Cognac            = 0xFF     // Kindle Oasis 2
-	*/
+				     */
 } Board;
 
 // For reference, list of boards (AFAICT, in chronological order):

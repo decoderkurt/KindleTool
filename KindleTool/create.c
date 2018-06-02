@@ -135,14 +135,7 @@ static int
 	// NOTE: mpz_out_raw outputs a format that doesn't quite fit our needs (it prepends 4 bytes of size info)...
 	//       Do it ourselves with mpz_export! That's:
 	//       Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
-	mpz_export(
-	    raw_sig,
-	    &siglen,
-	    1,
-	    sizeof(unsigned char*),
-	    1,
-	    0,
-	    sig);
+	mpz_export(raw_sig, &siglen, 1, sizeof(unsigned char*), 1, 0, sig);
 	mpz_clear(sig);
 	// Check that the sig looks sane...
 	if (siglen * sizeof(unsigned char*) != rsa_pkey->size) {
@@ -180,8 +173,7 @@ static int
 		}
 		// Exclude *.dat too, to avoid ending up with multiple bundlefiles!
 		// NOTE: If we wanted to be more lenient, we could exclude "./update*\\.[Dd][Aa][Tt]$" instead
-		if (archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") !=
-		    ARCHIVE_OK) {
+		if (archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") != ARCHIVE_OK) {
 			fprintf(
 			    stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
 		}

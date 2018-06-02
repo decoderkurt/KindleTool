@@ -21,7 +21,7 @@
 */
 
 #ifndef __KINDLETOOL_CONVERT_H
-#	define __KINDLETOOL_CONVERT_H
+#define __KINDLETOOL_CONVERT_H
 
 #include "kindle_tool.h"
 

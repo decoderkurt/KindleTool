@@ -29,7 +29,7 @@
 */
 
 #ifndef __KINDLETOOL_TABLE_H
-#	define __KINDLETOOL_TABLE_H
+#define __KINDLETOOL_TABLE_H
 
 #include "kindle_tool.h"
 
