@@ -21,18 +21,18 @@
 */
 
 #ifndef __KINDLETOOL_MAIN_H
-#define __KINDLETOOL_MAIN_H
+#	define __KINDLETOOL_MAIN_H
+
+#include "kindle_tool.h"
 
 // Ugly globals.
 unsigned int kt_with_unknown_devcodes;
-char kt_tempdir[PATH_MAX];
+char         kt_tempdir[PATH_MAX];
 
-static int kindle_print_help(const char *);
-static int kindle_print_version(const char *);
-static int kindle_deobfuscate_main(int, char **);
-static int kindle_obfuscate_main(int, char **);
-static int kindle_info_main(int, char **);
+static int kindle_print_help(const char*);
+static int kindle_print_version(const char*);
+static int kindle_deobfuscate_main(int, char**);
+static int kindle_obfuscate_main(int, char**);
+static int kindle_info_main(int, char**);
 
 #endif
-
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

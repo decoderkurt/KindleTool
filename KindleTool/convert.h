@@ -21,22 +21,22 @@
 */
 
 #ifndef __KINDLETOOL_CONVERT_H
-#define __KINDLETOOL_CONVERT_H
+#	define __KINDLETOOL_CONVERT_H
 
-static const char *convert_magic_number(char *);
+#include "kindle_tool.h"
 
-static char *to_base(int64_t, unsigned int);
+static const char* convert_magic_number(char*);
 
-static int kindle_read_bundle_header(UpdateHeader *, FILE *);
-static int kindle_convert(FILE *, FILE *, FILE *, const bool, const bool, FILE *, char *);
-static int kindle_convert_ota_update_v2(FILE *, FILE *, const bool, char *);
-static int kindle_convert_signature(UpdateHeader *, FILE *, FILE *);
-static int kindle_convert_ota_update(UpdateHeader *, FILE *, FILE *, const bool, char *);
-static int kindle_convert_recovery(UpdateHeader *, FILE *, FILE *, const bool, char *);
-static int kindle_convert_recovery_v2(FILE *, FILE *, const bool, char *);
+static char* to_base(int64_t, unsigned int);
 
-static int libarchive_extract(const char *, const char *);
+static int kindle_read_bundle_header(UpdateHeader*, FILE*);
+static int kindle_convert(FILE*, FILE*, FILE*, const bool, const bool, FILE*, char*);
+static int kindle_convert_ota_update_v2(FILE*, FILE*, const bool, char*);
+static int kindle_convert_signature(UpdateHeader*, FILE*, FILE*);
+static int kindle_convert_ota_update(UpdateHeader*, FILE*, FILE*, const bool, char*);
+static int kindle_convert_recovery(UpdateHeader*, FILE*, FILE*, const bool, char*);
+static int kindle_convert_recovery_v2(FILE*, FILE*, const bool, char*);
+
+static int libarchive_extract(const char*, const char*);
 
 #endif
-
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
