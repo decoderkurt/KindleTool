@@ -132,7 +132,9 @@ static int
 		return -1;
 	}
 
-	// NOTE: mpz_out_raw outputs a format that doesn't quite fit our needs (it prepends 4 bytes of size info)... Do it ourselves with mpz_export!
+	// NOTE: mpz_out_raw outputs a format that doesn't quite fit our needs (it prepends 4 bytes of size info)...
+	//       Do it ourselves with mpz_export! That's:
+	//       Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
 	mpz_export(
 	    raw_sig,
 	    &siglen,
@@ -140,7 +142,7 @@ static int
 	    sizeof(unsigned char*),
 	    1,
 	    0,
-	    sig);    // Words of the proper amount of bytes for the host, most significant word & byte first (BE), full words.
+	    sig);
 	mpz_clear(sig);
 	// Check that the sig looks sane...
 	if (siglen * sizeof(unsigned char*) != rsa_pkey->size) {
@@ -172,27 +174,36 @@ static int
 	} else {
 		// Exclude *.sig files in a case insensitive way, to avoid duplicates
 		matching = archive_match_new();
-		if (archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK)
+		if (archive_match_exclude_pattern(matching, "./*\\.[Ss][Ii][Gg]$") != ARCHIVE_OK) {
 			fprintf(
 			    stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
+		}
 		// Exclude *.dat too, to avoid ending up with multiple bundlefiles!
+		// NOTE: If we wanted to be more lenient, we could exclude "./update*\\.[Dd][Aa][Tt]$" instead
 		if (archive_match_exclude_pattern(matching, "./*\\.[Dd][Aa][Tt]$") !=
-		    ARCHIVE_OK)    // NOTE: If we wanted to be more lenient, we could exclude "./update*\\.[Dd][Aa][Tt]$" instead
+		    ARCHIVE_OK) {
 			fprintf(
 			    stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
-			// Exclude *nix hidden files, too?
-			// NOTE: The ARCHIVE_READDISK_MAC_COPYFILE flag for read_disk is disabled by default, so we should already be creating 'sane' archives on OS X, without the crazy ._* acl/xattr files ;)
-			// On the other hand, if the user passed us a self-built tarball, we can't do anything about it. OS X users: export COPYFILE_DISABLE=1 is your friend!
-			/*
-        if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK)
-            fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
-        */
+		}
+		// Exclude *nix hidden files, too?
+		// NOTE: The ARCHIVE_READDISK_MAC_COPYFILE flag for read_disk is disabled by default,
+		//       so we should already be creating 'sane' archives on OS X, without the crazy ._* acl/xattr files ;)
+		//       On the other hand, if the user passed us a self-built tarball, we can't do anything about it.
+		//       OS X users: export COPYFILE_DISABLE=1 is your friend!
+		/*
+		if(archive_match_exclude_pattern(matching, "./\\.*$") != ARCHIVE_OK) {
+			fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
+		}
+		*/
 #if defined(_WIN32) && !defined(__CYGWIN__)
-		// NOTE: Exclude our own tempfiles, since we may create them in PWD, because otherwise, depending on what the user uses as input (i.e., * or .), we might inadvertently snarf them up...
-		//       Right now, the only one susceptible of being part of our directory walking is our own tarball temporary file...
-		if (archive_match_exclude_pattern(matching, "^kindletool_create_tarball_*") != ARCHIVE_OK)
+		// NOTE: Exclude our own tempfiles, since we may create them in PWD, because otherwise,
+		//       depending on what the user uses as input (i.e., * or .), we might inadvertently snarf them up.
+		//       Right now, the only one susceptible of being part of our directory walking
+		//       is our own tarball temporary file...
+		if (archive_match_exclude_pattern(matching, "^kindletool_create_tarball_*") != ARCHIVE_OK) {
 			fprintf(
 			    stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(matching));
+		}
 #endif
 
 		r = archive_match_path_excluded(matching, entry);
@@ -237,8 +248,10 @@ static int
 	if (e == ARCHIVE_FATAL)
 		return 1;
 
-	// If we opened a file earlier, write it out now. Note that the format handler might have reset the size field to zero
-	// to inform us that the archive body won't get stored. In that case, just skip the write.
+	// If we opened a file earlier, write it out now.
+	// Note that the format handler might have reset the size field to zero
+	// to inform us that the archive body won't get stored.
+	// In that case, just skip the write.
 	if (e >= ARCHIVE_WARN && archive_entry_size(entry) > 0) {
 		if (copy_file_data_block(kttar, a, in_a, entry) != 0)
 			return 1;
@@ -312,7 +325,8 @@ static int
 	return 0;
 }
 
-// Helper function to populate & write entries from a read_disk_open loop, tailored to our needs (helps avoid code duplication, since we're doing this in two passes)
+// Helper function to populate & write entries from a read_disk_open loop, tailored to our needs.
+// Helps avoid code duplication, since we're doing this in two passes.
 static int
     create_from_archive_read_disk(struct kttar*      kttar,
 				  struct archive*    a,
@@ -334,8 +348,9 @@ static int
 	entry = archive_entry_new();
 
 	if (first_pass) {
-		// Perform pattern matching in a metadata filter to apply our exclude list to reguar files
-		// NOTE: We're not using archive_read_disk_set_matching anymore because it does *pattern* matching too early to determine if we're a directory...
+		// Perform pattern matching in a metadata filter to apply our exclude list to reguar files.
+		// NOTE: We're not using archive_read_disk_set_matching anymore
+		//       because it does *pattern* matching too early to determine if we're a directory...
 		archive_read_disk_set_metadata_filter_callback(disk, metadata_filter, NULL);
 	}
 	archive_read_disk_set_standard_lookup(disk);
@@ -366,13 +381,17 @@ static int
 		}
 
 		if (!first_pass) {
-			// Fix the entry pathname, we used a tempfile... (if we're in legacy mode, signame has already been set to the tweaked path ;))
+			// Fix the entry pathname, we used a tempfile...
+			// (if we're in legacy mode, signame has already been set to the tweaked path ;))
 			archive_entry_copy_pathname(entry, signame);
 		} else {
 			// Tweak the pathname if we were asked to behave like Yifan's KindleTool...
 			if (kttar->tweak_pointer_index != 0) {
 				// Handle the 'root' source directory itself..
-				// NOTE: We check that strlen <= pointer_index because libarchive strips trailing path separators in the entry pathname, but we might have passed one on the CL, so pointer_index might be larger than strlen ;)
+				// NOTE: We check that strlen <= pointer_index
+				//       because libarchive strips trailing path separators in the entry pathname,
+				//       but we might have passed one on the CL,
+				//       so pointer_index might be larger than strlen ;)
 				if (archive_entry_filetype(entry) == AE_IFDIR &&
 				    strlen(archive_entry_pathname(entry)) <= kttar->tweak_pointer_index) {
 					// Print what we're stripping, ala GNU tar...
@@ -384,7 +403,10 @@ static int
 					continue;
 				} else {
 					original_path = strdup(archive_entry_pathname(entry));
-					// Try to handle a trailing path separator properly... NOTE: This probably isn't very robust. Also, no need to handle MinGW, it already spectacularly fails to handle this case ^^
+					// Try to handle a trailing path separator properly...
+					// NOTE: This probably isn't very robust.
+					//       Also, no need to handle MinGW,
+					//       it already spectacularly fails to handle this case ^^
 					if (original_path[kttar->tweak_pointer_index] == '/') {
 						// We found a path separator, skip it, too
 						tweaked_path = original_path + (kttar->tweak_pointer_index + 1);
@@ -445,16 +467,20 @@ static int
 			archive_entry_pathname(entry),
 			(is_kernel ? "\t\t|<" : (is_exec ? "\t\t<-" : "")));
 
-		// Write our entry to the archive, completely through libarchive, to avoid having to open our entry file again, which would fail on non POSIX systems...
+		// Write our entry to the archive, completely via libarchive,
+		// to avoid having to open our entry file again, which would fail on non-POSIX systems...
 		if (write_file(kttar, a, disk, entry) != 0)
 			goto cleanup;
 
 		if (first_pass) {
 			// If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
 			if (archive_entry_filetype(entry) == AE_IFREG) {
-				// But just build a filelist for now, and do it later, I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
-				// We can't just do it now with the current sign_file & md5_sum implementation because we'd need to open() the input file (to sign & hash it),
-				// while it's already open through libarchive's read_disk API. That's apparently not possible on non POSIX systems.
+				// But just build a filelist for now, and do it later,
+				// I'm not up to refactoring sign_file & md5_sum to be useable during copy_file_data_block...
+				// We can't just do it now with the current sign_file & md5_sum implementation
+				// because we'd need to open() the input file (to sign & hash it),
+				// while it's already open through libarchive's read_disk API.
+				// That's apparently not possible on non POSIX systems.
 				// (You get a very helpful 'Permission denied' error on Windows...)
 				kttar->to_sign_and_bundle_list = realloc(
 				    kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char*));
@@ -609,10 +635,12 @@ static int
 			// It's the second time we're looping over the bundlefile, just archive it
 			// Just set the correct pathnames...
 			signame = strdup(INDEX_FILE_NAME);
-			// NOTE: Fragile, sigabsolutepath & bundle_filename need to be of the same length... Slightly less of a concern now that both are using PATH_MAX, but, still...
+			// NOTE: Fragile, sigabsolutepath & bundle_filename need to be of the same length...
+			//       Slightly less of a concern now that both are using PATH_MAX, but, still...
 			strcpy(sigabsolutepath, bundle_filename);
 		} else {
-			// First things first, if we're not the bundlefile, we're gonna need our size for a field of the bundlefile, so get on that...
+			// First things first, if we're not the bundlefile,
+			// we're gonna need our size for a field of the bundlefile, so get on that...
 			if ((bundlefile_status & BUNDLE_OPEN) == BUNDLE_OPEN) {
 				// We're out of a libarchive read loop, so do a stat call ourselves
 				stat(kttar->to_sign_and_bundle_list[i], &st);
@@ -624,7 +652,9 @@ static int
 					"Cannot open '%s' for reading: %s!\n",
 					kttar->to_sign_and_bundle_list[i],
 					strerror(errno));
-				// Avoid a double free (beginning from the second iteration, since we freed signame at the end of the first iteration, but it's not allocated yet, and cleanup will try to free...)
+				// Avoid a double free (beginning from the second iteration,
+				// since we freed signame at the end of the first iteration,
+				// but it's not allocated yet, and cleanup will try to free...)
 				signame = NULL;
 				goto cleanup;
 			}
@@ -650,7 +680,8 @@ static int
 				strncpy(signame, INDEX_FILE_NAME, pathlen + 4 + 1);
 				strncat(signame, ".sig", 4);
 			} else {
-				// Always use the tweaked paths (they're properly set to the real path when we're not in legacy mode)
+				// Always use the tweaked paths
+				// (they're properly set to the real path when we're not in legacy mode)
 				pathlen = strlen(kttar->tweaked_to_sign_and_bundle_list[i]);
 				signame = malloc(pathlen + 4 + 1);
 				strncpy(signame, kttar->tweaked_to_sign_and_bundle_list[i], pathlen + 4 + 1);
@@ -685,13 +716,18 @@ static int
 
 			// Don't add the bundlefile to itself
 			if ((bundlefile_status & BUNDLE_OPEN) == BUNDLE_OPEN) {
-				// The last field is a display name, take a hint from the Python tool, and use the file's basename with a simple suffix
-				// Use a copy of to_sign_and_bundle_list[i] to get our basename, since the POSIX implementation may alter its arg, and that would be very bad...
+				// The last field is a display name, take a hint from the Python tool,
+				// and use the file's basename with a simple suffix.
+				// Use a copy of to_sign_and_bundle_list[i] to get our basename,
+				// since the POSIX implementation may alter its arg, and that would be very bad...
 				// And we're using the tweaked pathname in case we're in legacy mode ;)
 				pathnamecpy = strdup(kttar->to_sign_and_bundle_list[i]);
 				// Only flag kernels in recovery update...
-				// FWIW, the format is as follows: file_type_id md5sum file_name blocksize file_display_name
-				// where the id is 1 for kernel images (in recovery updates only), 129 for install scripts, and 128 for assets, and the blocksize is based on the file size relative to the update type blocksize.
+				// FWIW, the format is as follows:
+				//   file_type_id md5sum file_name blocksize file_display_name
+				// where the id is 1 for kernel images (in recovery updates only),
+				// 129 for install scripts, and 128 for assets,
+				// and the blocksize is based on the file size relative to the update type blocksize.
 				if (fprintf(bundlefile,
 					    "%d %s %s %lld %s_ktool_file\n",
 					    ((real_blocksize == RECOVERY_BLOCK_SIZE &&
@@ -769,7 +805,8 @@ cleanup:
 		fclose(bundlefile);
 		unlink(bundle_filename);
 	} else {
-		// And if it's not open anymore, but was created, remove it too (that's a short window of time, namely, when we're looping over the bundlefile itself & its sigfile)
+		// And if it's not open anymore, but was created, remove it too
+		// (that's a short window of time, namely, when we're looping over the bundlefile itself & its sigfile)
 		if ((bundlefile_status & BUNDLE_CREATED) == BUNDLE_CREATED) {
 			unlink(bundle_filename);
 		}
@@ -988,14 +1025,17 @@ static int
 		header_size += str_len + sizeof(uint16_t);
 		header = realloc(header, header_size);
 		// String length: little endian -> big endian
-		// FIXME: While otaup expects this endianness switch, it would seem that otacheck doesn't, and chokes with an headerTooShortInMetadataField error as soon as we pass more than one metastring...
+		// FIXME: While otaup expects this endianness switch, it would seem that otacheck doesn't,
+		//        and chokes with an headerTooShortInMetadataField error as soon as we pass more than one metastring...
 		//        If we don't switch the endianness, otacheck passes, but otaup chokes... >_<"
 		memcpy(&header[hindex], &((uint8_t*) &str_len)[1], sizeof(uint8_t));
 		hindex += sizeof(uint8_t);
 		memcpy(&header[hindex], &((uint8_t*) &str_len)[0], sizeof(uint8_t));
 		hindex += sizeof(uint8_t);
 		md((unsigned char*) info->metastrings[i], str_len);    // Obfuscate meta string
-		// FIXME: Should this really be munged? Following otaup would point to yes, but I've never seen an update with meta strings in the wild, and the aforementionned issue with the string length doesn't help...
+		// FIXME: Should this really be munged? Following otaup would point to yes,
+		//        but I've never seen an update with meta strings in the wild,
+		//        and the aforementionned issue with the string length doesn't help...
 		strncpy((char*) &header[hindex], info->metastrings[i], str_len);
 		hindex += str_len;
 	}
@@ -1152,7 +1192,7 @@ static int
 
 	demunged_tgz = NULL;
 
-	// Its total size is fixed, but some stuff inside are variable/padded...
+	// Its total size is fixed, but some stuff inside is variable/padded...
 	header_size = MAGIC_NUMBER_LENGTH + RECOVERY_UPDATE_BLOCK_SIZE;
 	header      = malloc(header_size);
 	// Zero init everything first...
@@ -1358,8 +1398,9 @@ int
 					info.devices[info.num_devices++] = Kindle5TouchWiFi;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3GEurope;
-					if (kt_with_unknown_devcodes)
+					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = Kindle5TouchUnknown;
+					}
 				} else if (strcasecmp(optarg, "paperwhite") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 6;
@@ -1496,8 +1537,9 @@ int
 					info.devices[info.num_devices++] = Kindle5TouchWiFi;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3GEurope;
-					if (kt_with_unknown_devcodes)
+					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = Kindle5TouchUnknown;
+					}
 					// PW1
 					info.devices[info.num_devices++] = KindlePaperWhiteWiFi;
 					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3G;
@@ -1667,7 +1709,8 @@ int
 						strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT
-					// NOTE: Magic number switch to 'versionless' update types here... FW >= 5.6.1 apparently dropped support for these in the UYK menu...
+					// NOTE: Magic number switch to 'versionless' update types here...
+					//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
 					else if (strcasecmp(optarg, "k5w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
@@ -1907,7 +1950,8 @@ int
 							// ... try the new device ID scheme if it doesn't...
 							snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
 							dev_code = (Device) from_base(device_code, 32);
-							// ... And finally, unless we're feeling adventurous, check if it's really a valid device...
+							// ... And finally, unless we're feeling adventurous,
+							// check if it's really a valid device...
 							if (!kt_with_unknown_devcodes &&
 							    strcmp(convert_device_id(dev_code), "Unknown") == 0) {
 								fprintf(stderr,
@@ -1930,17 +1974,21 @@ int
 							}
 						}
 					} else {
-						// Check if we passed a device code, be it as a ready-to-use hex value or a to-be-decoded serial fragment...
+						// Check if we passed a device code, be it as a ready-to-use hex value,
+						// or a to-be-decoded serial fragment...
 						char*  endptr;
 						Device dev_code = (Device) strtoul(optarg, &endptr, 16);
 						// Check that it even remotely looks like a device code, old or new, first...
 						// NOTE: The range is 01 to 0VF for now, update as needed!
 						if (*endptr != '\0' || dev_code <= 0x00 || dev_code > 0x3AF) {
-							// That was either an out of range hexadecimal value, or not an hexadecimal value at all...
+							// That was either an out of range hexadecimal value,
+							// or not an hexadecimal value at all...
 							if (strcmp(convert_device_id(dev_code), "Unknown") == 0) {
-								// ... in which case, try to see if that was a serial fragment following the new device id scheme...
+								// ... in which case, try to see if that was
+								// a serial fragment following the new device id scheme...
 								dev_code = (Device) from_base(optarg, 32);
-								// Unless we're feeling adventurous, check if it's a valid device...
+								// Unless we're feeling adventurous,
+								// check if it's a valid device...
 								if (!kt_with_unknown_devcodes &&
 								    strcmp(convert_device_id(dev_code), "Unknown") ==
 									0) {
@@ -1952,7 +2000,9 @@ int
 								}
 							}
 						} else {
-							// Okay, that looked like an in-range hex value, make sure it matches an hex-only device id if we're not bypassing device checks...
+							// Okay, that looked like an in-range hex value,
+							// make sure it matches an hex-only device id if
+							// we're not bypassing device checks...
 							if (!kt_with_unknown_devcodes &&
 							    strcmp(convert_device_id(dev_code), "Unknown") == 0) {
 								fprintf(stderr,
@@ -2213,7 +2263,8 @@ int
 			if (!enforce_target_rev) {
 				info.target_revision = 1 + 3301990004;    // FW 5.9.5.2 (KOA2)
 			}
-			// NOTE: Don't expect those to be entirely consistent when crossing devices (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
+			// NOTE: Don't expect those to be entirely consistent when crossing devices
+			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
 		}
 		// Musn't be *only* a sig envelope...
 		if (info.version == UpdateSignature) {
@@ -2240,7 +2291,8 @@ int
 				UINT32_MAX);
 			goto do_error;
 		}
-		// When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions, reset it to FC02, or shit happens.
+		// When building an ota update with ota2 only devices, don't try to use non ota v1 bundle versions,
+		// reset it to FC02, or shit happens.
 		if (info.version == OTAUpdate) {
 			// OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
 			if (info.devices[0] > Kindle3WiFi3GEurope &&
@@ -2252,7 +2304,8 @@ int
 		}
 		// Same thing with recovery updates
 		if (info.version == RecoveryUpdate) {
-			// It's called FB02.2 for a reason... Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
+			// It's called FB02.2 for a reason...
+			// Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
 			if ((info.header_rev == 2 || info.devices[0] > Kindle3WiFi3GEurope) &&
 			    (strncmp(info.magic_number, "FB01", MAGIC_NUMBER_LENGTH) != 0 &&
 			     strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) != 0)) {
@@ -2261,9 +2314,12 @@ int
 		}
 		// Same thing with recovery updates v2
 		if (info.version == RecoveryUpdateV2) {
-			// Make sure we have a sane magic number... We either don't yet have one set when not specifying any device, or what's set corresponds to OTA update types when specifying anything since the K4...
+			// Make sure we have a sane magic number...
+			// We either don't yet have one set when not specifying any device,
+			// or what's set corresponds to OTA update types when specifying anything since the K4...
 			if (strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0) {
-				// NOTE: This effectively prevents us from setting a custom magic number. Which is not really something you'd want to do in this case anyway...
+				// NOTE: This effectively prevents us from setting a custom magic number.
+				//       Which is not really something you'd want to do in this case anyway...
 				strncpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
 			}
 		}
@@ -2308,7 +2364,9 @@ int
 				info.devices[info.num_devices] = KindleUnknown;
 			}
 		}
-		// We of course need a full magic number... As magic_number is not NULL terminated, we cannot use strlen, so let one of our helper functions do the job...
+		// We of course need a full magic number...
+		// As magic_number is not NULL terminated, we cannot use strlen,
+		// so let one of our helper functions do the job...
 		if (get_bundle_version(info.magic_number) == UnknownUpdate) {
 			fprintf(stderr,
 				"You need to set a valid bundle version for this update type (%s), '%s' is invalid.\n",
@@ -2326,7 +2384,8 @@ int
 	if (optind < argc) {
 		// Iterate over non-options (the file(s) we passed)
 		while (optind < argc) {
-			// The last one will always be our output (but only check if we have at least one input file, we might really want to output to stdout)
+			// The last one will always be our output (but only check if we have at least one input file,
+			// we might really want to output to stdout)
 			if (optind == argc - 1 && input_index > 0) {
 				output_filename = strdup(argv[optind++]);
 				// If it's a single dash, output to stdout (like tar cf -)
@@ -2335,7 +2394,9 @@ int
 					output_filename = NULL;
 				}
 			} else {
-				// Build a list of all our input files/dirs, libarchive will do most of the heavy lifting for us (c.f., http://stackoverflow.com/questions/1182534/#1182649)
+				// Build a list of all our input files/dirs,
+				// libarchive will do most of the heavy lifting for us
+				// (c.f., http://stackoverflow.com/questions/1182534/#1182649)
 				input_list                  = realloc(input_list, ++input_index * sizeof(char*));
 				input_list[input_index - 1] = strdup(argv[optind++]);
 			}
@@ -2355,7 +2416,7 @@ int
 		if (fake_sign || userdata_only) {
 			valid_update_file_pattern = strdup("./data\\.stgz$");
 		} else {
-			// Recovery updates must be lowercase!
+			// NOTE: Recovery updates must be lowercase!
 			if (info.version == RecoveryUpdate || info.version == RecoveryUpdateV2) {
 				valid_update_file_pattern = strdup("./update*\\.bin$");
 			} else {
@@ -2393,7 +2454,9 @@ int
 		archive_entry_free(entry);
 		archive_match_free(match);
 
-		// Check to see if we can write to our output file (do it now instead of earlier, this way the pattern matching has been done, and we potentially avoid fopen squishing a file we meant as input, not output)
+		// Check to see if we can write to our output file
+		// (do it now instead of earlier, this way the pattern matching has been done,
+		// and we potentially avoid fopen squishing a file we meant as input, not output)
 		if ((output = fopen(output_filename, "wb")) == NULL) {
 			fprintf(
 			    stderr, "Cannot create output package file '%s': %s.\n", output_filename, strerror(errno));
@@ -2404,7 +2467,8 @@ int
 		output_filename = strdup("standard output");
 	}
 
-	// If we only provided a single input file, and it's a tarball, assume it's properly packaged, and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
+	// If we only provided a single input file, and it's a tarball, assume it's properly packaged,
+	// and just sign/munge it. (Restore backwards compatibilty with ixtab's tools, among other things)
 	if (input_index == 1) {
 		if (IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0])) {
 			// NOTE: There's no real check besides the file extension...
