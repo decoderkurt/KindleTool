@@ -211,7 +211,8 @@ static int
 	struct rsa_public_key pub;
 	int                   res;
 
-	// NOTE: Unlike rsa_keypair_from_sexp, we *HAVE* to init the pubkey too, or everything blows up, the from_der codepath expects it to be setup...
+	// NOTE: Unlike rsa_keypair_from_sexp, we *HAVE* to init the pubkey too, or everything blows up,
+	//       the from_der codepath expects it to be setup...
 	rsa_public_key_init(&pub);
 
 	if (rsa_keypair_from_der(&pub, rsa_pkey, 0, length, data)) {
@@ -228,7 +229,7 @@ static int
 }
 
 // NOTE: Destroys contents of buffer
-// Returns 1 on success, 0 on error, and -1 for unsupported algorithms.
+//       Returns 1 on success, 0 on error, and -1 for unsupported algorithms.
 static int
     convert_type(struct nettle_buffer*   buffer,
 		 enum object_type        type,
