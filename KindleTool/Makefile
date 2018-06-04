@@ -17,7 +17,7 @@ ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-siblin
 ifeq "$(KINDLE)" "true"
 	CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 endif
-# MinGW cross toolchain prefix
+# MinGW-w64 (32bit) cross toolchain prefix
 ifeq "$(MINGW)" "true"
 	CROSS_PREFIX?=i686-w64-mingw32-
 endif

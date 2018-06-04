@@ -23,15 +23,18 @@ To compile for OSX:
 	1) If you're using Homebrew, see https://github.com/NiLuJe/homebrew-kindletool
 
 To compile for Windows:
-	1) Get Cygwin
-	2) Install the required packages for a proper toolchain (gcc, binutils, autoconf, automake, libtool, make, ...)
-	3) Install the packages: zlib / zlib-devel, libarchive13 / libarchive-devel, libnettle4 / libnettle-devel, git, cmake, patch, pkg-config, libxml2-devel
-	5) Compile using "make" in the tool's directory
-	6) Install it by running "make install"
-
-	BIS) Alternatively, you can also build a native version with a MinGW-w64 toolchain.
+	Native)
+		You can build a native version with a MinGW-w64 toolchain.
 		On a native MinGW+MSYS toolchain, you'll probably have to tweak the Makefile, but it should handle a Linux cross toolchain properly with the mingw target ;).
 		Check the tools/mingw directory for more details.
+
+	Cygwin)
+		1) Get Cygwin
+		2) Install the required packages for a proper toolchain (gcc, binutils, autoconf, automake, libtool, make, ...)
+		3) Install the packages: zlib / zlib-devel, libarchive13 / libarchive-devel, libnettle4 / libnettle-devel, git, cmake, patch, pkg-config, libxml2-devel
+		5) Compile using "make" in the tool's directory
+		6) Install it by running "make install"
+
 
 ----
 
