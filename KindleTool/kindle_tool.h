@@ -415,10 +415,10 @@ void          md(unsigned char*, size_t);
 void          dm(unsigned char*, size_t);
 int           munger(FILE*, FILE*, size_t, const bool);
 int           demunger(FILE*, FILE*, size_t, const bool);
-const char*   convert_device_id(Device);
-const char*   convert_platform_id(Platform);
-const char*   convert_board_id(Board);
-BundleVersion get_bundle_version(char*);
+const char*   convert_device_id(Device) __attribute__((const));
+const char*   convert_platform_id(Platform) __attribute__((const));
+const char*   convert_board_id(Board) __attribute__((const));
+BundleVersion get_bundle_version(char*) __attribute__((pure));
 int           md5_sum(FILE*, char*);
 
 int kindle_convert_main(int, char**);
