@@ -2220,7 +2220,7 @@ int
 				goto do_error;
 				break;
 			default:
-				fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+				fprintf(stderr, "?? Unknown option code 0%o ??\n", (unsigned int) opt);
 				goto do_error;
 				break;
 		}
@@ -2499,7 +2499,7 @@ int
 	// Again, a signed userdata package is the ugly duckling...
 	if (userdata_only) {
 		fprintf(stderr,
-			"Building userdata package '%s' directly from '%s' (signed with cert %d).\n",
+			"Building userdata package '%s' directly from '%s' (signed with cert %u).\n",
 			output_filename,
 			tarball_filename,
 			info.certificate_number);
@@ -2518,7 +2518,7 @@ int
 			(skip_archive ? "'" : ""));
 		// If we have specific device IDs, list them
 		if (info.num_devices > 0) {
-			fprintf(stderr, " %hd device%s:\n", info.num_devices, (info.num_devices > 1 ? "s" : ""));
+			fprintf(stderr, " %hu device%s:\n", info.num_devices, (info.num_devices > 1 ? "s" : ""));
 			// Loop over devices
 			for (i = 0; i < info.num_devices; i++) {
 				fprintf(stderr, "\t%s", convert_device_id(info.devices[i]));
@@ -2535,8 +2535,8 @@ int
 				if (info.target_revision == UINT64_MAX)
 					fprintf(
 					    stderr,
-					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %d & %hd Metadata strings%s",
-					    (long long) info.source_revision,
+					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %u & %hu Metadata strings%s",
+					    (long long unsigned int) info.source_revision,
 					    info.critical,
 					    info.certificate_number,
 					    info.num_meta,
@@ -2544,9 +2544,9 @@ int
 				else
 					fprintf(
 					    stderr,
-					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %d & %hd Metadata strings%s",
-					    (long long) info.source_revision,
-					    (long long) info.target_revision,
+					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %u & %hu Metadata strings%s",
+					    (long long unsigned int) info.source_revision,
+					    (long long unsigned int) info.target_revision,
 					    info.critical,
 					    info.certificate_number,
 					    info.num_meta,
@@ -2565,26 +2565,26 @@ int
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Optional: %hhu.\n",
-					    (long long) info.source_revision,
+					    (long long unsigned int) info.source_revision,
 					    info.optional);
 				else
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Optional: %hhu.\n",
-					    (long long) info.source_revision,
-					    (long long) info.target_revision,
+					    (long long unsigned int) info.source_revision,
+					    (long long unsigned int) info.target_revision,
 					    info.optional);
 				break;
 			case RecoveryUpdate:
 				fprintf(stderr,
-					"With the following flags: Minor: %d, Magic 1: %d, Magic 2: %d",
+					"With the following flags: Minor: %u, Magic 1: %u, Magic 2: %u",
 					info.minor,
 					info.magic_1,
 					info.magic_2);
 				if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
 					fprintf(stderr,
 						", Header Rev: %llu, Platform: %s, Board: %s.\n",
-						(long long) info.header_rev,
+						(long long unsigned int) info.header_rev,
 						convert_platform_id(info.platform),
 						convert_board_id(info.board));
 				else
@@ -2595,14 +2595,14 @@ int
 				if (info.target_revision == UINT64_MAX)
 					fprintf(stderr, " Target OTA: MAX");
 				else
-					fprintf(stderr, " Target OTA: %llu", (long long) info.target_revision);
+					fprintf(stderr, " Target OTA: %llu", (long long unsigned int) info.target_revision);
 				fprintf(
 				    stderr,
-				    ", Minor: %d, Magic 1: %d, Magic 2: %d, Header Rev: %llu, Cert: %d, Platform: %s, Board: %s.\n",
+				    ", Minor: %u, Magic 1: %u, Magic 2: %u, Header Rev: %llu, Cert: %u, Platform: %s, Board: %s.\n",
 				    info.minor,
 				    info.magic_1,
 				    info.magic_2,
-				    (long long) info.header_rev,
+				    (long long unsigned int) info.header_rev,
 				    info.certificate_number,
 				    convert_platform_id(info.platform),
 				    convert_board_id(info.board));

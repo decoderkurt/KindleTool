@@ -158,6 +158,11 @@ ifdef DEBUG
 	KT_CFLAGS+=-Wpadded
 	KT_CFLAGS+=-Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wmissing-format-attribute
 endif
+# Annoying with our typedefs
+KT_CFLAGS+=-Wno-bad-function-cast
+# And disable some very verbose and/or annoying stuff
+KT_CFLAGS+=-Wno-jump-misses-init
+
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...
