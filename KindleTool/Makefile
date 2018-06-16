@@ -14,11 +14,11 @@ ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-siblin
 # and only happens when using the NSS compat stuff (which happened to be the default on my system...)
 
 # Kindle cross toolchain prefix
-ifeq "$(KINDLE)" "true"
+ifdef KINDLE
 	CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 endif
 # MinGW-w64 (32bit) cross toolchain prefix
-ifeq "$(MINGW)" "true"
+ifdef MINGW
 	CROSS_PREFIX?=i686-w64-mingw32-
 endif
 
@@ -72,7 +72,7 @@ LIBS+=-lz
 #	LIBS+=-ltcmalloc
 #endif
 
-ifeq "$(DEBUG)" "true"
+ifdef DEBUG
 	OUT_DIR=Debug
 	# Clang doesn't support -Og...
 	ifeq "$(OSTYPE)" "Darwin"
@@ -102,14 +102,14 @@ else
 	endif
 endif
 
-ifeq "$(KINDLE)" "true"
+ifdef KINDLE
 	OUT_DIR=Kindle
 	CFLAGS?=$(K3_CFLAGS)
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
-ifeq "$(MINGW)" "true"
+ifdef MINGW
 	OUT_DIR=MinGW
 	CFLAGS?=$(MINGW_CFLAGS)
 	CC:=$(CROSS_PREFIX)gcc
@@ -124,7 +124,7 @@ else
 endif
 
 # It appears that Windows is using a strange & incongruous file extension for its binaries... ;D
-ifeq "$(MINGW)" "true"
+ifdef MINGW
 	# Cygwin is smart enough to take care of it itself, so just check MinGW ;)
 	BINEXT:=.exe
 else
@@ -143,7 +143,7 @@ KT_CFLAGS+=-Wconversion
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...
-ifeq "$(MINGW)" "true"
+ifdef MINGW
 	# That's enough for MinGW
 	KT_CPPFLAGS+=-D_GNU_SOURCE
 	# But not for MinGW-w64...
