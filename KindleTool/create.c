@@ -721,17 +721,17 @@ static int
 				// 129 for install scripts, and 128 for assets,
 				// and the blocksize is based on the file size relative to the update type blocksize.
 				if (fprintf(bundlefile,
-					    "%d %s %s %lld %s_ktool_file\n",
+					    "%u %s %s %jd %s_ktool_file\n",
 					    ((real_blocksize == RECOVERY_BLOCK_SIZE &&
 						      IS_UIMAGE(kttar->to_sign_and_bundle_list[i])
-						  ? 1
+						  ? 1U
 						  : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) ||
 						     IS_SHELL(kttar->to_sign_and_bundle_list[i]))
-							? 129
-							: 128)),
+							? 129U
+							: 128U)),
 					    md5,
 					    kttar->tweaked_to_sign_and_bundle_list[i],
-					    (long long) st.st_size / real_blocksize,
+					    (intmax_t) st.st_size / real_blocksize,
 					    basename(pathnamecpy)) < 0) {
 					fprintf(stderr, "Cannot write to bundle index file.\n");
 					// Cleanup a bit before crapping out
@@ -2123,10 +2123,10 @@ int
 					fprintf(stderr, "Invalid metastring. Format: key=value, input: %s\n", optarg);
 					goto do_error;
 				}
-				if (strlen(optarg) > 0xFFFF) {
+				if (strlen(optarg) > 0xFFFFU) {
 					fprintf(stderr,
-						"Metastring too long. Max length: %d, input length: %zu\n",
-						0xFFFF,
+						"Metastring too long. Max length: %u, input length: %zu\n",
+						0xFFFFU,
 						strlen(optarg));
 					goto do_error;
 				}
@@ -2270,7 +2270,7 @@ int
 		     (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) ||
 		    ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1)) {
 			fprintf(stderr,
-				"Invalid number of supported devices (%d) for this update type (%s).\n",
+				"Invalid number of supported devices (%hu) for this update type (%s).\n",
 				info.num_devices,
 				convert_bundle_version(info.version));
 			goto do_error;
@@ -2583,8 +2583,8 @@ int
 					info.magic_2);
 				if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
 					fprintf(stderr,
-						", Header Rev: %llu, Platform: %s, Board: %s.\n",
-						(long long unsigned int) info.header_rev,
+						", Header Rev: %u, Platform: %s, Board: %s.\n",
+						info.header_rev,
 						convert_platform_id(info.platform),
 						convert_board_id(info.board));
 				else
@@ -2598,11 +2598,11 @@ int
 					fprintf(stderr, " Target OTA: %llu", (long long unsigned int) info.target_revision);
 				fprintf(
 				    stderr,
-				    ", Minor: %u, Magic 1: %u, Magic 2: %u, Header Rev: %llu, Cert: %u, Platform: %s, Board: %s.\n",
+				    ", Minor: %u, Magic 1: %u, Magic 2: %u, Header Rev: %u, Cert: %u, Platform: %s, Board: %s.\n",
 				    info.minor,
 				    info.magic_1,
 				    info.magic_2,
-				    (long long unsigned int) info.header_rev,
+				    info.header_rev,
 				    info.certificate_number,
 				    convert_platform_id(info.platform),
 				    convert_board_id(info.board));

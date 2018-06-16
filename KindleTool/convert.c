@@ -365,7 +365,7 @@ static int
 	//num_metadata = *(uint16_t *)&data[hindex];
 	memcpy(&num_metadata, &data[hindex], sizeof(uint16_t));
 	//hindex += sizeof(uint16_t);       // Shut clang's sa up
-	fprintf(stderr, "Metadata       %hd\n", num_metadata);
+	fprintf(stderr, "Metadata       %hu\n", num_metadata);
 	free(data);
 
 	// Finally, get the metastrings
