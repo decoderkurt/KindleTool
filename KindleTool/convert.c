@@ -1031,7 +1031,10 @@ static int
 		// Rewrite the entry's pathname to extract in the right output directory
 		len        = strlen(prefix) + 1 + strlen(path) + 1;
 		fixed_path = malloc(len);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
 		snprintf(fixed_path, len, "%s/%s", prefix, path);
+#pragma GCC diagnostic pop
 		archive_entry_copy_pathname(entry, fixed_path);
 
 		// archive_read_extract should take care of everything for us...
