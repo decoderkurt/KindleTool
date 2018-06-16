@@ -2595,7 +2595,8 @@ int
 				if (info.target_revision == UINT64_MAX)
 					fprintf(stderr, " Target OTA: MAX");
 				else
-					fprintf(stderr, " Target OTA: %llu", (long long unsigned int) info.target_revision);
+					fprintf(
+					    stderr, " Target OTA: %llu", (long long unsigned int) info.target_revision);
 				fprintf(
 				    stderr,
 				    ", Minor: %u, Magic 1: %u, Magic 2: %u, Header Rev: %u, Cert: %u, Platform: %s, Board: %s.\n",
