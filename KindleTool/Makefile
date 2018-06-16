@@ -133,13 +133,31 @@ endif
 
 # NOTE: All the KT_ prefixed *FLAGS are stuff that we *always* want set, no matter what the user does.
 # Moar warnings!
-KT_CFLAGS+=-Wall -Wformat -Wformat-security
+KT_CFLAGS+=-Wall -Wformat=2 -Wformat-signedness -Wformat-truncation=2
 KT_CFLAGS+=-Wextra -Wunused
+KT_CFLAGS+=-Wnull-dereference
+KT_CFLAGS+=-Wuninitialized
+KT_CFLAGS+=-Wduplicated-branches -Wduplicated-cond
+KT_CFLAGS+=-Wundef
+KT_CFLAGS+=-Wbad-function-cast
+KT_CFLAGS+=-Wwrite-strings
+KT_CFLAGS+=-Wjump-misses-init
+KT_CFLAGS+=-Wlogical-op
+KT_CFLAGS+=-Wstrict-prototypes -Wold-style-definition
 KT_CFLAGS+=-Wshadow
-KT_CFLAGS+=-Wmissing-prototypes
+KT_CFLAGS+=-Wmissing-prototypes -Wmissing-declarations
+KT_CFLAGS+=-Wnested-externs
+KT_CFLAGS+=-Winline
 KT_CFLAGS+=-Wcast-qual
+# NOTE: GCC 8 introduces -Wcast-align=strict to warn regardless of the target architecture (i.e., like clang)
 KT_CFLAGS+=-Wcast-align
 KT_CFLAGS+=-Wconversion
+# Output padding info when debugging (NOTE: Clang is slightly more verbose)
+# As well as function attribute hints
+ifdef DEBUG
+	KT_CFLAGS+=-Wpadded
+	KT_CFLAGS+=-Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wmissing-format-attribute
+endif
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 # Get a printf function family with GNU extensions support on MinGW...
