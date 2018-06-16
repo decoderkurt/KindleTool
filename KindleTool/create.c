@@ -2123,10 +2123,10 @@ int
 					fprintf(stderr, "Invalid metastring. Format: key=value, input: %s\n", optarg);
 					goto do_error;
 				}
-				if (strlen(optarg) > 0xFFFFU) {
+				if (strlen(optarg) > 0xFFFFu) {
 					fprintf(stderr,
 						"Metastring too long. Max length: %u, input length: %zu\n",
-						0xFFFFU,
+						0xFFFFu,
 						strlen(optarg));
 					goto do_error;
 				}
