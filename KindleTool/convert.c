@@ -317,7 +317,7 @@ static int
 			if (device > 0xFF) {
 				char* dev_id;
 				dev_id    = to_base(device, 32);
-				char* pad = "000";
+				const char* pad = "000";
 				// NOTE: 0 padding a string with actual zeroes is fun....
 				//       (cf. https://stackoverflow.com/questions/4133318)
 				fprintf(stderr,
@@ -399,7 +399,7 @@ static int
     kindle_convert_signature(UpdateHeader* header, FILE* input, FILE* output)
 {
 	CertificateNumber cert_num;
-	char*             cert_name;
+	const char*             cert_name;
 	size_t            seek;
 	unsigned char*    signature;
 
@@ -479,7 +479,7 @@ static int
 		if (header->data.ota_update.device > 0xFF) {
 			char* dev_id;
 			dev_id    = to_base(header->data.ota_update.device, 32);
-			char* pad = "000";
+			const char* pad = "000";
 			fprintf(stderr,
 				"%.*s%s -> ",
 				((int) strlen(pad) < (int) strlen(dev_id)) ? 0
@@ -555,7 +555,7 @@ static int
 			if (header->data.recovery_update.device > 0xFF) {
 				char* dev_id;
 				dev_id    = to_base(header->data.recovery_update.device, 32);
-				char* pad = "000";
+				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))
@@ -671,7 +671,7 @@ static int
 			if (device > 0xFF) {
 				char* dev_id;
 				dev_id    = to_base(device, 32);
-				char* pad = "000";
+				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))
