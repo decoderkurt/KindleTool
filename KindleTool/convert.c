@@ -58,7 +58,7 @@ static char*
 	uint64_t     n;
 	unsigned int i, len = 0, neg = 0;
 	if (base > strlen(tbl)) {
-		fprintf(stderr, "base %d is unsupported (too large).\n", base);
+		fprintf(stderr, "base %u is unsupported (too large).\n", base);
 		return 0;
 	}
 
@@ -89,7 +89,7 @@ unsigned long int
 	unsigned long int result = 0;
 
 	if (base > strlen(tbl)) {
-		fprintf(stderr, "base %d is unsupported (too large).\n", base);
+		fprintf(stderr, "base %u is unsupported (too large).\n", base);
 		return 0;
 	}
 
@@ -280,15 +280,15 @@ static int
 	//source_revision = *(uint64_t *)&data[hindex];
 	memcpy(&source_revision, &data[hindex], sizeof(uint64_t));
 	hindex += sizeof(uint64_t);
-	fprintf(stderr, "Minimum OTA    %llu\n", (long long) source_revision);
+	fprintf(stderr, "Minimum OTA    %llu\n", (long long unsigned int) source_revision);
 	//target_revision = *(uint64_t *)&data[hindex];
 	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
 	hindex += sizeof(uint64_t);
-	fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
+	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
 	//num_devices = *(uint16_t *)&data[hindex];
 	memcpy(&num_devices, &data[hindex], sizeof(uint16_t));
 	//hindex += sizeof(uint16_t);       // Shut clang's sa up
-	fprintf(stderr, "Devices        %hd\n", num_devices);
+	fprintf(stderr, "Devices        %hu\n", num_devices);
 	free(data);
 
 	// Now get the data
@@ -516,13 +516,13 @@ static int
 	dm((unsigned char*) header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.recovery_update.md5_sum);
 	strncpy(header_md5, header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
-	fprintf(stderr, "Magic 1        %d\n", header->data.recovery_update.magic_1);
-	fprintf(stderr, "Magic 2        %d\n", header->data.recovery_update.magic_2);
-	fprintf(stderr, "Minor          %d\n", header->data.recovery_update.minor);
+	fprintf(stderr, "Magic 1        %u\n", header->data.recovery_update.magic_1);
+	fprintf(stderr, "Magic 2        %u\n", header->data.recovery_update.magic_2);
+	fprintf(stderr, "Minor          %u\n", header->data.recovery_update.minor);
 
 	// Handle V2 header rev...
 	if (header->data.recovery_h2_update.header_rev == 2) {
-		fprintf(stderr, "Header Rev     %d\n", header->data.recovery_h2_update.header_rev);
+		fprintf(stderr, "Header Rev     %u\n", header->data.recovery_h2_update.header_rev);
 		// Slightly ugly way to detect unknown platforms...
 		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
@@ -606,7 +606,7 @@ static int
 	//target_revision = *(uint64_t *)&data[hindex];
 	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
 	hindex += sizeof(uint64_t);
-	fprintf(stderr, "Target OTA     %llu\n", (long long) target_revision);
+	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
 	pkg_md5_sum = (char*) &data[hindex];
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
 	hindex += MD5_HASH_LENGTH;
@@ -615,15 +615,15 @@ static int
 	//magic_1 = *(uint32_t *)&data[hindex];
 	memcpy(&magic_1, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
-	fprintf(stderr, "Magic 1        %d\n", magic_1);
+	fprintf(stderr, "Magic 1        %u\n", magic_1);
 	//magic_2 = *(uint32_t *)&data[hindex];
 	memcpy(&magic_2, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
-	fprintf(stderr, "Magic 2        %d\n", magic_2);
+	fprintf(stderr, "Magic 2        %u\n", magic_2);
 	//minor = *(uint32_t *)&data[hindex];
 	memcpy(&minor, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
-	fprintf(stderr, "Minor          %d\n", minor);
+	fprintf(stderr, "Minor          %u\n", minor);
 	//platform = *(uint32_t *)&data[hindex];
 	memcpy(&platform, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
@@ -635,7 +635,7 @@ static int
 	//header_rev = *(uint32_t *)&data[hindex];
 	memcpy(&header_rev, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
-	fprintf(stderr, "Header Rev     %d\n", header_rev);
+	fprintf(stderr, "Header Rev     %u\n", header_rev);
 	//board = *(uint32_t *)&data[hindex];
 	memcpy(&board, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
@@ -650,7 +650,7 @@ static int
 	hindex += sizeof(uint8_t);     // And more weird padding
 	num_devices = *(uint8_t*) &data[hindex];
 	hindex += sizeof(uint8_t);
-	fprintf(stderr, "Devices        %hhd\n", num_devices);
+	fprintf(stderr, "Devices        %hhu\n", num_devices);
 	for (i = 0; i < num_devices; i++) {
 		//device = *(uint16_t *)&data[hindex];
 		memcpy(&device, &data[hindex], sizeof(uint16_t));
@@ -763,7 +763,7 @@ int
 				return -1;
 				break;
 			default:
-				fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+				fprintf(stderr, "?? Unknown option code 0%o ??\n", (unsigned int) opt);
 				return -1;
 				break;
 		}
@@ -1091,7 +1091,7 @@ int
 				return -1;
 				break;
 			default:
-				fprintf(stderr, "?? Unknown option code 0%o ??\n", opt);
+				fprintf(stderr, "?? Unknown option code 0%o ??\n", (unsigned int) opt);
 				return -1;
 				break;
 		}
