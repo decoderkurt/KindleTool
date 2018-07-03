@@ -106,6 +106,7 @@
 		-d, --device koag           Kindle Oasis WiFi+3G
 		-d, --device koagb          Kindle Oasis WiFi+3G Europe
 		-d, --device koagbi         Kindle Oasis WiFi+3G International
+		-d, --device koagcn         Kindle Oasis WiFi+3G China
 		-d, --device kt3            Kindle Basic 2 (2016)
 		-d, --device kt3w           White Kindle Basic 2 (2016)
 		-d, --device koa2w8         Kindle Oasis 2 (2017) WiFi (8GB)"
@@ -123,7 +124,7 @@
 		-d, --device basic          Alias for kt2 & kt2a
 		-d, --device voyage         Alias for kv, kvg, kvgb, kvgj & kvgm
 		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib
-		-d, --device oasis          Alias for koa, koag, koagb & koagbi
+		-d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn
 		-d, --device basic2         Alias for kt3 & kt3w
 		-d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b"
 		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2 & oasis2"

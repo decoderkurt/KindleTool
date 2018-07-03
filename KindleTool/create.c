@@ -1468,16 +1468,16 @@ int
 					}
 				} else if (strcasecmp(optarg, "oasis") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 2);
+					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
 					info.devices                           = realloc(
                                             info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++] = KindleOasisWiFi;
 					info.devices[info.num_devices++] = KindleOasisWiFi3G;
 					info.devices[info.num_devices++] = KindleOasisWiFi3GEurope;
 					info.devices[info.num_devices++] = KindleOasisWiFi3GInternational;
+					info.devices[info.num_devices++] = KindleOasisWiFi3GChina;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
-						info.devices[info.num_devices++] = KindleOasisUnknown_0GT;
 					}
 				} else if (strcasecmp(optarg, "basic2") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
@@ -1520,7 +1520,7 @@ int
 					    2 +                                      // KT2
 					    5 + (kt_with_unknown_devcodes * 1) +     // KV
 					    12 + (kt_with_unknown_devcodes * 2) +    // PW3
-					    4 + (kt_with_unknown_devcodes * 2) +     // Oasis
+					    5 + (kt_with_unknown_devcodes * 1) +     // Oasis
 					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
 					    4 + (kt_with_unknown_devcodes * 11);     // Oasis 2
 					info.devices = realloc(
@@ -1591,9 +1591,9 @@ int
 					info.devices[info.num_devices++] = KindleOasisWiFi3G;
 					info.devices[info.num_devices++] = KindleOasisWiFi3GEurope;
 					info.devices[info.num_devices++] = KindleOasisWiFi3GInternational;
+					info.devices[info.num_devices++] = KindleOasisWiFi3GChina;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
-						info.devices[info.num_devices++] = KindleOasisUnknown_0GT;
 					}
 					// KT3
 					info.devices[info.num_devices++] = KindleBasic2;
@@ -1881,6 +1881,9 @@ int
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koagbi") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GInternational;
+						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					} else if (strcasecmp(optarg, "koagcn") == 0) {
+						info.devices[info.num_devices - 1] = KindleOasisWiFi3GChina;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT3
