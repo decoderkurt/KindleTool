@@ -1185,7 +1185,8 @@ int
 		}
 		// ...And compare it against the one stored in the package's header.
 		if (strcmp(header_md5, actual_md5) != 0) {
-			fprintf(stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_md5, actual_md5);
+			fprintf(
+			    stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_md5, actual_md5);
 			fclose(tgz_output);
 			unlink(tgz_filename);
 			return -1;

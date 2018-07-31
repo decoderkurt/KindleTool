@@ -112,8 +112,10 @@ int
 			fprintf(stderr, "Error munging, cannot write to output: %s.\n", strerror(errno));
 			return -1;
 		} else if (bytes_written < bytes_read) {
-			fprintf(
-			    stderr, "Error munging, read %zu bytes but only wrote %zu bytes.\n", bytes_read, bytes_written);
+			fprintf(stderr,
+				"Error munging, read %zu bytes but only wrote %zu bytes.\n",
+				bytes_read,
+				bytes_written);
 			return -1;
 		}
 		length -= bytes_read;
@@ -400,10 +402,12 @@ BundleVersion
 		return RecoveryUpdate;
 	else if (!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
 		return RecoveryUpdateV2;
-	else if (!strncmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
+	else if (!strncmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) ||
+		 !strncmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
 		return OTAUpdate;
 	else if (!strncmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) ||
-		 !strncmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH))
+		 !strncmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) ||
+		 !strncmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH))
 		return OTAUpdateV2;
 	else if (!strncmp(magic_number, "SP01", MAGIC_NUMBER_LENGTH))
 		return UpdateSignature;
