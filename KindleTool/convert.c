@@ -180,8 +180,9 @@ static int
 			if (unwrap_only) {
 				while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0) {
 					if (fwrite(buffer, sizeof(unsigned char), count, unwrap_output) < count) {
-						fprintf(
-						    stderr, "Error writing unwrapped update to output: %s.\n", strerror(errno));
+						fprintf(stderr,
+							"Error writing unwrapped update to output: %s.\n",
+							strerror(errno));
 						return -1;
 					}
 				}
@@ -225,8 +226,9 @@ static int
 				fseek(input, -MAGIC_NUMBER_LENGTH, SEEK_CUR);
 				while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0) {
 					if (fwrite(buffer, sizeof(unsigned char), count, output) < count) {
-						fprintf(
-						    stderr, "Error writing userdata tarball to output: %s.\n", strerror(errno));
+						fprintf(stderr,
+							"Error writing userdata tarball to output: %s.\n",
+							strerror(errno));
 						return -1;
 					}
 				}
@@ -320,7 +322,9 @@ static int
 				//       (cf. https://stackoverflow.com/questions/4133318)
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id),
+					((int) strlen(pad) < (int) strlen(dev_id))
+					    ? 0
+					    : (int) strlen(pad) - (int) strlen(dev_id),
 					pad,
 					dev_id);
 				// NOTE: Can't touch the formatting of this, MRPI relies on it...
@@ -448,7 +452,8 @@ static int
 static int
     kindle_convert_ota_update(UpdateHeader* header, FILE* input, FILE* output, const bool fake_sign, char* header_md5)
 {
-	if (fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) < OTA_UPDATE_BLOCK_SIZE) {
+	if (fread(header->data.ota_header_data, sizeof(unsigned char), OTA_UPDATE_BLOCK_SIZE, input) <
+	    OTA_UPDATE_BLOCK_SIZE) {
 		fprintf(stderr, "Cannot read OTA header: %s.\n", strerror(errno));
 		return -1;
 	}
@@ -520,7 +525,8 @@ static int
 		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
 		} else {
-			fprintf(stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
+			fprintf(
+			    stderr, "Platform       %s\n", convert_platform_id(header->data.recovery_h2_update.platform));
 		}
 		// Same shtick for unknown boards...
 		if (strcmp(convert_board_id(header->data.recovery_h2_update.board), "Unknown") == 0) {
@@ -549,7 +555,9 @@ static int
 				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id),
+					((int) strlen(pad) < (int) strlen(dev_id))
+					    ? 0
+					    : (int) strlen(pad) - (int) strlen(dev_id),
 					pad,
 					dev_id);
 				free(dev_id);
@@ -663,7 +671,9 @@ static int
 				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id),
+					((int) strlen(pad) < (int) strlen(dev_id))
+					    ? 0
+					    : (int) strlen(pad) - (int) strlen(dev_id),
 					pad,
 					dev_id);
 				free(dev_id);
@@ -780,9 +790,10 @@ int
 			// Check that a valid package input properly ends in .bin or .stgz,
 			// unless we just want to parse the header
 			if (!info_only && (!IS_BIN(in_name) && !IS_STGZ(in_name))) {
-				fprintf(stderr,
-					"Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n",
-					in_name);
+				fprintf(
+				    stderr,
+				    "Input file '%s' is neither a '.bin' update package nor a '.stgz' userdata package.\n",
+				    in_name);
 				fail = true;
 				continue;    // It's fatal, go away
 			}
@@ -838,8 +849,9 @@ int
 				else
 					strncat(unwrapped_name, "_unwrapped.bin", 14);
 				if ((unwrap_output = fopen(unwrapped_name, "wb")) == NULL) {
-					fprintf(
-					    stderr, "Cannot open unwrapped package output '%s' for writing.\n", unwrapped_name);
+					fprintf(stderr,
+						"Cannot open unwrapped package output '%s' for writing.\n",
+						unwrapped_name);
 					fail = true;
 					free(unwrapped_name);
 					if (extract_sig) {
@@ -906,7 +918,8 @@ int
 					(extract_sig ? "with sig" : "without sig"),
 					(keep_ori ? "keep input" : "delete input"));
 			}
-			if (kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output, header_md5) < 0) {
+			if (kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output, header_md5) <
+			    0) {
 				fprintf(stderr,
 					"Error converting %s package '%s'.\n",
 					(IS_STGZ(in_name) ? "userdata" : "update"),
@@ -1117,11 +1130,12 @@ int
 	// but the other (more correct?) way to handle this (chdir) would need some babysitting
 	// (cf. bsdtar's *_chdir() in tar/util.c)...
 	if ((bin_input = fopen(bin_filename, "rb")) == NULL) {
-		fprintf(stderr,
-			"Cannot open input %s package '%s': %s.\n",
-			((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
-			bin_filename,
-			strerror(errno));
+		fprintf(
+		    stderr,
+		    "Cannot open input %s package '%s': %s.\n",
+		    ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
+		    bin_filename,
+		    strerror(errno));
 		return -1;
 	}
 	// Use a non-racey tempfile, hopefully... (Heavily inspired from http://www.tldp.org/HOWTO/Secure-Programs-HOWTO/avoid-race.html)
@@ -1149,10 +1163,11 @@ int
 		bin_filename,
 		output_dir);
 	if (kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_md5) < 0) {
-		fprintf(stderr,
-			"Error converting %s package '%s'.\n",
-			((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
-			bin_filename);
+		fprintf(
+		    stderr,
+		    "Error converting %s package '%s'.\n",
+		    ((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
+		    bin_filename);
 		fclose(bin_input);
 		fclose(tgz_output);
 		return -1;

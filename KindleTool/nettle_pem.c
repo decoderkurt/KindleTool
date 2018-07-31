@@ -201,7 +201,10 @@ static int
 }
 
 static int
-    convert_rsa_private_key(struct nettle_buffer* buffer, size_t length, const uint8_t* data, struct rsa_private_key* rsa_pkey)
+    convert_rsa_private_key(struct nettle_buffer*   buffer,
+			    size_t                  length,
+			    const uint8_t*          data,
+			    struct rsa_private_key* rsa_pkey)
 {
 	struct rsa_public_key pub;
 	int                   res;
@@ -307,8 +310,8 @@ static int
 			if (!type)
 				fprintf(stderr, "Ignoring unsupported object type `%s'.\n", marker);
 
-			else if (convert_type(buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) !=
-				 1) {
+			else if (convert_type(
+				     buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) != 1) {
 				fprintf(stderr, "convert_type failed!\n");
 				return 0;
 			}

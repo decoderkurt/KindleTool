@@ -47,42 +47,44 @@ static struct rsa_private_key
 {
 	// Make nettle happy... (Array created from the bin2h (grub2 has one) output of pkcs1-conv on our pem file)
 	static const uint8_t sign_key_sexp[] = {
-		0x28, 0x31, 0x31, 0x3a, 0x70, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x2d, 0x6b, 0x65, 0x79, 0x28, 0x39, 0x3a, 0x72,
-		0x73, 0x61, 0x2d, 0x70, 0x6b, 0x63, 0x73, 0x31, 0x28, 0x31, 0x3a, 0x6e, 0x31, 0x32, 0x39, 0x3a, 0x00, 0xc9, 0x9f,
-		0x58, 0xd6, 0x53, 0xec, 0x71, 0x56, 0xff, 0xde, 0x44, 0xa7, 0xc2, 0x3d, 0x1f, 0x5e, 0xe3, 0xb9, 0x4f, 0x58, 0xdd,
-		0xab, 0x1f, 0x7d, 0xf3, 0xf5, 0x06, 0xdf, 0x9e, 0xa9, 0x82, 0xc4, 0x14, 0x4b, 0x3f, 0xa9, 0x8c, 0x8c, 0x6c, 0xba,
-		0x00, 0xfc, 0xb2, 0x71, 0x05, 0xe0, 0xde, 0x73, 0xe2, 0xe5, 0xf7, 0x1b, 0xef, 0x96, 0xa5, 0x66, 0x8f, 0x8e, 0x87,
-		0x4d, 0x76, 0x1e, 0x93, 0x1e, 0xf4, 0xb9, 0xe9, 0x78, 0x48, 0x25, 0xa0, 0x87, 0x66, 0xd4, 0x4e, 0x0b, 0x3a, 0xcc,
-		0xab, 0xcf, 0x89, 0x2d, 0xb5, 0x0b, 0x46, 0x46, 0x5c, 0xc2, 0x12, 0xb9, 0x81, 0x1a, 0xde, 0xbe, 0x70, 0x05, 0x44,
-		0x57, 0xce, 0xb2, 0xda, 0x98, 0x4e, 0x27, 0x79, 0x8b, 0x93, 0x41, 0x24, 0xf5, 0x44, 0x17, 0x6c, 0x85, 0x1f, 0xae,
-		0xfc, 0x89, 0x9d, 0x2d, 0x8c, 0x28, 0xb1, 0xb6, 0x71, 0xcc, 0xe3, 0x95, 0x29, 0x28, 0x31, 0x3a, 0x65, 0x33, 0x3a,
-		0x01, 0x00, 0x01, 0x29, 0x28, 0x31, 0x3a, 0x64, 0x31, 0x32, 0x38, 0x3a, 0x48, 0xbc, 0xa6, 0xd4, 0xf3, 0x83, 0xda,
-		0x43, 0xb3, 0x9d, 0x21, 0x11, 0x90, 0x5e, 0x72, 0xa1, 0xcd, 0xef, 0xbd, 0x73, 0x66, 0xcc, 0xe4, 0x58, 0x91, 0x19,
-		0x35, 0x78, 0x99, 0x09, 0xb8, 0x36, 0x3a, 0xc8, 0x06, 0xd8, 0x88, 0xee, 0xe4, 0x0e, 0x9a, 0x6a, 0x8f, 0x89, 0x7c,
-		0xc0, 0x6a, 0x20, 0x4e, 0x9b, 0xfd, 0xf0, 0xe3, 0x17, 0x6a, 0xe6, 0x3c, 0x26, 0x04, 0x23, 0xea, 0xd8, 0x0e, 0xe4,
-		0xb9, 0x18, 0xda, 0xea, 0x6d, 0xb6, 0xe9, 0x03, 0xaf, 0xcb, 0xa1, 0x13, 0x6c, 0xfd, 0x0e, 0x1e, 0xc7, 0x31, 0x95,
-		0x7f, 0xac, 0x36, 0x1a, 0xfb, 0xda, 0xf2, 0x6c, 0x9b, 0xac, 0x46, 0x20, 0x10, 0x0e, 0x61, 0x7e, 0x54, 0x2c, 0xd8,
-		0xd8, 0x78, 0xab, 0x8e, 0x9b, 0x12, 0xce, 0x04, 0x6e, 0xd2, 0xbf, 0x36, 0x34, 0x2f, 0x33, 0x9c, 0xd9, 0xb6, 0x78,
-		0x63, 0x91, 0xca, 0xcf, 0x41, 0xbe, 0x61, 0x29, 0x28, 0x31, 0x3a, 0x70, 0x36, 0x35, 0x3a, 0x00, 0xe8, 0x22, 0x89,
-		0x0e, 0xaf, 0x47, 0xd8, 0xcf, 0x75, 0x13, 0x49, 0xb1, 0xdf, 0x0f, 0x77, 0xa7, 0x81, 0x71, 0x4f, 0x67, 0xe2, 0x5a,
-		0x26, 0xa5, 0x3c, 0xc5, 0xac, 0x91, 0xec, 0x2f, 0x86, 0xa7, 0x92, 0x34, 0x0a, 0x04, 0xa7, 0x08, 0x34, 0xd0, 0x56,
-		0x07, 0x64, 0x54, 0x66, 0xcf, 0xb8, 0xb5, 0x58, 0x89, 0x60, 0xc8, 0x70, 0x46, 0xb1, 0x8e, 0xf5, 0x6b, 0x85, 0x76,
-		0x2d, 0xd8, 0x07, 0x3d, 0x29, 0x28, 0x31, 0x3a, 0x71, 0x36, 0x35, 0x3a, 0x00, 0xde, 0x59, 0xc4, 0x46, 0x08, 0x34,
-		0x46, 0x65, 0x81, 0x0b, 0x72, 0xbc, 0xb6, 0x80, 0xb2, 0x7c, 0x3b, 0xeb, 0xf1, 0xe5, 0xda, 0xa3, 0xec, 0x60, 0x50,
-		0x9d, 0xe5, 0x35, 0x66, 0xea, 0x4b, 0x41, 0xed, 0xc3, 0x17, 0x33, 0xc2, 0x72, 0x04, 0x1f, 0x8f, 0x48, 0x20, 0x3a,
-		0x23, 0x6d, 0x39, 0xcb, 0x52, 0xbd, 0xce, 0x8a, 0xd1, 0x4c, 0x66, 0xe6, 0x89, 0xb9, 0x3d, 0x8c, 0xb5, 0x6c, 0xd3,
-		0x39, 0x29, 0x28, 0x31, 0x3a, 0x61, 0x36, 0x35, 0x3a, 0x00, 0xae, 0x86, 0x08, 0x75, 0x39, 0xe2, 0xd2, 0x66, 0x66,
-		0xa6, 0xf1, 0xa9, 0x01, 0x03, 0x27, 0xfa, 0x8f, 0x9f, 0x19, 0x0c, 0x09, 0x69, 0xad, 0xd4, 0x5d, 0x34, 0x60, 0xe1,
-		0xf4, 0xa8, 0x66, 0x9c, 0x65, 0x97, 0x2a, 0x51, 0x05, 0x23, 0x6e, 0x51, 0x93, 0xdc, 0x4a, 0xda, 0x09, 0xd1, 0xf2,
-		0x14, 0xa5, 0x53, 0xe3, 0xa7, 0xce, 0x81, 0xd7, 0xcc, 0x9b, 0x47, 0x13, 0x38, 0x1e, 0x8f, 0x64, 0x21, 0x29, 0x28,
-		0x31, 0x3a, 0x62, 0x36, 0x35, 0x3a, 0x00, 0xc8, 0xb3, 0x96, 0x6a, 0xf0, 0x74, 0xdf, 0x26, 0x38, 0x39, 0x31, 0x34,
-		0x0e, 0x38, 0x54, 0xe3, 0xb6, 0xe2, 0xde, 0xd2, 0x6f, 0x6c, 0x8f, 0xac, 0xd0, 0x97, 0xf5, 0x91, 0x22, 0x78, 0x51,
-		0xbe, 0x0c, 0xf3, 0x90, 0x39, 0xf4, 0x46, 0x1e, 0x5a, 0xae, 0x66, 0x98, 0x50, 0x62, 0x31, 0xf1, 0x7d, 0x0a, 0x0e,
-		0xb2, 0x24, 0xb3, 0x8f, 0x97, 0x42, 0x79, 0x06, 0x6f, 0xfc, 0x56, 0xb7, 0x08, 0x61, 0x29, 0x28, 0x31, 0x3a, 0x63,
-		0x36, 0x35, 0x3a, 0x00, 0xdc, 0x57, 0x67, 0xae, 0xc1, 0x62, 0x08, 0xd3, 0x49, 0x86, 0xf8, 0xad, 0xd9, 0xa4, 0xe6,
-		0xb4, 0xbc, 0xd7, 0xc5, 0x4e, 0x3a, 0x2b, 0xeb, 0x15, 0xe8, 0xd2, 0x18, 0xd6, 0xd1, 0x09, 0x1b, 0xe4, 0x45, 0xcc,
-		0xb4, 0x70, 0x3b, 0x82, 0x05, 0x0d, 0x8e, 0x1a, 0xfd, 0xda, 0x28, 0x87, 0x56, 0x21, 0xd6, 0x21, 0x45, 0x1a, 0x37,
-		0x26, 0xa6, 0xac, 0xda, 0xea, 0xd4, 0x6e, 0xb5, 0xac, 0x3c, 0xcc, 0x29, 0x29, 0x29
+		0x28, 0x31, 0x31, 0x3a, 0x70, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x2d, 0x6b, 0x65, 0x79, 0x28, 0x39, 0x3a,
+		0x72, 0x73, 0x61, 0x2d, 0x70, 0x6b, 0x63, 0x73, 0x31, 0x28, 0x31, 0x3a, 0x6e, 0x31, 0x32, 0x39, 0x3a, 0x00,
+		0xc9, 0x9f, 0x58, 0xd6, 0x53, 0xec, 0x71, 0x56, 0xff, 0xde, 0x44, 0xa7, 0xc2, 0x3d, 0x1f, 0x5e, 0xe3, 0xb9,
+		0x4f, 0x58, 0xdd, 0xab, 0x1f, 0x7d, 0xf3, 0xf5, 0x06, 0xdf, 0x9e, 0xa9, 0x82, 0xc4, 0x14, 0x4b, 0x3f, 0xa9,
+		0x8c, 0x8c, 0x6c, 0xba, 0x00, 0xfc, 0xb2, 0x71, 0x05, 0xe0, 0xde, 0x73, 0xe2, 0xe5, 0xf7, 0x1b, 0xef, 0x96,
+		0xa5, 0x66, 0x8f, 0x8e, 0x87, 0x4d, 0x76, 0x1e, 0x93, 0x1e, 0xf4, 0xb9, 0xe9, 0x78, 0x48, 0x25, 0xa0, 0x87,
+		0x66, 0xd4, 0x4e, 0x0b, 0x3a, 0xcc, 0xab, 0xcf, 0x89, 0x2d, 0xb5, 0x0b, 0x46, 0x46, 0x5c, 0xc2, 0x12, 0xb9,
+		0x81, 0x1a, 0xde, 0xbe, 0x70, 0x05, 0x44, 0x57, 0xce, 0xb2, 0xda, 0x98, 0x4e, 0x27, 0x79, 0x8b, 0x93, 0x41,
+		0x24, 0xf5, 0x44, 0x17, 0x6c, 0x85, 0x1f, 0xae, 0xfc, 0x89, 0x9d, 0x2d, 0x8c, 0x28, 0xb1, 0xb6, 0x71, 0xcc,
+		0xe3, 0x95, 0x29, 0x28, 0x31, 0x3a, 0x65, 0x33, 0x3a, 0x01, 0x00, 0x01, 0x29, 0x28, 0x31, 0x3a, 0x64, 0x31,
+		0x32, 0x38, 0x3a, 0x48, 0xbc, 0xa6, 0xd4, 0xf3, 0x83, 0xda, 0x43, 0xb3, 0x9d, 0x21, 0x11, 0x90, 0x5e, 0x72,
+		0xa1, 0xcd, 0xef, 0xbd, 0x73, 0x66, 0xcc, 0xe4, 0x58, 0x91, 0x19, 0x35, 0x78, 0x99, 0x09, 0xb8, 0x36, 0x3a,
+		0xc8, 0x06, 0xd8, 0x88, 0xee, 0xe4, 0x0e, 0x9a, 0x6a, 0x8f, 0x89, 0x7c, 0xc0, 0x6a, 0x20, 0x4e, 0x9b, 0xfd,
+		0xf0, 0xe3, 0x17, 0x6a, 0xe6, 0x3c, 0x26, 0x04, 0x23, 0xea, 0xd8, 0x0e, 0xe4, 0xb9, 0x18, 0xda, 0xea, 0x6d,
+		0xb6, 0xe9, 0x03, 0xaf, 0xcb, 0xa1, 0x13, 0x6c, 0xfd, 0x0e, 0x1e, 0xc7, 0x31, 0x95, 0x7f, 0xac, 0x36, 0x1a,
+		0xfb, 0xda, 0xf2, 0x6c, 0x9b, 0xac, 0x46, 0x20, 0x10, 0x0e, 0x61, 0x7e, 0x54, 0x2c, 0xd8, 0xd8, 0x78, 0xab,
+		0x8e, 0x9b, 0x12, 0xce, 0x04, 0x6e, 0xd2, 0xbf, 0x36, 0x34, 0x2f, 0x33, 0x9c, 0xd9, 0xb6, 0x78, 0x63, 0x91,
+		0xca, 0xcf, 0x41, 0xbe, 0x61, 0x29, 0x28, 0x31, 0x3a, 0x70, 0x36, 0x35, 0x3a, 0x00, 0xe8, 0x22, 0x89, 0x0e,
+		0xaf, 0x47, 0xd8, 0xcf, 0x75, 0x13, 0x49, 0xb1, 0xdf, 0x0f, 0x77, 0xa7, 0x81, 0x71, 0x4f, 0x67, 0xe2, 0x5a,
+		0x26, 0xa5, 0x3c, 0xc5, 0xac, 0x91, 0xec, 0x2f, 0x86, 0xa7, 0x92, 0x34, 0x0a, 0x04, 0xa7, 0x08, 0x34, 0xd0,
+		0x56, 0x07, 0x64, 0x54, 0x66, 0xcf, 0xb8, 0xb5, 0x58, 0x89, 0x60, 0xc8, 0x70, 0x46, 0xb1, 0x8e, 0xf5, 0x6b,
+		0x85, 0x76, 0x2d, 0xd8, 0x07, 0x3d, 0x29, 0x28, 0x31, 0x3a, 0x71, 0x36, 0x35, 0x3a, 0x00, 0xde, 0x59, 0xc4,
+		0x46, 0x08, 0x34, 0x46, 0x65, 0x81, 0x0b, 0x72, 0xbc, 0xb6, 0x80, 0xb2, 0x7c, 0x3b, 0xeb, 0xf1, 0xe5, 0xda,
+		0xa3, 0xec, 0x60, 0x50, 0x9d, 0xe5, 0x35, 0x66, 0xea, 0x4b, 0x41, 0xed, 0xc3, 0x17, 0x33, 0xc2, 0x72, 0x04,
+		0x1f, 0x8f, 0x48, 0x20, 0x3a, 0x23, 0x6d, 0x39, 0xcb, 0x52, 0xbd, 0xce, 0x8a, 0xd1, 0x4c, 0x66, 0xe6, 0x89,
+		0xb9, 0x3d, 0x8c, 0xb5, 0x6c, 0xd3, 0x39, 0x29, 0x28, 0x31, 0x3a, 0x61, 0x36, 0x35, 0x3a, 0x00, 0xae, 0x86,
+		0x08, 0x75, 0x39, 0xe2, 0xd2, 0x66, 0x66, 0xa6, 0xf1, 0xa9, 0x01, 0x03, 0x27, 0xfa, 0x8f, 0x9f, 0x19, 0x0c,
+		0x09, 0x69, 0xad, 0xd4, 0x5d, 0x34, 0x60, 0xe1, 0xf4, 0xa8, 0x66, 0x9c, 0x65, 0x97, 0x2a, 0x51, 0x05, 0x23,
+		0x6e, 0x51, 0x93, 0xdc, 0x4a, 0xda, 0x09, 0xd1, 0xf2, 0x14, 0xa5, 0x53, 0xe3, 0xa7, 0xce, 0x81, 0xd7, 0xcc,
+		0x9b, 0x47, 0x13, 0x38, 0x1e, 0x8f, 0x64, 0x21, 0x29, 0x28, 0x31, 0x3a, 0x62, 0x36, 0x35, 0x3a, 0x00, 0xc8,
+		0xb3, 0x96, 0x6a, 0xf0, 0x74, 0xdf, 0x26, 0x38, 0x39, 0x31, 0x34, 0x0e, 0x38, 0x54, 0xe3, 0xb6, 0xe2, 0xde,
+		0xd2, 0x6f, 0x6c, 0x8f, 0xac, 0xd0, 0x97, 0xf5, 0x91, 0x22, 0x78, 0x51, 0xbe, 0x0c, 0xf3, 0x90, 0x39, 0xf4,
+		0x46, 0x1e, 0x5a, 0xae, 0x66, 0x98, 0x50, 0x62, 0x31, 0xf1, 0x7d, 0x0a, 0x0e, 0xb2, 0x24, 0xb3, 0x8f, 0x97,
+		0x42, 0x79, 0x06, 0x6f, 0xfc, 0x56, 0xb7, 0x08, 0x61, 0x29, 0x28, 0x31, 0x3a, 0x63, 0x36, 0x35, 0x3a, 0x00,
+		0xdc, 0x57, 0x67, 0xae, 0xc1, 0x62, 0x08, 0xd3, 0x49, 0x86, 0xf8, 0xad, 0xd9, 0xa4, 0xe6, 0xb4, 0xbc, 0xd7,
+		0xc5, 0x4e, 0x3a, 0x2b, 0xeb, 0x15, 0xe8, 0xd2, 0x18, 0xd6, 0xd1, 0x09, 0x1b, 0xe4, 0x45, 0xcc, 0xb4, 0x70,
+		0x3b, 0x82, 0x05, 0x0d, 0x8e, 0x1a, 0xfd, 0xda, 0x28, 0x87, 0x56, 0x21, 0xd6, 0x21, 0x45, 0x1a, 0x37, 0x26,
+		0xa6, 0xac, 0xda, 0xea, 0xd4, 0x6e, 0xb5, 0xac, 0x3c, 0xcc, 0x29, 0x29, 0x29
 	};
 
 	struct rsa_private_key rsa_pkey;
@@ -447,7 +449,8 @@ static int
 
 		archive_read_disk_descend(disk);
 		// Print what we're adding, ala bsdtar
-		fprintf(stderr, "a %s%s\n", archive_entry_pathname(entry), (is_kernel ? "\t\t|<" : (is_exec ? "\t\t<-" : "")));
+		fprintf(
+		    stderr, "a %s%s\n", archive_entry_pathname(entry), (is_kernel ? "\t\t|<" : (is_exec ? "\t\t<-" : "")));
 
 		// Write our entry to the archive, completely via libarchive,
 		// to avoid having to open our entry file again, which would fail on non-POSIX systems...
@@ -467,11 +470,12 @@ static int
 				kttar->to_sign_and_bundle_list =
 				    realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char*));
 				// And do the same with our tweaked pathname for legacy mode...
-				kttar->tweaked_to_sign_and_bundle_list =
-				    realloc(kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char*));
+				kttar->tweaked_to_sign_and_bundle_list = realloc(
+				    kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char*));
 				// Use the correct paths if we tweaked the entry pathname...
 				if (kttar->tweak_pointer_index != 0) {
-					kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(original_path);
+					kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] =
+					    strdup(original_path);
 					kttar->tweaked_to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] =
 					    strdup(tweaked_path);
 				} else {
@@ -592,7 +596,8 @@ static int
 	// Now that it's there, mark it as open and created
 	bundlefile_status = BUNDLE_OPEN | BUNDLE_CREATED;
 	// And append it as the last file...
-	kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char*));
+	kttar->to_sign_and_bundle_list =
+	    realloc(kttar->to_sign_and_bundle_list, ++kttar->sign_and_bundle_index * sizeof(char*));
 	kttar->to_sign_and_bundle_list[kttar->sign_and_bundle_index - 1] = strdup(bundle_filename);
 	// We'll never tweak the bundlefile pathname, but we rely on this being sane & consistent, so set it
 	kttar->tweaked_to_sign_and_bundle_list =
@@ -639,8 +644,9 @@ static int
 			// Don't hash our bundlefile
 			if ((bundlefile_status & BUNDLE_OPEN) == BUNDLE_OPEN) {
 				if (md5_sum(file, md5) != 0) {
-					fprintf(
-					    stderr, "Cannot calculate hash sum for '%s'.\n", kttar->to_sign_and_bundle_list[i]);
+					fprintf(stderr,
+						"Cannot calculate hash sum for '%s'.\n",
+						kttar->to_sign_and_bundle_list[i]);
 					fclose(file);
 					// Avoid a double free, bis.
 					signame = NULL;
@@ -674,8 +680,10 @@ static int
 				goto cleanup;
 			}
 			if ((sigfile = fdopen(sigfd, "wb")) == NULL) {
-				fprintf(
-				    stderr, "Cannot open temp signature file '%s' for writing: %s.\n", signame, strerror(errno));
+				fprintf(stderr,
+					"Cannot open temp signature file '%s' for writing: %s.\n",
+					signame,
+					strerror(errno));
 				fclose(file);
 				close(sigfd);
 				unlink(sigabsolutepath);
@@ -703,19 +711,19 @@ static int
 				// where the id is 1 for kernel images (in recovery updates only),
 				// 129 for install scripts, and 128 for assets,
 				// and the blocksize is based on the file size relative to the update type blocksize.
-				if (fprintf(
-					bundlefile,
-					"%u %s %s %jd %s_ktool_file\n",
-					((real_blocksize == RECOVERY_BLOCK_SIZE && IS_UIMAGE(kttar->to_sign_and_bundle_list[i])
-					      ? 1U
-					      : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) ||
-						 IS_SHELL(kttar->to_sign_and_bundle_list[i]))
-						    ? 129U
-						    : 128U)),
-					md5,
-					kttar->tweaked_to_sign_and_bundle_list[i],
-					(intmax_t) st.st_size / real_blocksize,
-					basename(pathnamecpy)) < 0) {
+				if (fprintf(bundlefile,
+					    "%u %s %s %jd %s_ktool_file\n",
+					    ((real_blocksize == RECOVERY_BLOCK_SIZE &&
+						      IS_UIMAGE(kttar->to_sign_and_bundle_list[i])
+						  ? 1U
+						  : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) ||
+						     IS_SHELL(kttar->to_sign_and_bundle_list[i]))
+							? 129U
+							: 128U)),
+					    md5,
+					    kttar->tweaked_to_sign_and_bundle_list[i],
+					    (intmax_t) st.st_size / real_blocksize,
+					    basename(pathnamecpy)) < 0) {
 					fprintf(stderr, "Cannot write to bundle index file.\n");
 					// Cleanup a bit before crapping out
 					fclose(file);
@@ -761,9 +769,12 @@ static int
 	}
 	// If we're building a recovery update, warn that this possibly isn't the brightest idea, given the very specific requirements...
 	if (real_blocksize == RECOVERY_BLOCK_SIZE) {
-		fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		fprintf(stderr, "@ You're building a recovery update from scratch! Make sure you know what you're doing... @\n");
-		fprintf(stderr, "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		fprintf(stderr,
+			"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		fprintf(stderr,
+			"@ You're building a recovery update from scratch! Make sure you know what you're doing... @\n");
+		fprintf(stderr,
+			"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
 
 	return 0;
@@ -894,7 +905,8 @@ static int
 			// ...And then simply append the input tarball as-is
 			while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input_tgz)) > 0) {
 				if (fwrite(buffer, sizeof(unsigned char), count, output) < count) {
-					fprintf(stderr, "Error appending userdata tarball to output: %s.\n", strerror(errno));
+					fprintf(
+					    stderr, "Error appending userdata tarball to output: %s.\n", strerror(errno));
 					return -1;
 				}
 			}
@@ -1264,32 +1276,47 @@ int
 					      { "legacy", no_argument, NULL, 'C' },
 					      { "packaging", no_argument, NULL, 'X' },
 					      { NULL, 0, NULL, 0 } };
-	UpdateInformation          info =
-	    { "\0\0\0\0", UnknownUpdate, get_default_key(), 0, UINT64_MAX, 0, 0, 0, 0, NULL, 0, 0, 0, CertificateDeveloper, 0, 0,
-	      0,          NULL };
-	FILE*                 input  = NULL;
-	FILE*                 output = stdout;
-	int                   i;
-	unsigned int          ui;
-	char*                 output_filename           = NULL;
-	char**                input_list                = NULL;
-	unsigned int          input_index               = 0;
-	char*                 tarball_filename          = NULL;
-	char*                 valid_update_file_pattern = NULL;
-	int                   tarball_fd                = -1;
-	const unsigned int    num_packaging_metastrings = 3;
-	bool                  keep_archive              = false;
-	bool                  skip_archive              = false;
-	bool                  fake_sign                 = false;
-	bool                  userdata_only             = false;
-	bool                  enforce_ota               = false;
-	bool                  enforce_source_rev        = false;
-	bool                  enforce_target_rev        = false;
-	bool                  legacy                    = false;
-	unsigned int          real_blocksize;
-	struct archive_entry* entry;
-	struct archive*       match;
-	int                   r;
+	UpdateInformation          info   = { "\0\0\0\0",
+                                   UnknownUpdate,
+                                   get_default_key(),
+                                   0,
+                                   UINT64_MAX,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
+                                   NULL,
+                                   0,
+                                   0,
+                                   0,
+                                   CertificateDeveloper,
+                                   0,
+                                   0,
+                                   0,
+                                   NULL };
+	FILE*                      input  = NULL;
+	FILE*                      output = stdout;
+	int                        i;
+	unsigned int               ui;
+	char*                      output_filename           = NULL;
+	char**                     input_list                = NULL;
+	unsigned int               input_index               = 0;
+	char*                      tarball_filename          = NULL;
+	char*                      valid_update_file_pattern = NULL;
+	int                        tarball_fd                = -1;
+	const unsigned int         num_packaging_metastrings = 3;
+	bool                       keep_archive              = false;
+	bool                       skip_archive              = false;
+	bool                       fake_sign                 = false;
+	bool                       userdata_only             = false;
+	bool                       enforce_ota               = false;
+	bool                       enforce_source_rev        = false;
+	bool                       enforce_target_rev        = false;
+	bool                       legacy                    = false;
+	unsigned int               real_blocksize;
+	struct archive_entry*      entry;
+	struct archive*            match;
+	int                        r;
 
 	// Skip command
 	argv++;
@@ -1337,49 +1364,49 @@ int
 				if (strcasecmp(optarg, "kindle4") == 0) {
 					strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = Kindle4NonTouch;
-					info.devices[info.num_devices++] = Kindle4NonTouchBlack;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = Kindle4NonTouch;
+					info.devices[info.num_devices++]       = Kindle4NonTouchBlack;
 				} else if (strcasecmp(optarg, "touch") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = Kindle5TouchWiFi;
-					info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
-					info.devices[info.num_devices++] = Kindle5TouchWiFi3GEurope;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = Kindle5TouchWiFi;
+					info.devices[info.num_devices++]       = Kindle5TouchWiFi3G;
+					info.devices[info.num_devices++]       = Kindle5TouchWiFi3GEurope;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = Kindle5TouchUnknown;
 					}
 				} else if (strcasecmp(optarg, "paperwhite") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 6;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi;
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3G;
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GCanada;
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GEurope;
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GJapan;
-					info.devices[info.num_devices++] = KindlePaperWhiteWiFi3GBrazil;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi;
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3G;
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GCanada;
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GEurope;
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GBrazil;
 				} else if (strcasecmp(optarg, "paperwhite2") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFiJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3GCanada;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3GEurope;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3GRussia;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3GJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi4GBInternational;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBEurope;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GB;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBCanada;
-					info.devices[info.num_devices++] = KindlePaperWhite2WiFi3G4GBBrazil;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFiJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3G;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3GCanada;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3GEurope;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3GRussia;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3GJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi4GBInternational;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3G4GBEurope;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3G4GB;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3G4GBCanada;
+					info.devices[info.num_devices++]       = KindlePaperWhite2WiFi3G4GBBrazil;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF4;
 						info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
@@ -1387,39 +1414,39 @@ int
 				} else if (strcasecmp(optarg, "basic") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleBasic;
-					info.devices[info.num_devices++] = KindleBasicKiwi;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleBasic;
+					info.devices[info.num_devices++]       = KindleBasicKiwi;
 				} else if (strcasecmp(optarg, "voyage") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleVoyageWiFi;
-					info.devices[info.num_devices++] = KindleVoyageWiFi3G;
-					info.devices[info.num_devices++] = KindleVoyageWiFi3GEurope;
-					info.devices[info.num_devices++] = KindleVoyageWiFi3GJapan;
-					info.devices[info.num_devices++] = KindleVoyageWiFi3GMexico;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleVoyageWiFi;
+					info.devices[info.num_devices++]       = KindleVoyageWiFi3G;
+					info.devices[info.num_devices++]       = KindleVoyageWiFi3GEurope;
+					info.devices[info.num_devices++]       = KindleVoyageWiFi3GJapan;
+					info.devices[info.num_devices++]       = KindleVoyageWiFi3GMexico;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
 					}
 				} else if (strcasecmp(optarg, "paperwhite3") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi;
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GCanada;
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3G;
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GEurope;
-					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GMexico;
-					info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi;
-					info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi3GJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite3BlackWiFi32GBJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi32GBJapan;
-					info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi3GInternational;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi3GJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi3GCanada;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi3G;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi3GEurope;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WiFi3GMexico;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WhiteWiFi;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WhiteWiFi3GJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite3BlackWiFi32GBJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WhiteWiFi32GBJapan;
+					info.devices[info.num_devices++]       = KindlePaperWhite3WhiteWiFi3GInternational;
 					info.devices[info.num_devices++] = KindlePaperWhite3WhiteWiFi3GInternationalBis;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePW3WhiteUnknown_0KD;
@@ -1428,35 +1455,35 @@ int
 				} else if (strcasecmp(optarg, "oasis") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleOasisWiFi;
-					info.devices[info.num_devices++] = KindleOasisWiFi3G;
-					info.devices[info.num_devices++] = KindleOasisWiFi3GEurope;
-					info.devices[info.num_devices++] = KindleOasisWiFi3GInternational;
-					info.devices[info.num_devices++] = KindleOasisWiFi3GChina;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleOasisWiFi;
+					info.devices[info.num_devices++]       = KindleOasisWiFi3G;
+					info.devices[info.num_devices++]       = KindleOasisWiFi3GEurope;
+					info.devices[info.num_devices++]       = KindleOasisWiFi3GInternational;
+					info.devices[info.num_devices++]       = KindleOasisWiFi3GChina;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
 					}
 				} else if (strcasecmp(optarg, "basic2") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 1);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleBasic2;
-					info.devices[info.num_devices++] = KindleBasic2White;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleBasic2;
+					info.devices[info.num_devices++]       = KindleBasic2White;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleBasic2Unknown_0DU;
 					}
 				} else if (strcasecmp(optarg, "oasis2") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 11);
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleOasis2WiFi8GB;
-					info.devices[info.num_devices++] = KindleOasis2WiFi3G32GB;
-					info.devices[info.num_devices++] = KindleOasis2WiFi32GB;
-					info.devices[info.num_devices++] = KindleOasis2WiFi3G32GBEurope;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleOasis2WiFi8GB;
+					info.devices[info.num_devices++]       = KindleOasis2WiFi3G32GB;
+					info.devices[info.num_devices++]       = KindleOasis2WiFi32GB;
+					info.devices[info.num_devices++]       = KindleOasis2WiFi3G32GBEurope;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleOasis2Unknown_0LM;
 						info.devices[info.num_devices++] = KindleOasis2Unknown_0LN;
@@ -1472,18 +1499,18 @@ int
 					}
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes +           // K5
-										 6 +                                      // PW1
-										 12 + (kt_with_unknown_devcodes * 2) +    // PW2
-										 2 +                                      // KT2
-										 5 + (kt_with_unknown_devcodes * 1) +     // KV
-										 12 + (kt_with_unknown_devcodes * 2) +    // PW3
-										 5 + (kt_with_unknown_devcodes * 1) +     // Oasis
-										 2 + (kt_with_unknown_devcodes * 1) +     // KT3
-										 4 +
-										 (kt_with_unknown_devcodes * 11);    // Oasis 2
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
+					const unsigned int num_aliased_devices =
+					    3 + kt_with_unknown_devcodes +           // K5
+					    6 +                                      // PW1
+					    12 + (kt_with_unknown_devcodes * 2) +    // PW2
+					    2 +                                      // KT2
+					    5 + (kt_with_unknown_devcodes * 1) +     // KV
+					    12 + (kt_with_unknown_devcodes * 2) +    // PW3
+					    5 + (kt_with_unknown_devcodes * 1) +     // Oasis
+					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
+					    4 + (kt_with_unknown_devcodes * 11);     // Oasis 2
+					info.devices = realloc(info.devices,
+							       (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
 					info.devices[info.num_devices++] = Kindle5TouchWiFi;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
@@ -1582,51 +1609,51 @@ int
 					   (strcasecmp(optarg, "unknown") == 0 || strcasecmp(optarg, "datamined") == 0)) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);    // Meh?
 					const unsigned int num_aliased_devices = 7;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x16;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x21;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x07;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x0B;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x0C;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x0D;
-					info.devices[info.num_devices++] = ValidKindleUnknown_0x99;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x16;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x21;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x07;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x0B;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x0C;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x0D;
+					info.devices[info.num_devices++]       = ValidKindleUnknown_0x99;
 				} else if (strcasecmp(optarg, "kindle2") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = Kindle2US;
-					info.devices[info.num_devices++] = Kindle2International;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = Kindle2US;
+					info.devices[info.num_devices++]       = Kindle2International;
 				} else if (strcasecmp(optarg, "kindledx") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = KindleDXUS;
-					info.devices[info.num_devices++] = KindleDXInternational;
-					info.devices[info.num_devices++] = KindleDXGraphite;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleDXUS;
+					info.devices[info.num_devices++]       = KindleDXInternational;
+					info.devices[info.num_devices++]       = KindleDXGraphite;
 				} else if (strcasecmp(optarg, "kindle3") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = Kindle3WiFi;
-					info.devices[info.num_devices++] = Kindle3WiFi3G;
-					info.devices[info.num_devices++] = Kindle3WiFi3GEurope;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = Kindle3WiFi;
+					info.devices[info.num_devices++]       = Kindle3WiFi3G;
+					info.devices[info.num_devices++]       = Kindle3WiFi3GEurope;
 				} else if (strcasecmp(optarg, "legacy") == 0) {
 					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2 + 3 + 3;
-					info.devices =
-					    realloc(info.devices, (info.num_devices + num_aliased_devices) * sizeof(Device));
-					info.devices[info.num_devices++] = Kindle2US;
-					info.devices[info.num_devices++] = Kindle2International;
-					info.devices[info.num_devices++] = KindleDXUS;
-					info.devices[info.num_devices++] = KindleDXInternational;
-					info.devices[info.num_devices++] = KindleDXGraphite;
-					info.devices[info.num_devices++] = Kindle3WiFi;
-					info.devices[info.num_devices++] = Kindle3WiFi3G;
-					info.devices[info.num_devices++] = Kindle3WiFi3GEurope;
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = Kindle2US;
+					info.devices[info.num_devices++]       = Kindle2International;
+					info.devices[info.num_devices++]       = KindleDXUS;
+					info.devices[info.num_devices++]       = KindleDXInternational;
+					info.devices[info.num_devices++]       = KindleDXGraphite;
+					info.devices[info.num_devices++]       = Kindle3WiFi;
+					info.devices[info.num_devices++]       = Kindle3WiFi3G;
+					info.devices[info.num_devices++]       = Kindle3WiFi3GEurope;
 				} else {
 					info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
 					// K1
@@ -1720,16 +1747,19 @@ int
 					} else if (strcasecmp(optarg, "pw2il") == 0 || strcasecmp(optarg, "kpw2il") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi4GBInternational;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw2gbl") == 0 || strcasecmp(optarg, "kpw2gbl") == 0) {
+					} else if (strcasecmp(optarg, "pw2gbl") == 0 ||
+						   strcasecmp(optarg, "kpw2gbl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBEurope;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gl") == 0 || strcasecmp(optarg, "kpw2gl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GB;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw2gcl") == 0 || strcasecmp(optarg, "kpw2gcl") == 0) {
+					} else if (strcasecmp(optarg, "pw2gcl") == 0 ||
+						   strcasecmp(optarg, "kpw2gcl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBCanada;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw2gbrl") == 0 || strcasecmp(optarg, "kpw2gbrl") == 0) {
+					} else if (strcasecmp(optarg, "pw2gbrl") == 0 ||
+						   strcasecmp(optarg, "kpw2gbrl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBBrazil;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
@@ -1785,17 +1815,23 @@ int
 					else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw3wgj") == 0 || strcasecmp(optarg, "kpw3wgj") == 0) {
+					} else if (strcasecmp(optarg, "pw3wgj") == 0 ||
+						   strcasecmp(optarg, "kpw3wgj") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GJapan;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw3wjl") == 0 || strcasecmp(optarg, "kpw3wjl") == 0) {
+					} else if (strcasecmp(optarg, "pw3wjl") == 0 ||
+						   strcasecmp(optarg, "kpw3wjl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi32GBJapan;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw3wgi") == 0 || strcasecmp(optarg, "kpw3wgi") == 0) {
-						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GInternational;
+					} else if (strcasecmp(optarg, "pw3wgi") == 0 ||
+						   strcasecmp(optarg, "kpw3wgi") == 0) {
+						info.devices[info.num_devices - 1] =
+						    KindlePaperWhite3WhiteWiFi3GInternational;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw3wgib") == 0 || strcasecmp(optarg, "kpw3wgib") == 0) {
-						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GInternationalBis;
+					} else if (strcasecmp(optarg, "pw3wgib") == 0 ||
+						   strcasecmp(optarg, "kpw3wgib") == 0) {
+						info.devices[info.num_devices - 1] =
+						    KindlePaperWhite3WhiteWiFi3GInternationalBis;
 						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// Oasis
@@ -1923,8 +1959,10 @@ int
 							// we're not bypassing device checks...
 							if (!kt_with_unknown_devcodes &&
 							    strcmp(convert_device_id(dev_code), "Unknown") == 0) {
-								fprintf(
-								    stderr, "Unknown device %s (0x%02X).\n", optarg, dev_code);
+								fprintf(stderr,
+									"Unknown device %s (0x%02X).\n",
+									optarg,
+									dev_code);
 								goto do_error;
 							}
 						}
@@ -1933,7 +1971,8 @@ int
 						// Roughly guess a decent magic number...
 						if (dev_code < Kindle4NonTouch) {
 							strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
-						} else if (dev_code == Kindle4NonTouch || dev_code == Kindle4NonTouchBlack) {
+						} else if (dev_code == Kindle4NonTouch ||
+							   dev_code == Kindle4NonTouchBlack) {
 							strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 						} else {
 							strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
@@ -2052,7 +2091,7 @@ int
 						strlen(optarg));
 					goto do_error;
 				}
-				info.metastrings                    = realloc(info.metastrings, ++info.num_meta * sizeof(char*));
+				info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char*));
 				info.metastrings[info.num_meta - 1] = strdup(optarg);
 				break;
 			case 'X':
@@ -2099,7 +2138,8 @@ int
 				if ((pwd = getpwuid(geteuid())) != NULL) {
 					snprintf(metabuff, sizeof(metabuff), "PackagedBy=%s@%s", pwd->pw_name, nodename);
 				} else {
-					snprintf(metabuff, sizeof(metabuff), "PackagedBy=%ld@%s", (long) geteuid(), nodename);
+					snprintf(
+					    metabuff, sizeof(metabuff), "PackagedBy=%ld@%s", (long) geteuid(), nodename);
 				}
 #endif
 				info.metastrings[info.num_meta++] = strdup(metabuff);
@@ -2147,8 +2187,9 @@ int
 	if (userdata_only) {
 		// Needs to be a signed package
 		if (info.version != UpdateSignature) {
-			fprintf(
-			    stderr, "Invalid update type (%s) for an userdata package.\n", convert_bundle_version(info.version));
+			fprintf(stderr,
+				"Invalid update type (%s) for an userdata package.\n",
+				convert_bundle_version(info.version));
 			goto do_error;
 		}
 	} else {
@@ -2176,8 +2217,9 @@ int
 		}
 		// Musn't be *only* a sig envelope...
 		if (info.version == UpdateSignature) {
-			fprintf(
-			    stderr, "Invalid update type (%s) for an update package.\n", convert_bundle_version(info.version));
+			fprintf(stderr,
+				"Invalid update type (%s) for an update package.\n",
+				convert_bundle_version(info.version));
 			goto do_error;
 		}
 		// Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
@@ -2475,16 +2517,18 @@ int
 				break;
 			case OTAUpdate:
 				if (info.target_revision == UINT32_MAX)
-					fprintf(stderr,
-						"With the following flags: Min. OTA: %llu, Target OTA: MAX, Optional: %hhu.\n",
-						(long long unsigned int) info.source_revision,
-						info.optional);
+					fprintf(
+					    stderr,
+					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Optional: %hhu.\n",
+					    (long long unsigned int) info.source_revision,
+					    info.optional);
 				else
-					fprintf(stderr,
-						"With the following flags: Min. OTA: %llu, Target OTA: %llu, Optional: %hhu.\n",
-						(long long unsigned int) info.source_revision,
-						(long long unsigned int) info.target_revision,
-						info.optional);
+					fprintf(
+					    stderr,
+					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Optional: %hhu.\n",
+					    (long long unsigned int) info.source_revision,
+					    (long long unsigned int) info.target_revision,
+					    info.optional);
 				break;
 			case RecoveryUpdate:
 				fprintf(stderr,
@@ -2527,8 +2571,8 @@ int
 
 	// Create our package archive, sigfile & bundlefile included
 	if (!skip_archive) {
-		if (kindle_create_package_archive(tarball_fd, input_list, input_index, &info.sign_pkey, legacy, real_blocksize) !=
-		    0) {
+		if (kindle_create_package_archive(
+			tarball_fd, input_list, input_index, &info.sign_pkey, legacy, real_blocksize) != 0) {
 			fprintf(stderr, "Failed to create intermediate archive '%s'.\n", tarball_filename);
 			// Delete the borked files
 			close(tarball_fd);
