@@ -94,8 +94,7 @@ static int
 
 	if (length > (sizeof(pem_start_pattern) + sizeof(pem_trailer_pattern)) &&
 	    memcmp(line, pem_start_pattern, sizeof(pem_start_pattern)) == 0 &&
-	    memcmp(line + length - sizeof(pem_trailer_pattern), pem_trailer_pattern, sizeof(pem_trailer_pattern)) ==
-		0) {
+	    memcmp(line + length - sizeof(pem_trailer_pattern), pem_trailer_pattern, sizeof(pem_trailer_pattern)) == 0) {
 		*marker_start  = 11;
 		*marker_length = length - (sizeof(pem_start_pattern) + sizeof(pem_trailer_pattern));
 
@@ -114,8 +113,7 @@ static int
 
 	if (length > (sizeof(pem_end_pattern) + sizeof(pem_trailer_pattern)) &&
 	    memcmp(line, pem_end_pattern, sizeof(pem_end_pattern)) == 0 &&
-	    memcmp(line + length - sizeof(pem_trailer_pattern), pem_trailer_pattern, sizeof(pem_trailer_pattern)) ==
-		0) {
+	    memcmp(line + length - sizeof(pem_trailer_pattern), pem_trailer_pattern, sizeof(pem_trailer_pattern)) == 0) {
 		/* Right form. Check marker */
 		if (length == marker_length + (sizeof(pem_end_pattern) + sizeof(pem_trailer_pattern)) &&
 		    memcmp(line + sizeof(pem_end_pattern), marker, marker_length) == 0)
@@ -203,10 +201,7 @@ static int
 }
 
 static int
-    convert_rsa_private_key(struct nettle_buffer*   buffer,
-			    size_t                  length,
-			    const uint8_t*          data,
-			    struct rsa_private_key* rsa_pkey)
+    convert_rsa_private_key(struct nettle_buffer* buffer, size_t length, const uint8_t* data, struct rsa_private_key* rsa_pkey)
 {
 	struct rsa_public_key pub;
 	int                   res;
@@ -312,8 +307,7 @@ static int
 			if (!type)
 				fprintf(stderr, "Ignoring unsupported object type `%s'.\n", marker);
 
-			else if (convert_type(
-				     buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) !=
+			else if (convert_type(buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) !=
 				 1) {
 				fprintf(stderr, "convert_type failed!\n");
 				return 0;

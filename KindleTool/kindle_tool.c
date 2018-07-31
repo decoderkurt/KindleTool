@@ -101,8 +101,7 @@ int
 	size_t        bytes_written;
 
 	while ((bytes_read = fread(
-		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) >
-	       0) {
+		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0) {
 		// Don't munge if we asked for a fake package
 		if (!fake_sign) {
 			md(bytes, bytes_read);
@@ -112,10 +111,7 @@ int
 			fprintf(stderr, "Error munging, cannot write to output: %s.\n", strerror(errno));
 			return -1;
 		} else if (bytes_written < bytes_read) {
-			fprintf(stderr,
-				"Error munging, read %zu bytes but only wrote %zu bytes.\n",
-				bytes_read,
-				bytes_written);
+			fprintf(stderr, "Error munging, read %zu bytes but only wrote %zu bytes.\n", bytes_read, bytes_written);
 			return -1;
 		}
 		length -= bytes_read;
@@ -136,8 +132,7 @@ int
 	size_t        bytes_written;
 
 	while ((bytes_read = fread(
-		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) >
-	       0) {
+		    bytes, sizeof(unsigned char), (length < BUFFER_SIZE && length > 0 ? length : BUFFER_SIZE), input)) > 0) {
 		// Don't demunge if we supplied a fake package
 		if (!fake_sign) {
 			dm(bytes, bytes_read);
@@ -147,10 +142,7 @@ int
 			fprintf(stderr, "Error demunging, cannot write to output: %s.\n", strerror(errno));
 			return -1;
 		} else if (bytes_written < bytes_read) {
-			fprintf(stderr,
-				"Error demunging, read %zu bytes but only wrote %zu bytes.\n",
-				bytes_read,
-				bytes_written);
+			fprintf(stderr, "Error demunging, read %zu bytes but only wrote %zu bytes.\n", bytes_read, bytes_written);
 			return -1;
 		}
 		length -= bytes_read;
@@ -402,11 +394,9 @@ BundleVersion
 		return RecoveryUpdate;
 	else if (!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
 		return RecoveryUpdateV2;
-	else if (!strncmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) ||
-		 !strncmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
+	else if (!strncmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
 		return OTAUpdate;
-	else if (!strncmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) ||
-		 !strncmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) ||
+	else if (!strncmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) || !strncmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) ||
 		 !strncmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH))
 		return OTAUpdateV2;
 	else if (!strncmp(magic_number, "SP01", MAGIC_NUMBER_LENGTH))
@@ -797,8 +787,7 @@ static int
 	}
 	// Handle the Wario (>= PW2) passwords while we're at it... Thanks to npoland for this one ;).
 	// NOTE: Remember to check if this is still sane w/ kindle_model_sort.py when new stuff comes out!
-	if (device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational ||
-	    device >= KindleVoyageWiFi3GJapan) {
+	if (device == KindleVoyageWiFi || device == KindlePaperWhite2WiFi4GBInternational || device >= KindleVoyageWiFi3GJapan) {
 		fprintf(stderr, "Platform is Wario or newer [%s]\n", convert_device_id(device));
 		fprintf(stderr,
 			"Root PW            %s%.*s\nRecovery PW        %s%.*s\n",
@@ -810,14 +799,8 @@ static int
 			&hash[13]);
 	} else {
 		fprintf(stderr, "Platform is pre Wario [%s]\n", convert_device_id(device));
-		fprintf(stderr,
-			"Root PW            %s%.*s\nRecovery PW        %s%.*s\n",
-			"fiona",
-			3,
-			&hash[7],
-			"fiona",
-			4,
-			&hash[7]);
+		fprintf(
+		    stderr, "Root PW            %s%.*s\nRecovery PW        %s%.*s\n", "fiona", 3, &hash[7], "fiona", 4, &hash[7]);
 	}
 	// Default root passwords are DES hashed, so we only care about the first 8 chars. On the other hand,
 	// the recovery MMC export option expects a 9 chars password, so, provide both...
