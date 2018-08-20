@@ -133,8 +133,12 @@ endif
 
 # NOTE: All the KT_ prefixed *FLAGS are stuff that we *always* want set, no matter what the user does.
 # Moar warnings!
-KT_CFLAGS+=-Wall -Wformat=2 -Wformat-signedness -Wformat-truncation=2
+KT_CFLAGS+=-Wall
 KT_CFLAGS+=-Wextra -Wunused
+KT_CFLAGS+=-Wformat=2
+KT_CFLAGS+=-Wformat-signedness
+# NOTE: This doesn't really play nice w/ FORTIFY, leading to an assload of false-positives
+KT_CFLAGS+=-Wno-format-truncation
 KT_CFLAGS+=-Wnull-dereference
 KT_CFLAGS+=-Wuninitialized
 KT_CFLAGS+=-Wduplicated-branches -Wduplicated-cond
