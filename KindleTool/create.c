@@ -661,15 +661,14 @@ static int
 			if ((bundlefile_status & BUNDLE_OPEN) != BUNDLE_OPEN) {
 				pathlen = strlen(INDEX_FILE_NAME);
 				signame = malloc(pathlen + 4 + 1);
-				strncpy(signame, INDEX_FILE_NAME, pathlen + 4 + 1);
-				strcat(signame, ".sig");
+				snprintf(signame, pathlen + 4 + 1, "%s.%s", INDEX_FILE_NAME, "sig");
 			} else {
 				// Always use the tweaked paths
 				// (they're properly set to the real path when we're not in legacy mode)
 				pathlen = strlen(kttar->tweaked_to_sign_and_bundle_list[i]);
 				signame = malloc(pathlen + 4 + 1);
-				strncpy(signame, kttar->tweaked_to_sign_and_bundle_list[i], pathlen + 4 + 1);
-				strcat(signame, ".sig");
+				snprintf(
+				    signame, pathlen + 4 + 1, "%s.%s", kttar->tweaked_to_sign_and_bundle_list[i], "sig");
 			}
 			// Create our sigfile in a tempfile
 			// We have to make sure mkstemp's template is reset first...

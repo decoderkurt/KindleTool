@@ -387,7 +387,7 @@ typedef struct
 
 typedef struct
 {
-	char magic_number[MAGIC_NUMBER_LENGTH];    // __attribute__ ((nonstring));
+	char magic_number[MAGIC_NUMBER_LENGTH] __attribute__((nonstring));
 	union
 	{
 		OTAUpdateHeader        ota_update;
