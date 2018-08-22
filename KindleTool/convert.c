@@ -25,19 +25,19 @@
 static const char*
     convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 {
-	if (!strncmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
+	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
 		return "(Fullbin [signed?])";    // /mnt/us/update-full.bin
-	else if (!strncmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
+	else if (!memcmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
 		return "(Fullbin [OTA?, fwo?])";    // /mnt/us/update-%lld-fwo.bin
-	else if (!strncmp(magic_number, "FB", MAGIC_NUMBER_LENGTH / 2))
+	else if (!memcmp(magic_number, "FB", MAGIC_NUMBER_LENGTH / 2))
 		return "(Fullbin)";
-	else if (!strncmp(magic_number, "FC", MAGIC_NUMBER_LENGTH / 2))
+	else if (!memcmp(magic_number, "FC", MAGIC_NUMBER_LENGTH / 2))
 		return "(OTA [ota])";    // /mnt/us/Update_%lld_%lld.bin
-	else if (!strncmp(magic_number, "FD", MAGIC_NUMBER_LENGTH / 2))
+	else if (!memcmp(magic_number, "FD", MAGIC_NUMBER_LENGTH / 2))
 		return "(Versionless [vls])";    // /mnt/us/Update_VLS_%lld.bin
-	else if (!strncmp(magic_number, "FL", MAGIC_NUMBER_LENGTH / 2))
+	else if (!memcmp(magic_number, "FL", MAGIC_NUMBER_LENGTH / 2))
 		return "(Language [lang])";    // /mnt/us/Update_LANG_%s.bin
-	else if (!strncmp(magic_number, "SP", MAGIC_NUMBER_LENGTH / 2))
+	else if (!memcmp(magic_number, "SP", MAGIC_NUMBER_LENGTH / 2))
 		return "(Signing Envelope)";
 	else if (!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
 		return "(Userdata tarball)";
@@ -808,7 +808,7 @@ int
 				out_name = malloc(len + 1 + (13 - ext_offset));
 				memcpy(out_name, in_name, len - (4 + ext_offset));
 				out_name[len - (4 + ext_offset)] = 0;    // . => \0
-				strncat(out_name, "_converted.tar.gz", 17);
+				strcat(out_name, "_converted.tar.gz");
 				if ((output = fopen(out_name, "wb")) == NULL) {
 					fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
 					fail = true;
@@ -822,7 +822,7 @@ int
 				sig_name = malloc(len + 1 + (1 - ext_offset));
 				memcpy(sig_name, in_name, len - (4 + ext_offset));
 				sig_name[len - (4 + ext_offset)] = 0;    // . => \0
-				strncat(sig_name, ".psig", 5);
+				strcat(sig_name, ".psig");
 				if ((sig_output = fopen(sig_name, "wb")) == NULL) {
 					fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
 					fail = true;
@@ -845,9 +845,9 @@ int
 				unwrapped_name[len - (4 + ext_offset)] = 0;    // . => \0
 				// If input is an userdata package, we can safely assume we'll end up with a tarballl
 				if (ext_offset)
-					strncat(unwrapped_name, "_unwrapped.tgz", 14);
+					strcat(unwrapped_name, "_unwrapped.tgz");
 				else
-					strncat(unwrapped_name, "_unwrapped.bin", 14);
+					strcat(unwrapped_name, "_unwrapped.bin");
 				if ((unwrap_output = fopen(unwrapped_name, "wb")) == NULL) {
 					fprintf(stderr,
 						"Cannot open unwrapped package output '%s' for writing.\n",

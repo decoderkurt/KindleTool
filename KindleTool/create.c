@@ -662,14 +662,14 @@ static int
 				pathlen = strlen(INDEX_FILE_NAME);
 				signame = malloc(pathlen + 4 + 1);
 				strncpy(signame, INDEX_FILE_NAME, pathlen + 4 + 1);
-				strncat(signame, ".sig", 4);
+				strcat(signame, ".sig");
 			} else {
 				// Always use the tweaked paths
 				// (they're properly set to the real path when we're not in legacy mode)
 				pathlen = strlen(kttar->tweaked_to_sign_and_bundle_list[i]);
 				signame = malloc(pathlen + 4 + 1);
 				strncpy(signame, kttar->tweaked_to_sign_and_bundle_list[i], pathlen + 4 + 1);
-				strncat(signame, ".sig", 4);
+				strcat(signame, ".sig");
 			}
 			// Create our sigfile in a tempfile
 			// We have to make sure mkstemp's template is reset first...
@@ -1037,7 +1037,7 @@ static int
 	UpdateHeader header;    // Header to write
 
 	memset(&header, 0, sizeof(UpdateHeader));                                          // Zero init
-	strncpy(header.magic_number, "SP01", MAGIC_NUMBER_LENGTH);                         // Write magic number
+	memcpy(header.magic_number, "SP01", MAGIC_NUMBER_LENGTH);                          // Write magic number
 	header.data.signature.certificate_number = (uint32_t) info->certificate_number;    // 4 byte certificate number
 	if (fwrite(&header, sizeof(unsigned char), MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE, output) <
 	    MAGIC_NUMBER_LENGTH + UPDATE_SIGNATURE_BLOCK_SIZE) {
@@ -1330,27 +1330,27 @@ int
 	}
 	if (strncmp(argv[0], "ota2", 4) == 0) {
 		info.version = OTAUpdateV2;
-		strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+		memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 		real_blocksize = BLOCK_SIZE;
 	} else if (strncmp(argv[0], "ota", 3) == 0) {
 		info.version = OTAUpdate;
-		strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+		memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
 		info.target_revision = UINT32_MAX;
 		real_blocksize       = BLOCK_SIZE;
 	} else if (strncmp(argv[0], "recovery2", 9) == 0) {
 		info.version = RecoveryUpdateV2;
-		strncpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
+		memcpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
 		real_blocksize = RECOVERY_BLOCK_SIZE;
 		// FB03 is at header_rev 0, don't force it to 2
 	} else if (strncmp(argv[0], "recovery", 8) == 0) {
 		info.version = RecoveryUpdate;
-		strncpy(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH);
+		memcpy(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH);
 		info.target_revision = UINT32_MAX;
 		real_blocksize       = RECOVERY_BLOCK_SIZE;
 	} else if (strncmp(argv[0], "sig", 3) == 0) {
 		info.version = UpdateSignature;
 		// For reference only, since we only support converting an existing tarball, we don't really care about that...
-		//strncpy(info.magic_number, "SP01", MAGIC_NUMBER_LENGTH);
+		//memcpy(info.magic_number, "SP01", MAGIC_NUMBER_LENGTH);
 		real_blocksize = BLOCK_SIZE;
 	} else {
 		fprintf(stderr, "'%s' is not a valid update type.\n", argv[0]);
@@ -1363,14 +1363,14 @@ int
 			case 'd':
 				// The aliases handle their memory allocation on their own, in one shot.
 				if (strcasecmp(optarg, "kindle4") == 0) {
-					strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = Kindle4NonTouch;
 					info.devices[info.num_devices++]       = Kindle4NonTouchBlack;
 				} else if (strcasecmp(optarg, "touch") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3 + kt_with_unknown_devcodes;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1381,7 +1381,7 @@ int
 						info.devices[info.num_devices++] = Kindle5TouchUnknown;
 					}
 				} else if (strcasecmp(optarg, "paperwhite") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 6;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1392,7 +1392,7 @@ int
 					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GJapan;
 					info.devices[info.num_devices++]       = KindlePaperWhiteWiFi3GBrazil;
 				} else if (strcasecmp(optarg, "paperwhite2") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1413,14 +1413,14 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite2Unknown_0xF9;
 					}
 				} else if (strcasecmp(optarg, "basic") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindleBasic;
 					info.devices[info.num_devices++]       = KindleBasicKiwi;
 				} else if (strcasecmp(optarg, "voyage") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1433,7 +1433,7 @@ int
 						info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
 					}
 				} else if (strcasecmp(optarg, "paperwhite3") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1454,7 +1454,7 @@ int
 						info.devices[info.num_devices++] = KindlePW3WhiteUnknown_0KG;
 					}
 				} else if (strcasecmp(optarg, "oasis") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1467,7 +1467,7 @@ int
 						info.devices[info.num_devices++] = KindleOasisUnknown_0GS;
 					}
 				} else if (strcasecmp(optarg, "basic2") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 1);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1477,7 +1477,7 @@ int
 						info.devices[info.num_devices++] = KindleBasic2Unknown_0DU;
 					}
 				} else if (strcasecmp(optarg, "oasis2") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 11);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1499,7 +1499,7 @@ int
 						info.devices[info.num_devices++] = KindleOasis2Unknown_0S7;
 					}
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices =
 					    3 + kt_with_unknown_devcodes +           // K5
 					    6 +                                      // PW1
@@ -1608,7 +1608,7 @@ int
 					}
 				} else if (kt_with_unknown_devcodes &&
 					   (strcasecmp(optarg, "unknown") == 0 || strcasecmp(optarg, "datamined") == 0)) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);    // Meh?
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);    // Meh?
 					const unsigned int num_aliased_devices = 7;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1620,14 +1620,14 @@ int
 					info.devices[info.num_devices++]       = ValidKindleUnknown_0x0D;
 					info.devices[info.num_devices++]       = ValidKindleUnknown_0x99;
 				} else if (strcasecmp(optarg, "kindle2") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = Kindle2US;
 					info.devices[info.num_devices++]       = Kindle2International;
 				} else if (strcasecmp(optarg, "kindledx") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1635,7 +1635,7 @@ int
 					info.devices[info.num_devices++]       = KindleDXInternational;
 					info.devices[info.num_devices++]       = KindleDXGraphite;
 				} else if (strcasecmp(optarg, "kindle3") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 3;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1643,7 +1643,7 @@ int
 					info.devices[info.num_devices++]       = Kindle3WiFi3G;
 					info.devices[info.num_devices++]       = Kindle3WiFi3GEurope;
 				} else if (strcasecmp(optarg, "legacy") == 0) {
-					strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2 + 3 + 3;
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1682,210 +1682,210 @@ int
 					// K4
 					else if (strcasecmp(optarg, "k4") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouch;
-						strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k4b") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
-						strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT
 					// NOTE: Magic number switch to 'versionless' update types here...
 					//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
 					else if (strcasecmp(optarg, "k5w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k5g") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k5gb") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k5u") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// PW1
 					else if (strcasecmp(optarg, "pw") == 0 || strcasecmp(optarg, "kpw") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwg") == 0 || strcasecmp(optarg, "kpwg") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwgc") == 0 || strcasecmp(optarg, "kpwgc") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GCanada;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwgb") == 0 || strcasecmp(optarg, "kpwgb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwgj") == 0 || strcasecmp(optarg, "kpwgj") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwgbr") == 0 ||
 						   strcasecmp(optarg, "kpwgbr") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GBrazil;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// PW2
 					else if (strcasecmp(optarg, "pw2") == 0 || strcasecmp(optarg, "kpw2") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2j") == 0 || strcasecmp(optarg, "kpw2j") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFiJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2g") == 0 || strcasecmp(optarg, "kpw2g") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gc") == 0 ||
 						   strcasecmp(optarg, "kpw2gc") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3GCanada;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gb") == 0 ||
 						   strcasecmp(optarg, "kpw2gb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gr") == 0 ||
 						   strcasecmp(optarg, "kpw2gr") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3GRussia;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gj") == 0 ||
 						   strcasecmp(optarg, "kpw2gj") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3GJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2il") == 0 ||
 						   strcasecmp(optarg, "kpw2il") == 0) {
 						info.devices[info.num_devices - 1] =
 						    KindlePaperWhite2WiFi4GBInternational;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gbl") == 0 ||
 						   strcasecmp(optarg, "kpw2gbl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gl") == 0 ||
 						   strcasecmp(optarg, "kpw2gl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GB;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gcl") == 0 ||
 						   strcasecmp(optarg, "kpw2gcl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBCanada;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2gbrl") == 0 ||
 						   strcasecmp(optarg, "kpw2gbrl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBBrazil;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT2
 					else if (strcasecmp(optarg, "kt2") == 0 || strcasecmp(optarg, "bk") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt2a") == 0 || strcasecmp(optarg, "bka") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasicKiwi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KV
 					else if (strcasecmp(optarg, "kv") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvg") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvgb") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvgj") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3GJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvgm") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3GMexico;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// Black PW3
 					else if (strcasecmp(optarg, "pw3") == 0 || strcasecmp(optarg, "kpw3") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3g") == 0 || strcasecmp(optarg, "kpw3g") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3gj") == 0 ||
 						   strcasecmp(optarg, "kpw3gj") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3GJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3gc") == 0 ||
 						   strcasecmp(optarg, "kpw3gc") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3GCanada;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3gb") == 0 ||
 						   strcasecmp(optarg, "kpw3gb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3gm") == 0 ||
 						   strcasecmp(optarg, "kpw3gm") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi3GMexico;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3jl") == 0 ||
 						   strcasecmp(optarg, "kpw3jl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3BlackWiFi32GBJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// White PW3
 					else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wgj") == 0 ||
 						   strcasecmp(optarg, "kpw3wgj") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi3GJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wjl") == 0 ||
 						   strcasecmp(optarg, "kpw3wjl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi32GBJapan;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wgi") == 0 ||
 						   strcasecmp(optarg, "kpw3wgi") == 0) {
 						info.devices[info.num_devices - 1] =
 						    KindlePaperWhite3WhiteWiFi3GInternational;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wgib") == 0 ||
 						   strcasecmp(optarg, "kpw3wgib") == 0) {
 						info.devices[info.num_devices - 1] =
 						    KindlePaperWhite3WhiteWiFi3GInternationalBis;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// Oasis
 					else if (strcasecmp(optarg, "koa") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koag") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3G;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koagb") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koagbi") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GInternational;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koagcn") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GChina;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT3
 					else if (strcasecmp(optarg, "kt3") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt3w") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2White;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// Oasis 2
 					else if (strcasecmp(optarg, "koa2w8") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi8GB;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koa2g32") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi3G32GB;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koa2w32") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi32GB;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koa2g32b") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi3G32GBEurope;
-						strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// N/A
 					else if (strcasecmp(optarg, "none") == 0) {
@@ -1938,12 +1938,12 @@ int
 							info.devices[info.num_devices - 1] = dev_code;
 							// Roughly guess a decent magic number...
 							if (dev_code < Kindle4NonTouch) {
-								strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+								memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
 							} else if (dev_code == Kindle4NonTouch ||
 								   dev_code == Kindle4NonTouchBlack) {
-								strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+								memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 							} else {
-								strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+								memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 							}
 						}
 					} else {
@@ -1988,12 +1988,12 @@ int
 						info.devices[info.num_devices - 1] = dev_code;
 						// Roughly guess a decent magic number...
 						if (dev_code < Kindle4NonTouch) {
-							strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+							memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
 						} else if (dev_code == Kindle4NonTouch ||
 							   dev_code == Kindle4NonTouchBlack) {
-							strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+							memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 						} else {
-							strncpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+							memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 						}
 					}
 				}
@@ -2222,7 +2222,7 @@ int
 				goto do_error;
 			}
 			// We of course need the versioned ota bundle type...
-			strncpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
+			memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 			// But also a source & target version!
 			if (!enforce_source_rev) {
 				info.source_revision = 2443670049;    // FW 5.5.0
@@ -2263,10 +2263,10 @@ int
 		if (info.version == OTAUpdate) {
 			// OTA V1 only supports one device, we don't need to loop (fix anything newer than a K3GB)
 			if (info.devices[0] > Kindle3WiFi3GEurope &&
-			    (strncmp(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH) != 0 &&
-			     strncmp(info.magic_number, "FD03", MAGIC_NUMBER_LENGTH) != 0)) {
+			    (memcmp(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH) != 0 &&
+			     memcmp(info.magic_number, "FD03", MAGIC_NUMBER_LENGTH) != 0)) {
 				// FC04 is hardcoded when we set K4 as a device, and FD04 when we ask for a K5 and up, so fix it silently.
-				strncpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+				memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
 			}
 		}
 		// Same thing with recovery updates
@@ -2274,9 +2274,9 @@ int
 			// It's called FB02.2 for a reason...
 			// Plus, we can have a null/none device with it, so we avoid the same blowup as the RecoveryV2 check ;).
 			if ((info.header_rev == 2 || info.devices[0] > Kindle3WiFi3GEurope) &&
-			    (strncmp(info.magic_number, "FB01", MAGIC_NUMBER_LENGTH) != 0 &&
-			     strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) != 0)) {
-				strncpy(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH);
+			    (memcmp(info.magic_number, "FB01", MAGIC_NUMBER_LENGTH) != 0 &&
+			     memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) != 0)) {
+				memcpy(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH);
 			}
 		}
 		// Same thing with recovery updates v2
@@ -2284,10 +2284,10 @@ int
 			// Make sure we have a sane magic number...
 			// We either don't yet have one set when not specifying any device,
 			// or what's set corresponds to OTA update types when specifying anything since the K4...
-			if (strncmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0) {
+			if (memcmp(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH) != 0) {
 				// NOTE: This effectively prevents us from setting a custom magic number.
 				//       Which is not really something you'd want to do in this case anyway...
-				strncpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
+				memcpy(info.magic_number, "FB03", MAGIC_NUMBER_LENGTH);
 			}
 		}
 		// We need a platform id, board id (& header rev?) for recovery2
@@ -2308,14 +2308,14 @@ int
 		}
 		// We need a platform id & board id for recovery FB02 V2
 		if (info.version == RecoveryUpdate) {
-			if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
+			if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
 			    strcmp(convert_platform_id(info.platform), "Unknown") == 0) {
 				fprintf(stderr,
 					"You need to set a platform for this update type (%s).\n",
 					convert_bundle_version(info.version));
 				goto do_error;
 			}
-			if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
+			if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
 			    strcmp(convert_board_id(info.board), "Unknown") == 0) {
 				fprintf(stderr,
 					"You need to set a board for this update type (%s).\n",
@@ -2325,7 +2325,7 @@ int
 		}
 		// Right now, we don't use device at all for FB02.2, so reset it to none to have a consistent recap... FIXME?
 		if (info.version == RecoveryUpdate) {
-			if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
+			if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2 &&
 			    info.num_devices > 0) {
 				info.num_devices               = 0;
 				info.devices[info.num_devices] = KindleUnknown;
@@ -2556,7 +2556,7 @@ int
 					info.minor,
 					info.magic_1,
 					info.magic_2);
-				if (strncmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
+				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
 					fprintf(stderr,
 						", Header Rev: %u, Platform: %s, Board: %s.\n",
 						info.header_rev,

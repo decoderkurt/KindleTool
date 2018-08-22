@@ -27,7 +27,11 @@
 
 typedef struct
 {
-	char                   magic_number[MAGIC_NUMBER_LENGTH];
+	// NOTE: We resort to a nonstring (and non-portable, heh!) attribute because it's true, this isn't NULL terminated,
+	//       so this easily shuts up the many, many, GCC 8 strncpy warnings...
+	//       This is helpful in the few cases where we do want to keep using strncpy instead of memcpy,
+	//       because of its NULL-padding assurance.
+	char                   magic_number[MAGIC_NUMBER_LENGTH];    // __attribute__ ((nonstring));
 	BundleVersion          version;
 	struct rsa_private_key sign_pkey;
 	uint64_t               source_revision;
