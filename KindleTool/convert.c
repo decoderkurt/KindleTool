@@ -806,9 +806,12 @@ int
 			if (!info_only && !unwrap_only && output != stdout) {
 				len      = strlen(in_name);
 				out_name = malloc(len + 1 + (13 - ext_offset));
-				memcpy(out_name, in_name, len - (4 + ext_offset));
-				out_name[len - (4 + ext_offset)] = 0;    // . => \0
-				strcat(out_name, "_converted.tar.gz");
+				snprintf(out_name,
+					 len + 1 + (13 - ext_offset),
+					 "%.*s_%s",
+					 (int) (len - (4 + ext_offset)),
+					 in_name,
+					 "converted.tar.gz");
 				if ((output = fopen(out_name, "wb")) == NULL) {
 					fprintf(stderr, "Cannot open output '%s' for writing.\n", out_name);
 					fail = true;
@@ -820,9 +823,12 @@ int
 			if (extract_sig) {
 				len      = strlen(in_name);
 				sig_name = malloc(len + 1 + (1 - ext_offset));
-				memcpy(sig_name, in_name, len - (4 + ext_offset));
-				sig_name[len - (4 + ext_offset)] = 0;    // . => \0
-				strcat(sig_name, ".psig");
+				snprintf(sig_name,
+					 len + 1 + (1 - ext_offset),
+					 "%.*s.%s",
+					 (int) (len - (4 + ext_offset)),
+					 in_name,
+					 "psig");
 				if ((sig_output = fopen(sig_name, "wb")) == NULL) {
 					fprintf(stderr, "Cannot open signature output '%s' for writing.\n", sig_name);
 					fail = true;
@@ -841,13 +847,22 @@ int
 			if (unwrap_only) {
 				len            = strlen(in_name);
 				unwrapped_name = malloc(len + 1 + (10 - ext_offset));
-				memcpy(unwrapped_name, in_name, len - (4 + ext_offset));
-				unwrapped_name[len - (4 + ext_offset)] = 0;    // . => \0
 				// If input is an userdata package, we can safely assume we'll end up with a tarballl
-				if (ext_offset)
-					strcat(unwrapped_name, "_unwrapped.tgz");
-				else
-					strcat(unwrapped_name, "_unwrapped.bin");
+				if (ext_offset) {
+					snprintf(unwrapped_name,
+						 len + 1 + (10 - ext_offset),
+						 "%.*s_%s",
+						 (int) (len - (4 + ext_offset)),
+						 in_name,
+						 "unwrapped.tgz");
+				} else {
+					snprintf(unwrapped_name,
+						 len + 1 + (10 - ext_offset),
+						 "%.*s_%s",
+						 (int) (len - (4 + ext_offset)),
+						 in_name,
+						 "unwrapped.bin");
+				}
 				if ((unwrap_output = fopen(unwrapped_name, "wb")) == NULL) {
 					fprintf(stderr,
 						"Cannot open unwrapped package output '%s' for writing.\n",
