@@ -375,6 +375,8 @@ const char*
 			return "Heisenberg";
 		case Zelda:
 			return "Zelda";
+		case Rex:
+			return "Rex";
 		default:
 			return "Unknown";
 	}
