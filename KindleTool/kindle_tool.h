@@ -308,11 +308,11 @@ typedef enum
 				     // Other potentially relevant (OTA|Recovery)v2 ready boards:
 				     /*
 	Sauza             = 0xFF     // Black Kindle 4
-	Celeste           = 0xFF     // PW
+	Celeste           = 0xFF     // Kindle PW
 	Icewine           = 0xFF     // Kindle Voyage (also a dev/proto on the Yoshime3 platform)
-	Pinot             = 0xFF     // PW2
+	Pinot             = 0xFF     // Kindle PW2
 	Bourbon           = 0xFF     // Kindle Basic
-	Muscat            = 0xFF     // PW3
+	Muscat            = 0xFF     // Kindle PW3
 	Whisky            = 0xFF     // Kindle Oasis
 	Woody             = 0xFF     // ?? (in the Basic line? (no 3G))
 	Eanab             = 0xFF     // Kindle Basic 2

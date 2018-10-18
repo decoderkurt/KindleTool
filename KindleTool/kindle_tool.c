@@ -587,6 +587,7 @@ static int
 	    "      -p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).\n"
 	    "      -p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).\n"
 	    "      -p, --platform zelda        Zelda (mostly devices shipped on FW >= 5.9).\n"
+	    "      -p, --platform rex          Rex (mostly devices shipped on FW >= 5.10).\n"
 	    "      \n"
 	    "    Boards:\n"
 	    "      Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.\n"

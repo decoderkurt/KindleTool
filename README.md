@@ -145,6 +145,7 @@
 		-p, --platform duet         Duet (mostly devices shipped on FW >= 5.7).
 		-p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).
 		-p, --platform zelda        Zelda (mostly devices shipped on FW >= 5.9).
+		-p, --platform rex          Rex (mostly devices shipped on FW >= 5.10).
 
 	Boards:
 		Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.
