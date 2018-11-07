@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 from operator import itemgetter
 
@@ -131,29 +131,29 @@ for i, v in enumerate(model_tuples):
 		wario_cutoff_id = v[1]
 
 
-print 'Kindle models sorted by device code\n'
+print('Kindle models sorted by device code\n')
 for t in sorted(model_tuples, key=itemgetter(1)):
 	# Handle the base32hex device IDs in a dedicated manner...
 	if t[1] > 0xFF:
-		print "{:<45} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else '')
+		print("{:<45} {:04X} (0{:<2}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else ''))
 	else:
-		print "{:<45} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else '')
+		print("{:<45} {:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else ''))
 
-print '\nKindle models >= KindleVoyageWiFi3GJapan (i.e., Platform >= Wario)\n'
+print('\nKindle models >= KindleVoyageWiFi3GJapan (i.e., Platform >= Wario)\n')
 for t in model_tuples:
 	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
-			print "{:<45} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32))
+			print("{:<45} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32)))
 		else:
-			print "{:<45} {:02X}".format(t[0], t[1])
+			print("{:<45} {:02X}".format(t[0], t[1]))
 """
 	# That's to double-check that everything's sane for KindleTool's info command...
 	else:
-		print "!!{:<44}!!".format(t[0])
+		print("!!{:<44}!!".format(t[0]))
 """
 
-print '\nKindle models with new device code decoding (i.e., >= PW3)\n'
+print('\nKindle models with new device code decoding (i.e., >= PW3)\n')
 for t in model_tuples:
 	if t[1] >= wario_cutoff_id:
 		if t[1] > 0xFF:
-			print "{:<45} {:04X} (0{:<2} <-> {:04X})".format(t[0], t[1], baseN(t[1], 32), devCode(baseN(t[1], 32)))
+			print("{:<45} {:04X} (0{:<2} <-> {:04X})".format(t[0], t[1], baseN(t[1], 32), devCode(baseN(t[1], 32))))
