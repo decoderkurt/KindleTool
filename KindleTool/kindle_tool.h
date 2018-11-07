@@ -281,7 +281,8 @@ typedef enum
 	KindleOasis2Unknown_0S4      = 0x344,    // 0S4?
 	KindleOasis2Unknown_0S7      = 0x347,    // 0S7?
 	KindleOasis2WiFi32GB         = 0x34A,    // 0SA
-	KindleUnknown                = 0x00
+	// Kindle PaperWhite 4, released November 7 2018 on FW 5.10.0.1/5.10.0.2
+	KindleUnknown = 0x00
 } Device;
 
 typedef enum
