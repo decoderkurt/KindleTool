@@ -282,7 +282,20 @@ typedef enum
 	KindleOasis2Unknown_0S7      = 0x347,    // 0S7?
 	KindleOasis2WiFi32GB         = 0x34A,    // 0SA
 	// Kindle PaperWhite 4, released November 7 2018 on FW 5.10.0.1/5.10.0.2
-	KindleUnknown = 0x00
+	KindlePaperWhite4WiFi8GB     = 0x2F7,    // 0PP
+	KindlePaperWhite4Unknown_0T1 = 0x361,    // 0T1?
+	KindlePaperWhite4Unknown_0T2 = 0x362,    // 0T2?
+	KindlePaperWhite4Unknown_0T3 = 0x363,    // 0T3?
+	KindlePaperWhite4Unknown_0T4 = 0x364,    // 0T4?
+	KindlePaperWhite4Unknown_0T5 = 0x365,    // 0T5?
+	KindlePaperWhite4WiFi32GB    = 0x366,    // 0T6
+	KindlePaperWhite4Unknown_0T7 = 0x367,    // 0T7?
+	KindlePaperWhite4Unknown_0TJ = 0x372,    // 0TJ?
+	KindlePaperWhite4Unknown_0TK = 0x373,    // 0TK?
+	KindlePaperWhite4Unknown_0TL = 0x374,    // 0TL?
+	KindlePaperWhite4Unknown_0TM = 0x375,    // 0TM?
+	KindlePaperWhite4Unknown_0TN = 0x376,    // 0TN?
+	KindleUnknown                = 0x00
 } Device;
 
 typedef enum
@@ -298,7 +311,7 @@ typedef enum
 	Duet             = 0x08,    // Kindle Oasis
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
 	Zelda            = 0x0A,    // Kindle Oasis 2
-	Rex              = 0x0B     // Kindle PW4 (actual value TBD!)
+	Rex              = 0x0B     // Kindle PW4
 } Platform;
 
 typedef enum

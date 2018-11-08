@@ -343,6 +343,32 @@ const char*
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0S7)";
 		case KindleOasis2WiFi32GB:
 			return "Kindle Oasis 2 (2017) WiFi (32GB)";
+		case KindlePaperWhite4WiFi8GB:
+			return "Kindle PaperWhite 4 (2018) WiFi (8GB)";
+		case KindlePaperWhite4Unknown_0T1:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T1)";
+		case KindlePaperWhite4Unknown_0T2:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T2)";
+		case KindlePaperWhite4Unknown_0T3:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T3)";
+		case KindlePaperWhite4Unknown_0T4:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T4)";
+		case KindlePaperWhite4Unknown_0T5:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T5)";
+		case KindlePaperWhite4WiFi32GB:
+			return "Kindle PaperWhite 4 (2018) WiFi (32GB)";
+		case KindlePaperWhite4Unknown_0T7:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0T7)";
+		case KindlePaperWhite4Unknown_0TJ:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TJ)";
+		case KindlePaperWhite4Unknown_0TK:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TK)";
+		case KindlePaperWhite4Unknown_0TL:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TL)";
+		case KindlePaperWhite4Unknown_0TM:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TM)";
+		case KindlePaperWhite4Unknown_0TN:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TN)";
 		case KindleUnknown:
 		default:
 			return "Unknown";
@@ -555,6 +581,8 @@ static int
 	    "      -d, --device koa2g32        Kindle Oasis 2 (2017) WiFi+3G (32GB)\n"
 	    "      -d, --device koa2w32        Kindle Oasis 2 (2017) WiFi (32GB)\n"
 	    "      -d, --device koa2g32b       Kindle Oasis 2 (2017) WiFi+3G (32GB) Europe\n"
+	    "      -d, --device pw4            Kindle PaperWhite 4 (2018) WiFi (8GB)\n"
+	    "      -d, --device pw4l           Kindle PaperWhite 4 (2018) WiFi (32GB)\n"
 	    "      -d, --device kindle2        Alias for k2 & k2i\n"
 	    "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
 	    "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -569,7 +597,8 @@ static int
 	    "      -d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn\n"
 	    "      -d, --device basic2         Alias for kt3 & kt3w\n"
 	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b\n"
-	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2 & oasis2\n"
+	    "      -d, --device paperwhite4    Alias for pw4 & pw4l\n"
+	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2 & paperwhite4\n"
 	    "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
 	    "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
 	    "      \n"
