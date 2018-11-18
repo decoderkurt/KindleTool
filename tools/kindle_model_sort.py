@@ -122,18 +122,18 @@ model_tuples = [
 	('KindleOasis2Unknown_0S7', 0x347),				# 0S7?
 	('KindleOasis2WiFi32GB', 0x34A),				# 0SA
 	('KindlePaperWhite4WiFi8GB', 0x2F7),				# 0PP
-	('KindlePaperWhite4Unknown_0T1', 0x361),				# 0T1?
-	('KindlePaperWhite4Unknown_0T2', 0x362),				# 0T2?
-	('KindlePaperWhite4Unknown_0T3', 0x363),				# 0T3?
-	('KindlePaperWhite4Unknown_0T4', 0x364),				# 0T4?
-	('KindlePaperWhite4Unknown_0T5', 0x365),				# 0T5?
+	('KindlePaperWhite4WiFi4G32GB', 0x361),				# 0T1
+	('KindlePaperWhite4WiFi4G32GBEurope', 0x362),			# 0T2
+	('KindlePaperWhite4Unknown_0T3', 0x363),			# 0T3?
+	('KindlePaperWhite4Unknown_0T4', 0x364),			# 0T4?
+	('KindlePaperWhite4Unknown_0T5', 0x365),			# 0T5?
 	('KindlePaperWhite4WiFi32GB', 0x366),				# 0T6
-	('KindlePaperWhite4Unknown_0T7', 0x367),				# 0T7?
-	('KindlePaperWhite4Unknown_0TJ', 0x372),				# 0TJ?
-	('KindlePaperWhite4Unknown_0TK', 0x373),				# 0TK?
-	('KindlePaperWhite4Unknown_0TL', 0x374),				# 0TL?
-	('KindlePaperWhite4Unknown_0TM', 0x375),				# 0TM?
-	('KindlePaperWhite4Unknown_0TN', 0x376),				# 0TN?
+	('KindlePaperWhite4Unknown_0T7', 0x367),			# 0T7?
+	('KindlePaperWhite4Unknown_0TJ', 0x372),			# 0TJ?
+	('KindlePaperWhite4Unknown_0TK', 0x373),			# 0TK?
+	('KindlePaperWhite4Unknown_0TL', 0x374),			# 0TL?
+	('KindlePaperWhite4Unknown_0TM', 0x375),			# 0TM?
+	('KindlePaperWhite4Unknown_0TN', 0x376),			# 0TN?
 	('KindleUnknown', 0x00)
 ]
 
