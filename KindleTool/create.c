@@ -1120,9 +1120,12 @@ static int
 	// Handle FB02 with a V2 Header Rev. Different length, but still fixed...
 	if (info->header_rev == 2) {
 		// NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
-		header.data.recovery_h2_update.platform   = (uint32_t) info->platform;
-		header.data.recovery_h2_update.header_rev = (uint32_t) info->header_rev;
-		header.data.recovery_h2_update.board      = (uint32_t) info->board;
+		// NOTE: Target OTA is optional, appeared (and is mandatory there) on Rex
+		//       (where those are also wrapped in a signature envelope!)
+		header.data.recovery_h2_update.target_revision = (uint32_t) info->target_revision;
+		header.data.recovery_h2_update.platform        = (uint32_t) info->platform;
+		header.data.recovery_h2_update.header_rev      = (uint32_t) info->header_rev;
+		header.data.recovery_h2_update.board           = (uint32_t) info->board;
 	} else {
 		// Assume what we did before was okay, and put a device id in there...
 		header.data.recovery_update.device = (uint32_t) info->devices[0];    // Device
@@ -2614,11 +2617,20 @@ int
 					info.magic_1,
 					info.magic_2);
 				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
-					fprintf(stderr,
-						", Header Rev: %u, Platform: %s, Board: %s.\n",
-						info.header_rev,
-						convert_platform_id(info.platform),
-						convert_board_id(info.board));
+					if (info.target_revision == UINT32_MAX) {
+						fprintf(stderr,
+							", Header Rev: %u, Target OTA: MAX, Platform: %s, Board: %s.\n",
+							info.header_rev,
+							convert_platform_id(info.platform),
+							convert_board_id(info.board));
+					} else {
+						fprintf(stderr,
+							", Header Rev: %u, Target OTA: %llu, Platform: %s, Board: %s.\n",
+							info.header_rev,
+							(long long unsigned int) info.target_revision,
+							convert_platform_id(info.platform),
+							convert_board_id(info.board));
+					}
 				else
 					fprintf(stderr, ".\n");
 				break;
