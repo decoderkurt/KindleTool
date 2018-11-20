@@ -860,8 +860,45 @@ static int
 			return kindle_create_ota_update(info, input_tgz, output, fake_sign);
 			break;
 		case RecoveryUpdate:
-			// NOTE: I'm gonna assume that this, even FB02 @ rev. 2, shouldn't be wrapped in an UpdateSignature...
-			return kindle_create_recovery(info, input_tgz, output, fake_sign);
+			// NOTE: I was assuming that this, even FB02 @ rev. 2, shouldn't be wrapped in an UpdateSignature...
+			//       That happen to be the case until Rex, where the target ota field also appeared...
+			//       Wrap it by default, you can always unwrap it later if need be...
+			if (memcmp(info->magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info->header_rev == 2) {
+				if ((temp = tmpfile()) == NULL) {
+					fprintf(stderr, "Error opening temp file: %s.\n", strerror(errno));
+					return -1;
+				}
+				if (kindle_create_recovery(info, input_tgz, temp, fake_sign) < 0) {
+					fprintf(stderr, "Error creating update package.\n");
+					fclose(temp);
+					return -1;
+				}
+				rewind(temp);
+				if (!fake_sign) {
+					if (kindle_create_signature(info, temp, output) < 0) {
+						fprintf(stderr, "Error signing update package.\n");
+						fclose(temp);
+						return -1;
+					}
+					rewind(temp);
+				}
+				while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, temp)) > 0) {
+					if (fwrite(buffer, sizeof(unsigned char), count, output) < count) {
+						fprintf(stderr, "Error writing update to output: %s.\n", strerror(errno));
+						fclose(temp);
+						return -1;
+					}
+				}
+				if (ferror(temp) != 0) {
+					fprintf(stderr, "Error reading generated update: %s.\n", strerror(errno));
+					fclose(temp);
+					return -1;
+				}
+				fclose(temp);
+				return 0;
+			} else {
+				return kindle_create_recovery(info, input_tgz, output, fake_sign);
+			}
 			break;
 		case RecoveryUpdateV2:
 			if ((temp = tmpfile()) == NULL) {
