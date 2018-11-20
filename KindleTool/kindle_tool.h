@@ -392,7 +392,9 @@ typedef struct
 
 typedef struct
 {
-	unsigned char unused[12];
+	unsigned char unknown[4];
+	uint32_t      target_revision;
+	unsigned char unused[4];
 	char          md5_sum[MD5_HASH_LENGTH];
 	uint32_t      magic_1;
 	uint32_t      magic_2;
