@@ -91,19 +91,19 @@ model_tuples = [
 	('KindlePaperWhite3WiFi3GJapan', 0x207, 'A3MTNJ7FDYZOPO'),	# 0G7
 	('KindlePaperWhite3WhiteWiFi', 0x26B),				# 0KB
 	('KindlePaperWhite3WhiteWiFi3GJapan', 0x26C),			# 0KC
-	('KindlePW3WhiteUnknown_0KD', 0x26D),
+	('KindlePW3WhiteUnknown_0KD', 0x26D),				# 0KD?
 	('KindlePaperWhite3WhiteWiFi3GInternational', 0x26E),		# 0KE
 	('KindlePaperWhite3WhiteWiFi3GInternationalBis', 0x26F),	# 0KF
-	('KindlePW3WhiteUnknown_0KG', 0x270),
-	('KindlePaperWhite3WiFi32GBJapanBlack', 0x293),		# 0LK
-	('KindlePaperWhite3WiFi32GBJapanWhite', 0x294),		# 0LL
+	('KindlePW3WhiteUnknown_0KG', 0x270),				# 0KG?
+	('KindlePaperWhite3WiFi32GBJapanBlack', 0x293),			# 0LK
+	('KindlePaperWhite3WiFi32GBJapanWhite', 0x294),			# 0LL
 	('KindleOasisWiFi', 0x20C),					# 0GC
 	('KindleOasisWiFi3G', 0x20D),					# 0GD
-	('KindleOasisWiFi3GInternational', 0x219),	# 0GR
-	('KindleOasisUnknown_0GS', 0x21A),
+	('KindleOasisWiFi3GInternational', 0x219),			# 0GR
+	('KindleOasisUnknown_0GS', 0x21A),				# 0GS?
 	('KindleOasisWiFi3GChina', 0x21B),				# 0GT
 	('KindleOasisWiFi3GEurope', 0x21C),				# 0GU
-	('KindleBasic2Unknown_0DU', 0x1BC),
+	('KindleBasic2Unknown_0DU', 0x1BC),				# 0DU?
 	('KindleBasic2', 0x269),					# 0K9
 	('KindleBasic2White', 0x26A),					# 0KA
 	('KindleOasis2Unknown_0LM', 0x295),				# 0LM?
