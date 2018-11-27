@@ -2574,7 +2574,7 @@ int
 			"Building userdata package '%s' directly from '%s' (signed with cert %u).\n",
 			output_filename,
 			tarball_filename,
-			info.certificate_number);
+			(uint32_t) info.certificate_number);
 	} else {
 		fprintf(stderr,
 			"Building %s%s%s (%.*s) update package '%s'%s%s%s%s for",
@@ -2610,7 +2610,7 @@ int
 					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %u & %hu Metadata strings%s",
 					    (long long unsigned int) info.source_revision,
 					    info.critical,
-					    info.certificate_number,
+					    (uint32_t) info.certificate_number,
 					    info.num_meta,
 					    (info.num_meta ? " (" : ".\n"));
 				else
@@ -2620,7 +2620,7 @@ int
 					    (long long unsigned int) info.source_revision,
 					    (long long unsigned int) info.target_revision,
 					    info.critical,
-					    info.certificate_number,
+					    (uint32_t) info.certificate_number,
 					    info.num_meta,
 					    (info.num_meta ? " (" : ".\n"));
 				// Loop over meta
@@ -2685,7 +2685,7 @@ int
 				    info.magic_1,
 				    info.magic_2,
 				    info.header_rev,
-				    info.certificate_number,
+				    (uint32_t) info.certificate_number,
 				    convert_platform_id(info.platform),
 				    convert_board_id(info.board));
 				break;
