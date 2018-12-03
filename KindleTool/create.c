@@ -2329,6 +2329,8 @@ int
 			}
 			// NOTE: Don't expect those to be entirely consistent when crossing devices
 			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
+			// NOTE: The VoiceView packages have a slightly higher Target OTA flag, f.g.,
+			//       while FW 5.10.1.2 is at 3360340004, the PW4 VoiceView packages targets 3372830002...
 		}
 		// Musn't be *only* a sig envelope...
 		if (info.version == UpdateSignature) {
