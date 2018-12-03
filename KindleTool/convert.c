@@ -151,7 +151,7 @@ static int
 			(unsigned) (unsigned char) header.magic_number[3],
 			MAGIC_NUMBER_LENGTH,
 			header.magic_number);
-	} else
+	} else {
 		fprintf(stderr,
 			"Bundle         %.*s %s\n",
 			MAGIC_NUMBER_LENGTH,
@@ -159,6 +159,7 @@ static int
 			     ? "GZIP"
 			     : get_bundle_version(header.magic_number) == AndroidUpdate ? "ZIP" : header.magic_number),
 			convert_magic_number(header.magic_number));
+	}
 	bundle_version = get_bundle_version(header.magic_number);
 	switch (bundle_version) {
 		case OTAUpdateV2:
