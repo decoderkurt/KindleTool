@@ -244,9 +244,10 @@ static int
 			return 0;
 			break;
 		case AndroidUpdate:
-			fprintf(stderr, "Nothing more to do!\n");
-			// Usually, nothing more to do... On extract, archive_read_open_file will gracefully fail
-			// with an unrecognized format error, which tracks, given that we only support tarball + gzip ;).
+			fprintf(stderr, "Nothing to do!\n");
+			// We can't really do anything about it...
+			// On extract, archive_read_open_file will gracefully fail with an unrecognized format error,
+			// which tracks, given that we only support tarball + gzip ;).
 			return -1;
 			break;
 		case UnknownUpdate:
