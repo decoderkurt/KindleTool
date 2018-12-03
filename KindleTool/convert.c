@@ -160,6 +160,10 @@ static int
 			     : get_bundle_version(header.magic_number) == AndroidUpdate ? "ZIP" : header.magic_number),
 			convert_magic_number(header.magic_number));
 	}
+	// NOTE: Remember if the package was wrapped in a signature... Since this is re-entrant, make it static.
+	//       (This is mainly used for cosmetic reasons with RecoveryV1H2 on Rex+).
+	static bool is_wrapped = false;
+
 	bundle_version = get_bundle_version(header.magic_number);
 	switch (bundle_version) {
 		case OTAUpdateV2:
@@ -177,6 +181,8 @@ static int
 				fprintf(stderr, "Cannot extract signature file!\n");
 				return -1;
 			}
+			// It's a wrap! :D
+			is_wrapped = true;
 			// If we asked to simply unwrap the package, just write our unwrapped package ;).
 			if (unwrap_only) {
 				while ((count = fread(buffer, sizeof(unsigned char), BUFFER_SIZE, input)) > 0) {
@@ -208,7 +214,7 @@ static int
 				return 0;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery");
-				return kindle_convert_recovery(&header, input, output, fake_sign, header_md5);
+				return kindle_convert_recovery(&header, input, output, fake_sign, header_md5, is_wrapped);
 			}
 			break;
 		case RecoveryUpdateV2:
@@ -505,7 +511,12 @@ static int
 }
 
 static int
-    kindle_convert_recovery(UpdateHeader* header, FILE* input, FILE* output, const bool fake_sign, char* header_md5)
+    kindle_convert_recovery(UpdateHeader* header,
+			    FILE*         input,
+			    FILE*         output,
+			    const bool    fake_sign,
+			    char*         header_md5,
+			    const bool    was_wrapped)
 {
 	if (fread(header->data.recovery_header_data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input) <
 	    RECOVERY_UPDATE_BLOCK_SIZE) {
@@ -524,7 +535,10 @@ static int
 		fprintf(stderr, "Header Rev     %u\n", header->data.recovery_h2_update.header_rev);
 		// NOTE: On newer platforms (Rex, possibly Zelda), it appears that a target revision field is set & honored,
 		//       at the exact same spot as in RecoveryV2 updates, except stored as an uint32_t...
-		fprintf(stderr, "Target OTA?    %u\n", header->data.recovery_h2_update.target_revision);
+		fprintf(stderr,
+			"Target OTA%s    %u\n",
+			was_wrapped ? " " : "?",
+			header->data.recovery_h2_update.target_revision);
 		// Slightly ugly way to detect unknown platforms...
 		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
