@@ -169,7 +169,7 @@ static int
 		case OTAUpdateV2:
 			if (unwrap_only) {
 				fprintf(stderr, "Nothing to unwrap!\n");
-				return 0;
+				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
 				// No absolute size, so no struct to pass
@@ -202,7 +202,7 @@ static int
 		case OTAUpdate:
 			if (unwrap_only) {
 				fprintf(stderr, "Nothing to unwrap!\n");
-				return 0;
+				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
 				return kindle_convert_ota_update(&header, input, output, fake_sign, header_md5);
@@ -211,7 +211,7 @@ static int
 		case RecoveryUpdate:
 			if (unwrap_only) {
 				fprintf(stderr, "Nothing to unwrap!\n");
-				return 0;
+				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery");
 				return kindle_convert_recovery(&header, input, output, fake_sign, header_md5, is_wrapped);
@@ -220,7 +220,7 @@ static int
 		case RecoveryUpdateV2:
 			if (unwrap_only) {
 				fprintf(stderr, "Nothing to unwrap!\n");
-				return 0;
+				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
 				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5);
@@ -247,7 +247,7 @@ static int
 			fprintf(stderr, "Nothing more to do!\n");
 			// Usually, nothing more to do... On extract, archive_read_open_file will gracefully fail
 			// with an unrecognized format error, which tracks, given that we only support tarball + gzip ;).
-			return 0;
+			return -1;
 			break;
 		case UnknownUpdate:
 		default:
@@ -964,7 +964,7 @@ int
 					unlink(out_name);    // Clean up our mess, if we made one
 				fail = true;
 			}
-			// If output was some file, and we didn't ask to keep it, and we didn't fail to convert it,
+			// If we were outputting to a file, we didn't ask to keep the original, and we didn't fail to convert it,
 			// delete the original
 			if (output != stdout && !info_only && !keep_ori && !fail) {
 				unlink(in_name);
