@@ -535,9 +535,9 @@ static int
 		fprintf(stderr, "Header Rev     %u\n", header->data.recovery_h2_update.header_rev);
 		// NOTE: On newer platforms (Rex, possibly Zelda), it appears that a target revision field is set & honored,
 		//       at the exact same spot as in RecoveryV2 updates, except stored as an uint32_t...
-		//       It's also always wrapped in a signature envelope on Rex+,
-		//       so we use that as a hint to decide if the field is genuine/mandatory or not,
-		//       only showing a question mark when we're unsure...
+		//       This behavior has also been retro-fitted to earlier platforms on the later end of FW >= 5.9.x.
+		//       When the field is mandatory, the package happens to always be wrapped in a signature envelope,
+		//       so we use that as a hint, only showing a question mark when we're unsure...
 		fprintf(stderr,
 			"Target OTA%s    %u\n",
 			was_wrapped ? " " : "?",
