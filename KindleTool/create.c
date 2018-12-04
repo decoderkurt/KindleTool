@@ -1751,36 +1751,41 @@ int
 					// K1
 					if (strcasecmp(optarg, "k1") == 0) {
 						info.devices[info.num_devices - 1] = Kindle1;
-						// K2
-					} else if (strcasecmp(optarg, "k2") == 0) {
+					}
+					// K2
+					else if (strcasecmp(optarg, "k2") == 0) {
 						info.devices[info.num_devices - 1] = Kindle2US;
 					} else if (strcasecmp(optarg, "k2i") == 0) {
 						info.devices[info.num_devices - 1] = Kindle2International;
-						// DX
-					} else if (strcasecmp(optarg, "dx") == 0) {
+					}
+					// DX
+					else if (strcasecmp(optarg, "dx") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXUS;
 					} else if (strcasecmp(optarg, "dxi") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXInternational;
 					} else if (strcasecmp(optarg, "dxg") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXGraphite;
-						// K3
-					} else if (strcasecmp(optarg, "k3w") == 0) {
+					}
+					// K3
+					else if (strcasecmp(optarg, "k3w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi;
 					} else if (strcasecmp(optarg, "k3g") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi3G;
 					} else if (strcasecmp(optarg, "k3gb") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi3GEurope;
-						// K4
-					} else if (strcasecmp(optarg, "k4") == 0) {
+					}
+					// K4
+					else if (strcasecmp(optarg, "k4") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouch;
 						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k4b") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
 						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
-						// KT
-						// NOTE: Magic number switch to 'versionless' update types here...
-						//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
-					} else if (strcasecmp(optarg, "k5w") == 0) {
+					}
+					// KT
+					// NOTE: Magic number switch to 'versionless' update types here...
+					//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
+					else if (strcasecmp(optarg, "k5w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k5g") == 0) {
@@ -1792,8 +1797,9 @@ int
 					} else if (strcasecmp(optarg, "k5u") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// PW1
-					} else if (strcasecmp(optarg, "pw") == 0 || strcasecmp(optarg, "kpw") == 0) {
+					}
+					// PW1
+					else if (strcasecmp(optarg, "pw") == 0 || strcasecmp(optarg, "kpw") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwg") == 0 || strcasecmp(optarg, "kpwg") == 0) {
@@ -1812,8 +1818,9 @@ int
 						   strcasecmp(optarg, "kpwgbr") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GBrazil;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// PW2
-					} else if (strcasecmp(optarg, "pw2") == 0 || strcasecmp(optarg, "kpw2") == 0) {
+					}
+					// PW2
+					else if (strcasecmp(optarg, "pw2") == 0 || strcasecmp(optarg, "kpw2") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2j") == 0 || strcasecmp(optarg, "kpw2j") == 0) {
@@ -1859,15 +1866,17 @@ int
 						   strcasecmp(optarg, "kpw2gbrl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBBrazil;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// KT2
-					} else if (strcasecmp(optarg, "kt2") == 0 || strcasecmp(optarg, "bk") == 0) {
+					}
+					// KT2
+					else if (strcasecmp(optarg, "kt2") == 0 || strcasecmp(optarg, "bk") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt2a") == 0 || strcasecmp(optarg, "bka") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasicKiwi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// KV
-					} else if (strcasecmp(optarg, "kv") == 0) {
+					}
+					// KV
+					else if (strcasecmp(optarg, "kv") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvg") == 0) {
@@ -1882,8 +1891,9 @@ int
 					} else if (strcasecmp(optarg, "kvgm") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3GMexico;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// Black PW3
-					} else if (strcasecmp(optarg, "pw3") == 0 || strcasecmp(optarg, "kpw3") == 0) {
+					}
+					// Black PW3
+					else if (strcasecmp(optarg, "pw3") == 0 || strcasecmp(optarg, "kpw3") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3g") == 0 || strcasecmp(optarg, "kpw3g") == 0) {
@@ -1909,8 +1919,9 @@ int
 						   strcasecmp(optarg, "kpw3jl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3BlackWiFi32GBJapan;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// White PW3
-					} else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
+					}
+					// White PW3
+					else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wgj") == 0 ||
@@ -1947,15 +1958,17 @@ int
 					} else if (strcasecmp(optarg, "koagcn") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GChina;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// KT3
-					} else if (strcasecmp(optarg, "kt3") == 0) {
+					}
+					// KT3
+					else if (strcasecmp(optarg, "kt3") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt3w") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2White;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// Oasis 2
-					} else if (strcasecmp(optarg, "koa2w8") == 0) {
+					}
+					// Oasis 2
+					else if (strcasecmp(optarg, "koa2w8") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi8GB;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koa2g32") == 0) {
@@ -1967,8 +1980,9 @@ int
 					} else if (strcasecmp(optarg, "koa2g32b") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi3G32GBEurope;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// PW4
-					} else if (strcasecmp(optarg, "pw4") == 0 || strcasecmp(optarg, "kpw4") == 0) {
+					}
+					// PW4
+					else if (strcasecmp(optarg, "pw4") == 0 || strcasecmp(optarg, "kpw4") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi8GB;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw4l") == 0 || strcasecmp(optarg, "kpw4l") == 0) {
@@ -1982,8 +1996,9 @@ int
 						   strcasecmp(optarg, "kpw4lgb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi4G32GBEurope;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// N/A
-					} else if (strcasecmp(optarg, "none") == 0) {
+					}
+					// N/A
+					else if (strcasecmp(optarg, "none") == 0) {
 						info.devices[info.num_devices - 1] = KindleUnknown;
 						// We *really* mean no devices, so reset num_devices ;).
 						info.num_devices = 0;
