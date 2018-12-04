@@ -68,8 +68,9 @@ static int
 	if (ferror(f)) {
 		fprintf(stderr, "Read failed: %s.\n", strerror(errno));
 		return 0;
-	} else
+	} else {
 		return 1;
+	}
 }
 
 static const uint8_t pem_start_pattern[11] = "-----BEGIN ";
@@ -99,8 +100,9 @@ static int
 		*marker_length = length - (sizeof(pem_start_pattern) + sizeof(pem_trailer_pattern));
 
 		return 1;
-	} else
+	} else {
 		return 0;
+	}
 }
 
 /* Returns 1 on match, -1 if the line is of the right form except for
@@ -120,8 +122,9 @@ static int
 			return 1;
 		else
 			return -1;
-	} else
+	} else {
 		return 0;
+	}
 }
 
 struct pem_info
