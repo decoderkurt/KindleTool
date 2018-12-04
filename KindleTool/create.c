@@ -1942,8 +1942,9 @@ int
 						info.devices[info.num_devices - 1] =
 						    KindlePaperWhite3WhiteWiFi3GInternationalBis;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-						// Oasis
-					} else if (strcasecmp(optarg, "koa") == 0) {
+					}
+					// Oasis
+					else if (strcasecmp(optarg, "koa") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koag") == 0) {
