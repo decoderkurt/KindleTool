@@ -62,9 +62,9 @@ FILE*
 		return NULL;
 	}
 	FILE* fp = _fdopen(fd, "w+b");
-	if (fp != NULL)
+	if (fp != NULL) {
 		return fp;
-	else {
+	} else {
 		// We need to close the fd ourselves in case of error, since our own code expects a FP, not an fd...
 		// Which means we have to fudge errno to keep the one from fdopen...
 		int saved_errno = errno;
@@ -929,25 +929,25 @@ int
 	}
 #endif
 
-	if (strncmp(cmd, "md", 2) == 0)
+	if (strncmp(cmd, "md", 2) == 0) {
 		return kindle_obfuscate_main(argc, argv);
-	else if (strncmp(cmd, "dm", 2) == 0)
+	} else if (strncmp(cmd, "dm", 2) == 0) {
 		return kindle_deobfuscate_main(argc, argv);
-	else if (strncmp(cmd, "convert", 7) == 0)
+	} else if (strncmp(cmd, "convert", 7) == 0) {
 		return kindle_convert_main(argc, argv);
-	else if (strncmp(cmd, "extract", 7) == 0)
+	} else if (strncmp(cmd, "extract", 7) == 0) {
 		return kindle_extract_main(argc, argv);
-	else if (strncmp(cmd, "create", 6) == 0)
+	} else if (strncmp(cmd, "create", 6) == 0) {
 		return kindle_create_main(argc, argv);
-	else if (strncmp(cmd, "info", 4) == 0)
+	} else if (strncmp(cmd, "info", 4) == 0) {
 		return kindle_info_main(argc, argv);
-	else if (strncmp(cmd, "version", 7) == 0)
+	} else if (strncmp(cmd, "version", 7) == 0) {
 		return kindle_print_version(prog_name);
-	else if (strncmp(cmd, "help", 4) == 0 || strncmp(cmd, "-help", 5) == 0 || strncmp(cmd, "-h", 2) == 0 ||
-		 strncmp(cmd, "-?", 2) == 0 || strncmp(cmd, "/?", 2) == 0 || strncmp(cmd, "/h", 2) == 0 ||
-		 strncmp(cmd, "/help", 2) == 0)
+	} else if (strncmp(cmd, "help", 4) == 0 || strncmp(cmd, "-help", 5) == 0 || strncmp(cmd, "-h", 2) == 0 ||
+		   strncmp(cmd, "-?", 2) == 0 || strncmp(cmd, "/?", 2) == 0 || strncmp(cmd, "/h", 2) == 0 ||
+		   strncmp(cmd, "/help", 2) == 0) {
 		return kindle_print_help(prog_name);
-	else {
+	} else {
 		fprintf(stderr, "Unknown command '%s'!\n\n", cmd);
 		kindle_print_help(prog_name);
 		exit(1);

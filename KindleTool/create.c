@@ -218,8 +218,9 @@ static int
 static int
     write_file(struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
 {
-	if (write_entry(kttar, a, in_a, entry) != 0)
+	if (write_entry(kttar, a, in_a, entry) != 0) {
 		return 1;
+	}
 	return 0;
 }
 
@@ -234,16 +235,18 @@ static int
 		fprintf(stderr, "archive_write_header() failed: %s.\n", archive_error_string(a));
 	}
 
-	if (e == ARCHIVE_FATAL)
+	if (e == ARCHIVE_FATAL) {
 		return 1;
+	}
 
 	// If we opened a file earlier, write it out now.
 	// Note that the format handler might have reset the size field to zero
 	// to inform us that the archive body won't get stored.
 	// In that case, just skip the write.
 	if (e >= ARCHIVE_WARN && archive_entry_size(entry) > 0) {
-		if (copy_file_data_block(kttar, a, in_a, entry) != 0)
+		if (copy_file_data_block(kttar, a, in_a, entry) != 0) {
 			return 1;
+		}
 	}
 	return 0;
 }
@@ -356,9 +359,9 @@ static int
 	for (;;) {
 		archive_entry_clear(entry);
 		r = archive_read_next_header2(disk, entry);
-		if (r == ARCHIVE_EOF)
+		if (r == ARCHIVE_EOF) {
 			break;
-		else if (r != ARCHIVE_OK) {
+		} else if (r != ARCHIVE_OK) {
 			fprintf(stderr, "archive_read_next_header2() failed: %s", archive_error_string(disk));
 			if (r == ARCHIVE_FATAL) {
 				fprintf(stderr, " (FATAL).\n");
@@ -444,8 +447,9 @@ static int
 			}
 
 			// Non-regular files get archived with zero size.
-			if (archive_entry_filetype(entry) != AE_IFREG)
+			if (archive_entry_filetype(entry) != AE_IFREG) {
 				archive_entry_set_size(entry, 0);
+			}
 		} else {
 			archive_entry_set_perm(entry, 0644);
 		}
@@ -459,8 +463,9 @@ static int
 
 		// Write our entry to the archive, completely via libarchive,
 		// to avoid having to open our entry file again, which would fail on non-POSIX systems...
-		if (write_file(kttar, a, disk, entry) != 0)
+		if (write_file(kttar, a, disk, entry) != 0) {
 			goto cleanup;
+		}
 
 		if (first_pass) {
 			// If we just added a regular file, hash it, sign it, add it to the index, and put the sig in our tarball
@@ -547,8 +552,9 @@ static int
 	memset(kttar, 0, sizeof(*kttar));
 	// Choose a suitable copy buffer size
 	kttar->buff_size = 64 * 1024;
-	while (kttar->buff_size < (size_t) DEFAULT_BYTES_PER_BLOCK)
+	while (kttar->buff_size < (size_t) DEFAULT_BYTES_PER_BLOCK) {
 		kttar->buff_size *= 2;
+	}
 	// Try to compensate for space we'll lose to alignment.
 	kttar->buff_size += 16 * 1024;
 
@@ -581,8 +587,9 @@ static int
 		}
 
 		// Populate & write our entries from read_disk_open's directory walking...
-		if (create_from_archive_read_disk(kttar, a, filename[i], true, NULL, real_blocksize) != 0)
+		if (create_from_archive_read_disk(kttar, a, filename[i], true, NULL, real_blocksize) != 0) {
 			goto cleanup;
+		}
 	}
 
 	// Add our bundle index to the end of the list...
@@ -756,11 +763,13 @@ static int
 	}
 
 	free(kttar->buff);
-	for (i = 0; i < kttar->sign_and_bundle_index; i++)
+	for (i = 0; i < kttar->sign_and_bundle_index; i++) {
 		free(kttar->to_sign_and_bundle_list[i]);
+	}
 	free(kttar->to_sign_and_bundle_list);
-	for (i = 0; i < kttar->sign_and_bundle_index; i++)
+	for (i = 0; i < kttar->sign_and_bundle_index; i++) {
 		free(kttar->tweaked_to_sign_and_bundle_list[i]);
+	}
 	free(kttar->tweaked_to_sign_and_bundle_list);
 	archive_write_close(a);
 	archive_write_free(a);
@@ -800,11 +809,13 @@ cleanup:
 	// The big stuff, too...
 	free(kttar->buff);
 	if (kttar->sign_and_bundle_index > 0) {
-		for (i = 0; i < kttar->sign_and_bundle_index; i++)
+		for (i = 0; i < kttar->sign_and_bundle_index; i++) {
 			free(kttar->to_sign_and_bundle_list[i]);
+		}
 		free(kttar->to_sign_and_bundle_list);
-		for (i = 0; i < kttar->sign_and_bundle_index; i++)
+		for (i = 0; i < kttar->sign_and_bundle_index; i++) {
 			free(kttar->tweaked_to_sign_and_bundle_list[i]);
+		}
 		free(kttar->tweaked_to_sign_and_bundle_list);
 	}
 	archive_write_close(a);
@@ -1738,39 +1749,38 @@ int
 				} else {
 					info.devices = realloc(info.devices, ++info.num_devices * sizeof(Device));
 					// K1
-					if (strcasecmp(optarg, "k1") == 0)
+					if (strcasecmp(optarg, "k1") == 0) {
 						info.devices[info.num_devices - 1] = Kindle1;
-					// K2
-					else if (strcasecmp(optarg, "k2") == 0)
+						// K2
+					} else if (strcasecmp(optarg, "k2") == 0) {
 						info.devices[info.num_devices - 1] = Kindle2US;
-					else if (strcasecmp(optarg, "k2i") == 0)
+					} else if (strcasecmp(optarg, "k2i") == 0) {
 						info.devices[info.num_devices - 1] = Kindle2International;
-					// DX
-					else if (strcasecmp(optarg, "dx") == 0)
+						// DX
+					} else if (strcasecmp(optarg, "dx") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXUS;
-					else if (strcasecmp(optarg, "dxi") == 0)
+					} else if (strcasecmp(optarg, "dxi") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXInternational;
-					else if (strcasecmp(optarg, "dxg") == 0)
+					} else if (strcasecmp(optarg, "dxg") == 0) {
 						info.devices[info.num_devices - 1] = KindleDXGraphite;
-					// K3
-					else if (strcasecmp(optarg, "k3w") == 0)
+						// K3
+					} else if (strcasecmp(optarg, "k3w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi;
-					else if (strcasecmp(optarg, "k3g") == 0)
+					} else if (strcasecmp(optarg, "k3g") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi3G;
-					else if (strcasecmp(optarg, "k3gb") == 0)
+					} else if (strcasecmp(optarg, "k3gb") == 0) {
 						info.devices[info.num_devices - 1] = Kindle3WiFi3GEurope;
-					// K4
-					else if (strcasecmp(optarg, "k4") == 0) {
+						// K4
+					} else if (strcasecmp(optarg, "k4") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouch;
 						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k4b") == 0) {
 						info.devices[info.num_devices - 1] = Kindle4NonTouchBlack;
 						memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
-					}
-					// KT
-					// NOTE: Magic number switch to 'versionless' update types here...
-					//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
-					else if (strcasecmp(optarg, "k5w") == 0) {
+						// KT
+						// NOTE: Magic number switch to 'versionless' update types here...
+						//       FW >= 5.6.1 apparently dropped support for these in the UYK menu...
+					} else if (strcasecmp(optarg, "k5w") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "k5g") == 0) {
@@ -1782,9 +1792,8 @@ int
 					} else if (strcasecmp(optarg, "k5u") == 0) {
 						info.devices[info.num_devices - 1] = Kindle5TouchUnknown;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// PW1
-					else if (strcasecmp(optarg, "pw") == 0 || strcasecmp(optarg, "kpw") == 0) {
+						// PW1
+					} else if (strcasecmp(optarg, "pw") == 0 || strcasecmp(optarg, "kpw") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pwg") == 0 || strcasecmp(optarg, "kpwg") == 0) {
@@ -1803,9 +1812,8 @@ int
 						   strcasecmp(optarg, "kpwgbr") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhiteWiFi3GBrazil;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// PW2
-					else if (strcasecmp(optarg, "pw2") == 0 || strcasecmp(optarg, "kpw2") == 0) {
+						// PW2
+					} else if (strcasecmp(optarg, "pw2") == 0 || strcasecmp(optarg, "kpw2") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw2j") == 0 || strcasecmp(optarg, "kpw2j") == 0) {
@@ -1851,17 +1859,15 @@ int
 						   strcasecmp(optarg, "kpw2gbrl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite2WiFi3G4GBBrazil;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// KT2
-					else if (strcasecmp(optarg, "kt2") == 0 || strcasecmp(optarg, "bk") == 0) {
+						// KT2
+					} else if (strcasecmp(optarg, "kt2") == 0 || strcasecmp(optarg, "bk") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt2a") == 0 || strcasecmp(optarg, "bka") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasicKiwi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// KV
-					else if (strcasecmp(optarg, "kv") == 0) {
+						// KV
+					} else if (strcasecmp(optarg, "kv") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kvg") == 0) {
@@ -1876,9 +1882,8 @@ int
 					} else if (strcasecmp(optarg, "kvgm") == 0) {
 						info.devices[info.num_devices - 1] = KindleVoyageWiFi3GMexico;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// Black PW3
-					else if (strcasecmp(optarg, "pw3") == 0 || strcasecmp(optarg, "kpw3") == 0) {
+						// Black PW3
+					} else if (strcasecmp(optarg, "pw3") == 0 || strcasecmp(optarg, "kpw3") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3g") == 0 || strcasecmp(optarg, "kpw3g") == 0) {
@@ -1904,9 +1909,8 @@ int
 						   strcasecmp(optarg, "kpw3jl") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3BlackWiFi32GBJapan;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// White PW3
-					else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
+						// White PW3
+					} else if (strcasecmp(optarg, "pw3w") == 0 || strcasecmp(optarg, "kpw3w") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite3WhiteWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw3wgj") == 0 ||
@@ -1927,9 +1931,8 @@ int
 						info.devices[info.num_devices - 1] =
 						    KindlePaperWhite3WhiteWiFi3GInternationalBis;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// Oasis
-					else if (strcasecmp(optarg, "koa") == 0) {
+						// Oasis
+					} else if (strcasecmp(optarg, "koa") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koag") == 0) {
@@ -1944,17 +1947,15 @@ int
 					} else if (strcasecmp(optarg, "koagcn") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasisWiFi3GChina;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// KT3
-					else if (strcasecmp(optarg, "kt3") == 0) {
+						// KT3
+					} else if (strcasecmp(optarg, "kt3") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt3w") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic2White;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// Oasis 2
-					else if (strcasecmp(optarg, "koa2w8") == 0) {
+						// Oasis 2
+					} else if (strcasecmp(optarg, "koa2w8") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi8GB;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "koa2g32") == 0) {
@@ -1966,9 +1967,8 @@ int
 					} else if (strcasecmp(optarg, "koa2g32b") == 0) {
 						info.devices[info.num_devices - 1] = KindleOasis2WiFi3G32GBEurope;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// PW4
-					else if (strcasecmp(optarg, "pw4") == 0 || strcasecmp(optarg, "kpw4") == 0) {
+						// PW4
+					} else if (strcasecmp(optarg, "pw4") == 0 || strcasecmp(optarg, "kpw4") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi8GB;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "pw4l") == 0 || strcasecmp(optarg, "kpw4l") == 0) {
@@ -1982,9 +1982,8 @@ int
 						   strcasecmp(optarg, "kpw4lgb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi4G32GBEurope;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					// N/A
-					else if (strcasecmp(optarg, "none") == 0) {
+						// N/A
+					} else if (strcasecmp(optarg, "none") == 0) {
 						info.devices[info.num_devices - 1] = KindleUnknown;
 						// We *really* mean no devices, so reset num_devices ;).
 						info.num_devices = 0;
@@ -2095,43 +2094,44 @@ int
 				}
 				break;
 			case 'p':
-				if (strcasecmp(optarg, "unspecified") == 0)
+				if (strcasecmp(optarg, "unspecified") == 0) {
 					info.platform = Plat_Unspecified;
-				else if (strcasecmp(optarg, "mario") == 0)
+				} else if (strcasecmp(optarg, "mario") == 0) {
 					info.platform = MarioDeprecated;
-				else if (strcasecmp(optarg, "luigi") == 0)
+				} else if (strcasecmp(optarg, "luigi") == 0) {
 					info.platform = Luigi;
-				else if (strcasecmp(optarg, "banjo") == 0)
+				} else if (strcasecmp(optarg, "banjo") == 0) {
 					info.platform = Banjo;
-				else if (strcasecmp(optarg, "yoshi") == 0)
+				} else if (strcasecmp(optarg, "yoshi") == 0) {
 					info.platform = Yoshi;
-				else if (strcasecmp(optarg, "yoshime-proto") == 0 || strcasecmp(optarg, "yoshime-p") == 0)
+				} else if (strcasecmp(optarg, "yoshime-proto") == 0 ||
+					   strcasecmp(optarg, "yoshime-p") == 0) {
 					info.platform = YoshimeProto;
-				else if (strcasecmp(optarg, "yoshime") == 0)
+				} else if (strcasecmp(optarg, "yoshime") == 0) {
 					info.platform = Yoshime;
-				else if (strcasecmp(optarg, "wario") == 0)
+				} else if (strcasecmp(optarg, "wario") == 0) {
 					info.platform = Wario;
-				else if (strcasecmp(optarg, "duet") == 0)
+				} else if (strcasecmp(optarg, "duet") == 0) {
 					info.platform = Duet;
-				else if (strcasecmp(optarg, "heisenberg") == 0)
+				} else if (strcasecmp(optarg, "heisenberg") == 0) {
 					info.platform = Heisenberg;
-				else if (strcasecmp(optarg, "zelda") == 0)
+				} else if (strcasecmp(optarg, "zelda") == 0) {
 					info.platform = Zelda;
-				else if (strcasecmp(optarg, "rex") == 0)
+				} else if (strcasecmp(optarg, "rex") == 0) {
 					info.platform = Rex;
-				else {
+				} else {
 					fprintf(stderr, "Unknown platform %s.\n", optarg);
 					goto do_error;
 				}
 				break;
 			case 'B':
-				if (strcasecmp(optarg, "unspecified") == 0)
+				if (strcasecmp(optarg, "unspecified") == 0) {
 					info.board = Board_Unspecified;
-				else if (strcasecmp(optarg, "tequila") == 0)
+				} else if (strcasecmp(optarg, "tequila") == 0) {
 					info.board = Tequila;
-				else if (strcasecmp(optarg, "whitney") == 0)
+				} else if (strcasecmp(optarg, "whitney") == 0) {
 					info.board = Whitney;
-				else {
+				} else {
 					fprintf(stderr, "Unknown board %s.\n", optarg);
 					goto do_error;
 				}
@@ -2194,9 +2194,8 @@ int
 				info.critical = (uint8_t) atoi(optarg);
 				break;
 			case 'x':
-				if (strchr(optarg, '=') ==
-				    NULL)    // A metastring must contain an '=' character (remember, it's a key=value pair ;))
-				{
+				// A metastring must contain an '=' character (remember, it's a key=value pair ;))
+				if (strchr(optarg, '=') == NULL) {
 					fprintf(stderr, "Invalid metastring. Format: key=value, input: %s\n", optarg);
 					goto do_error;
 				}
@@ -2490,8 +2489,9 @@ int
 				valid_update_file_pattern = strdup("./[Uu]pdate*\\.bin$");
 			}
 		}
-		if (archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK)
+		if (archive_match_exclude_pattern(match, valid_update_file_pattern) != ARCHIVE_OK) {
 			fprintf(stderr, "archive_match_exclude_pattern() failed: %s.\n", archive_error_string(match));
+		}
 		free(valid_update_file_pattern);
 
 		archive_entry_copy_pathname(entry, output_filename);
@@ -2597,8 +2597,9 @@ int
 			// Loop over devices
 			for (i = 0; i < info.num_devices; i++) {
 				fprintf(stderr, "\t%s", convert_device_id(info.devices[i]));
-				if (i != info.num_devices - 1)
+				if (i != info.num_devices - 1) {
 					fprintf(stderr, "\n");
+				}
 			}
 			fprintf(stderr, "\n");
 		} else {
@@ -2729,41 +2730,49 @@ int
 	}
 
 	// Cleanup
-	for (ui = 0; ui < input_index; ui++)
+	for (ui = 0; ui < input_index; ui++) {
 		free(input_list[ui]);
+	}
 	free(input_list);
 	free(info.devices);
-	for (i = 0; i < info.num_meta; i++)
+	for (i = 0; i < info.num_meta; i++) {
 		free(info.metastrings[i]);
+	}
 	free(info.metastrings);
 	rsa_private_key_clear(&info.sign_pkey);
 	fclose(input);
-	if (output != stdout)
+	if (output != stdout) {
 		fclose(output);
+	}
 	free(output_filename);
 	// Remove tarball, unless we asked to keep it, or we used an existing tarball as sole input
-	if (!keep_archive && !skip_archive)
+	if (!keep_archive && !skip_archive) {
 		unlink(tarball_filename);
+	}
 	free(tarball_filename);
 
 	return 0;
 
 do_error:
 	if (input_index > 0) {
-		for (ui = 0; ui < input_index; ui++)
+		for (ui = 0; ui < input_index; ui++) {
 			free(input_list[ui]);
+		}
 		free(input_list);
 	}
 	free(output_filename);
 	free(info.devices);
-	for (i = 0; i < info.num_meta; i++)
+	for (i = 0; i < info.num_meta; i++) {
 		free(info.metastrings[i]);
+	}
 	free(info.metastrings);
 	rsa_private_key_clear(&info.sign_pkey);
-	if (input != NULL)
+	if (input != NULL) {
 		fclose(input);
-	if (output != NULL && output != stdout)
+	}
+	if (output != NULL && output != stdout) {
 		fclose(output);
+	}
 	free(tarball_filename);
 	return -1;
 }

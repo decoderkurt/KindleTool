@@ -41,11 +41,13 @@ static int
 	int c;
 
 	while ((c = getc(f)) != EOF) {
-		if (!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c))
+		if (!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c)) {
 			return 0;
+		}
 
-		if (c == '\n')
+		if (c == '\n') {
 			return 1;
+		}
 	}
 	if (ferror(f)) {
 		fprintf(stderr, "Read failed: %s.\n", strerror(errno));
@@ -60,9 +62,11 @@ static int
 {
 	int c;
 
-	while ((c = getc(f)) != EOF)
-		if (!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c))
+	while ((c = getc(f)) != EOF) {
+		if (!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c)) {
 			return 0;
+		}
+	}
 
 	if (ferror(f)) {
 		fprintf(stderr, "Read failed: %s.\n", strerror(errno));
@@ -89,8 +93,9 @@ static const char pem_ws[33] = {
 static int
     match_pem_start(size_t length, const uint8_t* line, size_t* marker_start, size_t* marker_length)
 {
-	while (length > 0 && PEM_IS_SPACE(line[length - 1]))
+	while (length > 0 && PEM_IS_SPACE(line[length - 1])) {
 		length--;
+	}
 
 	if (length > (sizeof(pem_start_pattern) + sizeof(pem_trailer_pattern)) &&
 	    memcmp(line, pem_start_pattern, sizeof(pem_start_pattern)) == 0 &&
@@ -109,8 +114,9 @@ static int
 static int
     match_pem_end(size_t length, const uint8_t* line, size_t marker_length, const uint8_t* marker)
 {
-	while (length > 0 && PEM_IS_SPACE(line[length - 1]))
+	while (length > 0 && PEM_IS_SPACE(line[length - 1])) {
 		length--;
+	}
 
 	if (length > (sizeof(pem_end_pattern) + sizeof(pem_trailer_pattern)) &&
 	    memcmp(line, pem_end_pattern, sizeof(pem_end_pattern)) == 0 &&
@@ -146,11 +152,13 @@ static int
 		nettle_buffer_reset(buffer);
 
 		res = read_line(buffer, f);
-		if (res != 1)
+		if (res != 1) {
 			return res;
+		}
 
-		if (match_pem_start(buffer->size, buffer->contents, &info->marker_start, &info->marker_length))
+		if (match_pem_start(buffer->size, buffer->contents, &info->marker_start, &info->marker_length)) {
 			break;
+		}
 	}
 
 	/* NUL-terminate the marker. Don't care to check for embedded NULs. */
@@ -161,8 +169,9 @@ static int
 	for (;;) {
 		size_t line_start = buffer->size;
 
-		if (read_line(buffer, f) != 1)
+		if (read_line(buffer, f) != 1) {
 			return 0;
+		}
 
 		switch (match_pem_end(buffer->size - line_start,
 				      buffer->contents + line_start,
@@ -195,9 +204,9 @@ static int
 	base64_decode_init(&ctx);
 
 	/* Decode in place */
-	if (base64_decode_in_place(&ctx, length, *length, buffer->contents + start) && base64_decode_final(&ctx))
+	if (base64_decode_in_place(&ctx, length, *length, buffer->contents + start) && base64_decode_final(&ctx)) {
 		return 1;
-	else {
+	} else {
 		fprintf(stderr, "Invalid base64 data.\n");
 		return 0;
 	}
@@ -258,11 +267,13 @@ static int
 {
 	if (type) {
 		read_file(buffer, f);
-		if (base64 && !decode_base64(buffer, 0, &buffer->size))
+		if (base64 && !decode_base64(buffer, 0, &buffer->size)) {
 			return 0;
+		}
 
-		if (convert_type(buffer, type, buffer->size, buffer->contents, rsa_pkey) != 1)
+		if (convert_type(buffer, type, buffer->size, buffer->contents, rsa_pkey) != 1) {
 			return 0;
+		}
 
 		return 1;
 	} else {
@@ -310,11 +321,11 @@ static int
 					break;
 			}
 
-			if (!type)
+			if (!type) {
 				fprintf(stderr, "Ignoring unsupported object type `%s'.\n", marker);
-
-			else if (convert_type(
-				     buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) != 1) {
+			} else if (convert_type(
+				       buffer, type, info.data_length, buffer->contents + info.data_start, rsa_pkey) !=
+				   1) {
 				fprintf(stderr, "convert_type failed!\n");
 				return 0;
 			}

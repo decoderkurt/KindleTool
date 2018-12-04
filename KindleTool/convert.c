@@ -72,10 +72,12 @@ static char*
 
 	out = malloc(len + neg + 1);
 	memset(out, 0, len + neg + 1);
-	for (i = neg; len > 0; i++)
+	for (i = neg; len > 0; i++) {
 		out[i] = buf[--len];
-	if (neg)
+	}
+	if (neg) {
 		out[0] = '-';
+	}
 
 	return out;
 }
@@ -965,8 +967,9 @@ int
 					"Error converting %s package '%s'.\n",
 					(IS_STGZ(in_name) ? "userdata" : "update"),
 					in_name);
-				if (output != NULL && output != stdout)
+				if (output != NULL && output != stdout) {
 					unlink(out_name);    // Clean up our mess, if we made one
+				}
 				fail = true;
 			}
 			// If we were outputting to a file, we didn't ask to keep the original, and we didn't fail to convert it,
@@ -976,35 +979,43 @@ int
 			}
 
 			// Clean up behind us
-			if (!info_only && !unwrap_only)
+			if (!info_only && !unwrap_only) {
 				free(out_name);
-			if (output != NULL && output != stdout)
+			}
+			if (output != NULL && output != stdout) {
 				fclose(output);
-			if (input != NULL)
+			}
+			if (input != NULL) {
 				fclose(input);
-			if (sig_output != NULL)
+			}
+			if (sig_output != NULL) {
 				fclose(sig_output);
-			if (unwrap_output != NULL)
+			}
+			if (unwrap_output != NULL) {
 				fclose(unwrap_output);
+			}
 			// Remove empty sigs (since we have to open the fd before calling kindle_convert,
 			// we end up with an empty file for packages that aren't wrapped in an UpdateSignature)
 			if (extract_sig) {
 				stat(sig_name, &st);
-				if (st.st_size == 0)
+				if (st.st_size == 0) {
 					unlink(sig_name);
+				}
 				free(sig_name);
 			}
 			// Same thing for unwrapped packages...
 			if (unwrap_only) {
 				stat(unwrapped_name, &st);
-				if (st.st_size == 0)
+				if (st.st_size == 0) {
 					unlink(unwrapped_name);
+				}
 				free(unwrapped_name);
 			}
 
 			// If we're not the last file, throw an LF to untangle the output
-			if (optind < argc)
+			if (optind < argc) {
 				fprintf(stderr, "\n");
+			}
 		}
 	} else {
 		fprintf(stderr, "No input specified.\n");
@@ -1057,12 +1068,15 @@ static int
 
 	for (;;) {
 		r = archive_read_next_header(a, &entry);
-		if (r == ARCHIVE_EOF)
+		if (r == ARCHIVE_EOF) {
 			break;
-		if (r != ARCHIVE_OK)
+		}
+		if (r != ARCHIVE_OK) {
 			fprintf(stderr, "archive_read_next_header() failed: %s.\n", archive_error_string(a));
-		if (r < ARCHIVE_WARN)
+		}
+		if (r < ARCHIVE_WARN) {
 			goto cleanup;
+		}
 
 		// Print what we're extracting, like bsdtar
 		path = archive_entry_pathname(entry);
