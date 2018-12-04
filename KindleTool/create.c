@@ -270,10 +270,11 @@ static int
 			}
 
 			while (sparse > 0) {
-				if (sparse > (int64_t) kttar->buff_size)
+				if (sparse > (int64_t) kttar->buff_size) {
 					ns = kttar->buff_size;
-				else
+				} else {
 					ns = (size_t) sparse;
+				}
 				bytes_written = archive_write_data(a, null_buff, ns);
 				if (bytes_written < 0) {
 					// Write failed; this is bad
@@ -2606,7 +2607,7 @@ int
 		// Don't print settings not applicable to our update type...
 		switch (info.version) {
 			case OTAUpdateV2:
-				if (info.target_revision == UINT64_MAX)
+				if (info.target_revision == UINT64_MAX) {
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Critical: %hhu, Cert: %u & %hu Metadata strings%s",
@@ -2615,7 +2616,7 @@ int
 					    (uint32_t) info.certificate_number,
 					    info.num_meta,
 					    (info.num_meta ? " (" : ".\n"));
-				else
+				} else {
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Critical: %hhu, Cert: %u & %hu Metadata strings%s",
@@ -2625,29 +2626,32 @@ int
 					    (uint32_t) info.certificate_number,
 					    info.num_meta,
 					    (info.num_meta ? " (" : ".\n"));
+				}
 				// Loop over meta
 				for (i = 0; i < info.num_meta; i++) {
 					fprintf(stderr, "%s", info.metastrings[i]);
-					if (i != info.num_meta - 1)
+					if (i != info.num_meta - 1) {
 						fprintf(stderr, "; ");
-					else
+					} else {
 						fprintf(stderr, ").\n");
+					}
 				}
 				break;
 			case OTAUpdate:
-				if (info.target_revision == UINT32_MAX)
+				if (info.target_revision == UINT32_MAX) {
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: MAX, Optional: %hhu.\n",
 					    (long long unsigned int) info.source_revision,
 					    info.optional);
-				else
+				} else {
 					fprintf(
 					    stderr,
 					    "With the following flags: Min. OTA: %llu, Target OTA: %llu, Optional: %hhu.\n",
 					    (long long unsigned int) info.source_revision,
 					    (long long unsigned int) info.target_revision,
 					    info.optional);
+				}
 				break;
 			case RecoveryUpdate:
 				fprintf(stderr,
@@ -2655,7 +2659,7 @@ int
 					info.minor,
 					info.magic_1,
 					info.magic_2);
-				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0)
+				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0) {
 					if (info.target_revision == UINT32_MAX) {
 						fprintf(stderr,
 							", Header Rev: %u, Target OTA: MAX, Platform: %s, Board: %s.\n",
@@ -2670,16 +2674,18 @@ int
 							convert_platform_id(info.platform),
 							convert_board_id(info.board));
 					}
-				else
+				} else {
 					fprintf(stderr, ".\n");
+				}
 				break;
 			case RecoveryUpdateV2:
 				fprintf(stderr, "With the following flags:");
-				if (info.target_revision == UINT64_MAX)
+				if (info.target_revision == UINT64_MAX) {
 					fprintf(stderr, " Target OTA: MAX");
-				else
+				} else {
 					fprintf(
 					    stderr, " Target OTA: %llu", (long long unsigned int) info.target_revision);
+				}
 				fprintf(
 				    stderr,
 				    ", Minor: %u, Magic 1: %u, Magic 2: %u, Header Rev: %u, Cert: %u, Platform: %s, Board: %s.\n",

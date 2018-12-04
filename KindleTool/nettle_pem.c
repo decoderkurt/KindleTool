@@ -50,10 +50,9 @@ static int
 	if (ferror(f)) {
 		fprintf(stderr, "Read failed: %s.\n", strerror(errno));
 		return 0;
-	}
-
-	else
+	} else {
 		return -1;
+	}
 }
 
 static int
@@ -118,10 +117,11 @@ static int
 	    memcmp(line + length - sizeof(pem_trailer_pattern), pem_trailer_pattern, sizeof(pem_trailer_pattern)) == 0) {
 		/* Right form. Check marker */
 		if (length == marker_length + (sizeof(pem_end_pattern) + sizeof(pem_trailer_pattern)) &&
-		    memcmp(line + sizeof(pem_end_pattern), marker, marker_length) == 0)
+		    memcmp(line + sizeof(pem_end_pattern), marker, marker_length) == 0) {
 			return 1;
-		else
+		} else {
 			return -1;
+		}
 	} else {
 		return 0;
 	}

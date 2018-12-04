@@ -25,26 +25,27 @@
 static const char*
     convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
 {
-	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH))
+	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH)) {
 		return "(Fullbin [signed?])";    // /mnt/us/update-full.bin
-	else if (!memcmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH)) {
 		return "(Fullbin [OTA?, fwo?])";    // /mnt/us/update-%lld-fwo.bin
-	else if (!memcmp(magic_number, "FB", MAGIC_NUMBER_LENGTH / 2))
+	} else if (!memcmp(magic_number, "FB", MAGIC_NUMBER_LENGTH / 2)) {
 		return "(Fullbin)";
-	else if (!memcmp(magic_number, "FC", MAGIC_NUMBER_LENGTH / 2))
+	} else if (!memcmp(magic_number, "FC", MAGIC_NUMBER_LENGTH / 2)) {
 		return "(OTA [ota])";    // /mnt/us/Update_%lld_%lld.bin
-	else if (!memcmp(magic_number, "FD", MAGIC_NUMBER_LENGTH / 2))
+	} else if (!memcmp(magic_number, "FD", MAGIC_NUMBER_LENGTH / 2)) {
 		return "(Versionless [vls])";    // /mnt/us/Update_VLS_%lld.bin
-	else if (!memcmp(magic_number, "FL", MAGIC_NUMBER_LENGTH / 2))
+	} else if (!memcmp(magic_number, "FL", MAGIC_NUMBER_LENGTH / 2)) {
 		return "(Language [lang])";    // /mnt/us/Update_LANG_%s.bin
-	else if (!memcmp(magic_number, "SP", MAGIC_NUMBER_LENGTH / 2))
+	} else if (!memcmp(magic_number, "SP", MAGIC_NUMBER_LENGTH / 2)) {
 		return "(Signing Envelope)";
-	else if (!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH)) {
 		return "(Userdata tarball)";
-	else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH)) {
 		return "(Android update)";
-	else
+	} else {
 		return "Unknown";
+	}
 }
 
 // Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
@@ -647,10 +648,11 @@ static int
 	memcpy(&platform, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
 	// Slightly hackish way to detect unknown platforms...
-	if (strcmp(convert_platform_id(platform), "Unknown") == 0)
+	if (strcmp(convert_platform_id(platform), "Unknown") == 0) {
 		fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
-	else
+	} else {
 		fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
+	}
 	//header_rev = *(uint32_t *)&data[hindex];
 	memcpy(&header_rev, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
@@ -660,10 +662,11 @@ static int
 	hindex += sizeof(uint32_t);
 	// Slightly hackish way to detect unknown boards
 	// (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
-	if (strcmp(convert_board_id(board), "Unknown") == 0)
+	if (strcmp(convert_board_id(board), "Unknown") == 0) {
 		fprintf(stderr, "Board          %s (0x%02X)\n", convert_board_id(board), board);
-	else
+	} else {
 		fprintf(stderr, "Board          %s\n", convert_board_id(board));
+	}
 	hindex += sizeof(uint32_t);    // Padding
 	hindex += sizeof(uint16_t);    // ... Padding
 	hindex += sizeof(uint8_t);     // And more weird padding
@@ -820,10 +823,11 @@ int
 				continue;    // It's fatal, go away
 			}
 			// Set the appropriate file extension offset...
-			if (IS_STGZ(in_name))
+			if (IS_STGZ(in_name)) {
 				ext_offset = 1;
-			else
+			} else {
 				ext_offset = 0;
+			}
 			// Not info only, not unwrap only AND not stdout
 			if (!info_only && !unwrap_only && output != stdout) {
 				len      = strlen(in_name);
@@ -1008,10 +1012,11 @@ int
 	}
 
 	// Return
-	if (fail)
+	if (fail) {
 		return -1;
-	else
+	} else {
 		return 0;
+	}
 }
 
 // Heavily inspired from libarchive's tar/read.c ;)

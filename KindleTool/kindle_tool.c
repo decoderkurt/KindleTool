@@ -426,23 +426,26 @@ const char*
 BundleVersion
     get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
 {
-	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH) || !memcmp(magic_number, "FB01", MAGIC_NUMBER_LENGTH))
+	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH) || !memcmp(magic_number, "FB01", MAGIC_NUMBER_LENGTH)) {
 		return RecoveryUpdate;
-	else if (!memcmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "FB03", MAGIC_NUMBER_LENGTH)) {
 		return RecoveryUpdateV2;
-	else if (!memcmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) || !memcmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "FC02", MAGIC_NUMBER_LENGTH) ||
+		   !memcmp(magic_number, "FD03", MAGIC_NUMBER_LENGTH)) {
 		return OTAUpdate;
-	else if (!memcmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) ||
-		 !memcmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) || !memcmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "FC04", MAGIC_NUMBER_LENGTH) ||
+		   !memcmp(magic_number, "FD04", MAGIC_NUMBER_LENGTH) ||
+		   !memcmp(magic_number, "FL01", MAGIC_NUMBER_LENGTH)) {
 		return OTAUpdateV2;
-	else if (!memcmp(magic_number, "SP01", MAGIC_NUMBER_LENGTH))
+	} else if (!memcmp(magic_number, "SP01", MAGIC_NUMBER_LENGTH)) {
 		return UpdateSignature;
-	else if (!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH))    // GZIP magic number
+	} else if (!memcmp(magic_number, "\x1F\x8B\x08\x00", MAGIC_NUMBER_LENGTH)) {    // GZIP magic number
 		return UserDataPackage;
-	else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH))    // ZIP magic number
+	} else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH)) {    // ZIP magic number
 		return AndroidUpdate;
-	else
+	} else {
 		return UnknownUpdate;
+	}
 }
 
 int
