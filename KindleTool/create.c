@@ -385,6 +385,7 @@ static int
 				//       because libarchive strips trailing path separators in the entry pathname,
 				//       but we might have passed one on the CL,
 				//       so pointer_index might be larger than strlen ;)
+				// Flawfinder: ignore
 				if (archive_entry_filetype(entry) == AE_IFDIR &&
 				    strlen(archive_entry_pathname(entry)) <= kttar->tweak_pointer_index) {
 					// Print what we're stripping, ala GNU tar...
@@ -676,7 +677,7 @@ static int
 			} else {
 				// Always use the tweaked paths
 				// (they're properly set to the real path when we're not in legacy mode)
-				pathlen = strlen(kttar->tweaked_to_sign_and_bundle_list[i]);
+				pathlen = strlen(kttar->tweaked_to_sign_and_bundle_list[i]);    // Flawfinder: ignore
 				signame = malloc(pathlen + 4 + 1);
 				snprintf(
 				    signame, pathlen + 4 + 1, "%s.%s", kttar->tweaked_to_sign_and_bundle_list[i], "sig");
@@ -1066,7 +1067,7 @@ static int
 		// FIXME: Should this really be munged? Following otaup would point to yes,
 		//        but I've never seen an update with meta strings in the wild,
 		//        and the aforementionned issue with the string length doesn't help...
-		strncpy((char*) &header[hindex], info->metastrings[i], str_len);
+		strncpy((char*) &header[hindex], info->metastrings[i], str_len);    // Flawfinder: ignore
 		hindex += str_len;
 	}
 
@@ -1111,7 +1112,8 @@ static int
 
 	obfuscated_tgz = NULL;
 
-	memset(&header, 0, sizeof(UpdateHeader));                                     // Zero init
+	memset(&header, 0, sizeof(UpdateHeader));    // Zero init
+	// Flawfinder: ignore
 	strncpy(header.magic_number, info->magic_number, MAGIC_NUMBER_LENGTH);        // Magic number
 	header.data.ota_update.source_revision = (uint32_t) info->source_revision;    // Source
 	header.data.ota_update.target_revision = (uint32_t) info->target_revision;    // Target
@@ -2162,7 +2164,7 @@ int
 				}
 				break;
 			case 'b':
-				strncpy(info.magic_number, optarg, MAGIC_NUMBER_LENGTH);
+				strncpy(info.magic_number, optarg, MAGIC_NUMBER_LENGTH);    // Flawfinder: ignore
 				if ((info.version = get_bundle_version(optarg)) == UnknownUpdate) {
 					fprintf(stderr, "Invalid bundle version %s.\n", optarg);
 					goto do_error;
@@ -2215,7 +2217,9 @@ int
 					fprintf(stderr, "Invalid metastring. Format: key=value, input: %s\n", optarg);
 					goto do_error;
 				}
+				// Flawfinder: ignore
 				if (strlen(optarg) > 0xFFFFu) {
+					// Flawfinder: ignore
 					fprintf(stderr,
 						"Metastring too long. Max length: %u, input length: %zu\n",
 						0xFFFFu,
