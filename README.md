@@ -167,7 +167,7 @@
 		-s, --srcrev <ulong|uint>   OTA updates only. Source revision. OTA V1 uses uint, OTA V2 uses ulong.
                                       Lowest version of device that package supports. Default is 0.
                                       Also acccepts min for 0.
-		-t, --tgtrev <ulong|uint>   OTA & Recovery V2 updates only. Target revision. OTA V1 uses uint, OTA V2 & Recovery V2 uses ulong.
+		-t, --tgtrev <ulong|uint>   OTA, Recovery V2 & Recovery FB02 with header rev 2 updates only. Target revision. OTA V1 & Recovery V1H2 uses uint, OTA V2 & Recovery V2 uses ulong.
                                       Highest version of device that package supports. Default is ulong/uint max value.
                                       Also acccepts max for the appropriate maximum value for the chosen update package type.
 		-h, --hdrrev <uint>         Recovery V2 & Recovery FB02 updates only. Header Revision. Default is 0.
