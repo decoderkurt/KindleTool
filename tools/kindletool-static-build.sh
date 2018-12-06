@@ -191,7 +191,7 @@ EOF
 	sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^* /  /g;s/*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^\([[:digit:]]\)\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' README
 	cp -v KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
-	tar -cvzf kindletool-${REV}-linux-${ARCH}.tar.gz kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	tar -cvzf "kindletool-${REV}-linux-${ARCH}.tar.gz" kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 }
 
@@ -292,7 +292,7 @@ EOF
 	mv -v KindleTool/KindleTool/VERSION ./VERSION
 	# LF => CRLF...
 	unix2dos CREDITS README ChangeLog
-	7z a -tzip kindletool-${REV}-cygwin.zip kindletool.exe CREDITS README ChangeLog VERSION
+	7z a -tzip "kindletool-${REV}-cygwin.zip" kindletool.exe CREDITS README ChangeLog VERSION
 	rm -f kindletool.exe CREDITS README ChangeLog VERSION
 }
 
@@ -342,7 +342,7 @@ Build_OSX() {
 		cd ${GMP_DIR}
 		# Don't target my host cpu...
 		my_host="core2-$(clang --version | grep Target | awk '{print $2}' | cut -d- -f2-)"
-		./configure --host=${my_host} --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx --with-pic
+		./configure --host="${my_host}" --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-cxx --with-pic
 		make ${JOBSFLAGS}
 		make install
 		cd ..
@@ -441,7 +441,7 @@ EOF
 	echo "* Building KindleTool . . ."
 	echo ""
 	# Fake user@host tag
-	if echo "$(whoami)" | grep -E -e '^[nNiIlLuUjJeE]{6}' > /dev/null 2>&1 ; then
+	if whoami | grep -E -e '^[nNiIlLuUjJeE]{6}' > /dev/null 2>&1 ; then
 		export KT_NO_USERATHOST_TAG="true"
 		export CFLAGS="-march=core2 -pipe -O2 -fomit-frame-pointer -mmacosx-version-min=10.6 -DKT_USERATHOST='\"niluje@tyrande on Mac OS X $(sw_vers -productVersion)\"'"
 	fi
@@ -466,9 +466,9 @@ EOF
 	perl -pi -e 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&/g;s/^\* /  /g;s/\*//g;s/>> /\t/g;s/^> /  /g;s/^## //g;s/### //g;s/\t/    /g;s/^([[:digit:]])\./  \1)/g;s/^#.*$//;s/[[:blank:]]*$//g' ./README
 	cp -v ../KindleTool/KindleTool/kindletool.1 ./kindletool.1
 	mv -v ../KindleTool/KindleTool/VERSION ./VERSION
-	rm -f kindletool-${REV}-osx.zip
+	rm -f "kindletool-${REV}-osx.zip"
 	# Don't store uid/gid & attr, I'm packaging this on a 3rd party's computer
-	zip -X kindletool-${REV}-osx.zip kindletool CREDITS README kindletool.1 ChangeLog VERSION
+	zip -X "kindletool-${REV}-osx.zip" kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	rm -f kindletool CREDITS README kindletool.1 ChangeLog VERSION
 	cd ..
 }
