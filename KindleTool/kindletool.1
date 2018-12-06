@@ -281,9 +281,16 @@ Show the help screen.
 If the variable
 .B KT_WITH_UNKNOWN_DEVCODES
 is set in your environment (no matter the value), some device checks will be relaxed with the create command.
+.br
+Currently, even though
+.B OTA V2
+supports updates that run on multiple devices,
+.br
+it is not possible to create an update package that will run on both
+.I FW 4.x
+(Kindle 4) and
+.I FW 5.x
+(Basically everything since the Kindle Touch).
 .SH BUGS
-Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
-.br
-Currently, even though OTA V2 supports updates that run on multiple devices,
-.br
-it is not possible to create an update package that will run on both the Kindle 4 (No Touch) and Kindle 5 (Touch/PW).
+Updates with meta-strings will probably fail to run when passed to
+.BR "Update Your Kindle" .
