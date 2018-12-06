@@ -87,13 +87,13 @@ fi
 
 # If we don't have git installed (why, oh why would you do that? :D), just use the fallback
 if ! git help &>/dev/null ; then
-	echo "${FALLBACK_VER}" > ${VERSION_FILE}
+	echo "${FALLBACK_VER}" > "${VERSION_FILE}"
 fi
 
 # If we have a VERSION file, just use that (that's useful for package managers)
 # Otherwise, and if we have a proper git repo, use git (unless we asked for a new VERSION file)!
 if [[ -f "${VERSION_FILE}" ]] && [[ "${1}" != "PMS" ]] ; then
-	VER="$(< ${VERSION_FILE})"
+	VER="$(< "${VERSION_FILE}")"
 elif [[ -z "${VER}" && -d "${GIT_DIR:-${KT_DIR}/../.git}" || -f "${KT_DIR}/../.git" ]] ; then
 	# Get a properly formatted version string from our latest tag
 	VER="$(git describe --match "v[0-9]*" HEAD 2>/dev/null)"
@@ -150,7 +150,7 @@ fi
 
 # Get current version from include file
 if [[ -r "${VER_FILE}" ]] ; then
-	VER_CURRENT="$(cat ${VER_FILE} | head -n 1)"
+	VER_CURRENT="$(head -n 1 "${VER_FILE}")"
 	# Strip var assignment
 	VER_CURRENT="${VER_CURRENT/KT_VERSION = /}"
 else
@@ -160,22 +160,24 @@ fi
 # Update our include file, if need be
 if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 	echo >&2 "KT_VERSION = ${VER}"
-	echo "KT_VERSION = ${VER}" > ${VER_FILE}
-	echo "OSTYPE = ${UNAME}" >> ${VER_FILE}
-	echo "COMPILE_BY = ${COMPILE_BY}" >> ${VER_FILE}
-	echo "COMPILE_HOST = ${COMPILE_HOST}" >> ${VER_FILE}
-	echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}" >> ${VER_FILE}
-	echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}" >> ${VER_FILE}
-	echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}" >> ${VER_FILE}
-	echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}" >> ${VER_FILE}
-	echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}" >> ${VER_FILE}
-	echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}" >> ${VER_FILE}
-	echo "PC_NETTLE_LIBS = ${PC_NETTLE_LIBS}" >> ${VER_FILE}
-	echo "PC_NETTLE_VERSION = ${PC_NETTLE_VERSION}" >> ${VER_FILE}
-	echo "DISTRIB_ID = ${DISTRIB_ID}" >> ${VER_FILE}
+	echo "KT_VERSION = ${VER}" > "${VER_FILE}"
+	{
+		echo "OSTYPE = ${UNAME}";
+		echo "COMPILE_BY = ${COMPILE_BY}";
+		echo "COMPILE_HOST = ${COMPILE_HOST}";
+		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}";
+		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}";
+		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}";
+		echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}";
+		echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}";
+		echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}";
+		echo "PC_NETTLE_LIBS = ${PC_NETTLE_LIBS}";
+		echo "PC_NETTLE_VERSION = ${PC_NETTLE_VERSION}";
+		echo "DISTRIB_ID = ${DISTRIB_ID}";
+	} >> "${VER_FILE}"
 fi
 
 # Build a proper VERSION file (PMS)
 if [[ "${1}" == "PMS" ]] ; then
-	echo "${VER}" > ${VERSION_FILE}
+	echo "${VER}" > "${VERSION_FILE}"
 fi
