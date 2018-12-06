@@ -26,10 +26,10 @@ BASE_DICT = dict((c, v) for v, c in enumerate(BASE_LIST))
 BASE_LEN = len(BASE_LIST)
 
 def devCode(string):
-    num = 0
-    for char in string:
-        num = num * BASE_LEN + BASE_DICT[char]
-    return num
+	num = 0
+	for char in string:
+		num = num * BASE_LEN + BASE_DICT[char]
+	return num
 
 
 model_tuples = [
