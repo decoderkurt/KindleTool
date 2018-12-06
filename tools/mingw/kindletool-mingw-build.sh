@@ -42,7 +42,6 @@ export PKG_CONFIG_LIBDIR="${BASE_PKG_CONFIG_LIBDIR}"
 ## Go :)
 ## Get to our build dir
 mkdir -p "${TC_BUILD_DIR}"
-KT_TOOLS_DIR="${PWD}/.."
 cd "${TC_BUILD_DIR}"
 
 ZLIB_VER="1.2.11"
@@ -208,5 +207,5 @@ sed -si 's/<b>//g;s/<\/b>//g;s/<i>//g;s/<\/i>//g;s/&lt;/</g;s/&gt;/>/g;s/&amp;/&
 mv -v KindleTool/KindleTool/VERSION ./VERSION
 # LF => CRLF...
 unix2dos CREDITS README ChangeLog
-7z a -tzip kindletool-${REV}-mingw.zip kindletool.exe CREDITS README ChangeLog VERSION
+7z a -tzip "kindletool-${REV}-mingw.zip" kindletool.exe CREDITS README ChangeLog VERSION
 rm -f kindletool.exe CREDITS README ChangeLog VERSION
