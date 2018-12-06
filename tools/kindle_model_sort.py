@@ -25,9 +25,9 @@ BASE_LIST = tuple("0123456789ABCDEFGHJKLMNPQRSTUVWX")
 BASE_DICT = dict((c, v) for v, c in enumerate(BASE_LIST))
 BASE_LEN = len(BASE_LIST)
 
-def devCode(str):
+def devCode(string):
     num = 0
-    for char in str:
+    for char in string:
         num = num * BASE_LEN + BASE_DICT[char]
     return num
 
@@ -159,11 +159,9 @@ for t in model_tuples:
 			print("{:<45} {:04X} (0{:<2})".format(t[0], t[1], baseN(t[1], 32)))
 		else:
 			print("{:<45} {:02X}".format(t[0], t[1]))
-"""
-	# That's to double-check that everything's sane for KindleTool's info command...
-	else:
-		print("!!{:<44}!!".format(t[0]))
-"""
+#	# That's to double-check that everything's sane for KindleTool's info command...
+#	else:
+#		print("!!{:<44}!!".format(t[0]))
 
 print('\nKindle models with new device code decoding (i.e., >= PW3)\n')
 for t in model_tuples:
