@@ -19,7 +19,7 @@
 	Options:
 		-c, --stdout                Write to standard output, keeping original files unchanged.
 		-i, --info                  Just print the package information, no conversion done.
-		-s, --sig                   OTA V2 updates only. Extract the payload signature.
+		-s, --sig                   OTA V2, Recovery V2 & Recovery FB02 with header rev 2 updates only. Extract the payload signature.
 		-k, --keep                  Don't delete the input package.
 		-u, --unsigned              Assume input is an unsigned & mangled userdata package.
 		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header (especially useful for userdata packages).
@@ -44,7 +44,7 @@
 		ota                         OTA V1 update package. Works on Kindle 3 and older.
 		ota2                        OTA V2 signed update package. Works on Kindle 4 and newer.
 		recovery                    Recovery package for restoring partitions.
-		recovery2                   Recovery V2 package for restoring partitions. Works on Kindle 5 (PaperWhite) and newer
+		recovery2                   Recovery V2 package for restoring partitions. Works on FW >= 5.2 (PaperWhite) and newer
 		sig                         Signature envelope. Use this to build a signed userdata package with the -U switch (FW >= 5.1 only, but device agnostic).
 
 	Devices:
