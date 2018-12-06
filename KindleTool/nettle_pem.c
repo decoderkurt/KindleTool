@@ -40,6 +40,7 @@ static int
 {
 	int c;
 
+	// Flawfinder: ignore
 	while ((c = getc(f)) != EOF) {
 		if (!NETTLE_BUFFER_PUTC(buffer, (uint8_t) c)) {
 			return 0;
