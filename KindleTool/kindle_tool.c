@@ -777,7 +777,7 @@ static int
 static int
     kindle_info_main(int argc, char* argv[])
 {
-	char           serial_no[SERIAL_NO_LENGTH + 1] = { '\0' };    // Leave an extra space for the LF...
+	char           serial_no[SERIAL_NO_LENGTH + 1] = { 0 };    // Leave an extra space for the LF...
 	struct md5_ctx md5;
 	uint8_t        digest[MD5_DIGEST_SIZE];
 	char           hash[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)];
@@ -793,7 +793,7 @@ static int
 		return -1;
 	}
 	// Don't manipulate argv directly, make a copy of it first...
-	strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);
+	strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);    // Flawfinder: ignore
 	if (strlen(serial_no) < SERIAL_NO_LENGTH || strlen(argv[0]) > SERIAL_NO_LENGTH) {
 		fprintf(stderr,
 			"Serial number must be composed of exactly 16 characters (without spaces). For example: %s\n",
@@ -884,6 +884,7 @@ int
 	}
 #else
 	const char* posix_tmpdir = getenv("TMPDIR");
+	// Flawfinder: ignore
 	if (posix_tmpdir != NULL && strlen(posix_tmpdir) < PATH_MAX) {
 		strcpy(kt_tempdir, posix_tmpdir);
 	}
