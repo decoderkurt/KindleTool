@@ -1,20 +1,20 @@
 # KindleTool
-## Usage:
-* KindleTool md [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
+## Usage
+-   KindleTool md [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
 
->> Obfuscates data using Amazon's update algorithm.  
->> If no input is provided, input from stdin  
->> If no output is provided, output to stdout
+> Obfuscates data using Amazon's update algorithm.  
+> If no input is provided, input from stdin  
+> If no output is provided, output to stdout
 
-* KindleTool dm [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
+-   KindleTool dm [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
 
->> Deobfuscates data using Amazon's update algorithm.  
->> If no input is provided, input from stdin  
->> If no output is provided, output to stdout
+> Deobfuscates data using Amazon's update algorithm.  
+> If no input is provided, input from stdin  
+> If no output is provided, output to stdout
 
-* KindleTool convert [<i>options</i>] &lt;<b>input</b>&gt;...
+-   KindleTool convert [<i>options</i>] &lt;<b>input</b>&gt;...
 
->> Converts a Kindle update package to a gzipped tar archive file, and delete input.
+> Converts a Kindle update package to a gzipped tar archive file, and delete input.
 
 	Options:
 		-c, --stdout                Write to standard output, keeping original files unchanged.
@@ -24,21 +24,21 @@
 		-u, --unsigned              Assume input is an unsigned & mangled userdata package.
 		-w, --unwrap                Just unwrap the package, if it's wrapped in an UpdateSignature header (especially useful for userdata packages).
 
-* KindleTool extract [<i>options</i>] &lt;<b>input</b>&gt; &lt;<b>output</b>&gt;
+-   KindleTool extract [<i>options</i>] &lt;<b>input</b>&gt; &lt;<b>output</b>&gt;
 
->> Extracts a Kindle update package to a directory.
+> Extracts a Kindle update package to a directory.
 
 	Options:
 		-u, --unsigned              Assume input is an unsigned & mangled userdata package.
 
-* KindleTool create &lt;<b>type</b>&gt; &lt;<b>devices</b>&gt; [<i>options</i>] &lt;<b>dir</b>|<b>file</b>&gt;... [ &lt;<b>output</b>&gt; ]
+-   KindleTool create &lt;<b>type</b>&gt; &lt;<b>devices</b>&gt; [<i>options</i>] &lt;<b>dir</b>|<b>file</b>&gt;... [ &lt;<b>output</b>&gt; ]
 
->> Creates a Kindle update package.  
->> You should be able to throw a mix of files &amp; directories as input without trouble.  
->> Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
->> If input is a single gzipped tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
->> Output should be a file with the extension ".bin", if it is not provided, or if it's a single dash, outputs to standard output.  
->> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.
+> Creates a Kindle update package.  
+> You should be able to throw a mix of files &amp; directories as input without trouble.  
+> Just keep in mind that by default, if you feed it absolute paths, it will archive absolute paths, which usually isn't what you want!  
+> If input is a single gzipped tarball (".tgz" or ".tar.gz") file, we assume it is properly packaged (bundlefile &amp; sigfile), and will only convert it to an update.  
+> Output should be a file with the extension ".bin", if it is not provided, or if it's a single dash, outputs to standard output.  
+> In case of OTA updates, all files with the extension ".ffs" or ".sh" will be treated as update scripts.
 
 	Type:
 		ota                         OTA V1 update package. Works on Kindle 3 and older.
@@ -189,29 +189,27 @@
                                       every path passed on the commandline is stored as-is in the archive. This switch changes that, and store paths
                                       relative to the path passed on the commandline, like if we had chdir'ed into it.
 
+-   KindleTool info &lt;<b>serialno</b>&gt;
 
-* KindleTool info &lt;<b>serialno</b>&gt;
+> Get the default root password.  
+> Unless you changed your password manually, the first password shown will be the right one.  
+> (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters).  
+> If you're looking for the recovery MMC export password, that's the second one.
 
->> Get the default root password.  
->> Unless you changed your password manually, the first password shown will be the right one.  
->> (The Kindle defaults to DES hashed passwords, which are truncated to 8 characters).  
->> If you're looking for the recovery MMC export password, that's the second one.
+-   KindleTool version
 
-* KindleTool version
+> Show some info about this KindleTool build.
 
->> Show some info about this KindleTool build.
+-   KindleTool help
 
-* KindleTool help
+> Show this help screen.
 
->> Show this help screen.
+### Notices
+1.  If the variable KT_WITH_UNKNOWN_DEVCODES is set in your environment (no matter the value), some device checks will be relaxed with the create command.
+2.  Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
+3.  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both FW 4.x (Kindle 4) and FW 5.x (Basically everything since the Kindle Touch).
 
-### Notices:
-1. If the variable KT_WITH_UNKNOWN_DEVCODES is set in your environment (no matter the value), some device checks will be relaxed with the create command.
-
-2. Kindle 4.0+ has a known bug that prevents some updates with meta-strings to run.
-3. Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both FW 4.x (Kindle 4) and FW 5.x (Basically everything since the Kindle Touch).
-
-### Building:
+### Building
 
 See [COMPILING](/COMPILING).
 
