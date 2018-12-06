@@ -331,6 +331,7 @@ static int
 				const char* pad = "000";
 				// NOTE: 0 padding a string with actual zeroes is fun....
 				//       (cf. https://stackoverflow.com/questions/4133318)
+				// Flawfinder: ignore
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))
@@ -372,7 +373,7 @@ static int
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
 	hindex += MD5_HASH_LENGTH;
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
-	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);
+	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
 	//num_metadata = *(uint16_t *)&data[hindex];
 	memcpy(&num_metadata, &data[hindex], sizeof(uint16_t));
 	//hindex += sizeof(uint16_t);       // Shut clang's sa up
@@ -491,6 +492,7 @@ static int
 			char* dev_id;
 			dev_id          = to_base(header->data.ota_update.device, 32);
 			const char* pad = "000";
+			// Flawfinder: ignore
 			fprintf(stderr,
 				"%.*s%s -> ",
 				((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id),
@@ -1082,7 +1084,7 @@ static int
 		path = archive_entry_pathname(entry);
 		fprintf(stderr, "x %s\n", path);
 		// Rewrite the entry's pathname to extract in the right output directory
-		len        = strlen(prefix) + 1 + strlen(path) + 1;
+		len        = strlen(prefix) + 1 + strlen(path) + 1;    // Flawfinder: ignore
 		fixed_path = malloc(len);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation"
@@ -1130,8 +1132,10 @@ int
 	FILE* bin_input;
 	int   tgz_fd;
 	FILE* tgz_output;
-	char  header_md5[MD5_HASH_LENGTH + 1] = { '\0' };
-	char  actual_md5[MD5_HASH_LENGTH + 1] = { '\0' };
+	// NOTE: Unlike the header themselves, we want a real NULL-terminated string here, hence the extra-space & zero-init
+	//       (to make strlen safe, among other concerns).
+	char header_md5[MD5_HASH_LENGTH + 1] = { 0 };
+	char actual_md5[MD5_HASH_LENGTH + 1] = { 0 };
 
 	while ((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1) {
 		switch (opt) {
@@ -1230,6 +1234,7 @@ int
 	}
 	fclose(bin_input);
 	// When appropriate, check the integrity of the tarball, thanks to the md5 hash stored in the package's header...
+	// Flawfinder: ignore
 	if (!fake_sign && strlen(header_md5) != 0) {
 		// First, calculate the hash of what we've just extracted...
 		rewind(tgz_output);
