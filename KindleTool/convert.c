@@ -58,6 +58,7 @@ static char*
 	char*        out;
 	uint64_t     n;
 	unsigned int i, len = 0, neg = 0;
+	// Flawfinder: ignore
 	if (base > strlen(tbl)) {
 		fprintf(stderr, "base %u is unsupported (too large).\n", base);
 		return 0;
@@ -471,7 +472,7 @@ static int
 	}
 	dm((unsigned char*) header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.ota_update.md5_sum);
-	strncpy(header_md5, header->data.ota_update.md5_sum, MD5_HASH_LENGTH);
+	strncpy(header_md5, header->data.ota_update.md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
 	fprintf(stderr, "Minimum OTA    %u\n", header->data.ota_update.source_revision);
 	fprintf(stderr, "Target OTA     %u\n", header->data.ota_update.target_revision);
 	fprintf(stderr, "Device         ");
@@ -531,7 +532,7 @@ static int
 	}
 	dm((unsigned char*) header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, header->data.recovery_update.md5_sum);
-	strncpy(header_md5, header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);
+	strncpy(header_md5, header->data.recovery_update.md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
 	fprintf(stderr, "Magic 1        %u\n", header->data.recovery_update.magic_1);
 	fprintf(stderr, "Magic 2        %u\n", header->data.recovery_update.magic_2);
 	fprintf(stderr, "Minor          %u\n", header->data.recovery_update.minor);
@@ -834,7 +835,7 @@ int
 			}
 			// Not info only, not unwrap only AND not stdout
 			if (!info_only && !unwrap_only && output != stdout) {
-				len      = strlen(in_name);
+				len      = strlen(in_name);    // Flawfinder: ignore
 				out_name = malloc(len + 1 + (13 - ext_offset));
 				snprintf(out_name,
 					 len + 1 + (13 - ext_offset),
