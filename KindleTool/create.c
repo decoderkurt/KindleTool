@@ -582,7 +582,7 @@ static int
 		if (legacy) {
 			stat(filename[i], &st);
 			if (S_ISDIR(st.st_mode)) {
-				kttar->tweak_pointer_index = strlen(filename[i]);
+				kttar->tweak_pointer_index = strlen(filename[i]);    // Flawfinder: ignore
 			}
 		}
 
@@ -670,7 +670,7 @@ static int
 
 			// If we're the bundlefile, fix the relative path to not use the tempfile path...
 			if ((bundlefile_status & BUNDLE_OPEN) != BUNDLE_OPEN) {
-				pathlen = strlen(INDEX_FILE_NAME);
+				pathlen = strlen(INDEX_FILE_NAME);    // Flawfinder: ignore
 				signame = malloc(pathlen + 4 + 1);
 				snprintf(signame, pathlen + 4 + 1, "%s.%s", INDEX_FILE_NAME, "sig");
 			} else {
@@ -1050,7 +1050,7 @@ static int
 
 	// Next, we write the meta strings
 	for (i = 0; i < info->num_meta; i++) {
-		str_len = strlen(info->metastrings[i]);
+		str_len = strlen(info->metastrings[i]);    // Flawfinder: ignore
 		header_size += str_len + sizeof(uint16_t);
 		header = realloc(header, header_size);
 		// String length: little endian -> big endian
