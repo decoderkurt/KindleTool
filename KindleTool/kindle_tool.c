@@ -794,6 +794,7 @@ static int
 	}
 	// Don't manipulate argv directly, make a copy of it first...
 	strncpy(serial_no, argv[0], SERIAL_NO_LENGTH);    // Flawfinder: ignore
+	// Flawfinder: ignore
 	if (strlen(serial_no) < SERIAL_NO_LENGTH || strlen(argv[0]) > SERIAL_NO_LENGTH) {
 		fprintf(stderr,
 			"Serial number must be composed of exactly 16 characters (without spaces). For example: %s\n",
