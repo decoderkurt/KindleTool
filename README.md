@@ -213,4 +213,4 @@
 
 See [COMPILING](/COMPILING).
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-spaces none;
+<!-- kate: indent-mode cstyle; indent-width 4; replace-tabs on; remove-trailing-spaces none; -->
