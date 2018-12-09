@@ -899,9 +899,12 @@ int
 	} else {
 		// Check that our supposedly sane platform-specific tempdir actually exists, and that we can write to it...
 		struct stat st;
-		if (stat(kt_tempdir, &st) == -1 || !S_ISDIR(st.st_mode)) {
-			// ... couldn't stat it (doesn't exist, couldn't be searched), or it's not a directory:
+		if (stat(kt_tempdir, &st) == -1) {
+			// ... couldn't stat it (doesn't exist, couldn't be searched):
 			//     use our fallback directory and hope for the best
+			strcpy(kt_tempdir, KT_TMPDIR);
+		} else if (!S_ISDIR(st.st_mode)) {
+			// ... it's not a directory: use our fallback directory and hope for the best
 			strcpy(kt_tempdir, KT_TMPDIR);
 		} else if (access(kt_tempdir, R_OK | W_OK | X_OK) == -1) {
 			// NOTE: We might want to use euidaccess or eaccess instead, but those are GNU extensions.
