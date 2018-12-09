@@ -1,4 +1,6 @@
 # KindleTool
+[![License](https://img.shields.io/github/license/NiLuJe/KindleTool.svg)](/LICENSE) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/15d7ef43d2e046f998668960d4a65ae6)](https://www.codacy.com/app/NiLuJe/KindleTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=NiLuJe/KindleTool&amp;utm_campaign=Badge_Grade) [![Latest tag](https://img.shields.io/github/tag-date/NiLuJe/KindleTool.svg)](https://github.com/NiLuJe/KindleTool/releases/)
+
 ## Usage
 -   KindleTool md [ &lt;<b>input</b>&gt; ] [ &lt;<b>output</b>&gt; ]
 
