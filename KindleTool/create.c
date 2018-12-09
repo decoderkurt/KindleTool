@@ -385,8 +385,8 @@ static int
 				//       because libarchive strips trailing path separators in the entry pathname,
 				//       but we might have passed one on the CL,
 				//       so pointer_index might be larger than strlen ;)
-				// Flawfinder: ignore
 				if (archive_entry_filetype(entry) == AE_IFDIR &&
+				    // Flawfinder: ignore
 				    strlen(archive_entry_pathname(entry)) <= kttar->tweak_pointer_index) {
 					// Print what we're stripping, ala GNU tar...
 					fprintf(stderr,
@@ -1163,6 +1163,7 @@ static int
 
 	memset(&header, 0, sizeof(UpdateHeader));    // Zero init
 
+	// Flawfinder: ignore
 	strncpy(header.magic_number, info->magic_number, MAGIC_NUMBER_LENGTH);    // Magic number
 	header.data.recovery_update.magic_1 = (uint32_t) info->magic_1;           // Magic 1
 	header.data.recovery_update.magic_2 = (uint32_t) info->magic_2;           // Magic 2
@@ -1233,6 +1234,7 @@ static int
 	// Zero init everything first...
 	memset(header, 0, header_size);
 
+	// Flawfinder: ignore
 	strncpy((char*) header, info->magic_number, MAGIC_NUMBER_LENGTH);
 	hindex += MAGIC_NUMBER_LENGTH;
 	hindex += sizeof(uint32_t);                                           // Padding
@@ -2223,11 +2225,10 @@ int
 				}
 				// Flawfinder: ignore
 				if (strlen(optarg) > 0xFFFFu) {
-					// Flawfinder: ignore
 					fprintf(stderr,
 						"Metastring too long. Max length: %u, input length: %zu\n",
 						0xFFFFu,
-						strlen(optarg));
+						strlen(optarg));    // Flawfinder: ignore
 					goto do_error;
 				}
 				info.metastrings = realloc(info.metastrings, ++info.num_meta * sizeof(char*));

@@ -92,6 +92,7 @@ unsigned long int
 	const char*       tbl    = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
 	unsigned long int result = 0;
 
+	// Flawfinder: ignore
 	if (base > strlen(tbl)) {
 		fprintf(stderr, "base %u is unsupported (too large).\n", base);
 		return 0;
@@ -493,10 +494,11 @@ static int
 			char* dev_id;
 			dev_id          = to_base(header->data.ota_update.device, 32);
 			const char* pad = "000";
-			// Flawfinder: ignore
 			fprintf(stderr,
 				"%.*s%s -> ",
-				((int) strlen(pad) < (int) strlen(dev_id)) ? 0 : (int) strlen(pad) - (int) strlen(dev_id),
+				((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
+				    ? 0
+				    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
 				pad,
 				dev_id);
 			free(dev_id);
@@ -636,7 +638,7 @@ static int
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
 	hindex += MD5_HASH_LENGTH;
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
-	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);
+	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
 	//magic_1 = *(uint32_t *)&data[hindex];
 	memcpy(&magic_1, &data[hindex], sizeof(uint32_t));
 	hindex += sizeof(uint32_t);
@@ -701,9 +703,9 @@ static int
 				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))
+					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
 					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),
+					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
 					pad,
 					dev_id);
 				free(dev_id);
@@ -876,7 +878,7 @@ int
 			}
 			// We want an unwrapped package (implies not info only)
 			if (unwrap_only) {
-				len            = strlen(in_name);
+				len            = strlen(in_name);    // Flawfinder: ignore
 				unwrapped_name = malloc(len + 1 + (10 - ext_offset));
 				// If input is an userdata package, we can safely assume we'll end up with a tarballl
 				if (ext_offset) {
