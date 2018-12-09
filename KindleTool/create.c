@@ -992,7 +992,7 @@ static int
 	// First part of the set sized data
 	header_size = MAGIC_NUMBER_LENGTH + OTA_UPDATE_V2_BLOCK_SIZE;
 	header      = malloc(header_size);
-	strncpy((char*) header, info->magic_number, MAGIC_NUMBER_LENGTH);
+	strncpy((char*) header, info->magic_number, MAGIC_NUMBER_LENGTH);    // Flawfinder: ignore
 	hindex += MAGIC_NUMBER_LENGTH;
 	memcpy(&header[hindex], &info->source_revision, sizeof(uint64_t));    // Source
 	hindex += sizeof(uint64_t);

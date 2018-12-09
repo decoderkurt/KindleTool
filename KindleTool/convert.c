@@ -585,9 +585,9 @@ static int
 				const char* pad = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))
+					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
 					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),
+					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
 					pad,
 					dev_id);
 				free(dev_id);
@@ -854,7 +854,7 @@ int
 			}
 			// We want the payload sig (implies not info only)
 			if (extract_sig) {
-				len      = strlen(in_name);
+				len      = strlen(in_name);    // Flawfinder: ignore
 				sig_name = malloc(len + 1 + (1 - ext_offset));
 				snprintf(sig_name,
 					 len + 1 + (1 - ext_offset),
