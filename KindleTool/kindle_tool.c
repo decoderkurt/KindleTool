@@ -369,6 +369,10 @@ const char*
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TM)";
 		case KindlePaperWhite4Unknown_0TN:
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TN)";
+		case KindlePaperWhite4Unknown_102:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 102)";
+		case KindlePaperWhite4Unknown_103:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 103)";
 		case KindleUnknown:
 		default:
 			return "Unknown";

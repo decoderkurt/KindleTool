@@ -295,6 +295,8 @@ typedef enum
 	KindlePaperWhite4Unknown_0TL      = 0x374,    // 0TL?
 	KindlePaperWhite4Unknown_0TM      = 0x375,    // 0TM?
 	KindlePaperWhite4Unknown_0TN      = 0x376,    // 0TN?
+	KindlePaperWhite4Unknown_102      = 0x402,    // 102?? FIXME: Appeared in 5.10.1.3, here be dragons...
+	KindlePaperWhite4Unknown_103      = 0x403,    // 103??
 	KindleUnknown                     = 0x00
 } Device;
 
