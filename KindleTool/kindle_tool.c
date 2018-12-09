@@ -894,15 +894,14 @@ int
 	}
 #endif
 	// If we don't have a platform-specific tempdir, use the fallback...
-	// Because otherwise, a stat on the uninitialized or zero-initialized kt_tempdir would sometime PASS the S_ISDIR check?!
 	if (!*kt_tempdir) {
 		strcpy(kt_tempdir, KT_TMPDIR);
 	} else {
 		// Check that our supposedly sane platform-specific tempdir actually exists, and that we can write to it...
 		struct stat st;
-		stat(kt_tempdir, &st);
-		if (!S_ISDIR(st.st_mode)) {
-			// ... it's not a directory, or it doesn't exist: use our fallback directory and hope for the best
+		if (stat(kt_tempdir, &st) == -1 || !S_ISDIR(st.st_mode)) {
+			// ... couldn't stat it (doesn't exist, couldn't be searched), or it's not a directory:
+			//     use our fallback directory and hope for the best
 			strcpy(kt_tempdir, KT_TMPDIR);
 		} else if (access(kt_tempdir, R_OK | W_OK | X_OK) == -1) {
 			// NOTE: We might want to use euidaccess or eaccess instead, but those are GNU extensions.
