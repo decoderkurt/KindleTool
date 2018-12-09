@@ -2345,12 +2345,13 @@ int
 				info.source_revision = 2443670049;    // FW 5.5.0
 			}
 			if (!enforce_target_rev) {
-				info.target_revision = 1 + 3360340004;    // FW 5.10.1.2 (PW4)
+				info.target_revision = 1 + 3372830002;    // FW 5.10.1.3 (PW4)
 			}
 			// NOTE: Don't expect those to be entirely consistent when crossing devices
 			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
-			// NOTE: The VoiceView packages have a slightly higher Target OTA flag, f.g.,
-			//       while FW 5.10.1.2 is at 3360340004, the PW4 VoiceView packages targets 3372830002...
+			// NOTE: The VoiceView packages may have a slightly higher Target OTA flag, f.g.,
+			//       while FW 5.10.1.2 is at 3360340004, the PW4 VoiceView packages targets 3372830002,
+			//       which turned out to be FW 5.10.1.3
 		}
 		// Musn't be *only* a sig envelope...
 		if (info.version == UpdateSignature) {
