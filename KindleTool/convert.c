@@ -333,12 +333,11 @@ static int
 				const char* pad = "000";
 				// NOTE: 0 padding a string with actual zeroes is fun....
 				//       (cf. https://stackoverflow.com/questions/4133318)
-				// Flawfinder: ignore
 				fprintf(stderr,
 					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))
+					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
 					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),
+					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
 					pad,
 					dev_id);
 				// NOTE: Can't touch the formatting of this, MRPI relies on it...
