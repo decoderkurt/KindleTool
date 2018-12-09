@@ -893,12 +893,20 @@ int
 		strcpy(kt_tempdir, posix_tmpdir);
 	}
 #endif
-	// Check that our supposedly sane temp directory actually exists...
-	struct stat st;
-	stat(kt_tempdir, &st);
-	if (!S_ISDIR(st.st_mode)) {
-		// ... and if it doesn't, use our fallback directory and hope for the best
+	// If we don't have a platform-specific tempdir, use the fallback...
+	if (!*kt_tempdir) {
 		strcpy(kt_tempdir, KT_TMPDIR);
+	} else {
+		// Check that our supposedly sane platform-specific tempdir actually exists, and that we can write to it...
+		struct stat st;
+		stat(kt_tempdir, &st);
+		if (!S_ISDIR(st.st_mode)) {
+			// ... it's not a directory, or it doesn't exist: use our fallback directory and hope for the best
+			strcpy(kt_tempdir, KT_TMPDIR);
+		} else if (access(kt_tempdir, R_OK | W_OK | X_OK) == -1) {
+			// ... we can't write into that directory: use our fallback directory and hope for the best
+			strcpy(kt_tempdir, KT_TMPDIR);
+		}
 	}
 
 	prog_name = argv[0];

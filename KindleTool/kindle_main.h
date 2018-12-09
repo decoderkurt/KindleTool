@@ -27,7 +27,7 @@
 
 // Ugly globals.
 unsigned int kt_with_unknown_devcodes;
-char         kt_tempdir[PATH_MAX];
+char         kt_tempdir[PATH_MAX] = { 0 };
 
 static int kindle_print_help(const char*);
 static int kindle_print_version(const char*);
