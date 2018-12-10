@@ -581,9 +581,10 @@ static int
 		kttar->tweak_pointer_index = 0;
 		// Check if we want to behave like Yifan's KindleTool
 		if (legacy) {
-			stat(filename[i], &st);
-			if (S_ISDIR(st.st_mode)) {
-				kttar->tweak_pointer_index = strlen(filename[i]);    // Flawfinder: ignore
+			if (stat(filename[i], &st) == 0) {
+				if (S_ISDIR(st.st_mode)) {
+					kttar->tweak_pointer_index = strlen(filename[i]);    // Flawfinder: ignore
+				}
 			}
 		}
 
