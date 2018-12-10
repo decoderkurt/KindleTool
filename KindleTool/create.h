@@ -66,25 +66,30 @@ struct kttar
 static const char* convert_bundle_version(BundleVersion);
 
 static struct rsa_private_key get_default_key(void);
-static int                    sign_file(FILE*, struct rsa_private_key*, FILE*);
+static int                    sign_file(FILE*, const struct rsa_private_key*, FILE*);
 
 static int metadata_filter(struct archive*, void*, struct archive_entry*);
-static int write_file(struct kttar*, struct archive*, struct archive*, struct archive_entry*);
-static int write_entry(struct kttar*, struct archive*, struct archive*, struct archive_entry*);
-static int copy_file_data_block(struct kttar*, struct archive*, struct archive*, struct archive_entry*);
-static int create_from_archive_read_disk(struct kttar*, struct archive*, char*, bool, char*, const unsigned int);
+static int write_file(const struct kttar*, struct archive*, struct archive*, struct archive_entry*);
+static int write_entry(const struct kttar*, struct archive*, struct archive*, struct archive_entry*);
+static int copy_file_data_block(const struct kttar*, struct archive*, struct archive*, struct archive_entry*);
+static int create_from_archive_read_disk(struct kttar*,
+					 struct archive*,
+					 const char*,
+					 bool,
+					 const char*,
+					 const unsigned int);
 
 static int kindle_create_package_archive(const int,
 					 char**,
 					 const unsigned int,
-					 struct rsa_private_key*,
+					 const struct rsa_private_key*,
 					 const unsigned int,
 					 const unsigned int);
-static int kindle_create(UpdateInformation*, FILE*, FILE*, const bool);
-static int kindle_create_ota_update_v2(UpdateInformation*, FILE*, FILE*, const bool);
-static int kindle_create_signature(UpdateInformation*, FILE*, FILE*);
-static int kindle_create_ota_update(UpdateInformation*, FILE*, FILE*, const bool);
-static int kindle_create_recovery(UpdateInformation*, FILE*, FILE*, const bool);
-static int kindle_create_recovery_v2(UpdateInformation*, FILE*, FILE*, const bool);
+static int kindle_create(const UpdateInformation*, FILE*, FILE*, const bool);
+static int kindle_create_ota_update_v2(const UpdateInformation*, FILE*, FILE*, const bool);
+static int kindle_create_signature(const UpdateInformation*, FILE*, FILE*);
+static int kindle_create_ota_update(const UpdateInformation*, FILE*, FILE*, const bool);
+static int kindle_create_recovery(const UpdateInformation*, FILE*, FILE*, const bool);
+static int kindle_create_recovery_v2(const UpdateInformation*, FILE*, FILE*, const bool);
 
 #endif

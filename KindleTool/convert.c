@@ -23,7 +23,7 @@
 #include "convert.h"
 
 static const char*
-    convert_magic_number(char magic_number[MAGIC_NUMBER_LENGTH])
+    convert_magic_number(const char magic_number[MAGIC_NUMBER_LENGTH])
 {
 	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH)) {
 		return "(Fullbin [signed?])";    // /mnt/us/update-full.bin
@@ -86,7 +86,7 @@ static char*
 // Pilfered and mangled from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C++
 // NOTE: Eh, turns out to be basically the same implemention I used for kindle_model_sort.py...
 unsigned long int
-    from_base(char* num, unsigned int base)
+    from_base(const char* num, unsigned int base)
 {
 	// FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
 	const char*       tbl    = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
@@ -99,7 +99,7 @@ unsigned long int
 	}
 
 	// Hi, my name is Neo. I know pointers! (Or not.)
-	char* p;
+	const char* p;
 	for (p = num; *p != '\0'; p++) {
 		size_t i = 0;
 		for (i = 0; tbl[i] != '\0'; i++) {

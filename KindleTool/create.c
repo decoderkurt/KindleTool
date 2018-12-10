@@ -101,7 +101,7 @@ static struct rsa_private_key
 }
 
 static int
-    sign_file(FILE* in_file, struct rsa_private_key* rsa_pkey, FILE* sigout_file)
+    sign_file(FILE* in_file, const struct rsa_private_key* rsa_pkey, FILE* sigout_file)
 {
 	unsigned char     buffer[BUFFER_SIZE];
 	size_t            len;
@@ -216,7 +216,7 @@ static int
 
 // Write a single file (or directory or other filesystem object) to the archive [from libarchive's tar/write.c].
 static int
-    write_file(struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
+    write_file(const struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
 {
 	if (write_entry(kttar, a, in_a, entry) != 0) {
 		return 1;
@@ -226,7 +226,7 @@ static int
 
 // Write a single entry to the archive [from libarchive's tar/write.c].
 static int
-    write_entry(struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
+    write_entry(const struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
 {
 	int e;
 
@@ -253,7 +253,7 @@ static int
 
 // Helper function to copy file to archive [from libarchive's tar/write.c].
 static int
-    copy_file_data_block(struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
+    copy_file_data_block(const struct kttar* kttar, struct archive* a, struct archive* in_a, struct archive_entry* entry)
 {
 	size_t         bytes_read;
 	ssize_t        bytes_written;
@@ -323,9 +323,9 @@ static int
 static int
     create_from_archive_read_disk(struct kttar*      kttar,
 				  struct archive*    a,
-				  char*              input_filename,
+				  const char*        input_filename,
 				  bool               first_pass,
-				  char*              signame,
+				  const char*        signame,
 				  const unsigned int real_blocksize)
 {
 	int   r;
@@ -522,12 +522,12 @@ cleanup:
 
 // Archiving code inspired from libarchive tar/write.c ;).
 static int
-    kindle_create_package_archive(const int               outfd,
-				  char**                  filename,
-				  const unsigned int      total_files,
-				  struct rsa_private_key* rsa_pkey_file,
-				  const unsigned int      legacy,
-				  const unsigned int      real_blocksize)
+    kindle_create_package_archive(const int                     outfd,
+				  char**                        filename,
+				  const unsigned int            total_files,
+				  const struct rsa_private_key* rsa_pkey_file,
+				  const unsigned int            legacy,
+				  const unsigned int            real_blocksize)
 {
 	struct archive* a;
 	struct kttar *  kttar, kttar_storage;
@@ -826,7 +826,7 @@ cleanup:
 }
 
 static int
-    kindle_create(UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
+    kindle_create(const UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
 {
 	unsigned char buffer[BUFFER_SIZE];
 	size_t        count;
@@ -979,7 +979,7 @@ static int
 }
 
 static int
-    kindle_create_ota_update_v2(UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
+    kindle_create_ota_update_v2(const UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
 {
 	size_t         header_size;
 	unsigned char* header;
@@ -1085,7 +1085,7 @@ static int
 }
 
 static int
-    kindle_create_signature(UpdateInformation* info, FILE* input_bin, FILE* output)
+    kindle_create_signature(const UpdateInformation* info, FILE* input_bin, FILE* output)
 {
 	UpdateHeader header;    // Header to write
 
@@ -1106,7 +1106,7 @@ static int
 }
 
 static int
-    kindle_create_ota_update(UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
+    kindle_create_ota_update(const UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
 {
 	UpdateHeader header;
 	FILE*        obfuscated_tgz;
@@ -1155,7 +1155,7 @@ static int
 }
 
 static int
-    kindle_create_recovery(UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
+    kindle_create_recovery(const UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
 {
 	UpdateHeader header;
 	FILE*        obfuscated_tgz;
@@ -1218,7 +1218,7 @@ static int
 }
 
 static int
-    kindle_create_recovery_v2(UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
+    kindle_create_recovery_v2(const UpdateInformation* info, FILE* input_tgz, FILE* output, const bool fake_sign)
 {
 	size_t         header_size;
 	unsigned char* header;
