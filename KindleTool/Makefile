@@ -137,8 +137,12 @@ KT_CFLAGS+=-Wall
 KT_CFLAGS+=-Wextra -Wunused
 KT_CFLAGS+=-Wformat=2
 KT_CFLAGS+=-Wformat-signedness
-# NOTE: This doesn't really play nice w/ FORTIFY, leading to an assload of false-positives
-KT_CFLAGS+=-Wno-format-truncation
+# NOTE: This doesn't really play nice w/ FORTIFY, leading to an assload of false-positives, unless LTO is enabled
+ifneq (,$(findstring flto,$(CFLAGS)))
+	KT_CFLAGS+=-Wformat-truncation=2
+else
+	KT_CFLAGS+=-Wno-format-truncation
+endif
 KT_CFLAGS+=-Wnull-dereference
 KT_CFLAGS+=-Wuninitialized
 KT_CFLAGS+=-Wduplicated-branches -Wduplicated-cond
