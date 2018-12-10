@@ -101,8 +101,7 @@ unsigned long int
 	// Hi, my name is Neo. I know pointers! (Or not.)
 	const char* p;
 	for (p = num; *p != '\0'; p++) {
-		size_t i = 0;
-		for (i = 0; tbl[i] != '\0'; i++) {
+		for (uint8_t i = 0; tbl[i] != '\0'; i++) {
 			if (*p == tbl[i]) {
 				result = result * base + i;
 				break;
