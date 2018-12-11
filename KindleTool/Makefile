@@ -101,9 +101,18 @@ else
 		endif
 	endif
 	# Enforce aggressive optimizations...
-	KT_CFLAGS+=-O3 -ffast-math
-	KT_CFLAGS+=-ftree-vectorize
-	KT_CFLAGS+=-funroll-loops
+	ifeq (,$(findstring -O3,$(CFLAGS)))
+		KT_CFLAGS+=-O3
+	endif
+	ifeq (,$(findstring -ffast-math,$(CFLAGS)))
+		KT_CFLAGS+=-ffast-math
+	endif
+	ifeq (,$(findstring -ftree-vectorize,$(CFLAGS)))
+		KT_CFLAGS+=-ftree-vectorize
+	endif
+	ifeq (,$(findstring -funroll-loops,$(CFLAGS)))
+		KT_CFLAGS+=-funroll-loops
+	endif
 endif
 
 ifdef KINDLE
