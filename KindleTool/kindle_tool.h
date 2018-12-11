@@ -439,7 +439,7 @@ int           demunger(FILE*, FILE*, size_t, const bool);
 const char*   convert_device_id(Device) __attribute__((const));
 const char*   convert_platform_id(Platform) __attribute__((const));
 const char*   convert_board_id(Board) __attribute__((const));
-BundleVersion get_bundle_version(char*) __attribute__((pure));
+BundleVersion get_bundle_version(const char*) __attribute__((pure));
 int           md5_sum(FILE*, char*);
 
 int kindle_convert_main(int, char**);
@@ -448,6 +448,6 @@ int kindle_extract_main(int, char**);
 
 int kindle_create_main(int, char**);
 
-int nettle_rsa_privkey_from_pem(char*, struct rsa_private_key*);
+int nettle_rsa_privkey_from_pem(const char*, struct rsa_private_key*);
 
 #endif

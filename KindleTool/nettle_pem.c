@@ -336,7 +336,7 @@ static int
 }
 
 int
-    nettle_rsa_privkey_from_pem(char* pem_filename, struct rsa_private_key* rsa_pkey)
+    nettle_rsa_privkey_from_pem(const char* pem_filename, struct rsa_private_key* rsa_pkey)
 {
 	struct nettle_buffer buffer;
 	enum object_type     type   = 0;

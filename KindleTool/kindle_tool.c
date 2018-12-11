@@ -426,7 +426,7 @@ const char*
 }
 
 BundleVersion
-    get_bundle_version(char magic_number[MAGIC_NUMBER_LENGTH])
+    get_bundle_version(const char magic_number[MAGIC_NUMBER_LENGTH])
 {
 	if (!memcmp(magic_number, "FB02", MAGIC_NUMBER_LENGTH) || !memcmp(magic_number, "FB01", MAGIC_NUMBER_LENGTH)) {
 		return RecoveryUpdate;
