@@ -72,33 +72,42 @@ LIBS+=-lz
 #	LIBS+=-ltcmalloc
 #endif
 
+# Detect GCC version because reasons...
+# (namely, GCC emitting an error instead of a warning on unknown -W options)
+MOAR_WARNIGS:=0
+# Tests heavily inspired from Linux's build system ;).
+CC_IS_CLANG:=$(shell $(CC) -v 2>&1 | grep -q "clang version" && echo 1 || echo 0)
+CC_VERSION:=$(shell printf "%02d%02d%02d" `echo __GNUC__ | $(CC) -E -x c - | tail -n 1` `echo __GNUC_MINOR__ | $(CC) -E -x c - | tail -n 1` `echo __GNUC_PATCHLEVEL__ | $(CC) -E -x c - | tail -n 1`)
+# Detect Clang's SA, too...
+ifeq "$(CC_IS_CLANG)" "0"
+	ifeq "$(lastword $(subst /, ,$(CC)))" "ccc-analyzer"
+		CC_IS_CLANG:=1
+	endif
+endif
+ifeq "$(CC_IS_CLANG)" "1"
+	# This is Clang
+	MOAR_WARNIGS:=1
+endif
+ifeq "$(shell expr $(CC_VERSION) \>= 070000)" "1"
+	# This is GCC >= 7
+	MOAR_WARNIGS:=1
+endif
+
 ifdef DEBUG
 	OUT_DIR=Debug
 	# Clang doesn't support -Og...
-	ifeq "$(OSTYPE)" "Darwin"
+	ifeq "$(CC_IS_CLANG)" "1"
 		CFLAGS:=$(CLANG_DEBUG_CFLAGS)
 	else
-		ifeq "$(CC)" "clang"
-			CFLAGS:=$(CLANG_DEBUG_CFLAGS)
-		else ifeq "$(lastword $(subst /, ,$(CC)))" "ccc-analyzer"
-			CFLAGS:=$(CLANG_DEBUG_CFLAGS)
-		else
-			CFLAGS:=$(DEBUG_CFLAGS)
-		endif
+		CFLAGS:=$(DEBUG_CFLAGS)
 	endif
 else
 	OUT_DIR=Release
-	# Don't default to stuff that'll make clang unhappy on OS X
-	ifeq "$(OSTYPE)" "Darwin"
+	# Don't default to stuff that'll make clang unhappy
+	ifeq "$(CC_IS_CLANG)" "1"
 		CFLAGS?=$(CLANG_OPT_CFLAGS)
 	else
-		ifeq "$(CC)" "clang"
-			CFLAGS?=$(CLANG_OPT_CFLAGS)
-		else ifeq "$(lastword $(subst /, ,$(CC)))" "ccc-analyzer"
-			CFLAGS?=$(CLANG_OPT_CFLAGS)
-		else
-			CFLAGS?=$(OPT_CFLAGS)
-		endif
+		CFLAGS?=$(OPT_CFLAGS)
 	endif
 	# Enforce aggressive optimizations...
 	ifeq (,$(findstring -O3,$(CFLAGS)))
@@ -146,43 +155,49 @@ endif
 
 # NOTE: All the KT_ prefixed *FLAGS are stuff that we *always* want set, no matter what the user does.
 # Moar warnings!
-KT_CFLAGS+=-Wall
-KT_CFLAGS+=-Wextra -Wunused
-KT_CFLAGS+=-Wformat=2
-KT_CFLAGS+=-Wformat-signedness
-# NOTE: This doesn't really play nice w/ FORTIFY, leading to an assload of false-positives, unless LTO is enabled
-ifneq (,$(findstring flto,$(CFLAGS)))
-	KT_CFLAGS+=-Wformat-truncation=2
-else
-	KT_CFLAGS+=-Wno-format-truncation
+ifeq "$(MOAR_WARNIGS)" "1"
+	KT_CFLAGS+=-Wall
+	KT_CFLAGS+=-Wextra -Wunused
+	KT_CFLAGS+=-Wformat=2
+	KT_CFLAGS+=-Wformat-signedness
+	# NOTE: This doesn't really play nice w/ FORTIFY, leading to an assload of false-positives, unless LTO is enabled
+	ifneq (,$(findstring flto,$(CFLAGS)))
+		KT_CFLAGS+=-Wformat-truncation=2
+	else
+		KT_CFLAGS+=-Wno-format-truncation
+	endif
+	KT_CFLAGS+=-Wnull-dereference
+	KT_CFLAGS+=-Wuninitialized
+	KT_CFLAGS+=-Wduplicated-branches -Wduplicated-cond
+	KT_CFLAGS+=-Wundef
+	KT_CFLAGS+=-Wbad-function-cast
+	KT_CFLAGS+=-Wwrite-strings
+	KT_CFLAGS+=-Wjump-misses-init
+	KT_CFLAGS+=-Wlogical-op
+	KT_CFLAGS+=-Wstrict-prototypes -Wold-style-definition
+	KT_CFLAGS+=-Wshadow
+	KT_CFLAGS+=-Wmissing-prototypes -Wmissing-declarations
+	KT_CFLAGS+=-Wnested-externs
+	KT_CFLAGS+=-Winline
+	KT_CFLAGS+=-Wcast-qual
+	# NOTE: GCC 8 introduces -Wcast-align=strict to warn regardless of the target architecture (i.e., like clang)
+	KT_CFLAGS+=-Wcast-align
+	KT_CFLAGS+=-Wconversion
+	# Output padding info when debugging (NOTE: Clang is slightly more verbose)
+	# As well as function attribute hints
+	ifdef DEBUG
+		KT_CFLAGS+=-Wpadded
+		KT_CFLAGS+=-Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wmissing-format-attribute
+	endif
+	# Annoying with our typedefs
+	KT_CFLAGS+=-Wno-bad-function-cast
+	# And disable some very verbose and/or annoying stuff
+	KT_CFLAGS+=-Wno-jump-misses-init
+	# And just because that's annoying...
+	ifeq "$(CC_IS_CLANG)" "1"
+		KT_CFLAGS+=-Wno-ignored-optimization-argument -Wno-unknown-warning-option -Wno-unknown-attributes
+	endif
 endif
-KT_CFLAGS+=-Wnull-dereference
-KT_CFLAGS+=-Wuninitialized
-KT_CFLAGS+=-Wduplicated-branches -Wduplicated-cond
-KT_CFLAGS+=-Wundef
-KT_CFLAGS+=-Wbad-function-cast
-KT_CFLAGS+=-Wwrite-strings
-KT_CFLAGS+=-Wjump-misses-init
-KT_CFLAGS+=-Wlogical-op
-KT_CFLAGS+=-Wstrict-prototypes -Wold-style-definition
-KT_CFLAGS+=-Wshadow
-KT_CFLAGS+=-Wmissing-prototypes -Wmissing-declarations
-KT_CFLAGS+=-Wnested-externs
-KT_CFLAGS+=-Winline
-KT_CFLAGS+=-Wcast-qual
-# NOTE: GCC 8 introduces -Wcast-align=strict to warn regardless of the target architecture (i.e., like clang)
-KT_CFLAGS+=-Wcast-align
-KT_CFLAGS+=-Wconversion
-# Output padding info when debugging (NOTE: Clang is slightly more verbose)
-# As well as function attribute hints
-ifdef DEBUG
-	KT_CFLAGS+=-Wpadded
-	KT_CFLAGS+=-Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wmissing-format-attribute
-endif
-# Annoying with our typedefs
-KT_CFLAGS+=-Wno-bad-function-cast
-# And disable some very verbose and/or annoying stuff
-KT_CFLAGS+=-Wno-jump-misses-init
 
 # libarchive is always built with large files support, do the same to avoid issues.
 KT_CPPFLAGS+=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
