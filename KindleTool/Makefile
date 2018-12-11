@@ -102,7 +102,7 @@ else
 	endif
 	# Enforce aggressive optimizations...
 	ifeq (,$(findstring -O3,$(CFLAGS)))
-		KT_CFLAGS+=-O3
+		override CFLAGS:=$(CFLAGS:-O%=-O3)
 	endif
 	ifeq (,$(findstring -ffast-math,$(CFLAGS)))
 		KT_CFLAGS+=-ffast-math
