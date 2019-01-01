@@ -2,7 +2,7 @@
 **  KindleTool, nettle_pem.c
 **
 **  Copyright (C) 2011-2012  Yifan Lu
-**  Copyright (C) 2012-2018  NiLuJe
+**  Copyright (C) 2012-2019  NiLuJe
 **  Concept based on an original Python implementation by Igor Skochinsky & Jean-Yves Avenard,
 **    cf., http://www.mobileread.com/forums/showthread.php?t=63225
 **

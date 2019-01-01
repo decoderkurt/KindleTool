@@ -143,7 +143,7 @@ Build_Linux() {
 	cat > CREDITS << EOF
 * kindletool:
 
-KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2019 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
@@ -250,7 +250,7 @@ Build_Cygwin() {
 	cat > CREDITS << EOF
 * kindletool.exe:
 
-KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2019 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
@@ -421,7 +421,7 @@ Build_OSX() {
 	cat > Release/CREDITS << EOF
 * kindletool:
 
-KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2018 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2019 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
