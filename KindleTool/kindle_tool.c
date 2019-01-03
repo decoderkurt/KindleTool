@@ -367,8 +367,8 @@ const char*
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TM)";
 		case KindlePaperWhite4Unknown_0TN:
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0TN)";
-		case KindlePaperWhite4Unknown_102:
-			return "Kindle PaperWhite 4 (2018) (Unknown Variant 102)";
+		case KindlePaperWhite4WiFi8GBIndia:
+			return "Kindle PaperWhite 4 (2018) WiFi (8GB) India";
 		case KindlePaperWhite4Unknown_103:
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 103)";
 		case KindleUnknown:
@@ -590,6 +590,7 @@ static int
 	    "      -d, --device pw4l           Kindle PaperWhite 4 (2018) WiFi (32GB)\n"
 	    "      -d, --device pw4lg          Kindle PaperWhite 4 (2018) WiFi+4G (32GB)\n"
 	    "      -d, --device pw4lgb         Kindle PaperWhite 4 (2018) WiFi+4G (32GB) Europe\n"
+	    "      -d, --device pw4in          Kindle PaperWhite 4 (2018) WiFi (8GB) India\n"
 	    "      -d, --device kindle2        Alias for k2 & k2i\n"
 	    "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
 	    "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -604,7 +605,7 @@ static int
 	    "      -d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn\n"
 	    "      -d, --device basic2         Alias for kt3 & kt3w\n"
 	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b\n"
-	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg & pw4lgb\n"
+	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb & pw4in\n"
 	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2 & paperwhite4\n"
 	    "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
 	    "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
