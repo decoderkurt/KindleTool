@@ -2006,8 +2006,7 @@ int
 						   strcasecmp(optarg, "kpw4lgb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi4G32GBEurope;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw4in") == 0 ||
-						   strcasecmp(optarg, "kpwin") == 0) {
+					} else if (strcasecmp(optarg, "pw4in") == 0 || strcasecmp(optarg, "kpwin") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi8GBIndia;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
@@ -2355,7 +2354,7 @@ int
 				info.source_revision = 2443670049;    // FW 5.5.0
 			}
 			if (!enforce_target_rev) {
-				info.target_revision = 1 + 3380410003;    // FW 5.10.2.1 (PW2)
+				info.target_revision = 1 + 3383210041;    // FW 5.10.3 (KOA2)
 			}
 			// NOTE: Don't expect those to be entirely consistent when crossing devices
 			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
