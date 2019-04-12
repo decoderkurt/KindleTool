@@ -297,6 +297,7 @@ typedef enum
 	KindlePaperWhite4Unknown_0TN      = 0x376,    // 0TN?
 	KindlePaperWhite4WiFi8GBIndia     = 0x402,    // 102 NOTE: Appeared in 5.10.1.3...
 	KindlePaperWhite4Unknown_103      = 0x403,    // 103?
+	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
 	KindleUnknown                     = 0x00
 } Device;
 
@@ -313,7 +314,7 @@ typedef enum
 	Duet             = 0x08,    // Kindle Oasis
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
 	Zelda            = 0x0A,    // Kindle Oasis 2
-	Rex              = 0x0B     // Kindle PW4
+	Rex              = 0x0B     // Kindle PW4, KT4 (10th gen)
 } Platform;
 
 typedef enum
@@ -334,6 +335,7 @@ typedef enum
 	Eanab             = 0xFF     // Kindle Basic 2
 	Cognac            = 0xFF     // Kindle Oasis 2
 	Moonshine         = 0xFF     // Kindle PW4
+	Jaeger            = 0xFF     // Kindle Basic 3
 				     */
 } Board;
 
@@ -366,6 +368,7 @@ typedef enum
 // Eanab                      // Kindle Basic 2
 // Cognac                     // Kindle Oasis 2
 // Moonshine                  // Kindle PW4
+// Jaeger                     // Kindle KT4
 
 typedef struct
 {
