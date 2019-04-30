@@ -2064,13 +2064,13 @@ int
 						}
 						fclose(kindle_usid);
 						// Get the device code...
-						char device_code[4] = { '\0' };
-						snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
+						char device_code[3 + 1] = { 0 };
+						snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
 						Device dev_code = (Device) strtoul(device_code, NULL, 16);
 						// First check if it looks like a valid device...
 						if (strcmp(convert_device_id(dev_code), "Unknown") == 0) {
 							// ... try the new device ID scheme if it doesn't...
-							snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
+							snprintf(device_code, 3 + 1, "%.*s", 3, serial_no + 3);
 							dev_code = (Device) from_base(device_code, 32);
 							// ... And finally, unless we're feeling adventurous,
 							// check if it's really a valid device...
