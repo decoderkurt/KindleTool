@@ -439,7 +439,7 @@ extern unsigned int kt_with_unknown_devcodes;
 // And another to store the tmpdir...
 extern char kt_tempdir[PATH_MAX];
 
-unsigned long int from_base(const char*, unsigned int);
+uint32_t from_base(const char*, uint8_t);
 
 void          md(unsigned char*, size_t);
 void          dm(unsigned char*, size_t);

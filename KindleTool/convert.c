@@ -50,18 +50,19 @@ static const char*
 
 // Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
 static char*
-    to_base(int64_t num, unsigned int base)
+    to_base(int64_t num, uint8_t base)
 {
-	// FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-	const char*  tbl     = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
-	char         buf[66] = { '\0' };
-	char*        out;
-	uint64_t     n;
-	unsigned int i, len = 0, neg = 0;
-	// Flawfinder: ignore
-	if (base > strlen(tbl)) {
-		fprintf(stderr, "base %u is unsupported (too large).\n", base);
-		return 0;
+	// NOTE: Crockford's Base32, but with the "L" & "U" re-added in?
+	const char tbl[]   = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
+	char       buf[66] = { 0 };
+	char*      out     = NULL;
+	uint64_t   n;
+	uint32_t   len = 0U;
+	bool       neg = false;
+
+	if (base >= sizeof(tbl)) {
+		fprintf(stderr, "base %hhu is unsupported (too large)!\n", base);
+		return NULL;
 	}
 
 	// safe against most negative integer
@@ -71,9 +72,12 @@ static char*
 		buf[len++] = tbl[n % base];
 	} while (n /= base);
 
-	out = malloc(len + neg + 1);
-	memset(out, 0, len + neg + 1);
-	for (i = neg; len > 0; i++) {
+	out = calloc(len + neg + 1U, sizeof(*out));
+	if (out == NULL) {
+		fprintf(stderr, "Error allocating base32 output string buffer!\n");
+		return NULL;
+	}
+	for (uint32_t i = neg; len > 0U; i++) {
 		out[i] = buf[--len];
 	}
 	if (neg) {
@@ -85,22 +89,20 @@ static char*
 
 // Pilfered and mangled from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C++
 // NOTE: Eh, turns out to be basically the same implemention I used for kindle_model_sort.py...
-unsigned long int
-    from_base(const char* num, unsigned int base)
+uint32_t
+    from_base(const char* num, uint8_t base)
 {
-	// FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
-	const char*       tbl    = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
-	unsigned long int result = 0;
+	// NOTE: Crockford's Base32, but with the "L" & "U" re-added in?
+	const char tbl[]  = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
+	uint32_t   result = 0U;
 
-	// Flawfinder: ignore
-	if (base > strlen(tbl)) {
-		fprintf(stderr, "base %u is unsupported (too large).\n", base);
+	if (base >= sizeof(tbl)) {
+		fprintf(stderr, "base %hhu is unsupported (too large)!\n", base);
 		return 0;
 	}
 
 	// Hi, my name is Neo. I know pointers! (Or not.)
-	const char* p;
-	for (p = num; *p != '\0'; p++) {
+	for (const char* restrict p = num; *p != '\0'; p++) {
 		for (uint8_t i = 0; tbl[i] != '\0'; i++) {
 			if (*p == tbl[i]) {
 				result = result * base + i;
@@ -343,7 +345,7 @@ static int
 				//       So relegate this to a debug only feature...
 				/*
 				// Check that our base conversions work both ways...
-				unsigned long int dev_code = from_base(dev_id, 32);
+				uint32_t dev_code = from_base(dev_id, 32);
 				fprintf(stderr, "0x%03lX -> ", dev_code);
 				*/
 				free(dev_id);
