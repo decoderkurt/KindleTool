@@ -1,13 +1,13 @@
 CC?=gcc
 STRIP?=strip
-DEBUG_CFLAGS=-Og -march=native -fno-omit-frame-pointer -pipe -g3
-CLANG_DEBUG_CFLAGS=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
-OPT_CFLAGS=-O3 -ffast-math -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
-CLANG_OPT_CFLAGS=-O3 -ffast-math -march=native -fomit-frame-pointer -pipe
-K3_CFLAGS=-O3 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
-MINGW_CFLAGS=-O3 -ffast-math -march=i686 -mtune=generic -fomit-frame-pointer -pipe
+DEBUG_CFLAGS:=-Og -march=native -fno-omit-frame-pointer -pipe -g3
+CLANG_DEBUG_CFLAGS:=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
+OPT_CFLAGS:=-O3 -ffast-math -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
+CLANG_OPT_CFLAGS:=-O3 -ffast-math -march=native -fomit-frame-pointer -pipe
+K3_CFLAGS:=-O3 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
+MINGW_CFLAGS:=-O3 -ffast-math -march=i686 -mtune=generic -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
-ASAN_CLFAGS=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3
+ASAN_CLFAGS:=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
 # (Using --leak-check=full --track-origins=yes --show-reachable=yes)
 # The getpwuid_r/getgrgid_r thing from libarchive's archive_read_disk_set_standard_lookup is mostly harmless (cf. http://sourceware.org/bugzilla/show_bug.cgi?id=2314),
@@ -22,7 +22,7 @@ ifdef MINGW
 	CROSS_PREFIX?=i686-w64-mingw32-
 endif
 
-SRCS=kindle_tool.c create.c convert.c nettle_pem.c
+SRCS:=kindle_tool.c create.c convert.c nettle_pem.c
 
 default: all
 
@@ -57,7 +57,7 @@ else
 endif
 
 # We of course need libarchive
-LIBS=-larchive
+LIBS:=-larchive
 # And nettle (try to use sane fallbacks on the off chance we have it somewhere but pkg-config failed to find it...)
 ifeq "$(HAS_PC_NETTLE)" "true"
 	LIBS+=$(PC_NETTLE_LIBS)
@@ -94,7 +94,7 @@ ifeq "$(shell expr $(CC_VERSION) \>= 070000)" "1"
 endif
 
 ifdef DEBUG
-	OUT_DIR=Debug
+	OUT_DIR:=Debug
 	# Clang doesn't support -Og...
 	ifeq "$(CC_IS_CLANG)" "1"
 		CFLAGS:=$(CLANG_DEBUG_CFLAGS)
@@ -102,7 +102,7 @@ ifdef DEBUG
 		CFLAGS:=$(DEBUG_CFLAGS)
 	endif
 else
-	OUT_DIR=Release
+	OUT_DIR:=Release
 	# Don't default to stuff that'll make clang unhappy
 	ifeq "$(CC_IS_CLANG)" "1"
 		CFLAGS?=$(CLANG_OPT_CFLAGS)
@@ -125,14 +125,14 @@ else
 endif
 
 ifdef KINDLE
-	OUT_DIR=Kindle
+	OUT_DIR:=Kindle
 	CFLAGS?=$(K3_CFLAGS)
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
 endif
 
 ifdef MINGW
-	OUT_DIR=MinGW
+	OUT_DIR:=MinGW
 	CFLAGS?=$(MINGW_CFLAGS)
 	CC:=$(CROSS_PREFIX)gcc
 	STRIP:=$(CROSS_PREFIX)strip
@@ -246,12 +246,12 @@ endif
 #	# Check that we don't mess with Homebrew, which defaults to the OS version... (I'm not sure Homebrew even sets it for us, since we're not using autotools...)
 #	# Although it supposedly defaults to the OS version since OS X 10.5 anyway, so...
 #	ifndef MACOSX_DEPLOYMENT_TARGET
-#		export MACOSX_DEPLOYMENT_TARGET=10.6
+#		export MACOSX_DEPLOYMENT_TARGET:=10.6
 #		KT_CFLAGS+=-mmacosx-version-min=10.6
 #	endif
 #endif
 
-OBJS:=$(SRCS:%.c=$(OUT_DIR)/%.o)
+OBJS:=$(addprefix $(OUT_DIR)/, $(SRCS:.c=.o))
 
 $(OUT_DIR)/%.o: %.c
 	$(CC) $(CPPFLAGS) $(KT_CPPFLAGS) $(CFLAGS) $(KT_CFLAGS) -o $@ -c $<
@@ -259,7 +259,11 @@ $(OUT_DIR)/%.o: %.c
 outdir:
 	mkdir -p $(OUT_DIR)
 
-all: outdir kindletool
+# Make absolutely sure we create our output directories first, even with unfortunate // timings!
+# c.f., https://www.gnu.org/software/make/manual/html_node/Prerequisite-Types.html#Prerequisite-Types
+$(OBJS): | outdir
+
+all: kindletool
 
 kindletool: version-inc $(OBJS)
 	$(CC) $(CPPFLAGS) $(KT_CPPFLAGS) $(CFLAGS) $(KT_CFLAGS) $(LDFLAGS) -o$(OUT_DIR)/$@$(BINEXT) $(OBJS) $(LIBS)
