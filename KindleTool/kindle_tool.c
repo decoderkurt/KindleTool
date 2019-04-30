@@ -797,7 +797,7 @@ static int
 	struct md5_ctx md5;
 	uint8_t        digest[MD5_DIGEST_SIZE];
 	char           hash[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)];
-	char           device_code[4] = { '\0' };
+	char           device_code[3 + 1] = { 0 };
 	Device         device;
 	unsigned int   i;
 
@@ -832,7 +832,7 @@ static int
 	base16_encode_update(hash, MD5_DIGEST_SIZE, digest);
 
 	// And finally, do the device dance...
-	snprintf(device_code, 3, "%.*s", 2, &serial_no[2]);
+	snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
 	device = (Device) strtoul(device_code, NULL, 16);
 	// Handle the new device ID scheme, used since the PW3
 	if (strcmp(convert_device_id(device), "Unknown") == 0) {
@@ -840,7 +840,7 @@ static int
 			"Couldn't identify device %s (0x%02X), trying the new identification scheme...\n",
 			device_code,
 			device);
-		snprintf(device_code, 4, "%.*s", 3, &serial_no[3]);
+		snprintf(device_code, 3 + 1, "%.*s", 3, serial_no + 3);
 		device = (Device) from_base(device_code, 32);
 		if (strcmp(convert_device_id(device), "Unknown") == 0) {
 			fprintf(stderr, "Unknown device %s (0x%03X).\n", device_code, device);
