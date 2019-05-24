@@ -136,7 +136,7 @@ model_tuples = [
 	('KindlePaperWhite4Unknown_0TN', 0x376),			# 0TN?
 	('KindlePaperWhite4WiFi8GBIndia', 0x402),			# 102
 	('KindlePaperWhite4Unknown_103', 0x403),			# 103?
-	('KindleBasic3Unknown_10L', 0x414),				# 10L?
+	('KindleBasic3', 0x414),					# 10L
 	('KindleBasic3Unknown_0WF', 0x3CF),				# 0WF?
 	('KindleBasic3Unknown_0WG', 0x3D0),				# 0WG?
 	('KindleBasic3Unknown_0WH', 0x3D1),				# 0WH?

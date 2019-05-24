@@ -1581,11 +1581,11 @@ int
 					}
 				} else if (strcasecmp(optarg, "basic3") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 0 + (kt_with_unknown_devcodes * 6);
+					const unsigned int num_aliased_devices = 1 + (kt_with_unknown_devcodes * 5);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices[info.num_devices++]       = KindleBasic3;
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleBasic3Unknown_10L;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WH;
@@ -1605,7 +1605,7 @@ int
 					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
 					    4 + (kt_with_unknown_devcodes * 11) +    // Oasis 2
 					    6 + (kt_with_unknown_devcodes * 9) +     // PW4
-					    0 + (kt_with_unknown_devcodes * 6);      // KT4
+					    1 + (kt_with_unknown_devcodes * 5);      // KT4
 					info.devices = realloc(info.devices,
 							       (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1721,8 +1721,8 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_103;
 					}
 					// KT4
+					info.devices[info.num_devices++] = KindleBasic3;
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleBasic3Unknown_10L;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WH;
@@ -2035,6 +2035,11 @@ int
 					} else if (strcasecmp(optarg, "pw4lgjp") == 0 ||
 						   strcasecmp(optarg, "kpw4ljp") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi4G32GBJapan;
+					}
+					// KT4
+					else if (strcasecmp(optarg, "kt4") == 0) {
+						info.devices[info.num_devices - 1] = KindleBasic3;
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// N/A
 					else if (strcasecmp(optarg, "none") == 0) {

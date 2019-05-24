@@ -298,7 +298,7 @@ typedef enum
 	KindlePaperWhite4WiFi8GBIndia     = 0x402,    // 102 NOTE: Appeared in 5.10.1.3...
 	KindlePaperWhite4Unknown_103      = 0x403,    // 103?
 	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
-	KindleBasic3Unknown_10L = 0x414,    // 10L?
+	KindleBasic3            = 0x414,    // 10L
 	KindleBasic3Unknown_0WF = 0x3CF,    // 0WF?
 	KindleBasic3Unknown_0WG = 0x3D0,    // 0WG?
 	KindleBasic3Unknown_0WH = 0x3D1,    // 0WH?
