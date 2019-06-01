@@ -371,6 +371,18 @@ const char*
 			return "Kindle PaperWhite 4 (2018) WiFi (8GB) India";
 		case KindlePaperWhite4Unknown_103:
 			return "Kindle PaperWhite 4 (2018) (Unknown Variant 103)";
+		case KindlePaperWhite4Unknown_16Q:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16Q)";
+		case KindlePaperWhite4Unknown_16R:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16R)";
+		case KindlePaperWhite4Unknown_16S:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16S)";
+		case KindlePaperWhite4Unknown_16T:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16T)";
+		case KindlePaperWhite4Unknown_16U:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16U)";
+		case KindlePaperWhite4Unknown_16V:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16V)";
 		case KindleBasic3:
 			return "Kindle Basic 3 (2019)";
 		case KindleBasic3Unknown_0WF:
