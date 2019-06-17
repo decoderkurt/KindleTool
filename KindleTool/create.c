@@ -1587,14 +1587,14 @@ int
 					}
 				} else if (strcasecmp(optarg, "basic3") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 1 + (kt_with_unknown_devcodes * 5);
+					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 4);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindleBasic3;
+					info.devices[info.num_devices++]       = KindleBasic3White;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
-						info.devices[info.num_devices++] = KindleBasic3Unknown_0WH;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WJ;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0VB;
 					}
@@ -1611,7 +1611,7 @@ int
 					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
 					    4 + (kt_with_unknown_devcodes * 11) +    // Oasis 2
 					    6 + (kt_with_unknown_devcodes * 15) +    // PW4
-					    1 + (kt_with_unknown_devcodes * 5);      // KT4
+					    2 + (kt_with_unknown_devcodes * 4);      // KT4
 					info.devices = realloc(info.devices,
 							       (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1734,10 +1734,10 @@ int
 					}
 					// KT4
 					info.devices[info.num_devices++] = KindleBasic3;
+					info.devices[info.num_devices++] = KindleBasic3White;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
-						info.devices[info.num_devices++] = KindleBasic3Unknown_0WH;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WJ;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0VB;
 					}
@@ -2051,6 +2051,9 @@ int
 					// KT4
 					else if (strcasecmp(optarg, "kt4") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic3;
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					} else if (strcasecmp(optarg, "kt4w") == 0) {
+						info.devices[info.num_devices - 1] = KindleBasic3White;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// N/A
