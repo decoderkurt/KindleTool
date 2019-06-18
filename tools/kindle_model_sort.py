@@ -4,6 +4,8 @@ from operator import itemgetter
 
 # NOTE: Pilfered from https://code.activestate.com/recipes/65212/
 # FIXME: Crockford's Base32, but with the "L" & "U" re-added in?
+# NOTE: In case this ever needs fixing, don't forget to update the horrible regex used in MRPI to parse our verbose output,
+#       to avoid a repeat of what r16043 fixed...
 def baseN(num, base, numerals="0123456789ABCDEFGHJKLMNPQRSTUVWX"):
 	if num == 0:
 		return "0"
