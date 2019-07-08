@@ -325,7 +325,7 @@ typedef enum
 	Wario            = 0x07,    // Kindle PW2, Basic, Voyage, PW3
 	Duet             = 0x08,    // Kindle Oasis
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
-	Zelda            = 0x0A,    // Kindle Oasis 2
+	Zelda            = 0x0A,    // Kindle Oasis 2, Oasis 3
 	Rex              = 0x0B     // Kindle PW4, KT4 (10th gen)
 } Platform;
 
@@ -348,6 +348,7 @@ typedef enum
 	Cognac            = 0xFF     // Kindle Oasis 2
 	Moonshine         = 0xFF     // Kindle PW4
 	Jaeger            = 0xFF     // Kindle Basic 3
+	Stinger           = 0xFF     // Kindle Oasis 3
 				     */
 } Board;
 
@@ -381,6 +382,7 @@ typedef enum
 // Cognac                     // Kindle Oasis 2
 // Moonshine                  // Kindle PW4
 // Jaeger                     // Kindle KT4
+// Stinger                    // Kindle Oasis 3
 
 typedef struct
 {
