@@ -2065,6 +2065,7 @@ int
 						   strcasecmp(optarg, "current") == 0) {
 						// Detect the current Kindle model
 						FILE* kindle_usid;
+						// NOTE: Newer devices also have /proc/serial?
 						if ((kindle_usid = fopen("/proc/usid", "rb")) == NULL) {
 							fprintf(
 							    stderr,
@@ -2400,7 +2401,7 @@ int
 				info.source_revision = 2443670049;    // FW 5.5.0
 			}
 			if (!enforce_target_rev) {
-				info.target_revision = 1 + 3541880032;    // FW 5.11.2 (KT4)
+				info.target_revision = 1 + 3552180044;    // FW 5.12.1 (PW4)
 			}
 			// NOTE: Don't expect those to be entirely consistent when crossing devices
 			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
