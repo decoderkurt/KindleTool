@@ -2085,11 +2085,25 @@ int
 						}
 						fclose(kindle_usid);
 						// Get the device code...
-						char device_code[3 + 1] = { 0 };
-						snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
-						Device dev_code = (Device) strtoul(device_code, NULL, 16);
-						// First check if it looks like a valid device...
-						if (strcmp(convert_device_id(dev_code), "Unknown") == 0) {
+						char   device_code[3 + 1] = { 0 };
+						Device dev_code           = KindleUnknown;
+						// NOTE: If the S/N starts with B or 9,
+						//       assume it's an older device with an hexadecimal device code
+						if (serial_no[0] == 'B' || serial_no[0] == '9') {
+							snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
+							dev_code = (Device) strtoul(device_code, NULL, 16);
+							// ... And finally, unless we're feeling adventurous,
+							// check if it's really a valid device...
+							if (!kt_with_unknown_devcodes &&
+							    strcmp(convert_device_id(dev_code), "Unknown") == 0) {
+								fprintf(stderr,
+									"Unknown device %s (0x%02X) [%.6s].\n",
+									device_code,
+									dev_code,
+									serial_no);
+								goto do_error;
+							}
+						} else {
 							// ... try the new device ID scheme if it doesn't...
 							snprintf(device_code, 3 + 1, "%.*s", 3, serial_no + 3);
 							dev_code = (Device) from_base(device_code, 32);
@@ -2098,23 +2112,23 @@ int
 							if (!kt_with_unknown_devcodes &&
 							    strcmp(convert_device_id(dev_code), "Unknown") == 0) {
 								fprintf(stderr,
-									"Unknown device %s (0x%03X).\n",
+									"Unknown device %s (0x%03X) [%.6s].\n",
 									device_code,
-									dev_code);
+									dev_code,
+									serial_no);
 								goto do_error;
 							}
+						}
+						// Yay, known valid device code :)
+						info.devices[info.num_devices - 1] = dev_code;
+						// Roughly guess a decent magic number...
+						if (dev_code < Kindle4NonTouch) {
+							memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
+						} else if (dev_code == Kindle4NonTouch ||
+							   dev_code == Kindle4NonTouchBlack) {
+							memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
 						} else {
-							// Yay, known valid device code :)
-							info.devices[info.num_devices - 1] = dev_code;
-							// Roughly guess a decent magic number...
-							if (dev_code < Kindle4NonTouch) {
-								memcpy(info.magic_number, "FC02", MAGIC_NUMBER_LENGTH);
-							} else if (dev_code == Kindle4NonTouch ||
-								   dev_code == Kindle4NonTouchBlack) {
-								memcpy(info.magic_number, "FC04", MAGIC_NUMBER_LENGTH);
-							} else {
-								memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-							}
+							memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 						}
 					} else {
 						// Check if we passed a device code, be it as a ready-to-use hex value,
