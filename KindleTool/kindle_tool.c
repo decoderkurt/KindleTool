@@ -400,7 +400,7 @@ const char*
 		case KindleOasis3Unknown_0WQ:
 			return "Kindle Oasis 3 (2019) (Unknown Variant 0WQ)";
 		case KindleOasis3Unknown_0WP:
-			return "Kindle Oasis 3 (2019) (Unknown Variant 0WQ)";
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WP)";
 		case KindleOasis3Unknown_0WN:
 			return "Kindle Oasis 3 (2019) (Unknown Variant 0WN)";
 		case KindleOasis3Unknown_0WM:
