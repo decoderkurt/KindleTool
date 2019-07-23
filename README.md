@@ -122,7 +122,7 @@
 		-d, --device pw4in          Kindle PaperWhite 4 (2018) WiFi (8GB) India
 		-d, --device pw4lgjp        Kindle PaperWhite 4 (2018) WiFi+4G (32GB) Japan
 		-d, --device kt4            Kindle Basic 3 (2019)
-                -d, --device kt4w           White Kindle Basic 3 (2019)
+		-d, --device kt4w           White Kindle Basic 3 (2019)
 		-d, --device kindle2        Alias for k2 & k2i
 		-d, --device kindledx       Alias for dx, dxi & dxg
 		-d, --device kindle3        Alias for k3w, k3g & k3gb
