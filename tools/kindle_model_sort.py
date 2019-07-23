@@ -150,12 +150,12 @@ model_tuples = [
 	('KindleBasic3White', 0x3D1),					# 0WH
 	('KindleBasic3Unknown_0WJ', 0x3D2),				# 0WJ?
 	('KindleBasic3Unknown_0VB', 0x3AB),				# 0VB?
-	('KindleOasis3Unknown_434', 0x434),				#
-	('KindleOasis3Unknown_3D8', 0x3D8),				#
-	('KindleOasis3Unknown_3D7', 0x3D7),				#
-	('KindleOasis3Unknown_3D6', 0x3D6),				#
-	('KindleOasis3Unknown_3D5', 0x3D5),				#
-	('KindleOasis3Unknown_3D4', 0x3D4),				#
+	('KindleOasis3Unknown_11L', 0x434),				# 11L?
+	('KindleOasis3Unknown_0WQ', 0x3D8),				# 0WQ
+	('KindleOasis3Unknown_0WP', 0x3D7),				# 0WP?
+	('KindleOasis3Unknown_0WN', 0x3D6),				# 0WN?
+	('KindleOasis3Unknown_0WM', 0x3D5),				# 0WM?
+	('KindleOasis3Unknown_0WL', 0x3D4),				# 0WL?
 	('KindleUnknown', 0x00)
 ]
 
