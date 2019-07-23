@@ -395,6 +395,18 @@ const char*
 			return "Kindle Basic 3 (2019) (Unknown Variant 0WJ)";
 		case KindleBasic3Unknown_0VB:
 			return "Kindle Basic 3 (2019) (Unknown Variant 0VB)";
+		case KindleOasis3Unknown_11L:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 11L)";
+		case KindleOasis3Unknown_0WQ:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WQ)";
+		case KindleOasis3Unknown_0WP:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WQ)";
+		case KindleOasis3Unknown_0WN:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WN)";
+		case KindleOasis3Unknown_0WM:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WM)";
+		case KindleOasis3Unknown_0WL:
+			return "Kindle Oasis 3 (2019) (Unknown Variant 0WL)";
 		case KindleUnknown:
 		default:
 			return "Unknown";
@@ -634,7 +646,8 @@ static int
 	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b\n"
 	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in & pw4lgjp\n"
 	    "      -d, --device basic3         Alias for kt4 & kt4w\n"
-	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4 & basic3\n"
+	    "      -d, --device oasis3         Alias for TBD\n"
+	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3 & oasis3\n"
 	    "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
 	    "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
 	    "      \n"
