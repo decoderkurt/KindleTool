@@ -123,6 +123,7 @@
 		-d, --device pw4lgjp        Kindle PaperWhite 4 (2018) WiFi+4G (32GB) Japan
 		-d, --device kt4            Kindle Basic 3 (2019)
 		-d, --device kt4w           White Kindle Basic 3 (2019)
+		-d, --device koa3g32        Kindle Oasis 3 (2019) WiFi+4G (32GB)
 		-d, --device kindle2        Alias for k2 & k2i
 		-d, --device kindledx       Alias for dx, dxi & dxg
 		-d, --device kindle3        Alias for k3w, k3g & k3gb
@@ -139,7 +140,7 @@
 		-d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b
 		-d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in & pw4lgjp
 		-d, --device basic3         Alias for kt4 & kt4w
-		-d, --device oasis3         Alias for TBD
+		-d, --device oasis3         Alias for koa3g32
 		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3 & oasis3
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
