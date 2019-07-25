@@ -311,13 +311,13 @@ typedef enum
 	KindleBasic3Unknown_0WJ = 0x3D2,    // 0WJ?
 	KindleBasic3Unknown_0VB = 0x3AB,    // 0VB?
 	// Kindle Oasis 3, released July 24 2019 on FW 5.12.0
-	KindleOasis3WiFi32GB    = 0x434,    // 11L (Possibly Champagne only)
-	KindleOasis3WiFi4G32GB  = 0x3D8,    // 0WQ (Color unknown)
-	KindleOasis3Unknown_0WP = 0x3D7,    // 0WP?
-	KindleOasis3Unknown_0WN = 0x3D6,    // 0WN?
-	KindleOasis3Unknown_0WM = 0x3D5,    // 0WM?
-	KindleOasis3WiFi8GB     = 0x3D4,    // 0WL (Possibly Graphite only)
-	KindleUnknown           = 0x00
+	KindleOasis3WiFi32GBChampagne = 0x434,    // 11L (Champagne, US)
+	KindleOasis3WiFi4G32GBJapan   = 0x3D8,    // 0WQ (Graphite, JP)
+	KindleOasis3Unknown_0WP       = 0x3D7,    // 0WP?
+	KindleOasis3WiFi4G32GB        = 0x3D6,    // 0WN (Graphite, US)
+	KindleOasis3WiFi32GB          = 0x3D5,    // 0WM (Graphite, DE)
+	KindleOasis3WiFi8GB           = 0x3D4,    // 0WL (Graphite, DE)
+	KindleUnknown                 = 0x00
 } Device;
 
 typedef enum
