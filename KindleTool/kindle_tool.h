@@ -316,7 +316,7 @@ typedef enum
 	KindleOasis3Unknown_0WP = 0x3D7,    // 0WP?
 	KindleOasis3Unknown_0WN = 0x3D6,    // 0WN?
 	KindleOasis3Unknown_0WM = 0x3D5,    // 0WM?
-	KindleOasis3Unknown_0WL = 0x3D4,    // 0WL?
+	KindleOasis3WiFi8GB     = 0x3D4,    // 0WL (Possibly Graphite only)
 	KindleUnknown           = 0x00
 } Device;
 
