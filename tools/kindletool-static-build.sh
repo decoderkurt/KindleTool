@@ -30,9 +30,9 @@ Build_Linux() {
 
 	GMP_VER="6.1.2"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.4"
+	NETTLE_VER="3.5.1"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.3.2"
+	LIBARCHIVE_VER="3.4.0"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -115,7 +115,7 @@ Build_Linux() {
 			cd ${LIBARCHIVE_DIR}
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
 			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -224,7 +224,7 @@ Build_Cygwin() {
 			cd ${LIBARCHIVE_DIR}
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
 			make
 			make install
 			cd ..
@@ -309,9 +309,9 @@ Build_OSX() {
 
 	GMP_VER="6.1.2"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.4"
+	NETTLE_VER="3.5.1"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.3.2"
+	LIBARCHIVE_VER="3.4.0"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -393,7 +393,7 @@ Build_OSX() {
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
 			make ${JOBSFLAGS}
 			make install
 			cd ..

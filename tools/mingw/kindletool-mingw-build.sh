@@ -12,6 +12,7 @@
 ## NOTE: Alternatively, you could use MXE (http://mxe.cc) to build one yourself,
 ##       although it's currently only using GCC 5.5.0 & binutils 2.28 (but with the latest mingw-w64 release),
 ##       and has a bit too much dependencies for a headless box...
+## NOTE: Or some other build script, like https://github.com/shinchiro/mpv-winbuild-cmake
 ## FIXME: Might need to symlink bcrypt.h to Bcrypt.h & windows.h to Windows.h to make libarchive happy...
 
 # Make sure we're up to date
@@ -19,11 +20,11 @@ git pull
 
 echo "* Setting environment up . . ."
 echo ""
-ARCH_FLAGS="-march=i686 -mtune=generic"
-CROSS_TC="i686-w64-mingw32"
-TC_BUILD_DIR="/home/niluje/Kindle/KTool_Static/MinGW/Build_W32"
+ARCH_FLAGS="-march=x86-64 -mtune=generic"
+CROSS_TC="x86_64-w64-mingw32"
+TC_BUILD_DIR="/home/niluje/Kindle/KTool_Static/MinGW/Build_W64"
 
-export PATH="/home/niluje/x-tools/mingw32/bin:${PATH}"
+export PATH="/home/niluje/x-tools/mingw64/install/bin:${PATH}"
 
 BASE_CFLAGS="${ARCH_FLAGS} -O2 -pipe -fomit-frame-pointer"
 export CFLAGS="${BASE_CFLAGS}"
@@ -49,9 +50,9 @@ ZLIB_DIR="zlib-${ZLIB_VER}"
 ZLIB_FILE="zlib${ZLIB_VER//.}.zip"
 GMP_VER="6.1.2"
 GMP_DIR="gmp-${GMP_VER%a}"
-NETTLE_VER="3.4"
+NETTLE_VER="3.5.1"
 NETTLE_DIR="nettle-${NETTLE_VER}"
-LIBARCHIVE_VER="3.3.2"
+LIBARCHIVE_VER="3.4.0"
 LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 if [[ ! -d "${ZLIB_DIR}" ]] ; then
@@ -137,7 +138,7 @@ if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
-		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --disable-bsdcat --disable-bsdtar --disable-bsdcpio
 		make -j2
 		make install
 		cd ..
@@ -178,7 +179,7 @@ cat > ../../CREDITS << EOF
   |   licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
   |   (http://www.lysator.liu.se/~nisse/nettle)
   |
-  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009-2018 by the mingw-w64 project,
+  \`->   Built using MinGW-w64 and statically linked against the MinGW-w64 runtime, Copyright (C) 2009-2019 by the mingw-w64 project,
       Licensed mostly under the Zope Public License (ZPL) Version 2.1. (http://sourceforge.net/p/mingw-w64/code/HEAD/tree/stable/v3.x/COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt)
       (http://mingw-w64.sourceforge.net/)
 EOF
