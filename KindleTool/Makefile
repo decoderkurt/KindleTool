@@ -5,7 +5,7 @@ CLANG_DEBUG_CFLAGS:=-O0 -march=native -fno-omit-frame-pointer -pipe -g3
 OPT_CFLAGS:=-O3 -ffast-math -march=native -fomit-frame-pointer -frename-registers -fweb -pipe
 CLANG_OPT_CFLAGS:=-O3 -ffast-math -march=native -fomit-frame-pointer -pipe
 K3_CFLAGS:=-O3 -ffast-math -march=armv6j -mtune=arm1136jf-s -fomit-frame-pointer -frename-registers -fweb -pipe -fno-stack-protector -U_FORTIFY_SOURCE
-MINGW_CFLAGS:=-O3 -ffast-math -march=i686 -mtune=generic -fomit-frame-pointer -pipe
+MINGW_CFLAGS:=-O3 -ffast-math -march=x86-64 -mtune=generic -fomit-frame-pointer -pipe
 # When we want to use clang's asan (http://clang.llvm.org/docs/AddressSanitizer.html), because it rocks.
 ASAN_CLFAGS:=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibling-calls -Weverything -Wno-disabled-macro-expansion -fsanitize=address -g3
 # In the same vein, since valgrind 2.8.0 now runs properly on my Gentoo system, here's a few notes about its current report:
@@ -17,9 +17,9 @@ ASAN_CLFAGS:=-O1 -march=native -fno-omit-frame-pointer -pipe -fno-optimize-sibli
 ifdef KINDLE
 	CROSS_PREFIX?=arm-kindle-linux-gnueabi-
 endif
-# MinGW-w64 (32bit) cross toolchain prefix
+# MinGW-w64 (64bit) cross toolchain prefix
 ifdef MINGW
-	CROSS_PREFIX?=i686-w64-mingw32-
+	CROSS_PREFIX?=x86_64-w64-mingw32-
 endif
 
 SRCS:=kindle_tool.c create.c convert.c nettle_pem.c
