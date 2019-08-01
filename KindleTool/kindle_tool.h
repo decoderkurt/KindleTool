@@ -119,15 +119,9 @@
 #	define KT_TMPDIR "."
 
 // NOTE: cf. kindle_tool.c
-int   kt_win_mkstemp(char*);
 FILE* kt_win_tmpfile(void);
 
 // NOTE: Override the functions the hard way, shutting up GCC in the proces...
-#	ifdef mkstemp
-#		undef mkstemp
-#	endif
-#	define mkstemp kt_win_mkstemp
-
 #	ifdef tmpfile
 #		undef tmpfile
 #	endif

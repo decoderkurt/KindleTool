@@ -25,25 +25,11 @@
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 // NOTE: Handle the rest of the Win32 tempfiles mess in a quick'n dirty way...
-// Namely: - We can't use MinGW's mkstemp until 5.0 comes out
+// Namely: - We couldn't use MinGW's mkstemp until 5.0 came out
 //           (the implementation in 4.0.1 unlinks on close, which is unexpected)
 //         - MSVCRT's tmpfile() creates files in the root drive,
 //           which, as we've already mentioned, is a recipe for disaster...
 // Whip crude hacks around both of these issues while staying oblivious to the wchar_t potential mess...
-// Inspired from fontconfig's compatibility helpers (http://cgit.freedesktop.org/fontconfig/tree/src/fccompat.c)
-int
-    kt_win_mkstemp(char* template)
-{
-	if (_mktemp(template) == NULL) {
-		fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
-		return -1;
-	}
-	// NOTE: Don't use _O_TEMPORARY, we expect to handle the unlink ourselves!
-	// NOTE: And while we probably could use _O_NOINHERIT, we do not, for a question of feature parity:
-	//       We don't use O_CLOEXEC on Linux because it depends on Glibc 2.7 & Linux 2.6.23,
-	//       and we routinely run on stuff much older than that...
-	return _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
-}
 
 // Inspired from gnulib's tmpfile implementation (http://git.savannah.gnu.org/gitweb/?p=gnulib.git;a=blob;f=lib/tmpfile.c)
 FILE*
@@ -52,11 +38,7 @@ FILE*
 	char template[PATH_MAX];
 	snprintf(template, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_tmpfile_XXXXXX");
 	int fd = -1;
-	if (_mktemp(template) == NULL) {
-		fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
-		return NULL;
-	}
-	fd = _open(template, _O_CREAT | _O_EXCL | _O_TEMPORARY | _O_RDWR | _O_BINARY, _S_IREAD | _S_IWRITE);
+	fd     = mkstemp(template);
 	if (fd == -1) {
 		fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
 		return NULL;
