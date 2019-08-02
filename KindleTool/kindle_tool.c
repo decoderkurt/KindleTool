@@ -63,7 +63,7 @@ FILE*
 	*/
 	for (int i = 0; i >= 0; i++) {
 		for (size_t j = index; j < len; j++) {
-			template[j] = letters[rand() % 62U];
+			template[j] = letters[rand() % 62];
 		}
 		// NOTE: And we can't use mkstemp directly, because we *DO* want O_TEMPORARY here...
 		fd = _sopen(
