@@ -47,6 +47,7 @@ FILE*
 	static const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 	/* The last six characters of template must be "XXXXXX" */
+	// Flawfinder: ignore
 	if (template == NULL || (len = strlen(template)) < 6U || memcmp(template + (len - 6U), "XXXXXX", 6U)) {
 		errno = EINVAL;
 		fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
