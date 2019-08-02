@@ -41,8 +41,7 @@ FILE*
 
 	// Now, because the CRT's _mktemp is terrible (PID based), duplicate MinGW's mkstemp logic...
 	// c.f., https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/mingw-w64-crt/misc/mkstemp.c
-	int    i, j, index;
-	size_t len;
+	int i, j, index, len;
 
 	/* These are the (62) characters used in temporary filenames. */
 	static const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
