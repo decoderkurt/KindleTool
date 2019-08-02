@@ -38,7 +38,48 @@ FILE*
 	char template[PATH_MAX];
 	snprintf(template, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_tmpfile_XXXXXX");
 	int fd = -1;
-	fd     = mkstemp(template);
+
+	// Now, because the CRT's _mktemp is terrible (PID based), duplicate MinGW's mkstemp logic...
+	// c.f., https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/mingw-w64-crt/misc/mkstemp.c
+	int    i, j, index;
+	size_t len;
+
+	/* These are the (62) characters used in temporary filenames. */
+	static const char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+	/* The last six characters of template must be "XXXXXX" */
+	if (template == NULL || (len = strlen(template)) < 6 || memcmp(template + (len - 6), "XXXXXX", 6)) {
+		errno = EINVAL;
+		fprintf(stderr, "Couldn't create temporary file template: %s.\n", strerror(errno));
+		return NULL;
+	}
+
+	/* User may supply more than six trailing Xs */
+	for (index = len - 6; index > 0 && template[index - 1] == 'X'; index--)
+		;
+
+	/*
+	Like OpenBSD, mkstemp() will try at least 2 ** 31 combinations before
+	giving up.
+	*/
+	for (i = 0; i >= 0; i++) {
+		for (j = index; j < len; j++) {
+			template[j] = letters[rand() % 62];
+		}
+		// NOTE: And we can't use mkstemp directly, because we *DO* want O_TEMPORARY here...
+		fd = _sopen(
+		    template, _O_RDWR | _O_CREAT | _O_EXCL | _O_TEMPORARY | _O_BINARY, _SH_DENYRW, _S_IREAD | _S_IWRITE);
+		if (fd != -1) {
+			// Success!
+			break;
+		}
+		if (fd == -1 && errno != EEXIST) {
+			// Failure, we'll handle cleanup outside...
+			break;
+		}
+	}
+
+	// And we're back!
 	if (fd == -1) {
 		fprintf(stderr, "Couldn't open temporary file: %s.\n", strerror(errno));
 		return NULL;
