@@ -2641,7 +2641,7 @@ int
 #if defined(_WIN32) && !defined(__CYGWIN__)
 			fprintf(
 			    stderr,
-			    "As an added quirk, on Windows, make sure you're using UNIX-style forward slashes ('/') in your output file path, and not Windows-style backward slashes ('\\').\n");
+			    "As an added quirk, on Windows, make sure you're using UNIX-style forward slashes ('/') in your output file path, instead of Windows-style backward slashes ('\\'), and do NOT leave any trailing slashes.\n");
 #endif
 			archive_entry_free(entry);
 			archive_match_free(match);
