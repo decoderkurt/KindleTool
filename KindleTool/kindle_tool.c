@@ -36,7 +36,7 @@ FILE*
     kt_win_tmpfile(void)
 {
 	char template[PATH_MAX];
-	snprintf(template, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_tmpfile_XXXXXX");
+	snprintf(template, PATH_MAX, "%s/%s", kt_tempdir, "kindletool_tmpfile_XXXXXX");
 	int fd = -1;
 
 	// Now, because the CRT's _mktemp is terrible (PID based), duplicate MinGW's mkstemp logic...
