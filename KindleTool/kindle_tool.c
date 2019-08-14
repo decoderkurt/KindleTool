@@ -57,7 +57,7 @@ FILE*
 	/* User may supply more than six trailing Xs */
 	for (index = len - 6U; index > 0U && template[index - 1U] == 'X'; index--)
 		;
-	
+
 	/*
 	Like OpenBSD, mkstemp() will try at least 2 ** 31 combinations before
 	giving up.
