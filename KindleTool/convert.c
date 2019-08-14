@@ -1127,7 +1127,7 @@ int
 
 	char* bin_filename = NULL;
 	char  tgz_filename[PATH_MAX];
-	snprintf(tgz_filename, PATH_MAX, "%s/%s", kt_tempdir, "/kindletool_extract_tgz_XXXXXX");
+	snprintf(tgz_filename, PATH_MAX, "%s/%s", kt_tempdir, "kindletool_extract_tgz_XXXXXX");
 	char* output_dir = NULL;
 	FILE* bin_input;
 	int   tgz_fd;
