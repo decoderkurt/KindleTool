@@ -57,7 +57,7 @@ FILE*
 	/* User may supply more than six trailing Xs */
 	for (index = len - 6U; index > 0U && template[index - 1U] == 'X'; index--)
 		;
-
+	
 	/*
 	Like OpenBSD, mkstemp() will try at least 2 ** 31 combinations before
 	giving up.
@@ -947,6 +947,9 @@ int
 
 	// Try to use a sane temp directory, and remember it
 #if defined(_WIN32) && !defined(__CYGWIN__)
+	// Seed rand() so it isn't so utterly awful
+	srand((unsigned int) time(NULL));
+
 	// NOTE: Not dealing with the whole TCHAR/WCHAR mess, so, lalalalala, here be dragons!
 	char  win_tmpdir[PATH_MAX];
 	DWORD ret;
