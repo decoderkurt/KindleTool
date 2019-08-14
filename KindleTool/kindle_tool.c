@@ -952,6 +952,11 @@ int
 	DWORD ret;
 	ret = GetTempPath(PATH_MAX, win_tmpdir);
 	if (ret > 0 && ret < PATH_MAX) {
+		// NOTE: We need to strip trailing '\', or GetFileAttributes will fail...
+		//       c.f., git for windows's compat/mingw.c
+		while (win_tmpdir[ret - 1U] == '\\') {
+			win_tmpdir[--ret] = '\0';
+		}
 		strcpy(kt_tempdir, win_tmpdir);
 	}
 #else
