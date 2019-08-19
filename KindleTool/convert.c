@@ -229,7 +229,7 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
-				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5);
+				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5, is_wrapped);
 			}
 			break;
 		case UserDataPackage:
@@ -613,7 +613,7 @@ static int
 }
 
 static int
-    kindle_convert_recovery_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5)
+    kindle_convert_recovery_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5, const bool was_wrapped)
 {
 	unsigned char* data;
 	size_t         hindex = 0;
@@ -636,6 +636,14 @@ static int
 	read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
 
 	hindex += sizeof(uint32_t);    // Padding
+	// NOTE: c.f., the NOTE about that unknown field in FB02h2 packages...
+	if (was_wrapped) {
+		uint32_t unknown;
+		// NOTE: This probably means that target_revision actually ought to be an uint32_t...
+		//       In the meantime, we'll just peek 4 bytes later to match the position & size of that field @ FB02h2
+		memcpy(&unknown, &data[hindex + sizeof(uint32_t)], sizeof(uint32_t));
+		fprintf(stderr, "Magic?         %u\n", unknown);
+	}
 	//target_revision = *(uint64_t *)&data[hindex];
 	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
 	hindex += sizeof(uint64_t);

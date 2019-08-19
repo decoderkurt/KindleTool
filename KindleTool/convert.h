@@ -35,7 +35,7 @@ static int kindle_convert_ota_update_v2(FILE*, FILE*, const bool, char*);
 static int kindle_convert_signature(UpdateHeader*, FILE*, FILE*);
 static int kindle_convert_ota_update(UpdateHeader*, FILE*, FILE*, const bool, char*);
 static int kindle_convert_recovery(UpdateHeader*, FILE*, FILE*, const bool, char*, const bool);
-static int kindle_convert_recovery_v2(FILE*, FILE*, const bool, char*);
+static int kindle_convert_recovery_v2(FILE*, FILE*, const bool, char*, const bool);
 
 static int libarchive_extract(const char*, const char*);
 
