@@ -551,6 +551,12 @@ static int
 			"Target OTA%s    %u\n",
 			was_wrapped ? " " : "?",
 			header->data.recovery_h2_update.target_revision);
+		// NOTE: Exact purpose of this field is murky. It appears to only be set on wrapped packages (was garbage before).
+		//       Set to 0 on factory updates, and 2 on diags updates...
+		//       If it's set to 2, the target_revision field is also set to a much lower value than expected...
+		if (was_wrapped) {
+			fprintf(stderr, "Magic?         %u\n", header->data.recovery_h2_update.unknown);
+		}
 		// Slightly ugly way to detect unknown platforms...
 		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
