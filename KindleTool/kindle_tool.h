@@ -416,7 +416,7 @@ typedef struct
 {
 	unsigned char foo[4];
 	uint32_t      target_revision;
-	uint32_t      unknown;    // NOTE: Only set on *wrapped* FB02h2, 0 for main, 2 for diags?
+	uint32_t      unknown;    // NOTE: Only set on *wrapped* FB02h2, 0 for main/vv, 2 for diags?
 	char          md5_sum[MD5_HASH_LENGTH];
 	uint32_t      magic_1;
 	uint32_t      magic_2;
