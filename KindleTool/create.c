@@ -2473,7 +2473,7 @@ int
 		}
 		// Validation (Allow 0 devices in Recovery V2 & FB02 h2, allow multiple devices in OTA V2 & Recovery V2)
 		if ((info.num_devices < 1 &&
-		     (info.version != RecoveryUpdateV2 && (info.version != RecoveryUpdate || info.header_rev != 2))) ||
+		     (info.version != RecoveryUpdateV2 && !(info.version == RecoveryUpdate && info.header_rev == 2))) ||
 		    ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) && info.num_devices > 1)) {
 			fprintf(stderr,
 				"Invalid number of supported devices (%hu) for this update type (%s).\n",
@@ -2482,7 +2482,7 @@ int
 			goto do_error;
 		}
 		if ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2 &&
-		     (info.version != RecoveryUpdate || info.header_rev != 2)) &&
+		     !(info.version == RecoveryUpdate && info.header_rev == 2)) &&
 		    (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX)) {
 			fprintf(stderr,
 				"Source/target revision for this update type (%s) cannot exceed %u.\n",
