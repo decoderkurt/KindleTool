@@ -229,7 +229,7 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
-				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5, is_wrapped);
+				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5);
 			}
 			break;
 		case UserDataPackage:
@@ -543,20 +543,14 @@ static int
 	if (header->data.recovery_h2_update.header_rev == 2) {
 		fprintf(stderr, "Header Rev     %u\n", header->data.recovery_h2_update.header_rev);
 		// NOTE: On newer platforms (Rex, possibly Zelda), it appears that a target revision field is set & honored,
-		//       at the exact same spot as in RecoveryV2 updates, except stored as an uint32_t...
+		//       at the exact same spot as in RecoveryV2 updates, in the exact same data type...
 		//       This behavior has also been retro-fitted to earlier platforms on the later end of FW >= 5.9.x.
 		//       When the field is mandatory, the package happens to always be wrapped in a signature envelope,
 		//       so we use that as a hint, only showing a question mark when we're unsure...
 		fprintf(stderr,
-			"Target OTA%s    %u\n",
+			"Target OTA%s    %llu\n",
 			was_wrapped ? " " : "?",
-			header->data.recovery_h2_update.target_revision);
-		// NOTE: Exact purpose of this field is murky. It appears to only be set on wrapped packages (was garbage before).
-		//       Set to 0 on factory updates, and 2 on diags updates...
-		//       If it's set to 2, the target_revision field is also set to a much lower value than expected...
-		if (was_wrapped) {
-			fprintf(stderr, "Magic?         %u\n", header->data.recovery_h2_update.unknown);
-		}
+			(long long unsigned int) header->data.recovery_h2_update.target_revision);
 		// Slightly ugly way to detect unknown platforms...
 		if (strcmp(convert_platform_id(header->data.recovery_h2_update.platform), "Unknown") == 0) {
 			fprintf(stderr, "Platform       Unknown (0x%02X)\n", header->data.recovery_h2_update.platform);
@@ -613,7 +607,7 @@ static int
 }
 
 static int
-    kindle_convert_recovery_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5, const bool was_wrapped)
+    kindle_convert_recovery_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5)
 {
 	unsigned char* data;
 	size_t         hindex = 0;
@@ -638,18 +632,8 @@ static int
 	hindex += sizeof(uint32_t);    // Padding
 	//target_revision = *(uint64_t *)&data[hindex];
 	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
+	hindex += sizeof(uint64_t);
 	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
-	// NOTE: c.f., the NOTE about that unknown field in FB02h2 packages...
-	if (was_wrapped) {
-		uint32_t unknown;
-		// NOTE: This probably means that target_revision actually ought to be an uint32_t...
-		//       In the meantime, we'll just peek 4 bytes later to match the position & size of that field @ FB02h2
-		//       Appears to be 0 on main packages, which is what lead me to assume target_revision was an uint64_t,
-		//       that, and bundlefuncs, of course...
-		memcpy(&unknown, &data[hindex + sizeof(uint32_t)], sizeof(uint32_t));
-		fprintf(stderr, "Magic?         %u\n", unknown);
-	}
-	hindex += sizeof(uint64_t);    // And keep on trucking as usual w/ a uint64_t target_revision
 	pkg_md5_sum = (char*) &data[hindex];
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
 	hindex += MD5_HASH_LENGTH;

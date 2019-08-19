@@ -415,8 +415,7 @@ typedef struct
 typedef struct
 {
 	unsigned char foo[4];
-	uint32_t      target_revision;
-	uint32_t      unknown;    // NOTE: Only set on *wrapped* FB02h2, 0 for main/vv, 2 for diags?
+	uint64_t      target_revision;    // NOTE: This would enforce 8 bytes padding/alignment, hence the packing
 	char          md5_sum[MD5_HASH_LENGTH];
 	uint32_t      magic_1;
 	uint32_t      magic_2;
@@ -424,7 +423,7 @@ typedef struct
 	uint32_t      platform;
 	uint32_t      header_rev;
 	uint32_t      board;
-} RecoveryH2UpdateHeader;    // FB02 with V2 Header, not FB03
+} __attribute__((packed)) RecoveryH2UpdateHeader;    // FB02 with V2 Header, not FB03
 
 typedef struct
 {
