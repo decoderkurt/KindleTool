@@ -636,6 +636,9 @@ static int
 	read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
 
 	hindex += sizeof(uint32_t);    // Padding
+	//target_revision = *(uint64_t *)&data[hindex];
+	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
+	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
 	// NOTE: c.f., the NOTE about that unknown field in FB02h2 packages...
 	if (was_wrapped) {
 		uint32_t unknown;
@@ -644,10 +647,7 @@ static int
 		memcpy(&unknown, &data[hindex + sizeof(uint32_t)], sizeof(uint32_t));
 		fprintf(stderr, "Magic?         %u\n", unknown);
 	}
-	//target_revision = *(uint64_t *)&data[hindex];
-	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
-	hindex += sizeof(uint64_t);
-	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
+	hindex += sizeof(uint64_t);    // And keep on trucking as usual w/ a uint64_t target_revision
 	pkg_md5_sum = (char*) &data[hindex];
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
 	hindex += MD5_HASH_LENGTH;
