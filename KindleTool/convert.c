@@ -644,7 +644,8 @@ static int
 		uint32_t unknown;
 		// NOTE: This probably means that target_revision actually ought to be an uint32_t...
 		//       In the meantime, we'll just peek 4 bytes later to match the position & size of that field @ FB02h2
-		//       Appears to be 0 on main packages, which is what lead me to assume target_revision was an uint64_t...
+		//       Appears to be 0 on main packages, which is what lead me to assume target_revision was an uint64_t,
+		//       that, and bundlefuncs, of course...
 		memcpy(&unknown, &data[hindex + sizeof(uint32_t)], sizeof(uint32_t));
 		fprintf(stderr, "Magic?         %u\n", unknown);
 	}
