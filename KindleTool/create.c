@@ -1175,7 +1175,7 @@ static int
 		// NOTE: It expects some new stuff that I'm not too sure about... Here be dragons.
 		// NOTE: Target OTA is optional, appeared (and is mandatory there) on Rex
 		//       (where those are also wrapped in a signature envelope!)
-		header.data.recovery_h2_update.target_revision = (uint32_t) info->target_revision;
+		header.data.recovery_h2_update.target_revision = (uint64_t) info->target_revision;
 		header.data.recovery_h2_update.platform        = (uint32_t) info->platform;
 		header.data.recovery_h2_update.header_rev      = (uint32_t) info->header_rev;
 		header.data.recovery_h2_update.board           = (uint32_t) info->board;
@@ -2294,7 +2294,8 @@ int
 				// And, arguably more useful, handle "max" as a special value
 				if (strcasecmp(optarg, "max") == 0) {
 					// NOTE: Given the way we handle commands vs. args, by now, info.version should be accurate.
-					if (info.version == OTAUpdateV2 || info.version == RecoveryUpdateV2) {
+					if (info.version == OTAUpdateV2 || info.version == RecoveryUpdateV2 ||
+					    (info.version == RecoveryUpdate && info.header_rev == 2)) {
 						info.target_revision = UINT64_MAX;
 					} else {
 						info.target_revision = UINT32_MAX;
@@ -2480,7 +2481,8 @@ int
 				convert_bundle_version(info.version));
 			goto do_error;
 		}
-		if ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2) &&
+		if ((info.version != OTAUpdateV2 && info.version != RecoveryUpdateV2 &&
+		     (info.version != RecoveryUpdate || info.header_rev != 2)) &&
 		    (info.source_revision > UINT32_MAX || info.target_revision > UINT32_MAX)) {
 			fprintf(stderr,
 				"Source/target revision for this update type (%s) cannot exceed %u.\n",
@@ -2791,8 +2793,8 @@ int
 					info.minor,
 					info.magic_1,
 					info.magic_2);
-				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev > 0) {
-					if (info.target_revision == UINT32_MAX) {
+				if (memcmp(info.magic_number, "FB02", MAGIC_NUMBER_LENGTH) == 0 && info.header_rev == 2) {
+					if (info.target_revision == UINT64_MAX) {
 						fprintf(stderr,
 							", Header Rev: %u, Target OTA: MAX, Platform: %s, Board: %s.\n",
 							info.header_rev,
