@@ -262,21 +262,21 @@ typedef enum
 	KindleBasic2            = 0x269,    // 0K9 (Black)
 	KindleBasic2White       = 0x26A,    // 0KA (White)
 	// Kindle Oasis 2, released winter 2017 on FW 5.9.0.6
-	KindleOasis2Unknown_0LM      = 0x295,    // 0LM?
-	KindleOasis2Unknown_0LN      = 0x296,    // 0LN?
-	KindleOasis2Unknown_0LP      = 0x297,    // 0LP?
-	KindleOasis2Unknown_0LQ      = 0x298,    // 0LQ?
-	KindleOasis2Unknown_0P1      = 0x2E1,    // 0P1?
-	KindleOasis2Unknown_0P2      = 0x2E2,    // 0P2?
-	KindleOasis2Unknown_0P6      = 0x2E6,    // 0P6?
-	KindleOasis2Unknown_0P7      = 0x2E7,    // 0P7?
-	KindleOasis2WiFi8GB          = 0x2E8,    // 0P8
-	KindleOasis2WiFi3G32GB       = 0x341,    // 0S1
-	KindleOasis2WiFi3G32GBEurope = 0x342,    // 0S2
-	KindleOasis2Unknown_0S3      = 0x343,    // 0S3?
-	KindleOasis2Unknown_0S4      = 0x344,    // 0S4?
-	KindleOasis2Unknown_0S7      = 0x347,    // 0S7?
-	KindleOasis2WiFi32GB         = 0x34A,    // 0SA
+	KindleOasis2Unknown_0LM       = 0x295,    // 0LM?
+	KindleOasis2Unknown_0LN       = 0x296,    // 0LN?
+	KindleOasis2Unknown_0LP       = 0x297,    // 0LP?
+	KindleOasis2Unknown_0LQ       = 0x298,    // 0LQ?
+	KindleOasis2WiFi32GBChampagne = 0x2E1,    // 0P1
+	KindleOasis2Unknown_0P2       = 0x2E2,    // 0P2?
+	KindleOasis2Unknown_0P6       = 0x2E6,    // 0P6?
+	KindleOasis2Unknown_0P7       = 0x2E7,    // 0P7?
+	KindleOasis2WiFi8GB           = 0x2E8,    // 0P8
+	KindleOasis2WiFi3G32GB        = 0x341,    // 0S1
+	KindleOasis2WiFi3G32GBEurope  = 0x342,    // 0S2
+	KindleOasis2Unknown_0S3       = 0x343,    // 0S3?
+	KindleOasis2Unknown_0S4       = 0x344,    // 0S4?
+	KindleOasis2Unknown_0S7       = 0x347,    // 0S7?
+	KindleOasis2WiFi32GB          = 0x34A,    // 0SA
 	// Kindle PaperWhite 4, released November 7 2018 on FW 5.10.0.1/5.10.0.2
 	KindlePaperWhite4WiFi8GB          = 0x2F7,    // 0PP
 	KindlePaperWhite4WiFi4G32GB       = 0x361,    // 0T1

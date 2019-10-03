@@ -115,6 +115,7 @@
 		-d, --device koa2g32        Kindle Oasis 2 (2017) WiFi+3G (32GB)
 		-d, --device koa2w32        Kindle Oasis 2 (2017) WiFi (32GB)
 		-d, --device koa2g32b       Kindle Oasis 2 (2017) WiFi+3G (32GB) Europe
+		-d, --device koa2w32c       Champagne Kindle Oasis 2 (2017) WiFi (32GB)
 		-d, --device pw4            Kindle PaperWhite 4 (2018) WiFi (8GB)
 		-d, --device pw4l           Kindle PaperWhite 4 (2018) WiFi (32GB)
 		-d, --device pw4lg          Kindle PaperWhite 4 (2018) WiFi+4G (32GB)
@@ -141,7 +142,7 @@
 		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib
 		-d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn
 		-d, --device basic2         Alias for kt3 & kt3w
-		-d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b
+		-d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32, koa2g32b & koa2w32c
 		-d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in & pw4lgjp
 		-d, --device basic3         Alias for kt4 & kt4w
 		-d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32 & koa3w8

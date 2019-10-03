@@ -342,8 +342,8 @@ const char*
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0LP)";
 		case KindleOasis2Unknown_0LQ:
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0LQ)";
-		case KindleOasis2Unknown_0P1:
-			return "Kindle Oasis 2 (2017) (Unknown Variant 0P1)";
+		case KindleOasis2WiFi32GBChampagne:
+			return "Champagne Kindle Oasis 2 (2017) WiFi (32GB)";
 		case KindleOasis2Unknown_0P2:
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0P2)";
 		case KindleOasis2Unknown_0P6:
@@ -645,6 +645,7 @@ static int
 	    "      -d, --device koa2g32        Kindle Oasis 2 (2017) WiFi+3G (32GB)\n"
 	    "      -d, --device koa2w32        Kindle Oasis 2 (2017) WiFi (32GB)\n"
 	    "      -d, --device koa2g32b       Kindle Oasis 2 (2017) WiFi+3G (32GB) Europe\n"
+	    "      -d, --device koa2w32c       Champagne Kindle Oasis 2 (2017) WiFi (32GB)\n"
 	    "      -d, --device pw4            Kindle PaperWhite 4 (2018) WiFi (8GB)\n"
 	    "      -d, --device pw4l           Kindle PaperWhite 4 (2018) WiFi (32GB)\n"
 	    "      -d, --device pw4lg          Kindle PaperWhite 4 (2018) WiFi+4G (32GB)\n"
@@ -671,7 +672,7 @@ static int
 	    "      -d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi, pw3wgib\n"
 	    "      -d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn\n"
 	    "      -d, --device basic2         Alias for kt3 & kt3w\n"
-	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32 & koa2g32b\n"
+	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32, koa2g32b & koa2w32c\n"
 	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in & pw4lgjp\n"
 	    "      -d, --device basic3         Alias for kt4 & kt4w\n"
 	    "      -d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32 & koa3w8\n"
