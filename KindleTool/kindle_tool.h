@@ -296,7 +296,7 @@ typedef enum
 	KindlePaperWhite4Unknown_16Q      = 0x4D8,    // 16Q? NOTE: Appeared in 5.11.2...
 	KindlePaperWhite4Unknown_16R      = 0x4D9,    // 16R?
 	KindlePaperWhite4Unknown_16S      = 0x4DA,    // 16S?
-	KindlePaperWhite4Unknown_16T      = 0x4DB,    // 16T?
+	KindlePaperWhite4WiFi8GBBlue      = 0x4DB,    // 16T (Twilight Blue, DE)
 	KindlePaperWhite4Unknown_16U      = 0x4DC,    // 16U?
 	KindlePaperWhite4Unknown_16V      = 0x4DD,    // 16V?
 	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
