@@ -1559,7 +1559,7 @@ int
 					}
 				} else if (strcasecmp(optarg, "paperwhite4") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 7 + (kt_with_unknown_devcodes * 14);
+					const unsigned int num_aliased_devices = 8 + (kt_with_unknown_devcodes * 13);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindlePaperWhite4WiFi8GB;
@@ -1569,6 +1569,7 @@ int
 					info.devices[info.num_devices++]       = KindlePaperWhite4WiFi8GBIndia;
 					info.devices[info.num_devices++]       = KindlePaperWhite4WiFi4G32GBJapan;
 					info.devices[info.num_devices++]       = KindlePaperWhite4WiFi8GBBlue;
+					info.devices[info.num_devices++]       = KindlePaperWhite4WiFi32GBBlue;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0T4;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0T5;
@@ -1579,7 +1580,6 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0TM;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0TN;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_103;
-						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16Q;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16R;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16S;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16U;
@@ -1623,7 +1623,7 @@ int
 					    5 + (kt_with_unknown_devcodes * 1) +     // Oasis
 					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
 					    5 + (kt_with_unknown_devcodes * 10) +    // Oasis 2
-					    7 + (kt_with_unknown_devcodes * 14) +    // PW4
+					    8 + (kt_with_unknown_devcodes * 13) +    // PW4
 					    2 + (kt_with_unknown_devcodes * 4) +     // KT4
 					    5 + (kt_with_unknown_devcodes * 1);      // KOA3
 					info.devices = realloc(info.devices,
@@ -1730,6 +1730,7 @@ int
 					info.devices[info.num_devices++] = KindlePaperWhite4WiFi8GBIndia;
 					info.devices[info.num_devices++] = KindlePaperWhite4WiFi4G32GBJapan;
 					info.devices[info.num_devices++] = KindlePaperWhite4WiFi8GBBlue;
+					info.devices[info.num_devices++] = KindlePaperWhite4WiFi32GBBlue;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0T4;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0T5;
@@ -1740,7 +1741,6 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0TM;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_0TN;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_103;
-						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16Q;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16R;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16S;
 						info.devices[info.num_devices++] = KindlePaperWhite4Unknown_16U;
@@ -2077,6 +2077,10 @@ int
 					} else if (strcasecmp(optarg, "pw4tb") == 0 ||
 						   strcasecmp(optarg, "kpw4tb") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi8GBBlue;
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					} else if (strcasecmp(optarg, "pw4ltb") == 0 ||
+						   strcasecmp(optarg, "kpw4ltb") == 0) {
+						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi32GBBlue;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KT4
