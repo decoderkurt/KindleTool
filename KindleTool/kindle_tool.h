@@ -309,7 +309,7 @@ typedef enum
 	// Kindle Oasis 3, released July 24 2019 on FW 5.12.0
 	KindleOasis3WiFi32GBChampagne = 0x434,    // 11L (Champagne, US)
 	KindleOasis3WiFi4G32GBJapan   = 0x3D8,    // 0WQ (Graphite, JP)
-	KindleOasis3Unknown_0WP       = 0x3D7,    // 0WP?
+	KindleOasis3Unknown_0WP       = 0x3D7,    // 0WP (Seen in the wild, WiFi+4G, 32GB, not enough details)
 	KindleOasis3WiFi4G32GB        = 0x3D6,    // 0WN (Graphite, US)
 	KindleOasis3WiFi32GB          = 0x3D5,    // 0WM (Graphite, DE)
 	KindleOasis3WiFi8GB           = 0x3D4,    // 0WL (Graphite, DE)
