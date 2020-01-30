@@ -890,15 +890,22 @@ static int
 	base16_encode_update(hash, MD5_DIGEST_SIZE, digest);
 
 	// And finally, do the device dance...
-	snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
-	device = (Device) strtoul(device_code, NULL, 16);
-	// Handle the new device ID scheme, used since the PW3
-	if (strcmp(convert_device_id(device), "Unknown") == 0) {
-		fprintf(stderr,
-			"Couldn't identify device %s (0x%02X), trying the new identification scheme...\n",
-			device_code,
-			device);
+	// NOTE: If the S/N starts with B or 9, assume it's an older device with an hexadecimal device code
+	if (serial_no[0] == 'B' || serial_no[0] == '9') {
+		// NOTE: Slice the bracketed section out of the S/N: B0[17]NNNNNNNNNNNN
+		snprintf(device_code, 2 + 1, "%.*s", 2, serial_no + 2);
+		// It's in hex, easy peasy.
+		device = (Device) strtoul(device_code, NULL, 16);
+		if (strcmp(convert_device_id(device), "Unknown") == 0) {
+			fprintf(stderr, "Unknown device %s (0x%02X).\n", device_code, device);
+			return -1;
+		}
+	} else {
+		// Otherwise, assume it's the new base32-ish format (so far, all of those S/N start with a 'G').
+		// In use since the PW3.
+		// NOTE: Slice the bracketed section out of the S/N: (G09[0G1]NNNNNNNNNN)
 		snprintf(device_code, 3 + 1, "%.*s", 3, serial_no + 3);
+		// (these ones are encoded in a slightly custom base 32)
 		device = (Device) from_base(device_code, 32);
 		if (strcmp(convert_device_id(device), "Unknown") == 0) {
 			fprintf(stderr, "Unknown device %s (0x%03X).\n", device_code, device);
