@@ -321,8 +321,8 @@ Build_OSX() {
 	cd ../..
 
 	KT_SYSROOT="${PWD}/kt-sysroot-osx"
-	# NOTE: Use -isystem so that gmp doesn't do crazy stuff...
-	export CPPFLAGS="-isystem${KT_SYSROOT}/include"
+	# NOTE: We can't use -isystem because we'd be picking up Homebrew's includes in /usr/local...
+	export CPPFLAGS="-I${KT_SYSROOT}/include"
 	export LDFLAGS="-L${KT_SYSROOT}/lib"
 
 	BASE_PKG_CONFIG_PATH="${KT_SYSROOT}/lib/pkgconfig"
