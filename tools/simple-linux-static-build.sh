@@ -22,11 +22,11 @@ Build_Linux() {
 		GMPABI="32"
 	fi
 
-	GMP_VER="6.1.2"
+	GMP_VER="6.2.0"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.4"
+	NETTLE_VER="3.5.1"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.3.2"
+	LIBARCHIVE_VER="3.4.1"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -138,18 +138,18 @@ Build_Linux() {
 	cat > CREDITS << EOF
 * kindletool:
 
-KindleTool, Copyright (C) 2011-2015  Yifan Lu, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
+KindleTool, Copyright (C) 2011-2012 Yifan Lu & Copyright (C) 2012-2020 NiLuJe, licensed under the GNU General Public License version 3+ (http://www.gnu.org/licenses/gpl.html).
 (https://github.com/NiLuJe/KindleTool/)
 
   |
   |->   libarchive, Copyright (C) Tim Kientzle, licensed under the New BSD License (http://www.opensource.org/licenses/bsd-license.php)
   |   (http://libarchive.github.com/)
   |
-  |->   GMP, GNU MP Library, Copyright 1991-2014 Free Software Foundation, Inc.,
+  |->   GMP, GNU MP Library, Copyright 1991-2018 Free Software Foundation, Inc.,
   |   licensed under the GNU Lesser General Public License version 3+ (http://www.gnu.org/licenses/lgpl.html).
   |   (http://gmplib.org/)
   |
-  \`->   nettle, Copyright (C) 2001-2014 Niels Möller,
+  \`->   nettle, Copyright (C) 2001-2018 Niels Möller,
       licensed under the GNU Lesser General Public License version 2.1+ (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
       (http://www.lysator.liu.se/~nisse/nettle)
 EOF
