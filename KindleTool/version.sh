@@ -33,7 +33,7 @@ esac
 if pkg-config --atleast-version=3.0.3 libarchive ; then
 	HAS_PC_LIBARCHIVE="true"
 	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
-	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
+	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --static --libs-only-L libarchive)"
 else
 	HAS_PC_LIBARCHIVE="false"
 	PC_LIBARCHIVE_CPPFLAGS=""
