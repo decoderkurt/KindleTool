@@ -33,11 +33,18 @@ esac
 if pkg-config --atleast-version=3.0.3 libarchive ; then
 	HAS_PC_LIBARCHIVE="true"
 	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
-	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --static --libs-only-L libarchive)"
+	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
+	# We need to pickup Libs.private for MingW builds...
+	if [[ "${1}" == "1" ]] ; then
+		PC_LIBARCHIVE_LIBS="$(pkg-config --libs-only-l --libs-only-other --static)"
+	else
+		PC_LIBARCHIVE_LIBS="$(pkg-config --libs-only-l --libs-only-other)"
+	fi
 else
 	HAS_PC_LIBARCHIVE="false"
 	PC_LIBARCHIVE_CPPFLAGS=""
 	PC_LIBARCHIVE_LDFLAGS=""
+	PC_LIBARCHIVE_LIBS=""
 	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
 	echo "**!** @ Couldn't find libarchive >= 3.0.3 via pkg-config, don't be surprised if the build fails! @ **!**"
 	echo "**!** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ **!**"
@@ -168,6 +175,7 @@ if [[ "${VER}" != "${VER_CURRENT}" ]] ; then
 		echo "HAS_PC_LIBARCHIVE = ${HAS_PC_LIBARCHIVE}";
 		echo "PC_LIBARCHIVE_CPPFLAGS = ${PC_LIBARCHIVE_CPPFLAGS}";
 		echo "PC_LIBARCHIVE_LDFLAGS = ${PC_LIBARCHIVE_LDFLAGS}";
+		echo "PC_LIBARCHIVE_LIBS = ${PC_LIBARCHIVE_LIBS}";
 		echo "HAS_PC_NETTLE = ${HAS_PC_NETTLE}";
 		echo "PC_NETTLE_CPPFLAGS = ${PC_NETTLE_CPPFLAGS}";
 		echo "PC_NETTLE_LDFLAGS = ${PC_NETTLE_LDFLAGS}";
