@@ -35,7 +35,7 @@ if pkg-config --atleast-version=3.0.3 libarchive ; then
 	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config libarchive --cflags-only-I)"
 	PC_LIBARCHIVE_LDFLAGS="$(pkg-config libarchive --libs-only-L)"
 	# We need to pickup Libs.private for MingW builds...
-	if [[ "${1}" == "1" ]] ; then
+	if [[ "${2}" == "STATIC" ]] ; then
 		PC_LIBARCHIVE_LIBS="$(pkg-config libarchive --libs-only-l --libs-only-other --static)"
 	else
 		PC_LIBARCHIVE_LIBS="$(pkg-config libarchive --libs-only-l --libs-only-other)"

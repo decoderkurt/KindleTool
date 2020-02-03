@@ -20,7 +20,7 @@ endif
 # MinGW-w64 (64bit) cross toolchain prefix
 ifdef MINGW
 	CROSS_PREFIX?=x86_64-w64-mingw32-
-	NEED_STATIC_PKGC:=1
+	NEED_STATIC_PKGC:=STATIC
 endif
 
 SRCS:=kindle_tool.c create.c convert.c nettle_pem.c
@@ -31,7 +31,7 @@ default: all
 # It's basically our fake automated configure script, and it uses bash features, so override the default shell!
 SHELL:=/bin/bash
 version-inc:
-	@$(SHELL) ./version.sh $(NEED_STATIC_PKGC)
+	@$(SHELL) ./version.sh GIT $(NEED_STATIC_PKGC)
 -include version-inc
 
 # Try to use sane defaults for DESTDIR/PREFIX, while still playing nice with PMS

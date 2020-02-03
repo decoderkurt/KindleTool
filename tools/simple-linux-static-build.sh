@@ -164,7 +164,7 @@ EOF
 
 	# Package it
 	git log --stat --graph > ../../ChangeLog
-	./version.sh PMS
+	./version.sh PMS STATIC
 	VER_FILE="VERSION"
 	VER_CURRENT="$(<${VER_FILE})"
 	# Strip the git commit
