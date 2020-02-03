@@ -191,7 +191,7 @@ cd ../..
 cd KindleTool/KindleTool
 rm -rf lib includes
 make clean
-make mingw
+make mingw MINGW=true
 
 # Package it
 git log --stat --graph > ../../ChangeLog
