@@ -32,13 +32,13 @@ esac
 # because we don't want to override what Homebrew & our static build scripts do. The Makefile should use sane defaults as fallback.
 if pkg-config --atleast-version=3.0.3 libarchive ; then
 	HAS_PC_LIBARCHIVE="true"
-	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config --cflags-only-I libarchive)"
-	PC_LIBARCHIVE_LDFLAGS="$(pkg-config --libs-only-L libarchive)"
+	PC_LIBARCHIVE_CPPFLAGS="$(pkg-config libarchive --cflags-only-I)"
+	PC_LIBARCHIVE_LDFLAGS="$(pkg-config libarchive --libs-only-L)"
 	# We need to pickup Libs.private for MingW builds...
 	if [[ "${1}" == "1" ]] ; then
-		PC_LIBARCHIVE_LIBS="$(pkg-config --libs-only-l --libs-only-other --static)"
+		PC_LIBARCHIVE_LIBS="$(pkg-config libarchive --libs-only-l --libs-only-other --static)"
 	else
-		PC_LIBARCHIVE_LIBS="$(pkg-config --libs-only-l --libs-only-other)"
+		PC_LIBARCHIVE_LIBS="$(pkg-config libarchive --libs-only-l --libs-only-other)"
 	fi
 else
 	HAS_PC_LIBARCHIVE="false"
