@@ -329,7 +329,7 @@ typedef enum
 	Duet             = 0x08,    // Kindle Oasis
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
 	Zelda            = 0x0A,    // Kindle Oasis 2, Oasis 3
-	Rex              = 0x0B     // Kindle PW4, KT4 (10th gen)
+	Rex              = 0x0B     // Kindle PW4, Basic 3 (10th gen)
 } Platform;
 
 typedef enum
@@ -376,15 +376,15 @@ typedef enum
 // Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
 // Wario                      // Temp. Wario dev boards [Also a Platform]
 // Pinot (+ WFO variant)      // Kindle PW2
-// Bourbon                    // Kindle Basic
+// Bourbon                    // Kindle Basic (KT2)
 // Icewine (on Wario)         // Kindle Voyage
 // Muscat                     // Kindle PW3
 // Whisky                     // Kindle Oasis
 // Woody                      // ?? (Dev/Proto? Duet platform, Basic line)
-// Eanab                      // Kindle Basic 2
+// Eanab                      // Kindle Basic 2 (KT3)
 // Cognac                     // Kindle Oasis 2
 // Moonshine                  // Kindle PW4
-// Jaeger                     // Kindle KT4
+// Jaeger                     // Kindle Basic 3 (KT4)
 // Stinger                    // Kindle Oasis 3
 
 typedef struct
