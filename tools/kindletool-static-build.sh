@@ -30,9 +30,9 @@ Build_Linux() {
 
 	GMP_VER="6.2.0"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.5.1"
+	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.1"
+	LIBARCHIVE_VER="3.4.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -309,9 +309,9 @@ Build_OSX() {
 
 	GMP_VER="6.2.0"
 	GMP_DIR="gmp-${GMP_VER%a}"
-	NETTLE_VER="3.5.1"
+	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.1"
+	LIBARCHIVE_VER="3.4.2"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
