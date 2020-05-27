@@ -305,7 +305,7 @@ typedef enum
 	KindleBasic3Unknown_0WG = 0x3D0,    // 0WG?
 	KindleBasic3White       = 0x3D1,    // 0WH
 	KindleBasic3Unknown_0WJ = 0x3D2,    // 0WJ?
-	KindleBasic3Unknown_0VB = 0x3AB,    // 0VB?
+	KindleBasic3KidsEdition = 0x3AB,    // 0VB NOTE: Ships on a custom OTA-only FW branch. May be a special snowflake.
 	// Kindle Oasis 3, released July 24 2019 on FW 5.12.0
 	KindleOasis3WiFi32GBChampagne = 0x434,    // 11L (Champagne, US)
 	KindleOasis3WiFi4G32GBJapan   = 0x3D8,    // 0WQ (Graphite, JP)
