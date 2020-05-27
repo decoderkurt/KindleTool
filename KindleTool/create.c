@@ -2090,8 +2090,7 @@ int
 					} else if (strcasecmp(optarg, "kt4w") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic3White;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					}
-					else if (strcasecmp(optarg, "kt4ke") == 0) {
+					} else if (strcasecmp(optarg, "kt4ke") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic3KidsEdition;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
