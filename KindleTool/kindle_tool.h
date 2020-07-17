@@ -298,7 +298,7 @@ typedef enum
 	KindlePaperWhite4Unknown_16S      = 0x4DA,    // 16S?
 	KindlePaperWhite4WiFi8GBBlue      = 0x4DB,    // 16T (Twilight Blue, DE)
 	KindlePaperWhite4WiFi8GBPlum      = 0x4DC,    // 16U (Plum. New batch of colors released summer 2020, on 5.12.3)
-	KindlePaperWhite4Unknown_16V      = 0x4DD,    // 16V?
+	KindlePaperWhite4WiFi8GBSage      = 0x4DD,    // 16V (Sage. Ditto)
 	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
 	KindleBasic3            = 0x414,    // 10L
 	KindleBasic3Unknown_0WF = 0x3CF,    // 0WF?

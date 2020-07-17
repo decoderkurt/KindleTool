@@ -403,9 +403,9 @@ const char*
 		case KindlePaperWhite4WiFi8GBBlue:
 			return "Twilight Blue Kindle PaperWhite 4 (2018) WiFi (8GB)";
 		case KindlePaperWhite4WiFi8GBPlum:
-			return "Plum Twilight Blue Kindle PaperWhite 4 (2018) WiFi (8GB)";
-		case KindlePaperWhite4Unknown_16V:
-			return "Kindle PaperWhite 4 (2018) (Unknown Variant 16V)";
+			return "Plum Kindle PaperWhite 4 (2018) WiFi (8GB)";
+		case KindlePaperWhite4WiFi8GBSage:
+			return "Sage Kindle PaperWhite 4 (2018) WiFi (8GB)";
 		case KindleBasic3:
 			return "Kindle Basic 3 (2019)";
 		case KindleBasic3Unknown_0WF:
@@ -655,6 +655,7 @@ static int
 	    "      -d, --device pw4tb          Twilight Blue Kindle PaperWhite 4 (2018) WiFi (8GB)\n"
 	    "      -d, --device pw4ltb         Twilight Blue Kindle PaperWhite 4 (2018) WiFi (32GB)\n"
 	    "      -d, --device pw4p           Plum Kindle PaperWhite 4 (2018) WiFi (8GB)\n"
+	    "      -d, --device pw4s           Sage Kindle PaperWhite 4 (2018) WiFi (8GB)\n"
 	    "      -d, --device kt4            Kindle Basic 3 (2019)\n"
 	    "      -d, --device kt4w           White Kindle Basic 3 (2019)\n"
 	    "      -d, --device kt4ke          Kindle Basic 3 (2019) Kids Edition\n"
@@ -677,7 +678,7 @@ static int
 	    "      -d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn\n"
 	    "      -d, --device basic2         Alias for kt3 & kt3w\n"
 	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32, koa2g32b & koa2w32c\n"
-	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in, pw4lgjp, pw4tb, pw4ltb & pw4p\n"
+	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in, pw4lgjp, pw4tb, pw4ltb, pw4p & pw4s\n"
 	    "      -d, --device basic3         Alias for kt4, kt4w & kt4ke\n"
 	    "      -d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32 & koa3w8\n"
 	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3 & oasis3\n"
