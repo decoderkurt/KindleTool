@@ -1587,14 +1587,14 @@ int
 					}
 				} else if (strcasecmp(optarg, "basic3") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 3 + (kt_with_unknown_devcodes * 3);
+					const unsigned int num_aliased_devices = 4 + (kt_with_unknown_devcodes * 2);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindleBasic3;
 					info.devices[info.num_devices++]       = KindleBasic3White;
 					info.devices[info.num_devices++]       = KindleBasic3KidsEdition;
+					info.devices[info.num_devices++]       = KindleBasic3White8GB;
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WJ;
 					}
@@ -1624,7 +1624,7 @@ int
 					    2 + (kt_with_unknown_devcodes * 1) +      // KT3
 					    5 + (kt_with_unknown_devcodes * 10) +     // Oasis 2
 					    10 + (kt_with_unknown_devcodes * 11) +    // PW4
-					    3 + (kt_with_unknown_devcodes * 3) +      // KT4
+					    4 + (kt_with_unknown_devcodes * 2) +      // KT4
 					    5 + (kt_with_unknown_devcodes * 1);       // KOA3
 					info.devices = realloc(info.devices,
 							       (info.num_devices + num_aliased_devices) * sizeof(Device));
@@ -1750,8 +1750,8 @@ int
 					info.devices[info.num_devices++] = KindleBasic3;
 					info.devices[info.num_devices++] = KindleBasic3White;
 					info.devices[info.num_devices++] = KindleBasic3KidsEdition;
+					info.devices[info.num_devices++] = KindleBasic3White8GB;
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleBasic3Unknown_0WF;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WG;
 						info.devices[info.num_devices++] = KindleBasic3Unknown_0WJ;
 					}
@@ -2098,6 +2098,9 @@ int
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					} else if (strcasecmp(optarg, "kt4ke") == 0) {
 						info.devices[info.num_devices - 1] = KindleBasic3KidsEdition;
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					} else if (strcasecmp(optarg, "kt4w8") == 0) {
+						info.devices[info.num_devices - 1] = KindleBasic3White8GB;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// KOA3

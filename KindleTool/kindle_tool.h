@@ -301,7 +301,7 @@ typedef enum
 	KindlePaperWhite4WiFi8GBSage      = 0x4DD,    // 16V (Sage. Ditto)
 	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
 	KindleBasic3            = 0x414,    // 10L
-	KindleBasic3Unknown_0WF = 0x3CF,    // 0WF?
+	KindleBasic3White8GB    = 0x3CF,    // 0WF (White, WiFi, DE. 4GB -> 8GB)
 	KindleBasic3Unknown_0WG = 0x3D0,    // 0WG?
 	KindleBasic3White       = 0x3D1,    // 0WH
 	KindleBasic3Unknown_0WJ = 0x3D2,    // 0WJ?
