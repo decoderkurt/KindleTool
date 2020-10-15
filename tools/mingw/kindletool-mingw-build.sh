@@ -17,11 +17,7 @@
 
 # Remember where we are...
 SCRIPT_NAME="${BASH_SOURCE[0]-${(%):-%x}}"
-if [[ "${OSTYPE}" == "Linux" ]] ; then
-	SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
-else
-	SCRIPT_BASE_DIR="$(greadlink -f "${SCRIPT_NAME%/*}")"
-fi
+SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
 
 # Make sure we're up to date
 git pull
