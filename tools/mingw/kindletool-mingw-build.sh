@@ -15,6 +15,14 @@
 ## NOTE: Or some other build script, like https://github.com/shinchiro/mpv-winbuild-cmake
 ## FIXME: Might need to symlink bcrypt.h to Bcrypt.h & windows.h to Windows.h to make libarchive happy...
 
+# Remember where we are...
+SCRIPT_NAME="${BASH_SOURCE[0]-${(%):-%x}}"
+if [[ "${OSTYPE}" == "Linux" ]] ; then
+	SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
+else
+	SCRIPT_BASE_DIR="$(greadlink -f "${SCRIPT_NAME%/*}")"
+fi
+
 # Make sure we're up to date
 git pull
 
@@ -52,7 +60,7 @@ GMP_VER="6.2.0"
 GMP_DIR="gmp-${GMP_VER%a}"
 NETTLE_VER="3.6"
 NETTLE_DIR="nettle-${NETTLE_VER}"
-LIBARCHIVE_VER="3.4.2"
+LIBARCHIVE_VER="3.4.3"
 LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 if [[ ! -d "${ZLIB_DIR}" ]] ; then
@@ -138,7 +146,7 @@ if [[ "${USE_STABLE_LIBARCHIVE}" == "true" ]] ; then
 		tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 		cd ${LIBARCHIVE_DIR}
 		./build/autogen.sh
-		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --disable-bsdcat --disable-bsdtar --disable-bsdcpio
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd --disable-bsdcat --disable-bsdtar --disable-bsdcpio
 		make -j2
 		make install
 		cd ..
@@ -149,10 +157,12 @@ else
 		echo ""
 		git clone https://github.com/libarchive/libarchive.git libarchive-git
 		cd libarchive-git
+		# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
+		patch -p1 < "${SCRIPT_BASE_DIR}/../libarchive-git-fix-build.patch"
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
 		./build/autogen.sh
-		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --disable-bsdcat --disable-bsdtar --disable-bsdcpio
+		./configure --prefix="${TC_BUILD_DIR}" --host="${CROSS_TC}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd --disable-bsdcat --disable-bsdtar --disable-bsdcpio
 		make -j2
 		make install
 		cd ..
