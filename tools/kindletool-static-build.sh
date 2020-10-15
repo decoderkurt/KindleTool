@@ -1,5 +1,9 @@
 #!/bin/bash -e
 
+# Remember where we are...
+SCRIPT_NAME="${BASH_SOURCE[0]-${(%):-%x}}"
+SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
+
 OSTYPE="$(uname -s)"
 ARCH="$(uname -m)"
 KERNREL="$(uname -r)"
@@ -32,7 +36,7 @@ Build_Linux() {
 	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.2"
+	LIBARCHIVE_VER="3.4.3"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -115,7 +119,7 @@ Build_Linux() {
 			cd ${LIBARCHIVE_DIR}
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -127,11 +131,13 @@ Build_Linux() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
+			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
+			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# Kill -Werror, git master doesn't always build with it...
 			sed -e 's/-Werror //' -i ./Makefile.am
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -203,7 +209,7 @@ Build_Cygwin() {
 	export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_VER="3.4.1"
+	LIBARCHIVE_VER="3.4.3"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -224,7 +230,7 @@ Build_Cygwin() {
 			cd ${LIBARCHIVE_DIR}
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE -DENABLE_ZSTD=FALSE
 			make
 			make install
 			cd ..
@@ -235,11 +241,13 @@ Build_Cygwin() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
+			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
+			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# NOTE: CMake isn't up to date in the Cygwin repos, but is new enough for our purposes. Revert part of 1052c76, it doesn't concern us on Cygwin anyway.
 			sed -e 's/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6 FATAL_ERROR)/' -i CMakeLists.txt
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
 			# Switch to cmake, which will properly use Nettle on Cygwin, and hope it doesn't break everything, because the tests still fail horribly to build...
-			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE
+			cmake -DCMAKE_INSTALL_PREFIX="/usr" -DCMAKE_BUILD_TYPE="Release" -DENABLE_TEST=FALSE -DBUILD_TESTING=FALSE -DENABLE_TAR=ON -DENABLE_XATTR=FALSE -DENABLE_ACL=FALSE -DENABLE_ICONV=FALSE -DENABLE_CPIO=FALSE -DENABLE_NETTLE=ON -DENABLE_OPENSSL=FALSE -DENABLE_LZMA=FALSE -DENABLE_ZLIB=ON -DENABLE_BZip2=FALSE -DENABLE_EXPAT=FALSE -DENABLE_ZSTD=FALSE
 			make
 			make install
 			cd ..
@@ -311,7 +319,7 @@ Build_OSX() {
 	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.2"
+	LIBARCHIVE_VER="3.4.3"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -393,7 +401,7 @@ Build_OSX() {
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			cd ..
@@ -404,10 +412,12 @@ Build_OSX() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
+			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
+			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# Kill -Werror, git master doesn't always build with it...
 			sed -e 's/-Werror //' -i '' ./Makefile.am
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			cd ..
