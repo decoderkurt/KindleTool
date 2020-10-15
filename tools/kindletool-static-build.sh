@@ -1,12 +1,16 @@
 #!/bin/bash -e
 
-# Remember where we are...
-SCRIPT_NAME="${BASH_SOURCE[0]-${(%):-%x}}"
-SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
-
 OSTYPE="$(uname -s)"
 ARCH="$(uname -m)"
 KERNREL="$(uname -r)"
+
+# Remember where we are...
+SCRIPT_NAME="${BASH_SOURCE[0]-${(%):-%x}}"
+if [[ "${OSTYPE}" == "Linux" ]] ; then
+	SCRIPT_BASE_DIR="$(readlink -f "${SCRIPT_NAME%/*}")"
+else
+	SCRIPT_BASE_DIR="$(greadlink -f "${SCRIPT_NAME%/*}")"
+fi
 
 ## Setup parallellization... Shamelessly stolen from crosstool-ng ;).
 AUTO_JOBS=$(($(getconf _NPROCESSORS_ONLN 2> /dev/null || echo 0) + 1))
