@@ -77,22 +77,22 @@
 #	error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #endif
 
-#define BUFFER_SIZE 1024
-#define BLOCK_SIZE 64
+#define BUFFER_SIZE         1024
+#define BLOCK_SIZE          64
 #define RECOVERY_BLOCK_SIZE 131072
 
 #define MAGIC_NUMBER_LENGTH 4
-#define MD5_HASH_LENGTH 32
+#define MD5_HASH_LENGTH     32
 
-#define OTA_UPDATE_BLOCK_SIZE 60
-#define OTA_UPDATE_V2_BLOCK_SIZE 18
+#define OTA_UPDATE_BLOCK_SIZE           60
+#define OTA_UPDATE_V2_BLOCK_SIZE        18
 #define OTA_UPDATE_V2_PART_2_BLOCK_SIZE 36
-#define RECOVERY_UPDATE_BLOCK_SIZE 131068
-#define UPDATE_SIGNATURE_BLOCK_SIZE 60
+#define RECOVERY_UPDATE_BLOCK_SIZE      131068
+#define UPDATE_SIGNATURE_BLOCK_SIZE     60
 
 #define CERTIFICATE_DEV_SIZE 128
-#define CERTIFICATE_1K_SIZE 128
-#define CERTIFICATE_2K_SIZE 256
+#define CERTIFICATE_1K_SIZE  128
+#define CERTIFICATE_2K_SIZE  256
 
 #define INDEX_FILE_NAME "update-filelist.dat"
 
@@ -100,15 +100,15 @@
 
 #define DEFAULT_BYTES_PER_BLOCK (20 * 512)
 
-#define IS_SCRIPT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".ffs", 4) == 0)        // Flawfinder: ignore
-#define IS_SHELL(filename) (strncasecmp(filename + (strlen(filename) - 3), ".sh", 3) == 0)          // Flawfinder: ignore
-#define IS_SIG(filename) (strncasecmp(filename + (strlen(filename) - 4), ".sig", 4) == 0)           // Flawfinder: ignore
-#define IS_BIN(filename) (strncasecmp(filename + (strlen(filename) - 4), ".bin", 4) == 0)           // Flawfinder: ignore
-#define IS_STGZ(filename) (strncasecmp(filename + (strlen(filename) - 5), ".stgz", 5) == 0)         // Flawfinder: ignore
-#define IS_TGZ(filename) (strncasecmp(filename + (strlen(filename) - 4), ".tgz", 4) == 0)           // Flawfinder: ignore
+#define IS_SCRIPT(filename)  (strncasecmp(filename + (strlen(filename) - 4), ".ffs", 4) == 0)       // Flawfinder: ignore
+#define IS_SHELL(filename)   (strncasecmp(filename + (strlen(filename) - 3), ".sh", 3) == 0)        // Flawfinder: ignore
+#define IS_SIG(filename)     (strncasecmp(filename + (strlen(filename) - 4), ".sig", 4) == 0)       // Flawfinder: ignore
+#define IS_BIN(filename)     (strncasecmp(filename + (strlen(filename) - 4), ".bin", 4) == 0)       // Flawfinder: ignore
+#define IS_STGZ(filename)    (strncasecmp(filename + (strlen(filename) - 5), ".stgz", 5) == 0)      // Flawfinder: ignore
+#define IS_TGZ(filename)     (strncasecmp(filename + (strlen(filename) - 4), ".tgz", 4) == 0)       // Flawfinder: ignore
 #define IS_TARBALL(filename) (strncasecmp(filename + (strlen(filename) - 7), ".tar.gz", 7) == 0)    // Flawfinder: ignore
-#define IS_DAT(filename) (strncasecmp(filename + (strlen(filename) - 4), ".dat", 4) == 0)           // Flawfinder: ignore
-#define IS_UIMAGE(filename) (strncmp(filename + (strlen(filename) - 6), "uImage", 6) == 0)          // Flawfinder: ignore
+#define IS_DAT(filename)     (strncasecmp(filename + (strlen(filename) - 4), ".dat", 4) == 0)       // Flawfinder: ignore
+#define IS_UIMAGE(filename)  (strncmp(filename + (strlen(filename) - 6), "uImage", 6) == 0)         // Flawfinder: ignore
 
 // Don't break tempfiles on Win32... It doesn't like paths starting with // because that means an 'extended' path
 // (network shares and more weird stuff like that), but P_tmpdir defaults to / on Win32,
@@ -139,7 +139,7 @@ FILE* kt_win_tmpfile(void);
 #endif
 
 // Bundlefile status bitmasks
-#define BUNDLE_OPEN 1       // 1 << 0       (bit 0)
+#define BUNDLE_OPEN    1    // 1 << 0       (bit 0)
 #define BUNDLE_CREATED 2    // 1 << 1       (bit 1)
 
 // Version tag fallback

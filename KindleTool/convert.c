@@ -168,9 +168,9 @@ static int
 		fprintf(stderr,
 			"Bundle         %.*s %s\n",
 			MAGIC_NUMBER_LENGTH,
-			(get_bundle_version(header.magic_number) == UserDataPackage
-			     ? "GZIP"
-			     : get_bundle_version(header.magic_number) == AndroidUpdate ? "ZIP" : header.magic_number),
+			(get_bundle_version(header.magic_number) == UserDataPackage ? "GZIP"
+			 : get_bundle_version(header.magic_number) == AndroidUpdate ? "ZIP"
+										    : header.magic_number),
 			convert_magic_number(header.magic_number));
 	}
 	// NOTE: Remember if the package was wrapped in a signature... Since this is re-entrant, make it static.

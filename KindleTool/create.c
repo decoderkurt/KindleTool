@@ -729,10 +729,10 @@ static int
 					    ((real_blocksize == RECOVERY_BLOCK_SIZE &&
 						      IS_UIMAGE(kttar->to_sign_and_bundle_list[i])
 						  ? 1U
-						  : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) ||
-						     IS_SHELL(kttar->to_sign_and_bundle_list[i]))
-							? 129U
-							: 128U)),
+					      : (IS_SCRIPT(kttar->to_sign_and_bundle_list[i]) ||
+						 IS_SHELL(kttar->to_sign_and_bundle_list[i]))
+						  ? 129U
+						  : 128U)),
 					    md5,
 					    kttar->tweaked_to_sign_and_bundle_list[i],
 					    (intmax_t) st.st_size / real_blocksize,
@@ -1614,18 +1614,18 @@ int
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices =
-					    3 + kt_with_unknown_devcodes +            // K5
-					    6 +                                       // PW1
-					    12 + (kt_with_unknown_devcodes * 2) +     // PW2
-					    2 +                                       // KT2
-					    5 + (kt_with_unknown_devcodes * 1) +      // KV
-					    12 + (kt_with_unknown_devcodes * 2) +     // PW3
-					    5 + (kt_with_unknown_devcodes * 1) +      // Oasis
-					    2 + (kt_with_unknown_devcodes * 1) +      // KT3
-					    5 + (kt_with_unknown_devcodes * 10) +     // Oasis 2
+					    3 + kt_with_unknown_devcodes +           // K5
+					    6 +                                      // PW1
+					    12 + (kt_with_unknown_devcodes * 2) +    // PW2
+					    2 +                                      // KT2
+					    5 + (kt_with_unknown_devcodes * 1) +     // KV
+					    12 + (kt_with_unknown_devcodes * 2) +    // PW3
+					    5 + (kt_with_unknown_devcodes * 1) +     // Oasis
+					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
+					    5 + (kt_with_unknown_devcodes * 10) +    // Oasis 2
 					    12 + (kt_with_unknown_devcodes * 9) +    // PW4
-					    4 + (kt_with_unknown_devcodes * 2) +      // KT4
-					    5 + (kt_with_unknown_devcodes * 1);       // KOA3
+					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
+					    5 + (kt_with_unknown_devcodes * 1);      // KOA3
 					info.devices = realloc(info.devices,
 							       (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -2092,7 +2092,8 @@ int
 						   strcasecmp(optarg, "kpwlin") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi32GBIndia;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					} else if (strcasecmp(optarg, "pw4lp") == 0 || strcasecmp(optarg, "kpw4lp") == 0) {
+					} else if (strcasecmp(optarg, "pw4lp") == 0 ||
+						   strcasecmp(optarg, "kpw4lp") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite4WiFi32GBPlum;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
@@ -2279,6 +2280,8 @@ int
 					info.platform = Zelda;
 				} else if (strcasecmp(optarg, "rex") == 0) {
 					info.platform = Rex;
+				} else if (strcasecmp(optarg, "bellatrix") == 0) {
+					info.platform = Bellatrix;
 				} else {
 					fprintf(stderr, "Unknown platform %s.\n", optarg);
 					goto do_error;
