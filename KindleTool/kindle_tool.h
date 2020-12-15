@@ -294,7 +294,7 @@ typedef enum
 	KindlePaperWhite4WiFi8GBIndia     = 0x402,    // 102 NOTE: Appeared in 5.10.1.3...
 	KindlePaperWhite4WiFi32GBIndia    = 0x403,    // 103
 	KindlePaperWhite4WiFi32GBBlue     = 0x4D8,    // 16Q (Twilight Blue, ??) NOTE: Appeared in 5.11.2...
-	KindlePaperWhite4Unknown_16R      = 0x4D9,    // 16R?
+	KindlePaperWhite4WiFi32GBPlum     = 0x4D9,    // 16R
 	KindlePaperWhite4Unknown_16S      = 0x4DA,    // 16S?
 	KindlePaperWhite4WiFi8GBBlue      = 0x4DB,    // 16T (Twilight Blue, DE)
 	KindlePaperWhite4WiFi8GBPlum      = 0x4DC,    // 16U (Plum. New batch of colors released summer 2020, on 5.12.3)
