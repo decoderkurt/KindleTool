@@ -22,7 +22,7 @@ Build_Linux() {
 		GMPABI="32"
 	fi
 
-	GMP_VER="6.2.0"
+	GMP_VER="6.2.1"
 	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
