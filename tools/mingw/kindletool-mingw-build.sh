@@ -56,7 +56,7 @@ GMP_VER="6.2.1"
 GMP_DIR="gmp-${GMP_VER%a}"
 NETTLE_VER="3.6"
 NETTLE_DIR="nettle-${NETTLE_VER}"
-LIBARCHIVE_VER="3.4.3"
+LIBARCHIVE_VER="3.5.0"
 LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 if [[ ! -d "${ZLIB_DIR}" ]] ; then

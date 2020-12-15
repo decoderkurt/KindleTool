@@ -40,7 +40,7 @@ Build_Linux() {
 	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.3"
+	LIBARCHIVE_VER="3.5.0"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -211,7 +211,7 @@ Build_Cygwin() {
 	export CXXFLAGS="-march=i686 -mtune=generic -pipe -O2 -fomit-frame-pointer"
 	export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-	LIBARCHIVE_VER="3.4.3"
+	LIBARCHIVE_VER="3.5.0"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
@@ -319,7 +319,7 @@ Build_OSX() {
 	GMP_DIR="gmp-${GMP_VER%a}"
 	NETTLE_VER="3.6"
 	NETTLE_DIR="nettle-${NETTLE_VER}"
-	LIBARCHIVE_VER="3.4.3"
+	LIBARCHIVE_VER="3.5.0"
 	LIBARCHIVE_DIR="libarchive-${LIBARCHIVE_VER}"
 
 	# Make sure we're up to date
