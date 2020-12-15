@@ -135,8 +135,6 @@ Build_Linux() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
-			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
-			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# Kill -Werror, git master doesn't always build with it...
 			sed -e 's/-Werror //' -i ./Makefile.am
 			export ac_cv_header_ext2fs_ext2_fs_h=0
@@ -245,8 +243,6 @@ Build_Cygwin() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
-			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
-			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# NOTE: CMake isn't up to date in the Cygwin repos, but is new enough for our purposes. Revert part of 1052c76, it doesn't concern us on Cygwin anyway.
 			sed -e 's/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)/CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6 FATAL_ERROR)/' -i CMakeLists.txt
 			# NOTE: The win crypto stuff breaks horribly with the current Cygwin packages...
@@ -416,8 +412,6 @@ Build_OSX() {
 			echo ""
 			git clone https://github.com/libarchive/libarchive.git libarchive-git
 			cd libarchive-git
-			# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
-			patch -p1 < "${SCRIPT_BASE_DIR}/libarchive-git-fix-build.patch"
 			# Kill -Werror, git master doesn't always build with it...
 			sed -e 's/-Werror //' -i '' ./Makefile.am
 			./build/autogen.sh

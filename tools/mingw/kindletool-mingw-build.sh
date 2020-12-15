@@ -153,8 +153,6 @@ else
 		echo ""
 		git clone https://github.com/libarchive/libarchive.git libarchive-git
 		cd libarchive-git
-		# https://github.com/libarchive/libarchive/commit/0421e0195b2da24ee45a759f08a69da029c6ff35 missed an include guard...
-		patch -p1 < "${SCRIPT_BASE_DIR}/../libarchive-git-fix-build.patch"
 		# Remove -Werror, there might be some warnings depending on the TC used...
 		sed -e 's/-Werror //' -i ./Makefile.am
 		./build/autogen.sh
