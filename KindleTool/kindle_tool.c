@@ -347,7 +347,7 @@ const char*
 		case KindleOasis2Unknown_0P2:
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0P2)";
 		case KindleOasis2Unknown_0P6:
-			return "Kindle Oasis 2 (2017) (Unknown Variant 0P6)";
+			return "Kindle Oasis 2 (2017) WiFi+3G (32GB) (Variant 0P6)";
 		case KindleOasis2Unknown_0P7:
 			return "Kindle Oasis 2 (2017) (Unknown Variant 0P7)";
 		case KindleOasis2WiFi8GB:

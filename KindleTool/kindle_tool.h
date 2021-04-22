@@ -268,7 +268,7 @@ typedef enum
 	KindleOasis2Unknown_0LQ       = 0x298,    // 0LQ?
 	KindleOasis2WiFi32GBChampagne = 0x2E1,    // 0P1
 	KindleOasis2Unknown_0P2       = 0x2E2,    // 0P2?
-	KindleOasis2Unknown_0P6       = 0x2E6,    // 0P6 (Seen in the wild, WiFi+4G, 32GB, Graphite, not enough info)
+	KindleOasis2Unknown_0P6       = 0x2E6,    // 0P6 (FIXME: Seen in the wild, WiFi+4G, 32GB, Graphite, not enough info)
 	KindleOasis2Unknown_0P7       = 0x2E7,    // 0P7?
 	KindleOasis2WiFi8GB           = 0x2E8,    // 0P8
 	KindleOasis2WiFi3G32GB        = 0x341,    // 0S1
