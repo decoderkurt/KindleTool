@@ -422,8 +422,8 @@ const char*
 			return "Champagne Kindle Oasis 3 (2019) WiFi (32GB)";
 		case KindleOasis3WiFi4G32GBJapan:
 			return "Kindle Oasis 3 (2019) WiFi+4G (32GB) Japan";
-		case KindleOasis3Unknown_0WP:
-			return "Kindle Oasis 3 (2019) (Unknown Variant 0WP)";
+		case KindleOasis3WiFi4G32GBIndia:
+			return "Kindle Oasis 3 (2019) WiFi+4G (32GB) India";
 		case KindleOasis3WiFi4G32GB:
 			return "Kindle Oasis 3 (2019) WiFi+4G (32GB)";
 		case KindleOasis3WiFi32GB:
@@ -670,6 +670,7 @@ static int
 	    "      -d, --device koa3g32        Kindle Oasis 3 (2019) WiFi+4G (32GB)\n"
 	    "      -d, --device koa3w32        Kindle Oasis 3 (2019) WiFi (32GB)\n"
 	    "      -d, --device koa3w8         Kindle Oasis 3 (2019) WiFi (8GB)\n"
+	    "      -d, --device koa3g32in      Kindle Oasis 3 (2019) WiFi+4G (32GB) Indian\n"
 	    "      -d, --device kindle2        Alias for k2 & k2i\n"
 	    "      -d, --device kindledx       Alias for dx, dxi & dxg\n"
 	    "      -d, --device kindle3        Alias for k3w, k3g & k3gb\n"
@@ -686,7 +687,7 @@ static int
 	    "      -d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32, koa2g32b & koa2w32c\n"
 	    "      -d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in, pw4lgjp, pw4tb, pw4ltb, pw4p, pw4s, pw4lin, pw4lp & pw4ls\n"
 	    "      -d, --device basic3         Alias for kt4, kt4w, kt4ke & kt4w8\n"
-	    "      -d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32 & koa3w8\n"
+	    "      -d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32, koa3w8 & koa3g32in\n"
 	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3 & oasis3\n"
 	    "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
 	    "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
