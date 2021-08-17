@@ -461,8 +461,8 @@ int           demunger(FILE*, FILE*, size_t, const bool);
 const char*   convert_device_id(Device) __attribute__((const));
 const char*   convert_platform_id(Platform) __attribute__((const));
 const char*   convert_board_id(Board) __attribute__((const));
-BundleVersion get_bundle_version(const char*) __attribute__((pure));
-int           md5_sum(FILE*, char*);
+BundleVersion get_bundle_version(const char[MAGIC_NUMBER_LENGTH]) __attribute__((pure));
+int           md5_sum(FILE*, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)]);
 
 int kindle_convert_main(int, char**);
 

@@ -25,7 +25,7 @@
 
 #include "kindle_tool.h"
 
-static const char* convert_magic_number(const char*);
+static const char* convert_magic_number(const char[MAGIC_NUMBER_LENGTH]);
 
 static char* to_base(int64_t, uint8_t);
 
