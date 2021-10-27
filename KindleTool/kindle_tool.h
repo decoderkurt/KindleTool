@@ -397,7 +397,7 @@ typedef enum
 // Moonshine                  // Kindle PW4
 // Jaeger                     // Kindle Basic 3 (KT4)
 // Stinger                    // Kindle Oasis 3
-// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one)
+// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one: MT8110)
 
 typedef struct
 {

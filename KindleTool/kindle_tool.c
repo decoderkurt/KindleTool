@@ -316,6 +316,8 @@ const char*
 			return "Kindle PaperWhite 3 (2016) WiFi (32GB) Japan";
 		case KindlePaperWhite3WhiteWiFi32GBJapan:
 			return "White Kindle PaperWhite 3 (2016) WiFi (32GB) Japan";
+		case KindlePW3Unknown_TTT:
+			return "Kindle PaperWhite 3 (2016) (Unknown Variant TTT)";
 		case KindleOasisWiFi:
 			return "Kindle Oasis WiFi";
 		case KindleOasisWiFi3G:
@@ -406,6 +408,8 @@ const char*
 			return "Plum Kindle PaperWhite 4 (2018) WiFi (8GB)";
 		case KindlePaperWhite4WiFi8GBSage:
 			return "Sage Kindle PaperWhite 4 (2018) WiFi (8GB)";
+		case KindlePW4Unknown_0PL:
+			return "Kindle PaperWhite 4 (2018) (Unknown Variant 0PL)";
 		case KindleBasic3:
 			return "Kindle Basic 3 (2019)";
 		case KindleBasic3White8GB:
@@ -430,6 +434,18 @@ const char*
 			return "Kindle Oasis 3 (2019) WiFi (32GB)";
 		case KindleOasis3WiFi8GB:
 			return "Kindle Oasis 3 (2019) WiFi (8GB)";
+		case KindlePaperWhite5Unknown_1LG:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 1LG)";
+		case KindlePaperWhite5Unknown_1Q0:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 1Q0)";
+		case KindlePaperWhite5Unknown_1PX:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 1PX)";
+		case KindlePaperWhite5Unknown_1VD:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 1VD)";
+		case KindlePaperWhite5Unknown_219:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 219)";
+		case KindlePaperWhite5Unknown_21A:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 21A)";
 		case KindleUnknown:
 		default:
 			return "Unknown";
