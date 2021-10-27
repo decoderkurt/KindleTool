@@ -108,8 +108,8 @@ static int
 	struct sha256_ctx hash;
 	mpz_t             sig;
 	// NOTE: Don't do this at home, kids! We can get away with it because we know we can't use keys > 2K anyway...
-	unsigned char raw_sig[CERTIFICATE_2K_SIZE];
-	size_t        siglen;
+	unsigned char     raw_sig[CERTIFICATE_2K_SIZE];
+	size_t            siglen;
 
 	// Like we just said, handle 2K keys at most!
 	if (rsa_pkey->size > CERTIFICATE_2K_SIZE) {
@@ -432,7 +432,7 @@ static int
 			else if (archive_entry_filetype(entry) == AE_IFREG && real_blocksize == RECOVERY_BLOCK_SIZE &&
 				 IS_UIMAGE(archive_entry_pathname(entry))) {
 				archive_entry_set_perm(entry, 0644);
-				is_exec = false;
+				is_exec   = false;
 				// It's a kernel, keep track of it
 				is_kernel = true;
 			}
@@ -478,8 +478,8 @@ static int
 				// while it's already open through libarchive's read_disk API.
 				// That's apparently not possible on non POSIX systems.
 				// (You get a very helpful 'Permission denied' error on Windows...)
-				kttar->to_sign_and_bundle_list = realloc(kttar->to_sign_and_bundle_list,
-									 ++kttar->sign_and_bundle_index * sizeof(char*));
+				kttar->to_sign_and_bundle_list         = realloc(kttar->to_sign_and_bundle_list,
+                                                                         ++kttar->sign_and_bundle_index * sizeof(char*));
 				// And do the same with our tweaked pathname for legacy mode...
 				kttar->tweaked_to_sign_and_bundle_list = realloc(
 				    kttar->tweaked_to_sign_and_bundle_list, kttar->sign_and_bundle_index * sizeof(char*));
@@ -1314,29 +1314,31 @@ int
 {
 	int                        opt;
 	int                        opt_index;
-	static const struct option opts[] = { { "device", required_argument, NULL, 'd' },
-					      { "key", required_argument, NULL, 'k' },
-					      { "bundle", required_argument, NULL, 'b' },
-					      { "srcrev", required_argument, NULL, 's' },
-					      { "tgtrev", required_argument, NULL, 't' },
-					      { "magic1", required_argument, NULL, '1' },
-					      { "magic2", required_argument, NULL, '2' },
-					      { "minor", required_argument, NULL, 'm' },
-					      { "platform", required_argument, NULL, 'p' },
-					      { "board", required_argument, NULL, 'B' },
-					      { "hdrrev", required_argument, NULL, 'h' },
-					      { "cert", required_argument, NULL, 'c' },
-					      { "opt", required_argument, NULL, 'o' },
-					      { "crit", required_argument, NULL, 'r' },
-					      { "meta", required_argument, NULL, 'x' },
-					      { "archive", no_argument, NULL, 'a' },
-					      { "unsigned", no_argument, NULL, 'u' },
-					      { "userdata", no_argument, NULL, 'U' },
-					      { "ota", no_argument, NULL, 'O' },
-					      { "legacy", no_argument, NULL, 'C' },
-					      { "packaging", no_argument, NULL, 'X' },
-					      { NULL, 0, NULL, 0 } };
-	UpdateInformation          info   = { "\0\0\0\0",
+	static const struct option opts[] = {
+		{   "device", required_argument, NULL, 'd'},
+		{      "key", required_argument, NULL, 'k'},
+		{   "bundle", required_argument, NULL, 'b'},
+		{   "srcrev", required_argument, NULL, 's'},
+		{   "tgtrev", required_argument, NULL, 't'},
+		{   "magic1", required_argument, NULL, '1'},
+		{   "magic2", required_argument, NULL, '2'},
+		{    "minor", required_argument, NULL, 'm'},
+		{ "platform", required_argument, NULL, 'p'},
+		{    "board", required_argument, NULL, 'B'},
+		{   "hdrrev", required_argument, NULL, 'h'},
+		{     "cert", required_argument, NULL, 'c'},
+		{      "opt", required_argument, NULL, 'o'},
+		{     "crit", required_argument, NULL, 'r'},
+		{     "meta", required_argument, NULL, 'x'},
+		{  "archive",       no_argument, NULL, 'a'},
+		{ "unsigned",       no_argument, NULL, 'u'},
+		{ "userdata",       no_argument, NULL, 'U'},
+		{      "ota",       no_argument, NULL, 'O'},
+		{   "legacy",       no_argument, NULL, 'C'},
+		{"packaging",       no_argument, NULL, 'X'},
+		{       NULL,                 0, NULL,   0}
+	};
+	UpdateInformation     info   = { "\0\0\0\0",
                                    UnknownUpdate,
                                    get_default_key(),
                                    0,
@@ -1354,29 +1356,29 @@ int
                                    0,
                                    0,
                                    NULL };
-	FILE*                      input  = NULL;
-	FILE*                      output = stdout;
-	int                        i;
-	unsigned int               ui;
-	char*                      output_filename           = NULL;
-	char**                     input_list                = NULL;
-	unsigned int               input_index               = 0;
-	char*                      tarball_filename          = NULL;
-	char*                      valid_update_file_pattern = NULL;
-	int                        tarball_fd                = -1;
-	const unsigned int         num_packaging_metastrings = 3;
-	bool                       keep_archive              = false;
-	bool                       skip_archive              = false;
-	bool                       fake_sign                 = false;
-	bool                       userdata_only             = false;
-	bool                       enforce_ota               = false;
-	bool                       enforce_source_rev        = false;
-	bool                       enforce_target_rev        = false;
-	bool                       legacy                    = false;
-	unsigned int               real_blocksize;
-	struct archive_entry*      entry;
-	struct archive*            match;
-	int                        r;
+	FILE*                 input  = NULL;
+	FILE*                 output = stdout;
+	int                   i;
+	unsigned int          ui;
+	char*                 output_filename           = NULL;
+	char**                input_list                = NULL;
+	unsigned int          input_index               = 0;
+	char*                 tarball_filename          = NULL;
+	char*                 valid_update_file_pattern = NULL;
+	int                   tarball_fd                = -1;
+	const unsigned int    num_packaging_metastrings = 3;
+	bool                  keep_archive              = false;
+	bool                  skip_archive              = false;
+	bool                  fake_sign                 = false;
+	bool                  userdata_only             = false;
+	bool                  enforce_ota               = false;
+	bool                  enforce_source_rev        = false;
+	bool                  enforce_target_rev        = false;
+	bool                  legacy                    = false;
+	unsigned int          real_blocksize;
+	struct archive_entry* entry;
+	struct archive*       match;
+	int                   r;
 
 	// Skip command
 	argv++;
@@ -1407,7 +1409,7 @@ int
 		info.target_revision = UINT32_MAX;
 		real_blocksize       = RECOVERY_BLOCK_SIZE;
 	} else if (strncmp(argv[0], "sig", 3) == 0) {
-		info.version = UpdateSignature;
+		info.version   = UpdateSignature;
 		// For reference only, since we only support converting an existing tarball, we don't really care about that...
 		//memcpy(info.magic_number, "SP01", MAGIC_NUMBER_LENGTH);
 		real_blocksize = BLOCK_SIZE;
@@ -1628,8 +1630,8 @@ int
 					    13 + (kt_with_unknown_devcodes * 8) +    // PW4
 					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
 					    6 + (kt_with_unknown_devcodes * 0);      // KOA3
-					info.devices = realloc(info.devices,
-							       (info.num_devices + num_aliased_devices) * sizeof(Device));
+					info.devices                     = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
 					info.devices[info.num_devices++] = Kindle5TouchWiFi;
 					info.devices[info.num_devices++] = Kindle5TouchWiFi3G;
@@ -2143,7 +2145,7 @@ int
 					else if (strcasecmp(optarg, "none") == 0) {
 						info.devices[info.num_devices - 1] = KindleUnknown;
 						// We *really* mean no devices, so reset num_devices ;).
-						info.num_devices = 0;
+						info.num_devices                   = 0;
 					} else if (strcasecmp(optarg, "auto") == 0 ||
 						   strcasecmp(optarg, "current") == 0) {
 						// Detect the current Kindle model
@@ -2400,7 +2402,7 @@ int
 #if defined(_WIN32) && !defined(__CYGWIN__)
 				DWORD len;
 				// Get hostname
-				char nodename[256];
+				char  nodename[256];
 				len = sizeof(nodename);
 
 				if (!GetComputerName(nodename, &len)) {
@@ -2436,7 +2438,7 @@ int
 				info.metastrings[info.num_meta++] = strdup(metabuff);
 				// And finally PackagedOn
 				// Get UTC time
-				time_t     now = time(NULL);
+				time_t     now                    = time(NULL);
 				struct tm* gmt;
 				gmt = gmtime(&now);
 				char sz_time[22];
@@ -2718,7 +2720,7 @@ int
 	if (input_index == 1) {
 		if (IS_TGZ(input_list[0]) || IS_TARBALL(input_list[0])) {
 			// NOTE: There's no real check besides the file extension...
-			skip_archive = true;
+			skip_archive     = true;
 			// Use it as our tarball...
 			tarball_filename = strdup(input_list[0]);
 		}

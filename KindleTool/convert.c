@@ -281,15 +281,15 @@ static int
 	uint16_t       num_devices;
 	uint16_t       device;
 	//uint16_t *devices;
-	uint8_t  critical;
-	uint8_t  padding;
-	char*    pkg_md5_sum;
-	uint16_t num_metadata;
-	size_t   meta_strlen;
-	uint16_t metastring_length;
-	char*    metastring;
+	uint8_t        critical;
+	uint8_t        padding;
+	char*          pkg_md5_sum;
+	uint16_t       num_metadata;
+	size_t         meta_strlen;
+	uint16_t       metastring_length;
+	char*          metastring;
 	//unsigned char **metastrings;
-	size_t read_size __attribute__((unused));
+	size_t         read_size __attribute__((unused));
 
 	// First read the set block size and determine how much to resize
 	data      = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(unsigned char));
@@ -630,7 +630,7 @@ static int
 	uint8_t        num_devices;
 	unsigned int   i;
 	//uint16_t *devices;
-	size_t read_size __attribute__((unused));
+	size_t         read_size __attribute__((unused));
 
 	// Its size is set, there's just some wonky padding involved. Read it all!
 	data      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
@@ -744,31 +744,33 @@ int
 {
 	int                        opt;
 	int                        opt_index;
-	static const struct option opts[] = { { "stdout", no_argument, NULL, 'c' },
-					      { "info", no_argument, NULL, 'i' },
-					      { "keep", no_argument, NULL, 'k' },
-					      { "sig", no_argument, NULL, 's' },
-					      { "unsigned", no_argument, NULL, 'u' },
-					      { "unwrap", no_argument, NULL, 'w' },
-					      { NULL, 0, NULL, 0 } };
-	FILE*                      input;
-	FILE*                      output        = NULL;
-	FILE*                      sig_output    = NULL;
-	FILE*                      unwrap_output = NULL;
-	const char*                in_name;
-	char*                      out_name       = NULL;
-	char*                      sig_name       = NULL;
-	char*                      unwrapped_name = NULL;
-	size_t                     len;
-	struct stat                st;
-	bool                       info_only   = false;
-	bool                       keep_ori    = false;
-	bool                       extract_sig = false;
-	bool                       fake_sign   = false;
-	bool                       unwrap_only = false;
-	unsigned int               ext_offset  = 0;
-	bool                       fail        = true;
-	char                       header_md5[MD5_HASH_LENGTH + 1];
+	static const struct option opts[] = {
+		{  "stdout", no_argument, NULL, 'c'},
+		{    "info", no_argument, NULL, 'i'},
+		{    "keep", no_argument, NULL, 'k'},
+		{     "sig", no_argument, NULL, 's'},
+		{"unsigned", no_argument, NULL, 'u'},
+		{  "unwrap", no_argument, NULL, 'w'},
+		{      NULL,           0, NULL,   0}
+	};
+	FILE*        input;
+	FILE*        output        = NULL;
+	FILE*        sig_output    = NULL;
+	FILE*        unwrap_output = NULL;
+	const char*  in_name;
+	char*        out_name       = NULL;
+	char*        sig_name       = NULL;
+	char*        unwrapped_name = NULL;
+	size_t       len;
+	struct stat  st;
+	bool         info_only   = false;
+	bool         keep_ori    = false;
+	bool         extract_sig = false;
+	bool         fake_sign   = false;
+	bool         unwrap_only = false;
+	unsigned int ext_offset  = 0;
+	bool         fail        = true;
+	char         header_md5[MD5_HASH_LENGTH + 1];
 
 	while ((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1) {
 		switch (opt) {
@@ -1129,8 +1131,11 @@ int
 {
 	int                        opt;
 	int                        opt_index;
-	static const struct option opts[]    = { { "unsigned", no_argument, NULL, 'u' }, { NULL, 0, NULL, 0 } };
-	bool                       fake_sign = false;
+	static const struct option opts[] = {
+		{"unsigned", no_argument, NULL, 'u'},
+                {      NULL,           0, NULL,   0}
+	};
+	bool fake_sign = false;
 
 	char* bin_filename = NULL;
 	char  tgz_filename[PATH_MAX];
@@ -1141,8 +1146,8 @@ int
 	FILE* tgz_output;
 	// NOTE: Unlike the header themselves, we want a real NULL-terminated string here, hence the extra-space & zero-init
 	//       (to make strlen safe, among other concerns).
-	char header_md5[MD5_HASH_LENGTH + 1] = { 0 };
-	char actual_md5[MD5_HASH_LENGTH + 1] = { 0 };
+	char  header_md5[MD5_HASH_LENGTH + 1] = { 0 };
+	char  actual_md5[MD5_HASH_LENGTH + 1] = { 0 };
 
 	while ((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1) {
 		switch (opt) {

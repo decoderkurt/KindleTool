@@ -235,16 +235,16 @@ typedef enum
 	ValidKindleUnknown_0x99               = 0x99,
 	KindleBasicKiwi                       = 0xDD,
 	/* KindlePaperWhite3 = 0x90, */    // Kindle PaperWhite 3, released summer 2015 on FW 5.6.1 (NOTE: This is a bogus ID, the proper one is now found at chars 4 to 6 of the S/N)
-	KindlePaperWhite3WiFi         = 0x201,    // 0G1
-	KindlePaperWhite3WiFi3G       = 0x202,    // 0G2
-	KindlePaperWhite3WiFi3GMexico = 0x204,    // 0G4  NOTE: Might be better flagged as "Southern America"?
-	KindlePaperWhite3WiFi3GEurope = 0x205,    // 0G5
-	KindlePaperWhite3WiFi3GCanada = 0x206,    // 0G6
-	KindlePaperWhite3WiFi3GJapan  = 0x207,    // 0G7
+	KindlePaperWhite3WiFi                 = 0x201,    // 0G1
+	KindlePaperWhite3WiFi3G               = 0x202,    // 0G2
+	KindlePaperWhite3WiFi3GMexico         = 0x204,    // 0G4  NOTE: Might be better flagged as "Southern America"?
+	KindlePaperWhite3WiFi3GEurope         = 0x205,    // 0G5
+	KindlePaperWhite3WiFi3GCanada         = 0x206,    // 0G6
+	KindlePaperWhite3WiFi3GJapan          = 0x207,    // 0G7
 	// Kindle PaperWhite 3, White, appeared w/ FW 5.7.3.1, released summer 2016 on FW 5.7.x?
-	KindlePaperWhite3WhiteWiFi                   = 0x26B,     // 0KB
-	KindlePaperWhite3WhiteWiFi3GJapan            = 0x26C,     // 0KC
-	KindlePW3WhiteUnknown_0KD                    = 0x26D,     // 0KD?
+	KindlePaperWhite3WhiteWiFi            = 0x26B,            // 0KB
+	KindlePaperWhite3WhiteWiFi3GJapan     = 0x26C,            // 0KC
+	KindlePW3WhiteUnknown_0KD             = 0x26D,            // 0KD?
 	KindlePaperWhite3WhiteWiFi3GInternational    = 0x26E,     // 0KE
 	KindlePaperWhite3WhiteWiFi3GInternationalBis = 0x26F,     // 0KF
 	KindlePW3WhiteUnknown_0KG                    = 0x270,     // 0KG?
@@ -252,16 +252,16 @@ typedef enum
 	KindlePaperWhite3WhiteWiFi32GBJapan          = 0x294,     // 0LL
 	KindlePW3Unknown_TTT                         = 0x6F7B,    // TTT?
 	// Kindle Oasis, released late spring 2016 on FW 5.7.1.1
-	KindleOasisWiFi                = 0x20C,    // 0GC
-	KindleOasisWiFi3G              = 0x20D,    // 0GD
-	KindleOasisWiFi3GInternational = 0x219,    // 0GR
-	KindleOasisUnknown_0GS         = 0x21A,    // 0GS?
-	KindleOasisWiFi3GChina         = 0x21B,    // 0GT
-	KindleOasisWiFi3GEurope        = 0x21C,    // 0GU
+	KindleOasisWiFi                              = 0x20C,    // 0GC
+	KindleOasisWiFi3G                            = 0x20D,    // 0GD
+	KindleOasisWiFi3GInternational               = 0x219,    // 0GR
+	KindleOasisUnknown_0GS                       = 0x21A,    // 0GS?
+	KindleOasisWiFi3GChina                       = 0x21B,    // 0GT
+	KindleOasisWiFi3GEurope                      = 0x21C,    // 0GU
 	// Kindle Basic 2, released summer 2016 on FW 5.8.0
-	KindleBasic2Unknown_0DU = 0x1BC,    // 0DU??  FIXME: A good ID to check the sanity of my base32 tweaks...
-	KindleBasic2            = 0x269,    // 0K9 (Black)
-	KindleBasic2White       = 0x26A,    // 0KA (White)
+	KindleBasic2Unknown_0DU       = 0x1BC,    // 0DU??  FIXME: A good ID to check the sanity of my base32 tweaks...
+	KindleBasic2                  = 0x269,    // 0K9 (Black)
+	KindleBasic2White             = 0x26A,    // 0KA (White)
 	// Kindle Oasis 2, released winter 2017 on FW 5.9.0.6
 	KindleOasis2Unknown_0LM       = 0x295,    // 0LM?
 	KindleOasis2Unknown_0LN       = 0x296,    // 0LN?
@@ -273,11 +273,11 @@ typedef enum
 	KindleOasis2Unknown_0P7 = 0x2E7,    // 0P7?
 	KindleOasis2WiFi8GB     = 0x2E8,    // 0P8
 	KindleOasis2WiFi3G32GB  = 0x341,    // 0S1
-	KindleOasis2WiFi3G32GBEurope = 0x342,    // 0S2
-	KindleOasis2Unknown_0S3      = 0x343,    // 0S3?
-	KindleOasis2Unknown_0S4      = 0x344,    // 0S4?
-	KindleOasis2Unknown_0S7      = 0x347,    // 0S7?
-	KindleOasis2WiFi32GB         = 0x34A,    // 0SA
+	KindleOasis2WiFi3G32GBEurope      = 0x342,    // 0S2
+	KindleOasis2Unknown_0S3           = 0x343,    // 0S3?
+	KindleOasis2Unknown_0S4           = 0x344,    // 0S4?
+	KindleOasis2Unknown_0S7           = 0x347,    // 0S7?
+	KindleOasis2WiFi32GB              = 0x34A,    // 0SA
 	// Kindle PaperWhite 4, released November 7 2018 on FW 5.10.0.1/5.10.0.2
 	KindlePaperWhite4WiFi8GB          = 0x2F7,    // 0PP
 	KindlePaperWhite4WiFi4G32GB       = 0x361,    // 0T1
@@ -302,11 +302,11 @@ typedef enum
 	KindlePaperWhite4WiFi8GBSage      = 0x4DD,    // 16V (Sage. Ditto)
 	KindlePW4Unknown_0PL              = 0x2F4,    // 0PL?
 	// Kindle Basic 3, released April 10 2019 on FW 5.1x.y
-	KindleBasic3            = 0x414,    // 10L
-	KindleBasic3White8GB    = 0x3CF,    // 0WF (White, WiFi, DE. 4GB -> 8GB)
-	KindleBasic3Unknown_0WG = 0x3D0,    // 0WG?
-	KindleBasic3White       = 0x3D1,    // 0WH
-	KindleBasic3Unknown_0WJ = 0x3D2,    // 0WJ?
+	KindleBasic3                      = 0x414,    // 10L
+	KindleBasic3White8GB              = 0x3CF,    // 0WF (White, WiFi, DE. 4GB -> 8GB)
+	KindleBasic3Unknown_0WG           = 0x3D0,    // 0WG?
+	KindleBasic3White                 = 0x3D1,    // 0WH
+	KindleBasic3Unknown_0WJ           = 0x3D2,    // 0WJ?
 	KindleBasic3KidsEdition = 0x3AB,    // 0VB NOTE: Ships on a custom OTA-only FW branch. May be a special snowflake.
 	// Kindle Oasis 3, released July 24 2019 on FW 5.12.0
 	KindleOasis3WiFi32GBChampagne = 0x434,    // 11L (Champagne, US)
@@ -316,13 +316,13 @@ typedef enum
 	KindleOasis3WiFi32GB          = 0x3D5,    // 0WM (Graphite, DE)
 	KindleOasis3WiFi8GB           = 0x3D4,    // 0WL (Graphite, DE)
 	// Kindle PaperWhite 5, released October 27 2021 on FW 5.14.0
-	KindlePaperWhite5Unknown_1LG = 0x690,    // 1LG?
-	KindlePaperWhite5Unknown_1Q0 = 0x700,    // 1Q0?
-	KindlePaperWhite5Unknown_1PX = 0x6FF,    // 1PX?
-	KindlePaperWhite5Unknown_1VD = 0x7AD,    // 1VD?
-	KindlePaperWhite5Unknown_219 = 0x829,    // 219?
-	KindlePaperWhite5Unknown_21A = 0x82A,    // 21A?
-	KindleUnknown                = 0x00
+	KindlePaperWhite5Unknown_1LG  = 0x690,    // 1LG?
+	KindlePaperWhite5Unknown_1Q0  = 0x700,    // 1Q0?
+	KindlePaperWhite5Unknown_1PX  = 0x6FF,    // 1PX?
+	KindlePaperWhite5Unknown_1VD  = 0x7AD,    // 1VD?
+	KindlePaperWhite5Unknown_219  = 0x829,    // 219?
+	KindlePaperWhite5Unknown_21A  = 0x82A,    // 21A?
+	KindleUnknown                 = 0x00
 } Device;
 
 typedef enum
