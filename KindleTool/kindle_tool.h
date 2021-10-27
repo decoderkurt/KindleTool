@@ -339,7 +339,7 @@ typedef enum
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
 	Zelda            = 0x0A,    // Kindle Oasis 2, Oasis 3
 	Rex              = 0x0B,    // Kindle PW4, Basic 3 (10th gen)
-	Bellatrix        = 0x0C,    // ?? (Possibly devices in multiple form factors, no 4G)
+	Bellatrix        = 0x0C,    // Kindle PW5 (11th gen)
 } Platform;
 
 typedef enum
@@ -362,7 +362,7 @@ typedef enum
 	Moonshine         = 0xFF     // Kindle PW4
 	Jaeger            = 0xFF     // Kindle Basic 3
 	Stinger           = 0xFF     // Kindle Oasis 3
-	Malbec            = 0xFF     // ??
+	Malbec            = 0xFF     // Kindle PW5
 				     */
 } Board;
 
@@ -397,7 +397,7 @@ typedef enum
 // Moonshine                  // Kindle PW4
 // Jaeger                     // Kindle Basic 3 (KT4)
 // Stinger                    // Kindle Oasis 3
-// Malbec                     // ?? (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one)
+// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one)
 
 typedef struct
 {
