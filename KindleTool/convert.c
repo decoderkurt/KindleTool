@@ -66,7 +66,7 @@ static char*
 	}
 
 	// safe against most negative integer
-	n = ((neg = (num < 0))) ? (uint64_t)(~num) + 1 : (uint64_t) num;
+	n = ((neg = (num < 0))) ? (uint64_t) (~num) + 1 : (uint64_t) num;
 
 	do {
 		buf[len++] = tbl[n % base];
@@ -429,7 +429,7 @@ static int
 		fprintf(stderr, "Cannot read signature header: %s.\n", strerror(errno));
 		return -1;
 	}
-	cert_num = (CertificateNumber)(header->data.signature.certificate_number);
+	cert_num = (CertificateNumber) (header->data.signature.certificate_number);
 	fprintf(stderr, "Cert number    %u\n", (uint32_t) cert_num);
 	switch (cert_num) {
 		case CertificateDeveloper:

@@ -99,6 +99,7 @@ model_tuples = [
 	('KindlePW3WhiteUnknown_0KG',				0x270,	'A3P87LH4DLAKE2'),	# 0KG?
 	('KindlePaperWhite3WiFi32GBJapanBlack',			0x293,	'A2T9E09EBKRBWU'),	# 0LK
 	('KindlePaperWhite3WiFi32GBJapanWhite',			0x294,	'A2T9E09EBKRBWU'),	# 0LL
+	('KindlePW3Unknown_TTT',				0x6F7B,	'A21RY355YUXQAF'),	# TTT?
 	('KindleOasisWiFi',					0x20C,	'A2NP90AR02CXEG'),	# 0GC
 	('KindleOasisWiFi3G',					0x20D,	'A370DV3BFIHFD3'),	# 0GD
 	('KindleOasisWiFi3GInternational',			0x219,	'A21R12JDS0I7HR'),	# 0GR
@@ -144,6 +145,7 @@ model_tuples = [
 	('KindlePaperWhite4WiFi8GBBlue',			0x4DB,	'AJRLVDTOPT1LE'),	# 16T
 	('KindlePaperWhite4WiFi8GBPlum',			0x4DC,	'AJRLVDTOPT1LE'),	# 16U
 	('KindlePaperWhite4WiFi8GBSage',			0x4DD,	'AJRLVDTOPT1LE'),	# 16V
+	('KindlePW4Unknown_0PL',				0x2F4,	'A3IT5K46YEJ8DG'),	# 0PL?
 	('KindleBasic3',					0x414,	'AHU5VU98ZZYIL'),	# 10L
 	('KindleBasic3White8GB',				0x3CF,	'AHU5VU98ZZYIL'),	# 0WF
 	('KindleBasic3Unknown_0WG',				0x3D0,	'AHU5VU98ZZYIL'),	# 0WG?
@@ -156,14 +158,12 @@ model_tuples = [
 	('KindleOasis3WiFi4G32GB',				0x3D6,	'AB6KN53ZYVL6D'),	# 0WN
 	('KindleOasis3WiFi32GB',				0x3D5,	'A2NW3VDYR5P8Z0'),	# 0WM
 	('KindleOasis3WiFi8GB',					0x3D4,	'A2NW3VDYR5P8Z0'),	# 0WL
-	#('KindlePaperWhite3Unknown_TTT', 0x??,	'A21RY355YUXQAF') # TTT?
-	#('KindlePaperWhite4Unknown_0PL', 0x??,	'A3IT5K46YEJ8DG') # 0PL?
-	#('KindlePaperWhite5Unknown_1LG', 0x??',	'A328XUBPG464LQ')	# 1LG?
-	#('KindlePaperWhite5Unknown_1Q0', 0x??',	'A328XUBPG464LQ')	# 1Q0?
-	#('KindlePaperWhite5Unknown_1PX', 0x??',	'A328XUBPG464LQ')	# 1PX?
-	#('KindlePaperWhite5Unknown_1VD', 0x??',	'A328XUBPG464LQ')	# 1VD?
-	#('KindlePaperWhite5Unknown_219', 0x??',	'A328XUBPG464LQ')	# 219?
-	#('KindlePaperWhite5Unknown_21A', 0x??',	'A328XUBPG464LQ')	# 21A?
+	('KindlePaperWhite5Unknown_1LG',			0x690,	'A328XUBPG464LQ'),	# 1LG?
+	('KindlePaperWhite5Unknown_1Q0',			0x700,	'A328XUBPG464LQ'),	# 1Q0?
+	('KindlePaperWhite5Unknown_1PX',			0x6FF,	'A328XUBPG464LQ'),	# 1PX?
+	('KindlePaperWhite5Unknown_1VD',			0x7AD,	'A328XUBPG464LQ'),	# 1VD?
+	('KindlePaperWhite5Unknown_219',			0x829,	'A328XUBPG464LQ'),	# 219?
+	('KindlePaperWhite5Unknown_21A',			0x82A,	'A328XUBPG464LQ'),	# 21A?
 	('KindleUnknown', 0x00)
 ]
 
@@ -180,7 +180,7 @@ for t in sorted(model_tuples, key=itemgetter(1)):
 	if t[1] > 0xFF:
 		print("{:<45} 0x{:03X} ({:0>3}) {:4} {:<14}".format(t[0], t[1], baseN(t[1], 32), '', t[2] if len(t) == 3 else ''))
 	else:
-		print("{:<45} 0x{:02X} {:12} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else ''))
+		print("{:<45} 0x{:02X} {:11} {:<14}".format(t[0], t[1], '', t[2] if len(t) == 3 else ''))
 
 print('\nKindle models >= KindleVoyageWiFi3GJapan (i.e., Platform >= Wario)\n')
 for t in model_tuples:
