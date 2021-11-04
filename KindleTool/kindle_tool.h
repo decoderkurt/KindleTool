@@ -309,20 +309,20 @@ typedef enum
 	KindleBasic3Unknown_0WJ           = 0x3D2,    // 0WJ?
 	KindleBasic3KidsEdition = 0x3AB,    // 0VB NOTE: Ships on a custom OTA-only FW branch. May be a special snowflake.
 	// Kindle Oasis 3, released July 24 2019 on FW 5.12.0
-	KindleOasis3WiFi32GBChampagne = 0x434,    // 11L (Champagne, US)
-	KindleOasis3WiFi4G32GBJapan   = 0x3D8,    // 0WQ (Graphite, JP)
-	KindleOasis3WiFi4G32GBIndia   = 0x3D7,    // 0WP (Graphite, IN)
-	KindleOasis3WiFi4G32GB        = 0x3D6,    // 0WN (Graphite, US)
-	KindleOasis3WiFi32GB          = 0x3D5,    // 0WM (Graphite, DE)
-	KindleOasis3WiFi8GB           = 0x3D4,    // 0WL (Graphite, DE)
+	KindleOasis3WiFi32GBChampagne     = 0x434,    // 11L (Champagne, US)
+	KindleOasis3WiFi4G32GBJapan       = 0x3D8,    // 0WQ (Graphite, JP)
+	KindleOasis3WiFi4G32GBIndia       = 0x3D7,    // 0WP (Graphite, IN)
+	KindleOasis3WiFi4G32GB            = 0x3D6,    // 0WN (Graphite, US)
+	KindleOasis3WiFi32GB              = 0x3D5,    // 0WM (Graphite, DE)
+	KindleOasis3WiFi8GB               = 0x3D4,    // 0WL (Graphite, DE)
 	// Kindle PaperWhite 5, released October 27 2021 on FW 5.14.0
-	KindlePaperWhite5Unknown_1LG  = 0x690,    // 1LG?
-	KindlePaperWhite5Unknown_1Q0  = 0x700,    // 1Q0?
-	KindlePaperWhite5Unknown_1PX  = 0x6FF,    // 1PX?
-	KindlePaperWhite5Unknown_1VD  = 0x7AD,    // 1VD?
-	KindlePaperWhite5Unknown_219  = 0x829,    // 219?
-	KindlePaperWhite5Unknown_21A  = 0x82A,    // 21A?
-	KindleUnknown                 = 0x00
+	KindlePaperWhite5SignatureEdition = 0x690,    // 1LG (Black, 32GB, US)
+	KindlePaperWhite5Unknown_1Q0      = 0x700,    // 1Q0?
+	KindlePaperWhite5Unknown_1PX      = 0x6FF,    // 1PX?
+	KindlePaperWhite5Unknown_1VD      = 0x7AD,    // 1VD?
+	KindlePaperWhite5Unknown_219      = 0x829,    // 219?
+	KindlePaperWhite5Unknown_21A      = 0x82A,    // 21A?
+	KindleUnknown                     = 0x00
 } Device;
 
 typedef enum

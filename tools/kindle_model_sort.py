@@ -158,7 +158,7 @@ model_tuples = [
 	('KindleOasis3WiFi4G32GB',				0x3D6,	'AB6KN53ZYVL6D'),	# 0WN
 	('KindleOasis3WiFi32GB',				0x3D5,	'A2NW3VDYR5P8Z0'),	# 0WM
 	('KindleOasis3WiFi8GB',					0x3D4,	'A2NW3VDYR5P8Z0'),	# 0WL
-	('KindlePaperWhite5Unknown_1LG',			0x690,	'A328XUBPG464LQ'),	# 1LG?
+	('KindlePaperWhite5SignatureEdition',			0x690,	'A328XUBPG464LQ'),	# 1LG
 	('KindlePaperWhite5Unknown_1Q0',			0x700,	'A328XUBPG464LQ'),	# 1Q0?
 	('KindlePaperWhite5Unknown_1PX',			0x6FF,	'A328XUBPG464LQ'),	# 1PX?
 	('KindlePaperWhite5Unknown_1VD',			0x7AD,	'A328XUBPG464LQ'),	# 1VD?
