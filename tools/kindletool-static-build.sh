@@ -123,7 +123,7 @@ Build_Linux() {
 			cd ${LIBARCHIVE_DIR}
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --with-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -139,7 +139,7 @@ Build_Linux() {
 			sed -e 's/-Werror //' -i ./Makefile.am
 			export ac_cv_header_ext2fs_ext2_fs_h=0
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --with-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			unset ac_cv_header_ext2fs_ext2_fs_h
@@ -401,7 +401,7 @@ Build_OSX() {
 			tar -xvzf ./${LIBARCHIVE_DIR}.tar.gz
 			cd ${LIBARCHIVE_DIR}
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --with-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			cd ..
@@ -415,7 +415,7 @@ Build_OSX() {
 			# Kill -Werror, git master doesn't always build with it...
 			sed -e 's/-Werror //' -i '' ./Makefile.am
 			./build/autogen.sh
-			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --without-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
+			./configure --prefix="${KT_SYSROOT}" --enable-static --disable-shared --disable-xattr --disable-acl --with-zlib --without-bz2lib --without-lzmadec --without-iconv --without-lzma --with-nettle --without-openssl --without-expat --without-xml2 --without-lz4 --without-zstd
 			make ${JOBSFLAGS}
 			make install
 			cd ..
