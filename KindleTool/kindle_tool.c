@@ -749,7 +749,7 @@ static int
 	    "      -1, --magic1 <uint>         Recovery updates only. Magic number 1. Default is 0.\n"
 	    "      -2, --magic2 <uint>         Recovery updates only. Magic number 2. Default is 0.\n"
 	    "      -m, --minor <uint>          Recovery updates only. Minor number. Default is 0.\n"
-	    "      -c, --cert <ushort>         OTA V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is 0.\n"
+	    "      -c, --cert <ushort>         OTA V2 & Recovery V2 updates only. The number of the certificate to use (found in /etc/uks on device). Default is 0.\n"
 	    "                                    0 = pubdevkey01.pem, 1 = pubprodkey01.pem, 2 = pubprodkey02.pem\n"
 	    "      -o, --opt <uchar>           OTA V1 updates only. One byte optional data expressed as a number. Default is 0.\n"
 	    "      -r, --crit <uchar>          OTA V2 updates only. One byte optional data expressed as a number. Default is 0.\n"
