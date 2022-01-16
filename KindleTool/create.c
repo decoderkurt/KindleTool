@@ -1617,13 +1617,13 @@ int
 					*/
 				} else if (strcasecmp(optarg, "paperwhite5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 1 + (kt_with_unknown_devcodes * 5);
+					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 4);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindlePaperWhite5SignatureEdition;
+					info.devices[info.num_devices++]       = KindlePaperWhite5;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1Q0;
-						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1PX;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_219;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_21A;
@@ -1643,7 +1643,7 @@ int
 					    13 + (kt_with_unknown_devcodes * 8) +    // PW4
 					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
 					    6 + (kt_with_unknown_devcodes * 0) +     // KOA3
-					    1 + (kt_with_unknown_devcodes * 5);      // PW5
+					    2 + (kt_with_unknown_devcodes * 4);      // PW5
 					info.devices                     = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1786,9 +1786,9 @@ int
 					*/
 					// PW5
 					info.devices[info.num_devices++] = KindlePaperWhite5SignatureEdition;
+					info.devices[info.num_devices++] = KindlePaperWhite5;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1Q0;
-						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1PX;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_219;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_21A;
@@ -2167,6 +2167,9 @@ int
 					// PW5
 					else if (strcasecmp(optarg, "pw5se") == 0 || strcasecmp(optarg, "kpw5se") == 0) {
 						info.devices[info.num_devices - 1] = KindlePaperWhite5SignatureEdition;
+						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					} else if (strcasecmp(optarg, "pw5") == 0 || strcasecmp(optarg, "kpw5") == 0) {
+						info.devices[info.num_devices - 1] = KindlePaperWhite5;
 						memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					}
 					// N/A

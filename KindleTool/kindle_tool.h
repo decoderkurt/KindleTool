@@ -318,7 +318,7 @@ typedef enum
 	// Kindle PaperWhite 5, released October 27 2021 on FW 5.14.0
 	KindlePaperWhite5SignatureEdition = 0x690,    // 1LG (Black, 32GB, US)
 	KindlePaperWhite5Unknown_1Q0      = 0x700,    // 1Q0?
-	KindlePaperWhite5Unknown_1PX      = 0x6FF,    // 1PX?
+	KindlePaperWhite5                 = 0x6FF,    // 1PX (Black, 8GB, UK, FR)
 	KindlePaperWhite5Unknown_1VD      = 0x7AD,    // 1VD?
 	KindlePaperWhite5Unknown_219      = 0x829,    // 219?
 	KindlePaperWhite5Unknown_21A      = 0x82A,    // 21A?
