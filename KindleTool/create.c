@@ -1617,7 +1617,7 @@ int
 					*/
 				} else if (strcasecmp(optarg, "paperwhite5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 4);
+					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 6);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindlePaperWhite5SignatureEdition;
@@ -1627,6 +1627,8 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_219;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_21A;
+						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BH;
+						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 					}
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
@@ -1643,7 +1645,7 @@ int
 					    13 + (kt_with_unknown_devcodes * 8) +    // PW4
 					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
 					    6 + (kt_with_unknown_devcodes * 0) +     // KOA3
-					    2 + (kt_with_unknown_devcodes * 4);      // PW5
+					    2 + (kt_with_unknown_devcodes * 6);      // PW5
 					info.devices                     = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1792,6 +1794,8 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_219;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_21A;
+						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BH;
+						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 					}
 				} else if (kt_with_unknown_devcodes &&
 					   (strcasecmp(optarg, "unknown") == 0 || strcasecmp(optarg, "datamined") == 0)) {
