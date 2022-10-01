@@ -450,6 +450,8 @@ const char*
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BH)";
 		case KindlePaperWhite5Unknown_2BJ:
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BJ)";
+		case KindlePaperWhite5Unknown_2DK:
+			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2DK)";
 		case KindleUnknown:
 		default:
 			return "Unknown";

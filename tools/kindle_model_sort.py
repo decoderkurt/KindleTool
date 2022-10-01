@@ -166,6 +166,7 @@ model_tuples = [
 	('KindlePaperWhite5Unknown_21A',			0x82A,	'A328XUBPG464LQ'),	# 21A?
 	('KindlePaperWhite5Unknown_2BH',			0x971,	'A328XUBPG464LQ'),	# 2BH?
 	('KindlePaperWhite5Unknown_2BJ',			0x972,	'A328XUBPG464LQ'),	# 2BJ?
+	('KindlePaperWhite5Unknown_2DK',			0x9B3,	'A328XUBPG464LQ'),	# 2DK?
 	('KindleUnknown', 0x00)
 ]
 

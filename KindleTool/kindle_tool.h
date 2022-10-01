@@ -324,6 +324,7 @@ typedef enum
 	KindlePaperWhite5Unknown_21A      = 0x82A,    // 21A?
 	KindlePaperWhite5Unknown_2BH      = 0x971,    // 2BH? NOTE: Appeared in 5.14.2...
 	KindlePaperWhite5Unknown_2BJ      = 0x972,    // 2BJ?
+	KindlePaperWhite5Unknown_2DK      = 0x9B3,    // 2DK? NOTE: Appeared in 5.14.3...
 	KindleUnknown                     = 0x00
 } Device;
 
