@@ -1339,23 +1339,23 @@ int
 		{       NULL,                 0, NULL,   0}
 	};
 	UpdateInformation     info   = { "\0\0\0\0",
-                                   UnknownUpdate,
-                                   get_default_key(),
-                                   0,
-                                   UINT64_MAX,
-                                   0,
-                                   0,
-                                   0,
-                                   0,
-                                   NULL,
-                                   0,
-                                   0,
-                                   0,
-                                   CertificateDeveloper,
-                                   0,
-                                   0,
-                                   0,
-                                   NULL };
+					 UnknownUpdate,
+					 get_default_key(),
+					 0,
+					 UINT64_MAX,
+					 0,
+					 0,
+					 0,
+					 0,
+					 NULL,
+					 0,
+					 0,
+					 0,
+					 CertificateDeveloper,
+					 0,
+					 0,
+					 0,
+					 NULL };
 	FILE*                 input  = NULL;
 	FILE*                 output = stdout;
 	int                   i;
@@ -1611,10 +1611,6 @@ int
 					info.devices[info.num_devices++]       = KindleOasis3WiFi32GB;
 					info.devices[info.num_devices++]       = KindleOasis3WiFi8GB;
 					info.devices[info.num_devices++]       = KindleOasis3WiFi4G32GBIndia;
-					/*
-					if (kt_with_unknown_devcodes) {
-					}
-					*/
 				} else if (strcasecmp(optarg, "paperwhite5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 2 + (kt_with_unknown_devcodes * 7);
@@ -1631,6 +1627,20 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2DK;
 					}
+				} else if (strcasecmp(optarg, "scribe") == 0) {
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					const unsigned int num_aliased_devices = 0 + (kt_with_unknown_devcodes * 7);
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					if (kt_with_unknown_devcodes) {
+						info.devices[info.num_devices++] = KindleScribeUnknown_22D;
+						info.devices[info.num_devices++] = KindleScribeUnknown_25T;
+						info.devices[info.num_devices++] = KindleScribeUnknown_23A;
+						info.devices[info.num_devices++] = KindleScribeUnknown_2AQ;
+						info.devices[info.num_devices++] = KindleScribeUnknown_2AP;
+						info.devices[info.num_devices++] = KindleScribeUnknown_1XH;
+						info.devices[info.num_devices++] = KindleScribeUnknown_22C;
+					}
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices =
@@ -1646,7 +1656,8 @@ int
 					    13 + (kt_with_unknown_devcodes * 8) +    // PW4
 					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
 					    6 + (kt_with_unknown_devcodes * 0) +     // KOA3
-					    2 + (kt_with_unknown_devcodes * 7);      // PW5
+					    2 + (kt_with_unknown_devcodes * 7) +     // PW5
+					    0 + (kt_with_unknown_devcodes * 7);      // Scribe
 					info.devices                     = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1783,10 +1794,6 @@ int
 					info.devices[info.num_devices++] = KindleOasis3WiFi32GB;
 					info.devices[info.num_devices++] = KindleOasis3WiFi8GB;
 					info.devices[info.num_devices++] = KindleOasis3WiFi4G32GBIndia;
-					/*
-					if (kt_with_unknown_devcodes) {
-					}
-					*/
 					// PW5
 					info.devices[info.num_devices++] = KindlePaperWhite5SignatureEdition;
 					info.devices[info.num_devices++] = KindlePaperWhite5;
@@ -1798,6 +1805,16 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BH;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2DK;
+					}
+					// Scribe
+					if (kt_with_unknown_devcodes) {
+						info.devices[info.num_devices++] = KindleScribeUnknown_22D;
+						info.devices[info.num_devices++] = KindleScribeUnknown_25T;
+						info.devices[info.num_devices++] = KindleScribeUnknown_23A;
+						info.devices[info.num_devices++] = KindleScribeUnknown_2AQ;
+						info.devices[info.num_devices++] = KindleScribeUnknown_2AP;
+						info.devices[info.num_devices++] = KindleScribeUnknown_1XH;
+						info.devices[info.num_devices++] = KindleScribeUnknown_22C;
 					}
 				} else if (kt_with_unknown_devcodes &&
 					   (strcasecmp(optarg, "unknown") == 0 || strcasecmp(optarg, "datamined") == 0)) {

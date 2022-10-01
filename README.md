@@ -159,7 +159,8 @@
 		-d, --device basic3         Alias for kt4, kt4w, kt4ke & kt4w8
 		-d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32, koa3w8 & koa3g32in
 		-d, --device paperwhite5    Alias for pw5se & pw5
-		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3, oasis3 & paperwhite5
+		-d, --device scribe         Alias for TBD
+		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3, oasis3, paperwhite5 & scribe
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 

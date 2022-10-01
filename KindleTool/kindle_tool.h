@@ -325,6 +325,14 @@ typedef enum
 	KindlePaperWhite5Unknown_2BH      = 0x971,    // 2BH? NOTE: Appeared in 5.14.2...
 	KindlePaperWhite5Unknown_2BJ      = 0x972,    // 2BJ?
 	KindlePaperWhite5Unknown_2DK      = 0x9B3,    // 2DK? NOTE: Appeared in 5.14.3...
+	// Kindle Scribe, released Christmas 2022 on FX 5.15.x?
+	KindleScribeUnknown_22D           = 0x84D,    // 22D?
+	KindleScribeUnknown_25T           = 0x8BB,    // 25T?
+	KindleScribeUnknown_23A           = 0x86A,    // 23A?
+	KindleScribeUnknown_2AQ           = 0x958,    // 2AQ?
+	KindleScribeUnknown_2AP           = 0x957,    // 2AP?
+	KindleScribeUnknown_1XH           = 0x7F1,    // 1XH?
+	KindleScribeUnknown_22C           = 0x84C,    // 22C?
 	KindleUnknown                     = 0x00
 } Device;
 
@@ -342,7 +350,7 @@ typedef enum
 	Heisenberg       = 0x09,    // Kindle Basic 2 (8th gen)
 	Zelda            = 0x0A,    // Kindle Oasis 2, Oasis 3
 	Rex              = 0x0B,    // Kindle PW4, Basic 3 (10th gen)
-	Bellatrix        = 0x0C,    // Kindle PW5 (11th gen)
+	Bellatrix        = 0x0C,    // Kindle PW5 (11th gen), Scribe
 } Platform;
 
 typedef enum
@@ -366,6 +374,7 @@ typedef enum
 	Jaeger            = 0xFF     // Kindle Basic 3
 	Stinger           = 0xFF     // Kindle Oasis 3
 	Malbec            = 0xFF     // Kindle PW5
+	Cava              = 0xFF     // Kindle Scribe
 				     */
 } Board;
 
@@ -400,7 +409,8 @@ typedef enum
 // Moonshine                  // Kindle PW4
 // Jaeger                     // Kindle Basic 3 (KT4)
 // Stinger                    // Kindle Oasis 3
-// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one: MT8110)
+// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one: MT8110, likely based on the MT8512)
+// Cava                       // Kindle Scribe
 
 typedef struct
 {
