@@ -1627,20 +1627,29 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2DK;
 					}
-				} else if (strcasecmp(optarg, "scribe") == 0) {
+				} else if (strcasecmp(optarg, "basic4") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 0 + (kt_with_unknown_devcodes * 7);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleScribeUnknown_22D;
-						info.devices[info.num_devices++] = KindleScribeUnknown_25T;
-						info.devices[info.num_devices++] = KindleScribeUnknown_23A;
-						info.devices[info.num_devices++] = KindleScribeUnknown_2AQ;
-						info.devices[info.num_devices++] = KindleScribeUnknown_2AP;
-						info.devices[info.num_devices++] = KindleScribeUnknown_1XH;
-						info.devices[info.num_devices++] = KindleScribeUnknown_22C;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_22D;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_25T;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_23A;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_2AQ;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_2AP;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_1XH;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_22C;
 					}
+				} else if (strcasecmp(optarg, "scribe") == 0) {
+					/*
+					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
+					const unsigned int num_aliased_devices = 0 + (kt_with_unknown_devcodes * 0);
+					info.devices                           = realloc(info.devices,
+                                                               (info.num_devices + num_aliased_devices) * sizeof(Device));
+					if (kt_with_unknown_devcodes) {
+					}
+					*/
 				} else if (strcasecmp(optarg, "kindle5") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices =
@@ -1657,7 +1666,8 @@ int
 					    4 + (kt_with_unknown_devcodes * 2) +     // KT4
 					    6 + (kt_with_unknown_devcodes * 0) +     // KOA3
 					    2 + (kt_with_unknown_devcodes * 7) +     // PW5
-					    0 + (kt_with_unknown_devcodes * 7);      // Scribe
+					    0 + (kt_with_unknown_devcodes * 7);      // KT5
+					    0 + (kt_with_unknown_devcodes * 0);      // Scribe
 					info.devices                     = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					// K5
@@ -1806,16 +1816,17 @@ int
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2BJ;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_2DK;
 					}
-					// Scribe
+					// KT5
 					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleScribeUnknown_22D;
-						info.devices[info.num_devices++] = KindleScribeUnknown_25T;
-						info.devices[info.num_devices++] = KindleScribeUnknown_23A;
-						info.devices[info.num_devices++] = KindleScribeUnknown_2AQ;
-						info.devices[info.num_devices++] = KindleScribeUnknown_2AP;
-						info.devices[info.num_devices++] = KindleScribeUnknown_1XH;
-						info.devices[info.num_devices++] = KindleScribeUnknown_22C;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_22D;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_25T;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_23A;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_2AQ;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_2AP;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_1XH;
+						info.devices[info.num_devices++] = KindleBasic4Unknown_22C;
 					}
+					// Scribe
 				} else if (kt_with_unknown_devcodes &&
 					   (strcasecmp(optarg, "unknown") == 0 || strcasecmp(optarg, "datamined") == 0)) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);    // Meh?

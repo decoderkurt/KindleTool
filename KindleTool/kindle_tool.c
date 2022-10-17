@@ -452,20 +452,20 @@ const char*
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BJ)";
 		case KindlePaperWhite5Unknown_2DK:
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2DK)";
-		case KindleScribeUnknown_22D:
-			return "Kindle Scribe (2022) (Unknown Variant 22D)";
-		case KindleScribeUnknown_25T:
-			return "Kindle Scribe (2022) (Unknown Variant 25T)";
-		case KindleScribeUnknown_23A:
-			return "Kindle Scribe (2022) (Unknown Variant 23A)";
-		case KindleScribeUnknown_2AQ:
-			return "Kindle Scribe (2022) (Unknown Variant 2AQ)";
-		case KindleScribeUnknown_2AP:
-			return "Kindle Scribe (2022) (Unknown Variant 2AP)";
-		case KindleScribeUnknown_1XH:
-			return "Kindle Scribe (2022) (Unknown Variant 1XH)";
-		case KindleScribeUnknown_22C:
-			return "Kindle Scribe (2022) (Unknown Variant 22C)";
+		case KindleBasic4Unknown_22D:
+			return "Kindle Basic 4 (2022) (Unknown Variant 22D)";
+		case KindleBasic4Unknown_25T:
+			return "Kindle Basic 4 (2022) (Unknown Variant 25T)";
+		case KindleBasic4Unknown_23A:
+			return "Kindle Basic 4 (2022) (Unknown Variant 23A)";
+		case KindleBasic4Unknown_2AQ:
+			return "Kindle Basic 4 (2022) (Unknown Variant 2AQ)";
+		case KindleBasic4Unknown_2AP:
+			return "Kindle Basic 4 (2022) (Unknown Variant 2AP)";
+		case KindleBasic4Unknown_1XH:
+			return "Kindle Basic 4 (2022) (Unknown Variant 1XH)";
+		case KindleBasic4Unknown_22C:
+			return "Kindle Basic 4 (2022) (Unknown Variant 22C)";
 		case KindleUnknown:
 		default:
 			return "Unknown";
@@ -727,8 +727,9 @@ static int
 	    "      -d, --device basic3         Alias for kt4, kt4w, kt4ke & kt4w8\n"
 	    "      -d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32, koa3w8 & koa3g32in\n"
 	    "      -d, --device paperwhite5    Alias for pw5se & pw5\n"
+	    "      -d, --device basic4         Alias for TBD\n"
 	    "      -d, --device scribe         Alias for TBD\n"
-	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3, oasis3, paperwhite5 & scribe\n"
+	    "      -d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3, oasis3, paperwhite5, basic4 & scribe\n"
 	    "      -d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).\n"
 	    "      -d, --device auto           The current device (Obviously, has to be run from a Kindle).\n"
 	    "      \n"
