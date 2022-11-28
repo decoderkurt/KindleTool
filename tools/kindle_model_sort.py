@@ -174,6 +174,14 @@ model_tuples = [
 	('KindleBasic4Unknown_2AP',				0x957,	'A1S35GJCTB6VUN'),	# 2AP?
 	('KindleBasic4Unknown_1XH',				0x7F1,	'A1S35GJCTB6VUN'),	# 1XH?
 	('KindleBasic4Unknown_22C',				0x84C,	'A1S35GJCTB6VUN'),	# 22C?
+	('KindleScribeUnknown_27J',				0x8F2,	'A12KI9K1KHHBVF'),	# 27J?
+	('KindleScribeUnknown_2BL',				0x974,	'A12KI9K1KHHBVF'),	# 2BL?
+	('KindleScribeUnknown_263',				0x8C3,	'A12KI9K1KHHBVF'),	# 263?
+	('KindleScribeUnknown_227',				0x847,	'A12KI9K1KHHBVF'),	# 227?
+	('KindleScribeUnknown_2BM',				0x975,	'A12KI9K1KHHBVF'),	# 2BM?
+	('KindleScribeUnknown_23L',				0x874,	'A12KI9K1KHHBVF'),	# 23L?
+	('KindleScribeUnknown_23M',				0x875,	'A12KI9K1KHHBVF'),	# 23M?
+	('KindleScribeUnknown_270',				0x8E0,	'A12KI9K1KHHBVF'),	# 270?
 	('KindleUnknown', 0x00)
 ]
 

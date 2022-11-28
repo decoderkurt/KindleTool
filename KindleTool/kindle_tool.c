@@ -466,6 +466,22 @@ const char*
 			return "Kindle Basic 4 (2022) (Unknown Variant 1XH)";
 		case KindleBasic4Unknown_22C:
 			return "Kindle Basic 4 (2022) (Unknown Variant 22C)";
+		case KindleScribeUnknown_27J:
+			return "Kindle Scribe (Unknown Variant 27J)";
+		case KindleScribeUnknown_2BL:
+			return "Kindle Scribe (Unknown Variant 2BL)";
+		case KindleScribeUnknown_263:
+			return "Kindle Scribe (Unknown Variant 263)";
+		case KindleScribeUnknown_227:
+			return "Kindle Scribe (Unknown Variant 227)";
+		case KindleScribeUnknown_2BM:
+			return "Kindle Scribe (Unknown Variant 2BM)";
+		case KindleScribeUnknown_23L:
+			return "Kindle Scribe (Unknown Variant 23L)";
+		case KindleScribeUnknown_23M:
+			return "Kindle Scribe (Unknown Variant 23M)";
+		case KindleScribeUnknown_270:
+			return "Kindle Scribe (Unknown Variant 270)";
 		case KindleUnknown:
 		default:
 			return "Unknown";
@@ -502,6 +518,8 @@ const char*
 			return "Rex";
 		case Bellatrix:
 			return "Bellatrix";
+		case Bellatrix3:
+			return "Bellatrix3";
 		default:
 			return "Unknown";
 	}
@@ -748,7 +766,8 @@ static int
 	    "      -p, --platform heisenberg   Heisenberg (mostly devices shipped on FW >= 5.8).\n"
 	    "      -p, --platform zelda        Zelda (mostly devices shipped on FW >= 5.9).\n"
 	    "      -p, --platform rex          Rex (mostly devices shipped on FW >= 5.10).\n"
-	    "      -p, --platform bellatrix    Bellatrix (mostly devices shipped on FW >= 5.14?).\n"
+	    "      -p, --platform bellatrix    Bellatrix (mostly devices shipped on FW >= 5.14).\n"
+	    "      -p, --platform bellatrix3   Bellatrix3 (mostly devices shipped on FW >= 5.16).\n"
 	    "      \n"
 	    "    Boards:\n"
 	    "      Recovery V2 & Recovery FB02 with header rev 2 updates only. Use a single board per package.\n"
