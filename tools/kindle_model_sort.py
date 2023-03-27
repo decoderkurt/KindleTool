@@ -58,7 +58,7 @@ model_tuples = [
 	('KindlePaperWhiteWiFi3GEurope',			0x1D,	'A1I7TFXKDRQDZL'),
 	('KindlePaperWhiteWiFi3GJapan',				0x1F,	'A1K21FY43GMZF8'),
 	('KindlePaperWhiteWiFi3GBrazil',			0x20,	'A3RN7G7QC5MWSZ'),
-	('Kindle4NonTouchBlack',				0x23),
+	('Kindle4NonTouchBlack',				0x23,	'AMMK0LS9EDNM8'),
 	('KindlePaperWhiteWiFi',				0x24,	'A3VSAZHKW7EWVH'),
 	('KindlePaperWhite2WiFiJapan',				0x5A,	'A1XFE4LQM16OSW'),
 	('KindlePaperWhite2WiFi',				0xD4,	'A2X1JOFWQIYV75'),
