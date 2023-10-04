@@ -389,40 +389,40 @@ typedef enum
 				     */
 } Board;
 
-// For reference, list of boards (AFAICT, in chronological order):
+// For reference, list of boards (AFAICT, in chronological order), trailing name is the inane marketing name used on the *US* market:
 // ADS                        // K1 proto? (w/ ETH)
-// Fiona                      // Kindle 1
+// Fiona                      // Kindle 1 - Kindle (1st Generation)
 // Mario                      // Kindle 2? (w/ ETH) [Also a platform]
-// Nell/NellSL/NellWW         // DX & DXG & DXi?
-// Turing/TuringWW            // Kindle 2 & Kindle 2 International
+// Nell/NellSL/NellWW         // DX & DXG & DXi? - Kindle DX (2nd Generation)
+// Turing/TuringWW            // Kindle 2 & Kindle 2 International - Kindle (2nd Generation)
 // Luigi/Luigi3               // ?? (r3 w/ ETH) [Also a platform]
-// Shasta (+ WFO variant)     // Kindle 3
+// Shasta (+ WFO variant)     // Kindle 3 - Kindle Keyboard (Wi-Fi), Kindle Keyboard 3G (Free 3G + Wi-Fi) (3rd Generation)
 // Yoshi                      // ?? [Also a platform]
 // Primer                     // Deprecated proto
 // Harv                       // K4 proto?
-// Tequila (is WFO)           // Silver Kindle 4
+// Tequila (is WFO)           // Silver Kindle 4 - Kindle Wi-Fi, 6" E Ink Display (4th and 5th Generation)
 // Sauza                      // Black Kindle 4? (NOT in chronological order)
 // Finkle                     // Touch proto?
-// Whitney (+ WFO variant)    // Kindle Touch
+// Whitney (+ WFO variant)    // Kindle Touch - Kindle Touch, Kindle Touch 3G (Free 3G + Wi-Fi) (4th Generation)
 // Yoshime                    // Temp. Yoshime dev board [Also a Platform, which we call YoshimeProto]
 // Yoshime3                   // Temp. Yoshime3 dev boards (w/ ETH). PW proto? [Also a Platform, which we call Yoshime]
-// Celeste (+ WFO variant)    // Kindle PW
+// Celeste (+ WFO variant)    // Kindle PW - Kindle Paperwhite (5th Generation)
 // Icewine (+ WFO variants)   // Dev/Proto, next rumored product [Used on two different platforms (so far), Yoshime3 & Wario]
 // Wario                      // Temp. Wario dev boards [Also a Platform]
-// Pinot (+ WFO variant)      // Kindle PW2
-// Bourbon                    // Kindle Basic (KT2)
-// Icewine (on Wario)         // Kindle Voyage
-// Muscat                     // Kindle PW3
-// Whisky                     // Kindle Oasis
+// Pinot (+ WFO variant)      // Kindle PW2 - Kindle Paperwhite (6th Generation)
+// Bourbon                    // Kindle Basic (KT2) - Kindle (7th Generation)
+// Icewine (on Wario)         // Kindle Voyage - Kindle Voyage (7th Generation)
+// Muscat                     // Kindle PW3 - Kindle Paperwhite (7th Generation)
+// Whisky                     // Kindle Oasis - Kindle Oasis (8th Generation)
 // Woody                      // ?? (Dev/Proto? Duet platform, Basic line)
-// Eanab                      // Kindle Basic 2 (KT3)
-// Cognac                     // Kindle Oasis 2
-// Moonshine                  // Kindle PW4
-// Jaeger                     // Kindle Basic 3 (KT4)
-// Stinger                    // Kindle Oasis 3
-// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one: MT8110, likely based on the MT8512)
-// Cava                       // Kindle Basic 4 (KT5)
-// Barolo                     // Kindle Scribe (First Bellatrix3 board)
+// Eanab                      // Kindle Basic 2 (KT3) - Kindle (8th Generation)
+// Cognac                     // Kindle Oasis 2 - Kindle Oasis (9th Generation)
+// Moonshine                  // Kindle PW4 - Kindle Paperwhite (10th Generation)
+// Jaeger                     // Kindle Basic 3 (KT4) - Kindle (10th Generation)
+// Stinger                    // Kindle Oasis 3 - Kindle Oasis (10th Generation)
+// Malbec                     // Kindle PW5 (First Bellatrix board. No longer an i.MX SoC, but a MediaTek one: MT8110, likely based on the MT8512) - Kindle Paperwhite (11th Generation)
+// Cava                       // Kindle Basic 4 (KT5) [Kindle 11th gen] - Kindle (11th Generation)
+// Barolo                     // Kindle Scribe (First Bellatrix3 board) - Kindle Scribe
 
 typedef struct
 {
