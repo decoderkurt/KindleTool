@@ -318,29 +318,29 @@ typedef enum
 	// Kindle PaperWhite 5, released October 27 2021 on FW 5.14.0
 	KindlePaperWhite5SignatureEdition = 0x690,    // 1LG (Black, 32GB, US)
 	KindlePaperWhite5Unknown_1Q0      = 0x700,    // 1Q0?
-	KindlePaperWhite5                 = 0x6FF,    // 1PX (Black, 8GB, UK, FR)
+	KindlePaperWhite5                 = 0x6FF,    // 1PX (Black & White, 8GB, UK, FR, IT)
 	KindlePaperWhite5Unknown_1VD      = 0x7AD,    // 1VD?
 	KindlePaperWhite5Unknown_219      = 0x829,    // 219?
 	KindlePaperWhite5Unknown_21A      = 0x82A,    // 21A?
-	KindlePaperWhite5Unknown_2BH      = 0x971,    // 2BH? NOTE: Appeared in 5.14.2...
+	KindlePaperWhite5SE_2BH           = 0x971,    // 2BH NOTE: Appeared in 5.14.2... (SE)
 	KindlePaperWhite5Unknown_2BJ      = 0x972,    // 2BJ?
-	KindlePaperWhite5Unknown_2DK      = 0x9B3,    // 2DK? NOTE: Appeared in 5.14.3...
+	KindlePaperWhite5Kids_2DK         = 0x9B3,    // 2DK NOTE: Appeared in 5.14.3... (Black, Kids, US)
 	// Kindle Basic 4, released October 12 2022 on FW 5.15.0
 	KindleBasic4Unknown_22D           = 0x84D,    // 22D?
 	KindleBasic4Unknown_25T           = 0x8BB,    // 25T?
 	KindleBasic4Unknown_23A           = 0x86A,    // 23A?
-	KindleBasic4Unknown_2AQ           = 0x958,    // 2AQ?
-	KindleBasic4Unknown_2AP           = 0x957,    // 2AP?
+	KindleBasic4_2AQ                  = 0x958,    // 2AQ (Refurb seen in the wild)
+	KindleBasic4_2AP                  = 0x957,    // 2AP (Seen in the wild, possibly EU-ish)
 	KindleBasic4Unknown_1XH           = 0x7F1,    // 1XH?
 	KindleBasic4Unknown_22C           = 0x84C,    // 22C?
 	// Kindle Scribe, released December 2022 on FW 5.16.0
 	KindleScribeUnknown_27J           = 0x8F2,    // 27J?
 	KindleScribeUnknown_2BL           = 0x974,    // 2BL?
 	KindleScribeUnknown_263           = 0x8C3,    // 263?
-	KindleScribeUnknown_227           = 0x847,    // 227?
+	KindleScribe16GB_227              = 0x847,    // 227 (JP, 16GB, Premium Pen)
 	KindleScribeUnknown_2BM           = 0x975,    // 2BM?
 	KindleScribeUnknown_23L           = 0x874,    // 23L?
-	KindleScribeUnknown_23M           = 0x875,    // 23M?
+	KindleScribe64GB_23M              = 0x875,    // 23M (US, 64GB, Premium Pen)
 	KindleScribeUnknown_270           = 0x8E0,    // 270?
 	KindleUnknown                     = 0x00
 } Device;

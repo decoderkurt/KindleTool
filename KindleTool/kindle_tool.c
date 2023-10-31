@@ -446,22 +446,22 @@ const char*
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 219)";
 		case KindlePaperWhite5Unknown_21A:
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 21A)";
-		case KindlePaperWhite5Unknown_2BH:
-			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BH)";
+		case KindlePaperWhite5SE_2BH:
+			return "Kindle PaperWhite 5 Signature Edition (2021) (Variant 2BH)";
 		case KindlePaperWhite5Unknown_2BJ:
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BJ)";
-		case KindlePaperWhite5Unknown_2DK:
-			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2DK)";
+		case KindlePaperWhite5Kids_2DK:
+			return "Kindle PaperWhite 5 Kids (2021) (Variant 2DK)";
 		case KindleBasic4Unknown_22D:
 			return "Kindle Basic 4 (2022) (Unknown Variant 22D)";
 		case KindleBasic4Unknown_25T:
 			return "Kindle Basic 4 (2022) (Unknown Variant 25T)";
 		case KindleBasic4Unknown_23A:
 			return "Kindle Basic 4 (2022) (Unknown Variant 23A)";
-		case KindleBasic4Unknown_2AQ:
-			return "Kindle Basic 4 (2022) (Unknown Variant 2AQ)";
-		case KindleBasic4Unknown_2AP:
-			return "Kindle Basic 4 (2022) (Unknown Variant 2AP)";
+		case KindleBasic4_2AQ:
+			return "Kindle Basic 4 (2022) (Variant 2AQ)";
+		case KindleBasic4_2AP:
+			return "Kindle Basic 4 (2022) (Variant 2AP)";
 		case KindleBasic4Unknown_1XH:
 			return "Kindle Basic 4 (2022) (Unknown Variant 1XH)";
 		case KindleBasic4Unknown_22C:
@@ -472,14 +472,14 @@ const char*
 			return "Kindle Scribe (Unknown Variant 2BL)";
 		case KindleScribeUnknown_263:
 			return "Kindle Scribe (Unknown Variant 263)";
-		case KindleScribeUnknown_227:
-			return "Kindle Scribe (Unknown Variant 227)";
+		case KindleScribe16GB_227:
+			return "Kindle Scribe (16GB) (Variant 227)";
 		case KindleScribeUnknown_2BM:
 			return "Kindle Scribe (Unknown Variant 2BM)";
 		case KindleScribeUnknown_23L:
 			return "Kindle Scribe (Unknown Variant 23L)";
-		case KindleScribeUnknown_23M:
-			return "Kindle Scribe (Unknown Variant 23M)";
+		case KindleScribe64GB_23M:
+			return "Kindle Scribe (64GB) (Variant 23M)";
 		case KindleScribeUnknown_270:
 			return "Kindle Scribe (Unknown Variant 270)";
 		case KindleUnknown:
