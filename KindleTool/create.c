@@ -1619,7 +1619,7 @@ int
 					info.devices[info.num_devices++]       = KindlePaperWhite5SignatureEdition;
 					info.devices[info.num_devices++]       = KindlePaperWhite5;
 					info.devices[info.num_devices++]       = KindlePaperWhite5SE_2BH;
-					info.devices[info.num_devices++]       = KindlePaperWhite5Kids_2DK;
+					info.devices[info.num_devices++]       = KindlePaperWhite5_2DK;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1Q0;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;
@@ -1814,7 +1814,7 @@ int
 					info.devices[info.num_devices++] = KindlePaperWhite5SignatureEdition;
 					info.devices[info.num_devices++] = KindlePaperWhite5;
 					info.devices[info.num_devices++] = KindlePaperWhite5SE_2BH;
-					info.devices[info.num_devices++] = KindlePaperWhite5Kids_2DK;
+					info.devices[info.num_devices++] = KindlePaperWhite5_2DK;
 					if (kt_with_unknown_devcodes) {
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1Q0;
 						info.devices[info.num_devices++] = KindlePaperWhite5Unknown_1VD;

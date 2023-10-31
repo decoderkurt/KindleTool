@@ -450,8 +450,8 @@ const char*
 			return "Kindle PaperWhite 5 Signature Edition (2021) (Variant 2BH)";
 		case KindlePaperWhite5Unknown_2BJ:
 			return "Kindle PaperWhite 5 (2021) (Unknown Variant 2BJ)";
-		case KindlePaperWhite5Kids_2DK:
-			return "Kindle PaperWhite 5 Kids (2021) (Variant 2DK)";
+		case KindlePaperWhite5_2DK:
+			return "Kindle PaperWhite 5 (2021) (Variant 2DK)";
 		case KindleBasic4Unknown_22D:
 			return "Kindle Basic 4 (2022) (Unknown Variant 22D)";
 		case KindleBasic4Unknown_25T:

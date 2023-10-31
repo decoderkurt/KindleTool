@@ -324,7 +324,7 @@ typedef enum
 	KindlePaperWhite5Unknown_21A      = 0x82A,    // 21A?
 	KindlePaperWhite5SE_2BH           = 0x971,    // 2BH NOTE: Appeared in 5.14.2... (SE)
 	KindlePaperWhite5Unknown_2BJ      = 0x972,    // 2BJ?
-	KindlePaperWhite5Kids_2DK         = 0x9B3,    // 2DK NOTE: Appeared in 5.14.3... (Black, Kids, US)
+	KindlePaperWhite5_2DK             = 0x9B3,    // 2DK NOTE: Appeared in 5.14.3... (Black, Kids or not, US)
 	// Kindle Basic 4, released October 12 2022 on FW 5.15.0
 	KindleBasic4Unknown_22D           = 0x84D,    // 22D?
 	KindleBasic4Unknown_25T           = 0x8BB,    // 25T?
