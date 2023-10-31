@@ -339,7 +339,7 @@ typedef enum
 	KindleScribeUnknown_263           = 0x8C3,    // 263?
 	KindleScribe16GB_227              = 0x847,    // 227 (JP, 16GB, Premium Pen)
 	KindleScribeUnknown_2BM           = 0x975,    // 2BM?
-	KindleScribeUnknown_23L           = 0x874,    // 23L?
+	KindleScribe_23L                  = 0x874,    // 23L
 	KindleScribe64GB_23M              = 0x875,    // 23M (US, 64GB, Premium Pen)
 	KindleScribeUnknown_270           = 0x8E0,    // 270?
 	KindleUnknown                     = 0x00

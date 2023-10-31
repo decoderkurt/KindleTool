@@ -476,8 +476,8 @@ const char*
 			return "Kindle Scribe (16GB) (Variant 227)";
 		case KindleScribeUnknown_2BM:
 			return "Kindle Scribe (Unknown Variant 2BM)";
-		case KindleScribeUnknown_23L:
-			return "Kindle Scribe (Unknown Variant 23L)";
+		case KindleScribe_23L:
+			return "Kindle Scribe (Variant 23L)";
 		case KindleScribe64GB_23M:
 			return "Kindle Scribe (64GB) (Variant 23M)";
 		case KindleScribeUnknown_270:

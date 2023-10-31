@@ -179,7 +179,7 @@ model_tuples = [
 	('KindleScribeUnknown_263',				0x8C3,	'A12KI9K1KHHBVF'),	# 263?
 	('KindleScribe16GB_227',				0x847,	'A12KI9K1KHHBVF'),	# 227
 	('KindleScribeUnknown_2BM',				0x975,	'A12KI9K1KHHBVF'),	# 2BM?
-	('KindleScribeUnknown_23L',				0x874,	'A12KI9K1KHHBVF'),	# 23L?
+	('KindleScribe_23L',					0x874,	'A12KI9K1KHHBVF'),	# 23L
 	('KindleScribe64GB_23M',				0x875,	'A12KI9K1KHHBVF'),	# 23M
 	('KindleScribeUnknown_270',				0x8E0,	'A12KI9K1KHHBVF'),	# 270?
 	('KindleUnknown', 0x00)
