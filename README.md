@@ -61,107 +61,29 @@
 		-d, --device k3w            Kindle 3 WiFi
 		-d, --device k3g            Kindle 3 WiFi+3G
 		-d, --device k3gb           Kindle 3 WiFi+3G Europe
-		-d, --device k4             Silver Kindle 4 (No Touch) (2011)
-		-d, --device k4b            Black Kindle 4 (No Touch) (2012)
-		-d, --device k5w            Kindle 5 (Kindle Touch) WiFi
-		-d, --device k5g            Kindle 5 (Kindle Touch) WiFi+3G
-		-d, --device k5gb           Kindle 5 (Kindle Touch) WiFi+3G Europe
-		-d, --device k5u            Kindle 5 (Kindle Touch) Unknown Variant (4th device code found in Touch official updates).
-		-d, --device pw             Kindle PaperWhite WiFi
-		-d, --device pwg            Kindle PaperWhite WiFi+3G
-		-d, --device pwgc           Kindle PaperWhite WiFi+3G Canada
-		-d, --device pwgb           Kindle PaperWhite WiFi+3G Europe
-		-d, --device pwgj           Kindle PaperWhite WiFi+3G Japan
-		-d, --device pwgbr          Kindle PaperWhite WiFi+3G Brazil
-		-d, --device pw2            Kindle PaperWhite 2 (2013) WiFi
-		-d, --device pw2j           Kindle PaperWhite 2 (2013) WiFi Japan
-		-d, --device pw2g           Kindle PaperWhite 2 (2013) WiFi+3G
-		-d, --device pw2gc          Kindle PaperWhite 2 (2013) WiFi+3G Canada
-		-d, --device pw2gb          Kindle PaperWhite 2 (2013) WiFi+3G Europe
-		-d, --device pw2gr          Kindle PaperWhite 2 (2013) WiFi+3G Russia
-		-d, --device pw2gj          Kindle PaperWhite 2 (2013) WiFi+3G Japan
-		-d, --device pw2il          Kindle PaperWhite 2 (2013) WiFi (4GB) International
-		-d, --device pw2gbl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Europe
-		-d, --device pw2gl          Kindle PaperWhite 2 (2013) WiFi+3G (4GB)
-		-d, --device pw2gcl         Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Canada
-		-d, --device pw2gbrl        Kindle PaperWhite 2 (2013) WiFi+3G (4GB) Brazil
-		-d, --device kt2            Kindle Basic (2014)
-		-d, --device kt2a           Kindle Basic (2014) Australia
-		-d, --device kv             Kindle Voyage WiFi
-		-d, --device kvg            Kindle Voyage WiFi+3G
-		-d, --device kvgb           Kindle Voyage WiFi+3G Europe
-		-d, --device kvgj           Kindle Voyage WiFi+3G Japan
-		-d, --device kvgm           Kindle Voyage WiFi+3G Mexico
-		-d, --device pw3            Kindle PaperWhite 3 (2015) WiFi
-		-d, --device pw3g           Kindle PaperWhite 3 (2015) WiFi+3G
-		-d, --device pw3gj          Kindle PaperWhite 3 (2015) WiFi+3G Japan
-		-d, --device pw3gc          Kindle PaperWhite 3 (2015) WiFi+3G Canada
-		-d, --device pw3gb          Kindle PaperWhite 3 (2015) WiFi+3G Europe
-		-d, --device pw3gm          Kindle PaperWhite 3 (2015) WiFi+3G Mexico
-		-d, --device pw3jl          Kindle PaperWhite 3 (2016) WiFi (32GB) Japan
-		-d, --device pw3w           White Kindle PaperWhite 3 (2016) WiFi
-		-d, --device pw3wgj         White Kindle PaperWhite 3 (2016) WiFi+3G Japan
-		-d, --device pw3wjl         White Kindle PaperWhite 3 (2016) WiFi (32GB) Japan
-		-d, --device pw3wgi         White Kindle PaperWhite 3 (2016) WiFi+3G International
-		-d, --device pw3wgib        White Kindle PaperWhite 3 (2016) WiFi+3G International (Bis)
-		-d, --device koa            Kindle Oasis WiFi
-		-d, --device koag           Kindle Oasis WiFi+3G
-		-d, --device koagb          Kindle Oasis WiFi+3G Europe
-		-d, --device koagbi         Kindle Oasis WiFi+3G International
-		-d, --device koagcn         Kindle Oasis WiFi+3G China
-		-d, --device kt3            Kindle Basic 2 (2016)
-		-d, --device kt3w           White Kindle Basic 2 (2016)
-		-d, --device koa2w8         Kindle Oasis 2 (2017) WiFi (8GB)
-		-d, --device koa2g32        Kindle Oasis 2 (2017) WiFi+3G (32GB)
-		-d, --device koa2w32        Kindle Oasis 2 (2017) WiFi (32GB)
-		-d, --device koa2g32b       Kindle Oasis 2 (2017) WiFi+3G (32GB) Europe
-		-d, --device koa2w32c       Champagne Kindle Oasis 2 (2017) WiFi (32GB)
-		-d, --device pw4            Kindle PaperWhite 4 (2018) WiFi (8GB)
-		-d, --device pw4l           Kindle PaperWhite 4 (2018) WiFi (32GB)
-		-d, --device pw4lg          Kindle PaperWhite 4 (2018) WiFi+4G (32GB)
-		-d, --device pw4lgb         Kindle PaperWhite 4 (2018) WiFi+4G (32GB) Europe
-		-d, --device pw4in          Kindle PaperWhite 4 (2018) WiFi (8GB) India
-		-d, --device pw4lgjp        Kindle PaperWhite 4 (2018) WiFi+4G (32GB) Japan
-		-d, --device pw4tb          Twilight Blue Kindle PaperWhite 4 (2018) WiFi (8GB)
-		-d, --device pw4ltb         Twilight Blue Kindle PaperWhite 4 (2018) WiFi (32GB)
-		-d, --device pw4p           Plum Kindle PaperWhite 4 (2018) WiFi (8GB)
-		-d, --device pw4s           Sage Kindle PaperWhite 4 (2018) WiFi (8GB)
-		-d, --device pw4lin         Kindle PaperWhite 4 (2018) WiFi (32GB) India
-		-d, --device pw4lp          Plum Kindle PaperWhite 4 (2018) WiFi (32GB)
-		-d, --device pw4ls          Sage Kindle PaperWhite 4 (2018) WiFi (32GB)
-		-d, --device kt4            Kindle Basic 3 (2019)
-		-d, --device kt4w           White Kindle Basic 3 (2019)
-		-d, --device kt4ke          Kindle Basic 3 (2019) Kids Edition
-		-d, --device kt4w8          White Kindle Basic 3 (2019) (8GB)
-		-d, --device koa3w32c       Champagne Kindle Oasis 3 (2019) WiFi (32GB)
-		-d, --device koa3g32jp      Kindle Oasis 3 (2019) WiFi+4G (32GB) Japan
-		-d, --device koa3g32        Kindle Oasis 3 (2019) WiFi+4G (32GB)
-		-d, --device koa3w32        Kindle Oasis 3 (2019) WiFi (32GB)
-		-d, --device koa3w8         Kindle Oasis 3 (2019) WiFi (8GB)
-		-d, --device koa3g32in      Kindle Oasis 3 (2019) WiFi+4G (32GB) Indian
-		-d, --device pw5se          Kindle PaperWhite 5 Signature Edition (2021)
-		-d, --device pw5            Kindle PaperWhite 5 (2021)
-		-d, --device kindle2        Alias for k2 & k2i
-		-d, --device kindledx       Alias for dx, dxi & dxg
-		-d, --device kindle3        Alias for k3w, k3g & k3gb
-		-d, --device legacy         Alias for kindle2, kindledx & kindle3
-		-d, --device kindle4        Alias for k4 & k4b
-		-d, --device touch          Alias for k5w, k5g & k5gb
-		-d, --device paperwhite     Alias for pw, pwg, pwgc, pwgb, pwgj & pwgbr
-		-d, --device paperwhite2    Alias for pw2, pw2j, pw2g, pw2gc, pw2gb, pw2gr, pw2gj, pw2il, pw2gbl, pw2gl, pw2gcl & pw2gbrl
-		-d, --device basic          Alias for kt2 & kt2a
-		-d, --device voyage         Alias for kv, kvg, kvgb, kvgj & kvgm
-		-d, --device paperwhite3    Alias for pw3, pw3g, pw3gj, pw3gc, pw3gb, pw3gm, pw3jl, pw3w, pw3wgj, pw3wjl, pw3wgi & pw3wgib
-		-d, --device oasis          Alias for koa, koag, koagb, koagbi & koagcn
-		-d, --device basic2         Alias for kt3 & kt3w
-		-d, --device oasis2         Alias for koa2w8, koa2g32, koa2w32, koa2g32b & koa2w32c
-		-d, --device paperwhite4    Alias for pw4, pw4l, pw4lg, pw4lgb, pw4in, pw4lgjp, pw4tb, pw4ltb, pw4p, pw4s, pw4lin, pw4lp & pw4ls
-		-d, --device basic3         Alias for kt4, kt4w, kt4ke & kt4w8
-		-d, --device oasis3         Alias for koa3w32c, koa3g32jp, koa3g32, koa3w32, koa3w8 & koa3g32in
-		-d, --device paperwhite5    Alias for pw5se & pw5
-		-d, --device basic4         Alias for TBD
-		-d, --device scribe         Alias for TBD
-		-d, --device kindle5        Alias for touch, paperwhite, paperwhite2, basic, voyage, paperwhite3, oasis, basic2, oasis2, paperwhite4, basic3, oasis3, paperwhite5, basic4 & scribe
+		-d, --device k4             Silver Kindle 4 (Non-Touch) (2011)
+		-d, --device k4b            Black Kindle 4 (Non-Touch) (2012)
+		-d, --device kindle2        Alias for k2 + k2i
+		-d, --device kindledx       Alias for dx + dxi + dxg
+		-d, --device kindle3        Alias for k3w + k3g + k3gb
+		-d, --device legacy         Alias for kindle2 + kindledx + kindle3
+		-d, --device kindle4        Alias for k4 + k4b
+		-d, --device touch          Includes all known Kindle Touch variants
+		-d, --device paperwhite     Includes all known Kindle PaperWhite 1 variants
+		-d, --device paperwhite2    Includes all known Kindle PaperWhite 2 variants
+		-d, --device basic          Includes all known Kindle Basic 1 variants
+		-d, --device voyage         Includes all known Kindle Voyage variants
+		-d, --device paperwhite3    Includes all known Kindle PaperWhite 3 variants
+		-d, --device oasis          Includes all known Kindle Oasis 1 variants
+		-d, --device basic2         Includes all known Kindle Basic 2 variants
+		-d, --device oasis2         Includes all known Kindle Oasis 2 variants
+		-d, --device paperwhite4    Includes all known Kindle PaperWhite 4 variants
+		-d, --device basic3         Includes all known Kindle Basic 3 variants
+		-d, --device oasis3         Includes all known Kindle Oasis 3 variants
+		-d, --device paperwhite5    Includes all known Kindle PaperWhite 5 variants
+		-d, --device basic4         Includes all known Kindle Basic 4 variants
+		-d, --device scribe         Includes all known Kindle Scribe variants
+		-d, --device kindle5        Alias for touch + paperwhite + paperwhite2 + basic + voyage + paperwhite3 + oasis + basic2 + oasis2 + paperwhite4 + basic3 + oasis3 + paperwhite5 + basic4 + scribe
 		-d, --device none           No specific device (Recovery V2 & Recovery FB02 with header rev 2 only, default).
 		-d, --device auto           The current device (Obviously, has to be run from a Kindle).
 
