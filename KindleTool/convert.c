@@ -761,61 +761,58 @@ static int
 static int
     kindle_convert_component(FILE* input, FILE* output, const bool fake_sign, char* header_sha256)
 {
-	unsigned char* data;
-	size_t         hindex = 0U;
-	uint64_t       min_revision;
-	uint64_t       target_revision;
-	char*          pkg_sha256_sum;
-	uint32_t       component;
-	uint32_t       platform;
-	uint32_t       header_rev;
-	uint32_t       num_devices;
-	uint16_t       device;
-
-	size_t read_size __attribute__((unused));
+	uint64_t min_revision;
+	uint64_t target_revision;
+	char*    pkg_sha256_sum;
+	uint32_t component;
+	uint32_t platform;
+	uint32_t header_rev;
+	uint32_t num_devices;
 
 	// Its size is set, there's just some wonky padding involved. Read it all!
-	data      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
-	read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+	unsigned char* data                      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
+	unsigned char* pos                       = data;
+	size_t read_size __attribute__((unused)) = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
 
-	//min_revision = *(uint64_t *)&data[hindex];
-	memcpy(&min_revision, &data[hindex], sizeof(min_revision));
-	hindex += sizeof(min_revision);
+	//min_revision = *(uint64_t *) pos;
+	memcpy(&min_revision, pos, sizeof(min_revision));
+	pos += sizeof(min_revision);
 	fprintf(stderr, "Min    OTA     %llu\n", (long long unsigned int) min_revision);
-	//target_revision = *(uint64_t *)&data[hindex];
-	memcpy(&target_revision, &data[hindex], sizeof(target_revision));
-	hindex += sizeof(target_revision);
+	//target_revision = *(uint64_t *) pos;
+	memcpy(&target_revision, pos, sizeof(target_revision));
+	pos += sizeof(target_revision);
 	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
-	pkg_sha256_sum = (char*) &data[hindex];
+	pkg_sha256_sum = (char*) pos;
 	//dm((unsigned char*) pkg_sha256_sum, SHA256_HASH_LENGTH); // It's in clear
-	hindex += SHA256_HASH_LENGTH;
+	pos += SHA256_HASH_LENGTH;
 	// NOTE: It's the hash of the single binary *inside* the tarball, not the tarball itself
 	fprintf(stderr, "SHA256 Hash    %.*s\n", SHA256_HASH_LENGTH, pkg_sha256_sum);
 	strncpy(header_sha256, pkg_sha256_sum, SHA256_HASH_LENGTH);    // Flawfinder: ignore
-	//component = *(uint32_t *)&data[hindex];
-	memcpy(&component, &data[hindex], sizeof(component));
-	hindex += sizeof(component);
+	//component = *(uint32_t *) pos;
+	memcpy(&component, pos, sizeof(component));
+	pos += sizeof(component);
 	fprintf(stderr, "Component      %u (0x%02X)\n", component, component);
-	//platform = *(uint32_t *)&data[hindex];
-	memcpy(&platform, &data[hindex], sizeof(platform));
-	hindex += sizeof(platform);
+	//platform = *(uint32_t *) pos;
+	memcpy(&platform, pos, sizeof(platform));
+	pos += sizeof(platform);
 	// Slightly hackish way to detect unknown platforms...
 	if (strcmp(convert_platform_id(platform), "Unknown") == 0) {
 		fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
 	} else {
 		fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
 	}
-	//header_rev = *(uint32_t *)&data[hindex];
-	memcpy(&header_rev, &data[hindex], sizeof(header_rev));
-	hindex += sizeof(header_rev);
+	//header_rev = *(uint32_t *) pos;
+	memcpy(&header_rev, pos, sizeof(header_rev));
+	pos += sizeof(header_rev);
 	fprintf(stderr, "Header Rev     %u\n", header_rev);
-	//num_devices = *(uint32_t*) &data[hindex];
-	memcpy(&num_devices, &data[hindex], sizeof(num_devices));
-	hindex += sizeof(num_devices);
+	//num_devices = *(uint32_t*) pos;
+	memcpy(&num_devices, pos, sizeof(num_devices));
+	pos += sizeof(num_devices);
 	fprintf(stderr, "Devices        %u\n", num_devices);
 	for (size_t i = 0; i < num_devices; i++) {
-		//device = *(uint16_t *)&data[hindex];
-		memcpy(&device, &data[hindex], sizeof(uint16_t));
+		uint16_t device;
+		//device = *(uint16_t *) pos;
+		memcpy(&device, pos, sizeof(uint16_t));
 		fprintf(stderr, "Device         ");
 		// Slightly hackish way to detect unknown devices...
 		bool is_unknown = false;
@@ -848,7 +845,7 @@ static int
 			fprintf(stderr, "0x%02X)", device);
 		}
 		fprintf(stderr, "\n");
-		hindex += sizeof(device);
+		pos += sizeof(device);
 	}
 	free(data);
 
