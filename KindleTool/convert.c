@@ -770,9 +770,9 @@ static int
 	uint32_t num_devices;
 
 	// Its size is set, there's just some wonky padding involved. Read it all!
-	unsigned char* data                      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
-	unsigned char* pos                       = data;
-	size_t read_size __attribute__((unused)) = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+	unsigned char* data                              = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(*data));
+	unsigned char* pos                               = data;
+	size_t         read_size __attribute__((unused)) = fread(data, sizeof(*data), RECOVERY_UPDATE_BLOCK_SIZE, input);
 
 	//min_revision = *(uint64_t *) pos;
 	memcpy(&min_revision, pos, sizeof(min_revision));
