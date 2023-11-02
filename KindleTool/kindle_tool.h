@@ -77,7 +77,7 @@
 #	error Your libarchive version is too old, KindleTool depends on libarchive >= 3.0.3
 #endif
 
-#define BUFFER_SIZE         1024
+#define BUFFER_SIZE         PIPE_BUF    // 4K
 #define BLOCK_SIZE          64
 #define RECOVERY_BLOCK_SIZE 131072
 
@@ -499,6 +499,7 @@ const char*   convert_platform_id(Platform) __attribute__((const));
 const char*   convert_board_id(Board) __attribute__((const));
 BundleVersion get_bundle_version(const char[MAGIC_NUMBER_LENGTH]) __attribute__((pure));
 int           md5_sum(FILE*, char output_string[BASE16_ENCODE_LENGTH(MD5_DIGEST_SIZE)]);
+int           sha256_sum(FILE*, char output_string[BASE16_ENCODE_LENGTH(SHA256_DIGEST_SIZE)]);
 
 int kindle_convert_main(int, char**);
 

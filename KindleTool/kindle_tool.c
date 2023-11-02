@@ -590,6 +590,29 @@ int
 	return 0;
 }
 
+int
+    sha256_sum(FILE* input, char output_string[BASE16_ENCODE_LENGTH(SHA256_DIGEST_SIZE)])
+{
+	unsigned char     bytes[BUFFER_SIZE];
+	size_t            bytes_read;
+	struct sha256_ctx sha256;
+	uint8_t           digest[SHA256_DIGEST_SIZE];
+
+	sha256_init(&sha256);
+	while ((bytes_read = fread(bytes, sizeof(unsigned char), BUFFER_SIZE, input)) > 0) {
+		sha256_update(&sha256, bytes_read, bytes);
+	}
+	if (ferror(input) != 0) {
+		fprintf(stderr, "Error reading input file: %s.\n", strerror(errno));
+		return -1;
+	}
+	sha256_digest(&sha256, SHA256_DIGEST_SIZE, digest);
+	// And build the hex checksum the nettle way ;)
+	base16_encode_update(output_string, SHA256_DIGEST_SIZE, digest);
+
+	return 0;
+}
+
 static int
     kindle_print_help(const char* prog_name)
 {
