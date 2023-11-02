@@ -178,6 +178,13 @@ typedef enum
 
 typedef enum
 {
+	BundleMD5,
+	BundleSHA256,
+	BundleUnknown = -1,
+} BundleHashAlgorithm;
+
+typedef enum
+{
 	CertificateDeveloper = 0x00,
 	Certificate1K        = 0x01,
 	Certificate2K        = 0x02,

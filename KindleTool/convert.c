@@ -133,13 +133,14 @@ static int
 }
 
 static int
-    kindle_convert(FILE*      input,
-		   FILE*      output,
-		   FILE*      sig_output,
-		   const bool fake_sign,
-		   const bool unwrap_only,
-		   FILE*      unwrap_output,
-		   char*      header_md5)
+    kindle_convert(FILE*                input,
+		   FILE*                output,
+		   FILE*                sig_output,
+		   const bool           fake_sign,
+		   const bool           unwrap_only,
+		   FILE*                unwrap_output,
+		   char*                header_hash,
+		   BundleHashAlgorithm* hash_type)
 {
 	UpdateHeader  header;
 	BundleVersion bundle_version;
@@ -188,7 +189,8 @@ static int
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "OTA V2");
 				// No absolute size, so no struct to pass
-				return kindle_convert_ota_update_v2(input, output, fake_sign, header_md5);
+				*hash_type = BundleMD5;
+				return kindle_convert_ota_update_v2(input, output, fake_sign, header_hash);
 			}
 			break;
 		case UpdateSignature:
@@ -211,7 +213,8 @@ static int
 				// NOTE: We don't handle unwrapping nested UpdateSignature
 				return 0;
 			} else {
-				return kindle_convert(input, output, sig_output, fake_sign, 0, NULL, header_md5);
+				return kindle_convert(
+				    input, output, sig_output, fake_sign, 0, NULL, header_hash, hash_type);
 			}
 			break;
 		case OTAUpdate:
@@ -220,7 +223,8 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "OTA V1");
-				return kindle_convert_ota_update(&header, input, output, fake_sign, header_md5);
+				*hash_type = BundleMD5;
+				return kindle_convert_ota_update(&header, input, output, fake_sign, header_hash);
 			}
 			break;
 		case RecoveryUpdate:
@@ -229,7 +233,9 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery");
-				return kindle_convert_recovery(&header, input, output, fake_sign, header_md5, is_wrapped);
+				*hash_type = BundleMD5;
+				return kindle_convert_recovery(
+				    &header, input, output, fake_sign, header_hash, is_wrapped);
 			}
 			break;
 		case RecoveryUpdateV2:
@@ -238,7 +244,8 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Recovery V2");
-				return kindle_convert_recovery_v2(input, output, fake_sign, header_md5);
+				*hash_type = BundleMD5;
+				return kindle_convert_recovery_v2(input, output, fake_sign, header_hash);
 			}
 			break;
 		case UserDataPackage:
@@ -271,7 +278,8 @@ static int
 				return -1;
 			} else {
 				fprintf(stderr, "Bundle Type    %s\n", "Component");
-				return kindle_convert_component(input, output, fake_sign, header_md5);
+				*hash_type = BundleSHA256;
+				return kindle_convert_component(input, output, fake_sign, header_hash);
 			}
 			break;
 		case UnknownUpdate:
@@ -781,9 +789,9 @@ static int
 	pkg_sha256_sum = (char*) &data[hindex];
 	//dm((unsigned char*) pkg_sha256_sum, SHA256_HASH_LENGTH); // It's in clear
 	hindex += SHA256_HASH_LENGTH;
+	// NOTE: It's the hash of the single binary *inside* the tarball, not the tarball itself
 	fprintf(stderr, "SHA256 Hash    %.*s\n", SHA256_HASH_LENGTH, pkg_sha256_sum);
-	// FIXME: Buffer too small, hash too mysterious
-	//strncpy(header_sha256, pkg_sha256_sum, SHA256_HASH_LENGTH);    // Flawfinder: ignore
+	strncpy(header_sha256, pkg_sha256_sum, SHA256_HASH_LENGTH);    // Flawfinder: ignore
 	//component = *(uint32_t *)&data[hindex];
 	memcpy(&component, &data[hindex], sizeof(component));
 	hindex += sizeof(component);
@@ -870,24 +878,25 @@ int
 		{  "unwrap", no_argument, NULL, 'w'},
 		{      NULL,           0, NULL,   0}
 	};
-	FILE*        input;
-	FILE*        output        = NULL;
-	FILE*        sig_output    = NULL;
-	FILE*        unwrap_output = NULL;
-	const char*  in_name;
-	char*        out_name       = NULL;
-	char*        sig_name       = NULL;
-	char*        unwrapped_name = NULL;
-	size_t       len;
-	struct stat  st;
-	bool         info_only   = false;
-	bool         keep_ori    = false;
-	bool         extract_sig = false;
-	bool         fake_sign   = false;
-	bool         unwrap_only = false;
-	unsigned int ext_offset  = 0;
-	bool         fail        = true;
-	char         header_md5[MD5_HASH_LENGTH + 1];
+	FILE*               input;
+	FILE*               output        = NULL;
+	FILE*               sig_output    = NULL;
+	FILE*               unwrap_output = NULL;
+	const char*         in_name;
+	char*               out_name       = NULL;
+	char*               sig_name       = NULL;
+	char*               unwrapped_name = NULL;
+	size_t              len;
+	struct stat         st;
+	bool                info_only   = false;
+	bool                keep_ori    = false;
+	bool                extract_sig = false;
+	bool                fake_sign   = false;
+	bool                unwrap_only = false;
+	unsigned int        ext_offset  = 0;
+	bool                fail        = true;
+	char                header_hash[SHA256_HASH_LENGTH + 1];
+	BundleHashAlgorithm hash_type = BundleUnknown;
 
 	while ((opt = getopt_long(argc, argv, "icksuw", opts, &opt_index)) != -1) {
 		switch (opt) {
@@ -1092,8 +1101,14 @@ int
 					(extract_sig ? "with sig" : "without sig"),
 					(keep_ori ? "keep input" : "delete input"));
 			}
-			if (kindle_convert(input, output, sig_output, fake_sign, unwrap_only, unwrap_output, header_md5) <
-			    0) {
+			if (kindle_convert(input,
+					   output,
+					   sig_output,
+					   fake_sign,
+					   unwrap_only,
+					   unwrap_output,
+					   header_hash,
+					   &hash_type) < 0) {
 				fprintf(stderr,
 					"Error converting %s package '%s'.\n",
 					(IS_STGZ(in_name) ? "userdata" : "update"),
@@ -1257,14 +1272,15 @@ int
 	char* bin_filename = NULL;
 	char  tgz_filename[PATH_MAX];
 	snprintf(tgz_filename, PATH_MAX, "%s/%s", kt_tempdir, "kindletool_extract_tgz_XXXXXX");
-	char* output_dir = NULL;
-	FILE* bin_input;
-	int   tgz_fd;
-	FILE* tgz_output;
+	char*               output_dir = NULL;
+	FILE*               bin_input;
+	int                 tgz_fd;
+	FILE*               tgz_output;
 	// NOTE: Unlike the header themselves, we want a real NULL-terminated string here, hence the extra-space & zero-init
 	//       (to make strlen safe, among other concerns).
-	char  header_md5[MD5_HASH_LENGTH + 1] = { 0 };
-	char  actual_md5[MD5_HASH_LENGTH + 1] = { 0 };
+	char                header_hash[SHA256_HASH_LENGTH + 1] = { 0 };
+	char                actual_hash[SHA256_HASH_LENGTH + 1] = { 0 };
+	BundleHashAlgorithm hash_type                           = BundleUnknown;
 
 	while ((opt = getopt_long(argc, argv, "u", opts, &opt_index)) != -1) {
 		switch (opt) {
@@ -1351,7 +1367,7 @@ int
 		((IS_STGZ(bin_filename) || IS_TARBALL(bin_filename) || IS_TGZ(bin_filename)) ? "userdata" : "update"),
 		bin_filename,
 		output_dir);
-	if (kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_md5) < 0) {
+	if (kindle_convert(bin_input, tgz_output, NULL, fake_sign, 0, NULL, header_hash, &hash_type) < 0) {
 		fprintf(
 		    stderr,
 		    "Error converting %s package '%s'.\n",
@@ -1364,19 +1380,32 @@ int
 	fclose(bin_input);
 	// When appropriate, check the integrity of the tarball, thanks to the md5 hash stored in the package's header...
 	// Flawfinder: ignore
-	if (!fake_sign && strlen(header_md5) != 0) {
+	if (!fake_sign && hash_type != BundleUnknown) {
 		// First, calculate the hash of what we've just extracted...
 		rewind(tgz_output);
-		if (md5_sum(tgz_output, actual_md5) < 0) {
-			fprintf(stderr, "Error calculating MD5 of package.\n");
-			fclose(tgz_output);
-			unlink(tgz_filename);
-			return -1;
+		switch (hash_type) {
+			case BundleMD5:
+				if (md5_sum(tgz_output, actual_hash) < 0) {
+					fprintf(stderr, "Error calculating MD5 of package.\n");
+					fclose(tgz_output);
+					unlink(tgz_filename);
+					return -1;
+				}
+				break;
+			case BundleSHA256:
+				// NOP, the hash is that of the single binary *inside* the tarball, not the tarball itself
+				break;
+			default:
+				fprintf(stderr, "Unknown bundle hash algorithm: %d.\n", hash_type);
+				fclose(tgz_output);
+				unlink(tgz_filename);
+				return -1;
+				break;
 		}
 		// ...And compare it against the one stored in the package's header.
-		if (strcmp(header_md5, actual_md5) != 0) {
+		if (hash_type == BundleMD5 && strcmp(header_hash, actual_hash) != 0) {
 			fprintf(
-			    stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_md5, actual_md5);
+			    stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_hash, actual_hash);
 			fclose(tgz_output);
 			unlink(tgz_filename);
 			return -1;
