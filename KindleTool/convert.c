@@ -1380,30 +1380,17 @@ int
 	fclose(bin_input);
 	// When appropriate, check the integrity of the tarball, thanks to the md5 hash stored in the package's header...
 	// Flawfinder: ignore
-	if (!fake_sign && hash_type != BundleUnknown) {
+	if (!fake_sign && hash_type == BundleMD5) {
 		// First, calculate the hash of what we've just extracted...
 		rewind(tgz_output);
-		switch (hash_type) {
-			case BundleMD5:
-				if (md5_sum(tgz_output, actual_hash) < 0) {
-					fprintf(stderr, "Error calculating MD5 of package.\n");
-					fclose(tgz_output);
-					unlink(tgz_filename);
-					return -1;
-				}
-				break;
-			case BundleSHA256:
-				// NOP, the hash is that of the single binary *inside* the tarball, not the tarball itself
-				break;
-			default:
-				fprintf(stderr, "Unknown bundle hash algorithm: %d.\n", hash_type);
-				fclose(tgz_output);
-				unlink(tgz_filename);
-				return -1;
-				break;
+		if (md5_sum(tgz_output, actual_hash) < 0) {
+			fprintf(stderr, "Error calculating MD5 of package.\n");
+			fclose(tgz_output);
+			unlink(tgz_filename);
+			return -1;
 		}
 		// ...And compare it against the one stored in the package's header.
-		if (hash_type == BundleMD5 && strcmp(header_hash, actual_hash) != 0) {
+		if (strcmp(header_hash, actual_hash) != 0) {
 			fprintf(
 			    stderr, "Integrity check failed! Header: '%s' vs Package: '%s'.\n", header_hash, actual_hash);
 			fclose(tgz_output);
