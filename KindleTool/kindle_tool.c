@@ -560,6 +560,8 @@ BundleVersion
 		return UserDataPackage;
 	} else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH)) {    // ZIP magic number
 		return AndroidUpdate;
+	} else if (!memcmp(magic_number, "CB01", MAGIC_NUMBER_LENGTH)) {
+		return ComponentUpdate;
 	} else {
 		return UnknownUpdate;
 	}

@@ -83,6 +83,7 @@
 
 #define MAGIC_NUMBER_LENGTH 4
 #define MD5_HASH_LENGTH     32
+#define SHA256_HASH_LENGTH  64
 
 #define OTA_UPDATE_BLOCK_SIZE           60
 #define OTA_UPDATE_V2_BLOCK_SIZE        18
@@ -171,6 +172,7 @@ typedef enum
 	RecoveryUpdateV2,
 	UserDataPackage,    // Actually just a gzipped tarball, but easier to implement this way...
 	AndroidUpdate,      // Actually a JAR, designed for the weird Kindle X Migu Chinese exclusive
+	ComponentUpdate,
 	UnknownUpdate = -1
 } BundleVersion;
 

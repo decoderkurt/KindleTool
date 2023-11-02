@@ -43,6 +43,8 @@ static const char*
 		return "(Userdata tarball)";
 	} else if (!memcmp(magic_number, "\x50\x4B\x03\x04", MAGIC_NUMBER_LENGTH)) {
 		return "(Android update)";
+	} else if (!memcmp(magic_number, "CB01", MAGIC_NUMBER_LENGTH)) {
+		return "(Component [OTA?])";
 	} else {
 		return "Unknown";
 	}
@@ -262,6 +264,15 @@ static int
 			// On extract, archive_read_open_file will gracefully fail with an unrecognized format error,
 			// which tracks, given that we only support tarball + gzip ;).
 			return -1;
+			break;
+		case ComponentUpdate:
+			if (unwrap_only) {
+				fprintf(stderr, "Nothing to unwrap!\n");
+				return -1;
+			} else {
+				fprintf(stderr, "Bundle Type    %s\n", "Component");
+				return kindle_convert_component(input, output, fake_sign, header_md5);
+			}
 			break;
 		case UnknownUpdate:
 		default:
@@ -723,6 +734,112 @@ static int
 		}
 		fprintf(stderr, "\n");
 		hindex += sizeof(uint16_t);
+	}
+	free(data);
+
+	if (ferror(input) != 0) {
+		fprintf(stderr, "Cannot read update correctly: %s.\n", strerror(errno));
+		return -1;
+	}
+
+	if (output == NULL) {
+		return 0;
+	}
+
+	// Now we can decrypt the data
+	return demunger(input, output, 0, fake_sign);
+}
+
+static int
+    kindle_convert_component(FILE* input, FILE* output, const bool fake_sign, char* header_sha256)
+{
+	unsigned char* data;
+	size_t         hindex = 0U;
+	uint64_t       min_revision;
+	uint64_t       target_revision;
+	char*          pkg_sha256_sum;
+	uint32_t       component;
+	uint32_t       platform;
+	uint32_t       header_rev;
+	uint32_t       num_devices;
+	uint16_t       device;
+
+	size_t read_size __attribute__((unused));
+
+	// Its size is set, there's just some wonky padding involved. Read it all!
+	data      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
+	read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+
+	//min_revision = *(uint64_t *)&data[hindex];
+	memcpy(&min_revision, &data[hindex], sizeof(min_revision));
+	hindex += sizeof(min_revision);
+	fprintf(stderr, "Min    OTA     %llu\n", (long long unsigned int) min_revision);
+	//target_revision = *(uint64_t *)&data[hindex];
+	memcpy(&target_revision, &data[hindex], sizeof(target_revision));
+	hindex += sizeof(target_revision);
+	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
+	pkg_sha256_sum = (char*) &data[hindex];
+	//dm((unsigned char*) pkg_sha256_sum, SHA256_HASH_LENGTH); // It's in clear
+	hindex += SHA256_HASH_LENGTH;
+	fprintf(stderr, "SHA256 Hash    %.*s\n", SHA256_HASH_LENGTH, pkg_sha256_sum);
+	// FIXME: Buffer too small, hash too mysterious
+	//strncpy(header_sha256, pkg_sha256_sum, SHA256_HASH_LENGTH);    // Flawfinder: ignore
+	//component = *(uint32_t *)&data[hindex];
+	memcpy(&component, &data[hindex], sizeof(component));
+	hindex += sizeof(component);
+	fprintf(stderr, "Component      %u (0x%02X)\n", component, component);
+	//platform = *(uint32_t *)&data[hindex];
+	memcpy(&platform, &data[hindex], sizeof(platform));
+	hindex += sizeof(platform);
+	// Slightly hackish way to detect unknown platforms...
+	if (strcmp(convert_platform_id(platform), "Unknown") == 0) {
+		fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
+	} else {
+		fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
+	}
+	//header_rev = *(uint32_t *)&data[hindex];
+	memcpy(&header_rev, &data[hindex], sizeof(header_rev));
+	hindex += sizeof(header_rev);
+	fprintf(stderr, "Header Rev     %u\n", header_rev);
+	num_devices = *(uint32_t*) &data[hindex];
+	hindex += sizeof(num_devices);
+	fprintf(stderr, "Devices        %u\n", num_devices);
+	for (size_t i = 0; i < num_devices; i++) {
+		//device = *(uint16_t *)&data[hindex];
+		memcpy(&device, &data[hindex], sizeof(uint16_t));
+		fprintf(stderr, "Device         ");
+		// Slightly hackish way to detect unknown devices...
+		bool is_unknown = false;
+		if (strcmp(convert_device_id(device), "Unknown") == 0) {
+			is_unknown = true;
+			fprintf(stderr, "Unknown (");
+		} else {
+			fprintf(stderr, "%s", convert_device_id(device));
+		}
+		if (kt_with_unknown_devcodes) {
+			if (!is_unknown) {
+				fprintf(stderr, " (");
+			}
+			// Handle the new device ID scheme...
+			if (device > 0xFF) {
+				char* dev_id;
+				dev_id          = to_base(device, 32);
+				const char* pad = "000";
+				fprintf(stderr,
+					"%.*s%s -> ",
+					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
+					    ? 0
+					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
+					pad,
+					dev_id);
+				free(dev_id);
+			}
+		}
+		if (is_unknown || kt_with_unknown_devcodes) {
+			fprintf(stderr, "0x%02X)", device);
+		}
+		fprintf(stderr, "\n");
+		hindex += sizeof(device);
 	}
 	free(data);
 
