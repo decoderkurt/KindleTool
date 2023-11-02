@@ -768,13 +768,13 @@ static inline void
 static int
     kindle_convert_component(FILE* input, FILE* output, const bool fake_sign, char* header_sha256)
 {
-	uint64_t min_revision;
-	uint64_t target_revision;
-	char*    pkg_sha256_sum;
-	uint32_t component;
-	uint32_t platform;
-	uint32_t header_rev;
-	uint32_t num_devices;
+	uint64_t    min_revision;
+	uint64_t    target_revision;
+	const char* pkg_sha256_sum;
+	uint32_t    component;
+	uint32_t    platform;
+	uint32_t    header_rev;
+	uint32_t    num_devices;
 
 	// Its size is set, there's just some wonky padding involved. Read it all!
 	unsigned char* data                              = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(*data));
@@ -785,9 +785,9 @@ static int
 	fprintf(stderr, "Min    OTA     %llu\n", (long long unsigned int) min_revision);
 	consume_header_item(&target_revision, &pos, sizeof(target_revision));
 	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
-	pkg_sha256_sum = (char*) pos;
-	//dm((unsigned char*) pkg_sha256_sum, SHA256_HASH_LENGTH); // It's in clear
+	pkg_sha256_sum = (const char*) pos;
 	pos += SHA256_HASH_LENGTH;
+	//dm((unsigned char*) pkg_sha256_sum, SHA256_HASH_LENGTH); // It's in clear
 	// NOTE: It's the hash of the single binary *inside* the tarball, not the tarball itself
 	fprintf(stderr, "SHA256 Hash    %.*s\n", SHA256_HASH_LENGTH, pkg_sha256_sum);
 	strncpy(header_sha256, pkg_sha256_sum, SHA256_HASH_LENGTH);    // Flawfinder: ignore
