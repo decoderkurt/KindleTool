@@ -809,7 +809,8 @@ static int
 	memcpy(&header_rev, &data[hindex], sizeof(header_rev));
 	hindex += sizeof(header_rev);
 	fprintf(stderr, "Header Rev     %u\n", header_rev);
-	num_devices = *(uint32_t*) &data[hindex];
+	//num_devices = *(uint32_t*) &data[hindex];
+	memcpy(&num_devices, &data[hindex], sizeof(num_devices));
 	hindex += sizeof(num_devices);
 	fprintf(stderr, "Devices        %u\n", num_devices);
 	for (size_t i = 0; i < num_devices; i++) {
