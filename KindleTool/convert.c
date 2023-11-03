@@ -142,13 +142,9 @@ static int
 		   char*                header_hash,
 		   BundleHashAlgorithm* hash_type)
 {
-	UpdateHeader  header;
-	BundleVersion bundle_version;
 	// Zero init to make Valgrind happy
-	// (it considers a variable to be uninitialized if any variable or memory location used in its calculation were uninitialized,
-	// and we effectiveley only initialize the first MAGIC_NUMBER_LENGTH bytes of header with kindle_read_bundle_header, so it shouts at us
-	// later during the header.magic_number printf (asking for a MAGIC_NUMBER_LENGTH field width also helps) ;)).
-	memset(&header, 0, sizeof(UpdateHeader));
+	UpdateHeader  header = { 0 };
+	BundleVersion bundle_version;
 
 	unsigned char buffer[BUFFER_SIZE];
 	size_t        count;
@@ -290,6 +286,15 @@ static int
 	return -1;    // If we get here, there has been an error
 }
 
+// Keeps the header walk slightly cleaner, and lets memcpy deal with potentially unaligned accesses on crappy ARM SoCs
+// NOTE: Even the A8 has trouble with double-word loads (vld1.64 :64) if the alignment trap is strict (SIGILL).
+static inline void
+    consume_header_item(void* restrict target, unsigned char** restrict source, size_t bytes)
+{
+	memcpy(target, *source, bytes);
+	*source += bytes;
+}
+
 static int
     kindle_convert_ota_update_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5)
 {
@@ -355,9 +360,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char* dev_id;
-				dev_id          = to_base(device, 32);
-				const char* pad = "000";
+				char*       dev_id = to_base(device, 32);
+				const char* pad    = "000";
 				// NOTE: 0 padding a string with actual zeroes is fun....
 				//       (cf. https://stackoverflow.com/questions/4133318)
 				fprintf(stderr,
@@ -517,9 +521,8 @@ static int
 		}
 		// Handle the new device ID scheme...
 		if (header->data.ota_update.device > 0xFF) {
-			char* dev_id;
-			dev_id          = to_base(header->data.ota_update.device, 32);
-			const char* pad = "000";
+			char*       dev_id = to_base(header->data.ota_update.device, 32);
+			const char* pad    = "000";
 			fprintf(stderr,
 				"%.*s%s -> ",
 				((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
@@ -606,9 +609,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (header->data.recovery_update.device > 0xFF) {
-				char* dev_id;
-				dev_id          = to_base(header->data.recovery_update.device, 32);
-				const char* pad = "000";
+				char*       dev_id = to_base(header->data.recovery_update.device, 32);
+				const char* pad    = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
@@ -635,64 +637,45 @@ static int
 static int
     kindle_convert_recovery_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5)
 {
-	unsigned char* data;
-	size_t         hindex = 0;
-	uint64_t       target_revision;
-	char*          pkg_md5_sum;
-	uint32_t       magic_1;
-	uint32_t       magic_2;
-	uint32_t       minor;
-	uint32_t       platform;
-	uint32_t       header_rev;
-	uint32_t       board;
-	uint16_t       device;
-	uint8_t        num_devices;
-	unsigned int   i;
-	//uint16_t *devices;
-	size_t         read_size __attribute__((unused));
+	uint64_t target_revision;
+	char*    pkg_md5_sum;
+	uint32_t magic_1;
+	uint32_t magic_2;
+	uint32_t minor;
+	uint32_t platform;
+	uint32_t header_rev;
+	uint32_t board;
+	uint8_t  num_devices;
 
 	// Its size is set, there's just some wonky padding involved. Read it all!
-	data      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
-	read_size = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
+	unsigned char* data                      = malloc(RECOVERY_UPDATE_BLOCK_SIZE * sizeof(unsigned char));
+	unsigned char* pos                       = data;
+	size_t read_size __attribute__((unused)) = fread(data, sizeof(unsigned char), RECOVERY_UPDATE_BLOCK_SIZE, input);
 
-	hindex += sizeof(uint32_t);    // Padding
-	//target_revision = *(uint64_t *)&data[hindex];
-	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
-	hindex += sizeof(uint64_t);
+	pos += 4U;    // Padding
+	consume_header_item(&target_revision, &pos, sizeof(target_revision));
 	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
-	pkg_md5_sum = (char*) &data[hindex];
+	pkg_md5_sum = (char*) pos;
+	pos += MD5_HASH_LENGTH;
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
-	hindex += MD5_HASH_LENGTH;
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
 	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
-	//magic_1 = *(uint32_t *)&data[hindex];
-	memcpy(&magic_1, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&magic_1, &pos, sizeof(magic_1));
 	fprintf(stderr, "Magic 1        %u\n", magic_1);
-	//magic_2 = *(uint32_t *)&data[hindex];
-	memcpy(&magic_2, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&magic_2, &pos, sizeof(magic_2));
 	fprintf(stderr, "Magic 2        %u\n", magic_2);
-	//minor = *(uint32_t *)&data[hindex];
-	memcpy(&minor, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&minor, &pos, sizeof(minor));
 	fprintf(stderr, "Minor          %u\n", minor);
-	//platform = *(uint32_t *)&data[hindex];
-	memcpy(&platform, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&platform, &pos, sizeof(platform));
 	// Slightly hackish way to detect unknown platforms...
 	if (strcmp(convert_platform_id(platform), "Unknown") == 0) {
 		fprintf(stderr, "Platform       Unknown (0x%02X)\n", platform);
 	} else {
 		fprintf(stderr, "Platform       %s\n", convert_platform_id(platform));
 	}
-	//header_rev = *(uint32_t *)&data[hindex];
-	memcpy(&header_rev, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&header_rev, &pos, sizeof(header_rev));
 	fprintf(stderr, "Header Rev     %u\n", header_rev);
-	//board = *(uint32_t *)&data[hindex];
-	memcpy(&board, &data[hindex], sizeof(uint32_t));
-	hindex += sizeof(uint32_t);
+	consume_header_item(&board, &pos, sizeof(board));
 	// Slightly hackish way to detect unknown boards
 	// (Not to be confused with the 'Unspecified' board, which permits skipping the device/board check)...
 	if (strcmp(convert_board_id(board), "Unknown") == 0) {
@@ -700,15 +683,13 @@ static int
 	} else {
 		fprintf(stderr, "Board          %s\n", convert_board_id(board));
 	}
-	hindex += sizeof(uint32_t);    // Padding
-	hindex += sizeof(uint16_t);    // ... Padding
-	hindex += sizeof(uint8_t);     // And more weird padding
-	num_devices = *(uint8_t*) &data[hindex];
-	hindex += sizeof(uint8_t);
+	pos += 7;    // Padding
+	consume_header_item(&num_devices, &pos, sizeof(num_devices));
 	fprintf(stderr, "Devices        %hhu\n", num_devices);
-	for (i = 0; i < num_devices; i++) {
-		//device = *(uint16_t *)&data[hindex];
-		memcpy(&device, &data[hindex], sizeof(uint16_t));
+	uint16_t device_list[num_devices];    // VLA, solely for the metadata dump's sake
+	for (size_t i = 0; i < num_devices; i++) {
+		uint16_t device;
+		consume_header_item(&device, &pos, sizeof(device));
 		fprintf(stderr, "Device         ");
 		// Slightly hackish way to detect unknown devices...
 		bool is_unknown = false;
@@ -724,9 +705,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char* dev_id;
-				dev_id          = to_base(device, 32);
-				const char* pad = "000";
+				char*       dev_id = to_base(device, 32);
+				const char* pad    = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
@@ -741,7 +721,8 @@ static int
 			fprintf(stderr, "0x%02X)", device);
 		}
 		fprintf(stderr, "\n");
-		hindex += sizeof(uint16_t);
+
+		device_list[i] = device;
 	}
 	free(data);
 
@@ -750,19 +731,62 @@ static int
 		return -1;
 	}
 
+	// Dump that in a source friendly format if requested
+	if (kt_pkg_metadata_dump) {
+		FILE* f = fopen(kt_pkg_metadata_dump, "w");
+		if (!f) {
+			fprintf(stderr, "Unable to open metadata dump file for writing: %m");
+			return -1;
+		}
+		fprintf(f,
+			"pkgBundleMagic='FB03';"
+			"pkgBundleType='Recovery V2';"
+			"pkgTargetOTA=%llu;"
+			"pkgMD5Hash='%s';"
+			"pkgMagic1=%u;"
+			"pkgMagic2=%u;"
+			"pkgMinor=%u;"
+			"pkgPlatform=%u;"
+			"pkgHeaderRev=%u;"
+			"pkgBoard=%u;"
+			"pkgDevices=%u;",
+			(long long unsigned int) target_revision,
+			header_md5,
+			magic_1,
+			magic_2,
+			minor,
+			platform,
+			header_rev,
+			board,
+			num_devices);
+		// Then the device list, space-separated to just be able to for loop over it
+		fprintf(f, "pkgDeviceCodes='");
+		for (size_t i = 0; i < num_devices; i++) {
+			if (i == num_devices - 1U) {
+				fprintf(f, "%hu';", device_list[i]);
+			} else {
+				fprintf(f, "%hu ", device_list[i]);
+			}
+		}
+		fprintf(f, "pkgDeviceSNs='");
+		for (size_t i = 0; i < num_devices; i++) {
+			char* dev_id = to_base(device_list[i], 32);
+			if (i == num_devices - 1U) {
+				fprintf(f, "%s';", dev_id);
+			} else {
+				fprintf(f, "%s ", dev_id);
+			}
+			free(dev_id);
+		}
+		fclose(f);
+	}
+
 	if (output == NULL) {
 		return 0;
 	}
 
 	// Now we can decrypt the data
 	return demunger(input, output, 0, fake_sign);
-}
-
-static inline void
-    consume_header_item(void* restrict target, unsigned char** restrict source, size_t bytes)
-{
-	memcpy(target, *source, bytes);
-	*source += bytes;
 }
 
 static int
