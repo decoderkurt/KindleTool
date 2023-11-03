@@ -178,6 +178,7 @@ typedef enum
 
 typedef enum
 {
+	BundleNone = 0,
 	BundleMD5,
 	BundleSHA256,
 	BundleUnknown = -1,
