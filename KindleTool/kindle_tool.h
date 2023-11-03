@@ -493,6 +493,9 @@ typedef struct
 //       and I can't be arsed to add a bunch of casts there (because for some mystical reason, bool is signed :?)
 extern unsigned int kt_with_unknown_devcodes;
 
+// Another for the shell metadata dumps in convert
+extern const char* kt_pkg_metadata_dump;
+
 // And another to store the tmpdir...
 extern char kt_tempdir[PATH_MAX];
 

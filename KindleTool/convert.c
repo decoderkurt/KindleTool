@@ -804,6 +804,7 @@ static int
 	fprintf(stderr, "Header Rev     %u\n", header_rev);
 	consume_header_item(&num_devices, &pos, sizeof(num_devices));
 	fprintf(stderr, "Devices        %u\n", num_devices);
+	uint16_t device_list[num_devices];    // VLA, solely for the metadata dump's sake
 	for (size_t i = 0; i < num_devices; i++) {
 		uint16_t device;
 		consume_header_item(&device, &pos, sizeof(device));
@@ -822,9 +823,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char* dev_id;
-				dev_id          = to_base(device, 32);
-				const char* pad = "000";
+				char*       dev_id = to_base(device, 32);
+				const char* pad    = "000";
 				fprintf(stderr,
 					"%.*s%s -> ",
 					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
@@ -839,12 +839,60 @@ static int
 			fprintf(stderr, "0x%02X)", device);
 		}
 		fprintf(stderr, "\n");
+
+		device_list[i] = device;
 	}
 	free(data);
 
 	if (ferror(input) != 0) {
 		fprintf(stderr, "Cannot read update correctly: %s.\n", strerror(errno));
 		return -1;
+	}
+
+	// Dump that in a source friendly format if requested
+	if (kt_pkg_metadata_dump) {
+		FILE* f = fopen(kt_pkg_metadata_dump, "w");
+		if (!f) {
+			fprintf(stderr, "Unable to open metadata dump file for writing: %m");
+			return -1;
+		}
+		fprintf(f,
+			"pkgBundleMagic='CB01';"
+			"pkgBundleType='Component';"
+			"pkgMinOTA=%llu;"
+			"pkgTargetOTA=%llu;"
+			"pkgSHA256Hash='%s';"
+			"pkgComponent=%u;"
+			"pkgPlatform=%u;"
+			"pkgHeaderRev=%u;"
+			"pkgDevices=%u;",
+			(long long unsigned int) min_revision,
+			(long long unsigned int) target_revision,
+			header_sha256,
+			component,
+			platform,
+			header_rev,
+			num_devices);
+		// Then the device list, space-separated to just be able to for loop over it
+		fprintf(f, "pkgDeviceCodes='");
+		for (size_t i = 0; i < num_devices; i++) {
+			if (i == num_devices - 1U) {
+				fprintf(f, "%hu';", device_list[i]);
+			} else {
+				fprintf(f, "%hu ", device_list[i]);
+			}
+		}
+		fprintf(f, "pkgDeviceSNs='");
+		for (size_t i = 0; i < num_devices; i++) {
+			char* dev_id = to_base(device_list[i], 32);
+			if (i == num_devices - 1U) {
+				fprintf(f, "%s';", dev_id);
+			} else {
+				fprintf(f, "%s ", dev_id);
+			}
+			free(dev_id);
+		}
+		fclose(f);
 	}
 
 	if (output == NULL) {

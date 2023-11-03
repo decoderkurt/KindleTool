@@ -973,6 +973,9 @@ int
 		kt_with_unknown_devcodes = 1;
 	}
 
+	// Do we want a metadata dump in a shell-friendly format?
+	kt_pkg_metadata_dump = getenv("KT_PKG_METADATA_DUMP");
+
 	// Try to use a sane temp directory, and remember it
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	// Seed rand() so it isn't so utterly awful
