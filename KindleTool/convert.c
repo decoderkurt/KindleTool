@@ -298,53 +298,38 @@ static inline void
 static int
     kindle_convert_ota_update_v2(FILE* input, FILE* output, const bool fake_sign, char* header_md5)
 {
-	unsigned char* data;
-	size_t         hindex = 0;
-	uint64_t       source_revision;
-	uint64_t       target_revision;
-	uint16_t       num_devices;
-	uint16_t       device;
-	//uint16_t *devices;
-	uint8_t        critical;
-	uint8_t        padding;
-	char*          pkg_md5_sum;
-	uint16_t       num_metadata;
-	size_t         meta_strlen;
-	uint16_t       metastring_length;
-	char*          metastring;
-	//unsigned char **metastrings;
-	size_t         read_size __attribute__((unused));
+	uint64_t source_revision;
+	uint64_t target_revision;
+	uint16_t num_devices;
+	uint8_t  critical;
+	uint8_t  padding;
+	char*    pkg_md5_sum;
+	uint16_t num_metadata;
 
 	// First read the set block size and determine how much to resize
-	data      = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(unsigned char));
-	read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
+	unsigned char* data                      = malloc(OTA_UPDATE_V2_BLOCK_SIZE * sizeof(unsigned char));
+	unsigned char* pos                       = data;
+	size_t read_size __attribute__((unused)) = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_BLOCK_SIZE, input);
 
-	// NOTE: Use memcpy to avoid unaligned accesses on ARM...
-	//       Because for some reason, even the A8 eats dirt (the alignment trap throws a SIGILL) on some vld1.64 :64
-	//       instructions, and my non-existent understanding of ARM assembly & GCC innards is no help at all ;D.
-	//source_revision = *(uint64_t *)&data[hindex];
-	memcpy(&source_revision, &data[hindex], sizeof(uint64_t));
-	hindex += sizeof(uint64_t);
+	consume_header_item(&source_revision, &pos, sizeof(source_revision));
 	fprintf(stderr, "Minimum OTA    %llu\n", (long long unsigned int) source_revision);
-	//target_revision = *(uint64_t *)&data[hindex];
-	memcpy(&target_revision, &data[hindex], sizeof(uint64_t));
-	hindex += sizeof(uint64_t);
+	consume_header_item(&target_revision, &pos, sizeof(target_revision));
 	fprintf(stderr, "Target OTA     %llu\n", (long long unsigned int) target_revision);
-	//num_devices = *(uint16_t *)&data[hindex];
-	memcpy(&num_devices, &data[hindex], sizeof(uint16_t));
-	//hindex += sizeof(uint16_t);       // Shut clang's sa up
+	consume_header_item(&num_devices, &pos, sizeof(num_devices));
 	fprintf(stderr, "Devices        %hu\n", num_devices);
 	free(data);
 
-	// Now get the data
+	// Now get the variable length data
 	// NOTE: This is stored in a temp var for the express purpose of shutting up clang's sa
 	//       (uint16_t > uchar, which freaks clang. Would be dangerous if it were the other way around)...
-	size_t devices_size = num_devices * sizeof(uint16_t);
-	data                = malloc(devices_size);
-	read_size           = fread(data, sizeof(uint16_t), num_devices, input);
-	for (hindex = 0; hindex < num_devices * sizeof(uint16_t); hindex += sizeof(uint16_t)) {
-		//device = *(uint16_t *)&data[hindex];
-		memcpy(&device, &data[hindex], sizeof(uint16_t));
+	const size_t devices_size = num_devices * sizeof(uint16_t);
+	data                      = malloc(devices_size);
+	pos                       = data;
+	read_size                 = fread(data, sizeof(uint16_t), num_devices, input);
+	uint16_t device_list[num_devices];    // VLA, solely for the metadata dump's sake
+	for (size_t i = 0; i < num_devices; i++) {
+		uint16_t device;
+		consume_header_item(&device, &pos, sizeof(device));
 		fprintf(stderr, "Device         ");
 		// Slightly hackish way to detect unknown devices...
 		bool is_unknown = false;
@@ -362,7 +347,7 @@ static int
 			if (device > 0xFF) {
 				char*       dev_id = to_base(device, 32);
 				const char* pad    = "000";
-				// NOTE: 0 padding a string with actual zeroes is fun....
+				// NOTE: 0 padding a *string* with actual zeroes is fun....
 				//       (cf. https://stackoverflow.com/questions/4133318)
 				fprintf(stderr,
 					"%.*s%s -> ",
@@ -371,13 +356,6 @@ static int
 					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
 					pad,
 					dev_id);
-				// NOTE: Can't touch the formatting of this, MRPI relies on it...
-				//       So relegate this to a debug only feature...
-				/*
-				// Check that our base conversions work both ways...
-				uint32_t dev_code = from_base(dev_id, 32);
-				fprintf(stderr, "0x%03lX -> ", dev_code);
-				*/
 				free(dev_id);
 			}
 		}
@@ -385,41 +363,38 @@ static int
 			fprintf(stderr, "0x%02X)", device);
 		}
 		fprintf(stderr, "\n");
+
+		device_list[i] = device;
 	}
 	free(data);
 
-	// Now get second part of set sized data
+	// Now get the second part of the fixed size data
 	data      = malloc(OTA_UPDATE_V2_PART_2_BLOCK_SIZE * sizeof(unsigned char));
+	pos       = data;
 	read_size = fread(data, sizeof(unsigned char), OTA_UPDATE_V2_PART_2_BLOCK_SIZE, input);
-	hindex    = 0;
-
-	// NOTE: Here, the alignment is identical between critical & data, so we can get away with it safely.
-	critical = *(uint8_t*) &data[hindex];
-	// Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
-	hindex += sizeof(uint8_t);
+	consume_header_item(&critical, &pos, sizeof(critical));
 	fprintf(stderr, "Critical       %hhu\n", critical);
-	padding = *(uint8_t*) &data[hindex];    // Print the (garbage?) padding byte found in official updates...
-	hindex += sizeof(uint8_t);
+	// Apparently critical really is supposed to be 1 byte + 1 padding byte, so obey that...
+	consume_header_item(&padding, &pos, sizeof(padding));
 	fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", padding, padding);
-	pkg_md5_sum = (char*) &data[hindex];
+	pkg_md5_sum = (char*) pos;
+	pos += MD5_HASH_LENGTH;
 	dm((unsigned char*) pkg_md5_sum, MD5_HASH_LENGTH);
-	hindex += MD5_HASH_LENGTH;
 	fprintf(stderr, "MD5 Hash       %.*s\n", MD5_HASH_LENGTH, pkg_md5_sum);
 	strncpy(header_md5, pkg_md5_sum, MD5_HASH_LENGTH);    // Flawfinder: ignore
-	//num_metadata = *(uint16_t *)&data[hindex];
-	memcpy(&num_metadata, &data[hindex], sizeof(uint16_t));
-	//hindex += sizeof(uint16_t);       // Shut clang's sa up
+	consume_header_item(&num_metadata, &pos, sizeof(num_metadata));
 	fprintf(stderr, "Metadata       %hu\n", num_metadata);
 	free(data);
 
 	// Finally, get the metastrings
-	for (hindex = 0; hindex < num_metadata; hindex++) {
+	for (size_t i = 0; i < num_metadata; i++) {
+		size_t meta_strlen;
 		// Get correct meta string length because of the endianness swap...
-		read_size         = fread(&((uint8_t*) &meta_strlen)[1], sizeof(uint8_t), 1, input);
-		read_size         = fread(&((uint8_t*) &meta_strlen)[0], sizeof(uint8_t), 1, input);
-		metastring_length = (uint16_t) meta_strlen;
-		metastring        = malloc(metastring_length);
-		read_size         = fread(metastring, sizeof(char), metastring_length, input);
+		read_size                  = fread(&((uint8_t*) &meta_strlen)[1], sizeof(uint8_t), 1, input);
+		read_size                  = fread(&((uint8_t*) &meta_strlen)[0], sizeof(uint8_t), 1, input);
+		uint16_t metastring_length = (uint16_t) meta_strlen;
+		char*    metastring        = malloc(metastring_length);
+		read_size                  = fread(metastring, sizeof(char), metastring_length, input);
 		// Deobfuscate string (FIXME: Should meta strings really be obfuscated?)
 		dm((unsigned char*) metastring, metastring_length);
 		fprintf(stderr, "Metastring     %.*s\n", metastring_length, metastring);
@@ -429,6 +404,63 @@ static int
 	if (ferror(input) != 0) {
 		fprintf(stderr, "Cannot read update correctly: %s.\n", strerror(errno));
 		return -1;
+	}
+
+	// Dump that in a source friendly format if requested
+	if (kt_pkg_metadata_dump) {
+		FILE* f = fopen(kt_pkg_metadata_dump, "w");
+		if (!f) {
+			fprintf(stderr, "Unable to open metadata dump file for writing: %m");
+			return -1;
+		}
+		// NOTE: Magic is not actually accurate, but we don't have a pointer to the earlier data anymore
+		fprintf(f,
+			"pkgBundleMagic='FC04';"
+			"pkgBundleType='OTA V2';"
+			"pkgMinOTA=%llu;"
+			"pkgTargetOTA=%llu;"
+			"pkgDevices=%u;",
+			(long long unsigned int) source_revision,
+			(long long unsigned int) target_revision,
+			num_devices);
+		// Then the device list, space-separated to just be able to for loop over it
+		fprintf(f, "pkgDeviceCodes='");
+		for (size_t i = 0; i < num_devices; i++) {
+			if (i == num_devices - 1U) {
+				fprintf(f, "%hu';", device_list[i]);
+			} else {
+				fprintf(f, "%hu ", device_list[i]);
+			}
+		}
+		fprintf(f, "pkgDeviceSNs='");
+		for (size_t i = 0; i < num_devices; i++) {
+			char* dev_id = to_base(device_list[i], 32);
+			if (i == num_devices - 1U) {
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s';", dev_id);
+				} else {
+					fprintf(f, "%02X';", device_list[i]);
+				}
+			} else {
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s ", dev_id);
+				} else {
+					fprintf(f, "%02X ", device_list[i]);
+				}
+			}
+			free(dev_id);
+		}
+		fprintf(f,
+			"pkgCritical=%hhu;"
+			"pkgPaddingByte=%hhu;"
+			"pkgMD5Hash='%s';"
+			"pkgMetadataStrings=%hu;",
+			critical,
+			padding,
+			header_md5,
+			num_metadata);
+		// NOTE: We don't dump the actual metadata strings, as we'd need to safely escape them, and I'm lazy.
+		fclose(f);
 	}
 
 	if (output == NULL) {
