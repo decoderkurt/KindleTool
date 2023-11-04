@@ -320,12 +320,9 @@ static int
 	free(data);
 
 	// Now get the variable length data
-	// NOTE: This is stored in a temp var for the express purpose of shutting up clang's sa
-	//       (uint16_t > uchar, which freaks clang. Would be dangerous if it were the other way around)...
-	const size_t devices_size = num_devices * sizeof(uint16_t);
-	data                      = malloc(devices_size);
-	pos                       = data;
-	read_size                 = fread(data, sizeof(uint16_t), num_devices, input);
+	data      = calloc(num_devices, sizeof(uint16_t));
+	pos       = data;
+	read_size = fread(data, sizeof(uint16_t), num_devices, input);
 	uint16_t device_list[num_devices];    // VLA, solely for the metadata dump's sake
 	for (size_t i = 0; i < num_devices; i++) {
 		uint16_t device;
