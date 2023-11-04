@@ -825,9 +825,17 @@ static int
 		for (size_t i = 0; i < num_devices; i++) {
 			char* dev_id = to_base(device_list[i], 32);
 			if (i == num_devices - 1U) {
-				fprintf(f, "%s';", dev_id);
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s';", dev_id);
+				} else {
+					fprintf(f, "%02X';", device_list[i]);
+				}
 			} else {
-				fprintf(f, "%s ", dev_id);
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s ", dev_id);
+				} else {
+					fprintf(f, "%02X ", device_list[i]);
+				}
 			}
 			free(dev_id);
 		}
@@ -965,9 +973,17 @@ static int
 		for (size_t i = 0; i < num_devices; i++) {
 			char* dev_id = to_base(device_list[i], 32);
 			if (i == num_devices - 1U) {
-				fprintf(f, "%s';", dev_id);
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s';", dev_id);
+				} else {
+					fprintf(f, "%02X';", device_list[i]);
+				}
 			} else {
-				fprintf(f, "%s ", dev_id);
+				if (device_list[i] > 0xFF) {
+					fprintf(f, "%s ", dev_id);
+				} else {
+					fprintf(f, "%02X ", device_list[i]);
+				}
 			}
 			free(dev_id);
 		}
