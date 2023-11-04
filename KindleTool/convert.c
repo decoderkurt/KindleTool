@@ -747,8 +747,10 @@ static int
 			"pkgMagic2=%u;"
 			"pkgMinor=%u;"
 			"pkgPlatform=%u;"
+			"pkgPlatformName='%s';"
 			"pkgHeaderRev=%u;"
 			"pkgBoard=%u;"
+			"pkgBoardName='%s';"
 			"pkgDevices=%u;",
 			(long long unsigned int) target_revision,
 			header_md5,
@@ -756,8 +758,10 @@ static int
 			magic_2,
 			minor,
 			platform,
+			convert_platform_id(platform),
 			header_rev,
 			board,
+			convert_board_id(board),
 			num_devices);
 		// Then the device list, space-separated to just be able to for loop over it
 		fprintf(f, "pkgDeviceCodes='");
@@ -888,6 +892,7 @@ static int
 			"pkgSHA256Hash='%s';"
 			"pkgComponent=%u;"
 			"pkgPlatform=%u;"
+			"pkgPlatformName='%s';"
 			"pkgHeaderRev=%u;"
 			"pkgDevices=%u;",
 			(long long unsigned int) min_revision,
@@ -895,6 +900,7 @@ static int
 			header_sha256,
 			component,
 			platform,
+			convert_platform_id(platform),
 			header_rev,
 			num_devices);
 		// Then the device list, space-separated to just be able to for loop over it
