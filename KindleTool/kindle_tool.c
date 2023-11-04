@@ -767,8 +767,9 @@ static int
 	    "    \n"
 	    "Notices:\n"
 	    "  1.  If the variable KT_WITH_UNKNOWN_DEVCODES is set in your environment (no matter the value), some device checks will be relaxed with the create command.\n"
-	    "  2.  Updates with meta-strings will probably fail to run when passed to 'Update Your Kindle'.\n"
-	    "  3.  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both FW 4.x (Kindle 4) and FW 5.x (Basically everything since the Kindle Touch).\n",
+	    "  2.  If the variable KT_PKG_METADATA_DUMP is set in your environment, convert will dump header info in a shell-friendly format in the file this variable points to.\n"
+	    "  3.  Updates with meta-strings will probably fail to run when passed to 'Update Your Kindle'.\n"
+	    "  4.  Currently, even though OTA V2 supports updates that run on multiple devices, it is not possible to create an update package that will run on both FW 4.x (Kindle 4) and FW 5.x (Basically everything since the Kindle Touch).\n",
 	    prog_name,
 	    prog_name,
 	    prog_name,
