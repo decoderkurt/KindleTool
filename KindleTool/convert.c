@@ -627,6 +627,55 @@ static int
 		fprintf(stderr, "\n");
 	}
 
+	// Dump that in a source friendly format if requested
+	if (kt_pkg_metadata_dump) {
+		FILE* f = fopen(kt_pkg_metadata_dump, "w");
+		if (!f) {
+			fprintf(stderr, "Unable to open metadata dump file for writing: %m");
+			return -1;
+		}
+		fprintf(f,
+			"pkgBundleMagic='%.*s';"
+			"pkgBundleType='Recovery';"
+			"pkgMD5Hash='%.*s';"
+			"pkgMagic1=%u;"
+			"pkgMagic2=%u;"
+			"pkgMinor=%u;"
+			"pkgHeaderRev=%u;",
+			MAGIC_NUMBER_LENGTH,
+			header->magic_number,
+			MD5_HASH_LENGTH,
+			header->data.recovery_update.md5_sum,
+			header->data.recovery_update.magic_1,
+			header->data.recovery_update.magic_2,
+			header->data.recovery_update.minor,
+			header->data.recovery_h2_update.header_rev);
+		if (header->data.recovery_h2_update.header_rev == 2) {
+			fprintf(f,
+				"pkgTargetOTA=%llu;"
+				"pkgPlatform=%u;"
+				"pkgPlatformName='%s';"
+				"pkgBoard=%u;"
+				"pkgBoardName='%s';",
+				(long long unsigned int) header->data.recovery_h2_update.target_revision,
+				header->data.recovery_h2_update.platform,
+				convert_platform_id(header->data.recovery_h2_update.platform),
+				header->data.recovery_h2_update.board,
+				convert_board_id(header->data.recovery_h2_update.board));
+		} else {
+			// Then the device (same variable name as bundle types supporting multiple devices)
+			fprintf(f, "pkgDeviceCodes=%u;", header->data.recovery_update.device);
+			if (header->data.recovery_update.device > 0xFF) {
+				char* dev_id = to_base(header->data.recovery_update.device, 32);
+				fprintf(f, "pkgDeviceSNs='%s';", dev_id);
+				free(dev_id);
+			} else {
+				fprintf(f, "pkgDeviceSNs='%02X';", header->data.recovery_update.device);
+			}
+		}
+		fclose(f);
+	}
+
 	if (output == NULL) {
 		return 0;
 	}
