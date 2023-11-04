@@ -541,6 +541,42 @@ static int
 	// Print the (garbage?) padding byte... (The python tool puts 0x13 in there)
 	fprintf(stderr, "Padding Byte   %hhu (0x%02X)\n", header->data.ota_update.unused, header->data.ota_update.unused);
 
+	// Dump that in a source friendly format if requested
+	if (kt_pkg_metadata_dump) {
+		FILE* f = fopen(kt_pkg_metadata_dump, "w");
+		if (!f) {
+			fprintf(stderr, "Unable to open metadata dump file for writing: %m");
+			return -1;
+		}
+		fprintf(f,
+			"pkgBundleMagic='%.*s';"
+			"pkgBundleType='OTA V1';"
+			"pkgMD5Hash='%.*s';"
+			"pkgMinOTA=%u;"
+			"pkgTargetOTA=%u;",
+			MAGIC_NUMBER_LENGTH,
+			header->magic_number,
+			MD5_HASH_LENGTH,
+			header->data.ota_update.md5_sum,
+			header->data.ota_update.source_revision,
+			header->data.ota_update.target_revision);
+		// Then the device (same variable name as bundle types supporting multiple devices)
+		fprintf(f, "pkgDeviceCodes=%u;", header->data.ota_update.device);
+		if (header->data.ota_update.device > 0xFF) {
+			char* dev_id = to_base(header->data.ota_update.device, 32);
+			fprintf(f, "pkgDeviceSNs='%s';", dev_id);
+			free(dev_id);
+		} else {
+			fprintf(f, "pkgDeviceSNs='%02X';", header->data.ota_update.device);
+		}
+		fprintf(f,
+			"pkgOptional=%hhu;"
+			"pkgPaddingByte=0x%02X;",
+			header->data.ota_update.optional,
+			header->data.ota_update.unused);
+		fclose(f);
+	}
+
 	if (output == NULL) {
 		return 0;
 	}
