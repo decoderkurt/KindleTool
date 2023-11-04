@@ -52,15 +52,16 @@ static const char*
 
 // Pilfered from http://rosettacode.org/wiki/Non-decimal_radices/Convert#C
 static char*
-    to_base(int64_t num, uint8_t base)
+    to_base(int64_t num, uint8_t base, size_t min_output_columns)
 {
 	// NOTE: Crockford's Base32, but with the "L" & "U" re-added in?
 	const char tbl[]   = "0123456789ABCDEFGHJKLMNPQRSTUVWX";
 	char       buf[66] = { 0 };
 	char*      out     = NULL;
 	uint64_t   n;
-	uint32_t   len = 0U;
-	bool       neg = false;
+	size_t     len     = 0U;
+	size_t     padding = 0U;
+	bool       neg     = false;
 
 	if (base >= sizeof(tbl)) {
 		fprintf(stderr, "base %hhu is unsupported (too large)!\n", base);
@@ -74,13 +75,20 @@ static char*
 		buf[len++] = tbl[n % base];
 	} while (n /= base);
 
-	out = calloc(len + neg + 1U, sizeof(*out));
+	// Ensure we pad with at least min_output_columns zeroes
+	if (len < min_output_columns) {
+		padding = min_output_columns - len;
+	}
+	out = calloc(len + padding + neg + 1U, sizeof(*out));
 	if (out == NULL) {
 		fprintf(stderr, "Error allocating base32 output string buffer!\n");
 		return NULL;
 	}
-	for (uint32_t i = neg; len > 0U; i++) {
+	for (size_t i = neg + padding; len > 0U; i++) {
 		out[i] = buf[--len];
+	}
+	while (padding) {
+		out[neg + --padding] = '0';
 	}
 	if (neg) {
 		out[0] = '-';
@@ -342,17 +350,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char*       dev_id = to_base(device, 32);
-				const char* pad    = "000";
-				// NOTE: 0 padding a *string* with actual zeroes is fun....
-				//       (cf. https://stackoverflow.com/questions/4133318)
-				fprintf(stderr,
-					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
-					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
-					pad,
-					dev_id);
+				char* dev_id = to_base(device, 32, 3);
+				fprintf(stderr, "%s -> ", dev_id);
 				free(dev_id);
 			}
 		}
@@ -431,7 +430,7 @@ static int
 		}
 		fprintf(f, "pkgDeviceSNs='");
 		for (size_t i = 0; i < num_devices; i++) {
-			char* dev_id = to_base(device_list[i], 32);
+			char* dev_id = to_base(device_list[i], 32, 3);
 			if (i == num_devices - 1U) {
 				if (device_list[i] > 0xFF) {
 					fprintf(f, "%s';", dev_id);
@@ -550,15 +549,8 @@ static int
 		}
 		// Handle the new device ID scheme...
 		if (header->data.ota_update.device > 0xFF) {
-			char*       dev_id = to_base(header->data.ota_update.device, 32);
-			const char* pad    = "000";
-			fprintf(stderr,
-				"%.*s%s -> ",
-				((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
-				    ? 0
-				    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
-				pad,
-				dev_id);
+			char* dev_id = to_base(header->data.ota_update.device, 32, 3);
+			fprintf(stderr, "%s -> ", dev_id);
 			free(dev_id);
 		}
 	}
@@ -592,7 +584,7 @@ static int
 		// Then the device (same variable name as bundle types supporting multiple devices)
 		fprintf(f, "pkgDeviceCodes=%u;", header->data.ota_update.device);
 		if (header->data.ota_update.device > 0xFF) {
-			char* dev_id = to_base(header->data.ota_update.device, 32);
+			char* dev_id = to_base(header->data.ota_update.device, 32, 3);
 			fprintf(f, "pkgDeviceSNs='%s';", dev_id);
 			free(dev_id);
 		} else {
@@ -674,15 +666,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (header->data.recovery_update.device > 0xFF) {
-				char*       dev_id = to_base(header->data.recovery_update.device, 32);
-				const char* pad    = "000";
-				fprintf(stderr,
-					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
-					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
-					pad,
-					dev_id);
+				char* dev_id = to_base(header->data.recovery_update.device, 32, 3);
+				fprintf(stderr, "%s -> ", dev_id);
 				free(dev_id);
 			}
 		}
@@ -731,7 +716,7 @@ static int
 			// Then the device (same variable name as bundle types supporting multiple devices)
 			fprintf(f, "pkgDeviceCodes=%u;", header->data.recovery_update.device);
 			if (header->data.recovery_update.device > 0xFF) {
-				char* dev_id = to_base(header->data.recovery_update.device, 32);
+				char* dev_id = to_base(header->data.recovery_update.device, 32, 3);
 				fprintf(f, "pkgDeviceSNs='%s';", dev_id);
 				free(dev_id);
 			} else {
@@ -819,15 +804,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char*       dev_id = to_base(device, 32);
-				const char* pad    = "000";
-				fprintf(stderr,
-					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
-					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
-					pad,
-					dev_id);
+				char* dev_id = to_base(device, 32, 3);
+				fprintf(stderr, "%s -> ", dev_id);
 				free(dev_id);
 			}
 		}
@@ -888,7 +866,7 @@ static int
 		}
 		fprintf(f, "pkgDeviceSNs='");
 		for (size_t i = 0; i < num_devices; i++) {
-			char* dev_id = to_base(device_list[i], 32);
+			char* dev_id = to_base(device_list[i], 32, 3);
 			if (i == num_devices - 1U) {
 				if (device_list[i] > 0xFF) {
 					fprintf(f, "%s';", dev_id);
@@ -973,15 +951,8 @@ static int
 			}
 			// Handle the new device ID scheme...
 			if (device > 0xFF) {
-				char*       dev_id = to_base(device, 32);
-				const char* pad    = "000";
-				fprintf(stderr,
-					"%.*s%s -> ",
-					((int) strlen(pad) < (int) strlen(dev_id))    // Flawfinder: ignore
-					    ? 0
-					    : (int) strlen(pad) - (int) strlen(dev_id),    // Flawfinder: ignore
-					pad,
-					dev_id);
+				char* dev_id = to_base(device, 32, 3);
+				fprintf(stderr, "%s -> ", dev_id);
 				free(dev_id);
 			}
 		}
@@ -1036,7 +1007,7 @@ static int
 		}
 		fprintf(f, "pkgDeviceSNs='");
 		for (size_t i = 0; i < num_devices; i++) {
-			char* dev_id = to_base(device_list[i], 32);
+			char* dev_id = to_base(device_list[i], 32, 3);
 			if (i == num_devices - 1U) {
 				if (device_list[i] > 0xFF) {
 					fprintf(f, "%s';", dev_id);

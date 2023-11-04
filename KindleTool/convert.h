@@ -27,7 +27,7 @@
 
 static const char* convert_magic_number(const char[MAGIC_NUMBER_LENGTH]);
 
-static char* to_base(int64_t, uint8_t);
+static char* to_base(int64_t, uint8_t, size_t);
 
 static int kindle_read_bundle_header(UpdateHeader*, FILE*);
 static int kindle_convert(FILE*, FILE*, FILE*, const bool, const bool, FILE*, char*, BundleHashAlgorithm*);
