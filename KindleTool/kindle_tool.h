@@ -330,7 +330,7 @@ typedef enum
 	KindlePaperWhite5Unknown_1Q0      = 0x700,    // 1Q0?
 	KindlePaperWhite5                 = 0x6FF,    // 1PX (Black & White, 8GB, UK, FR, IT)
 	KindlePaperWhite5Unknown_1VD      = 0x7AD,    // 1VD?
-	KindlePaperWhite5Unknown_219      = 0x829,    // 219?
+	KindlePaperWhite5SE_219           = 0x829,    // 219 (SE, 32GB, Denim, US)
 	KindlePaperWhite5_21A             = 0x82A,    // 21A
 	KindlePaperWhite5SE_2BH           = 0x971,    // 2BH NOTE: Appeared in 5.14.2... (SE)
 	KindlePaperWhite5Unknown_2BJ      = 0x972,    // 2BJ?
