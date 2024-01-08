@@ -270,8 +270,8 @@ const char*
 			return "Kindle Voyage WiFi+3G";
 		case KindleVoyageWiFi3GJapan:
 			return "Kindle Voyage WiFi+3G Japan";
-		case KindleVoyageUnknown_0x4F:
-			return "Kindle Voyage (Unknown Variant 0x4F)";
+		case KindleVoyage_0x4F:
+			return "Kindle Voyage (Variant 0x4F)";
 		case KindleVoyageWiFi3GMexico:
 			return "Kindle Voyage WiFi+3G Mexico";
 		case KindleVoyageWiFi3GEurope:

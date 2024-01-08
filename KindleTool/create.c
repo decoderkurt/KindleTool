@@ -1482,7 +1482,7 @@ int
 					info.devices[info.num_devices++]       = KindleBasicKiwi;
 				} else if (strcasecmp(optarg, "voyage") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
-					const unsigned int num_aliased_devices = 5 + (kt_with_unknown_devcodes * 1);
+					const unsigned int num_aliased_devices = 6 + (kt_with_unknown_devcodes * 0);
 					info.devices                           = realloc(info.devices,
                                                                (info.num_devices + num_aliased_devices) * sizeof(Device));
 					info.devices[info.num_devices++]       = KindleVoyageWiFi;
@@ -1490,9 +1490,7 @@ int
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GEurope;
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GJapan;
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GMexico;
-					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
-					}
+					info.devices[info.num_devices++]       = KindleVoyage_0x4F;
 				} else if (strcasecmp(optarg, "paperwhite3") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
@@ -1663,7 +1661,7 @@ int
 					    6 +                                      // PW1
 					    12 + (kt_with_unknown_devcodes * 2) +    // PW2
 					    2 +                                      // KT2
-					    5 + (kt_with_unknown_devcodes * 1) +     // KV
+					    6 + (kt_with_unknown_devcodes * 0) +     // KV
 					    12 + (kt_with_unknown_devcodes * 2) +    // PW3
 					    5 + (kt_with_unknown_devcodes * 1) +     // Oasis
 					    2 + (kt_with_unknown_devcodes * 1) +     // KT3
@@ -1716,9 +1714,7 @@ int
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GEurope;
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GJapan;
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GMexico;
-					if (kt_with_unknown_devcodes) {
-						info.devices[info.num_devices++] = KindleVoyageUnknown_0x4F;
-					}
+					info.devices[info.num_devices++] = KindleVoyage_0x4F;
 					// Black PW3
 					info.devices[info.num_devices++] = KindlePaperWhite3WiFi;
 					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GJapan;
