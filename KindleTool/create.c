@@ -1490,7 +1490,7 @@ int
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GEurope;
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GJapan;
 					info.devices[info.num_devices++]       = KindleVoyageWiFi3GMexico;
-					info.devices[info.num_devices++]       = KindleVoyage_0x4F;
+					info.devices[info.num_devices++]       = KindleVoyageWiFi3G_0x4F;
 				} else if (strcasecmp(optarg, "paperwhite3") == 0) {
 					memcpy(info.magic_number, "FD04", MAGIC_NUMBER_LENGTH);
 					const unsigned int num_aliased_devices = 12 + (kt_with_unknown_devcodes * 2);
@@ -1714,7 +1714,7 @@ int
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GEurope;
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GJapan;
 					info.devices[info.num_devices++] = KindleVoyageWiFi3GMexico;
-					info.devices[info.num_devices++] = KindleVoyage_0x4F;
+					info.devices[info.num_devices++] = KindleVoyageWiFi3G_0x4F;
 					// Black PW3
 					info.devices[info.num_devices++] = KindlePaperWhite3WiFi;
 					info.devices[info.num_devices++] = KindlePaperWhite3WiFi3GJapan;
