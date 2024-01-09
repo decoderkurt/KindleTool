@@ -2297,7 +2297,7 @@ int
 				info.source_revision = 2443670049U;    // FW 5.5.0
 			}
 			if (!enforce_target_rev) {
-				info.target_revision = 4142890042U + 1U;    // FW 5.16.5 (KS)
+				info.target_revision = 4169630030U + 1U;    // FW 5.16.6 (KS)
 			}
 			// NOTE: Don't expect those to be entirely consistent when crossing devices
 			//       (f.g., the Touch's FW 5.3.7.3 has a higher OTA build number than the KV's FW 5.5.0)
