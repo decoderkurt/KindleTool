@@ -99,7 +99,8 @@ Build_Linux() {
 		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
-			git clone https://git.lysator.liu.se/nettle/nettle.git nettle-git
+			#git clone https://git.lysator.liu.se/nettle/nettle.git nettle-git
+   			git clone https://gitlab.com/gnutls/nettle nettle-git
 			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i configure.ac
 			sed -e '/SUBDIRS/s/testsuite examples//' -i Makefile.in
@@ -378,7 +379,8 @@ Build_OSX() {
 		if [[ ! -d "nettle-git" ]] ; then
 			echo "* Building nettle . . ."
 			echo ""
-			git clone https://git.lysator.liu.se/nettle/nettle.git nettle-git
+			#git clone https://git.lysator.liu.se/nettle/nettle.git nettle-git
+   			git clone https://gitlab.com/gnutls/nettle nettle-git   
 			cd nettle-git
 			sed -e '/CFLAGS=/s: -ggdb3::' -e 's/solaris\*)/sunldsolaris*)/' -i '' configure.ac
 			sed -e '/SUBDIRS/s/testsuite examples//' -i '' Makefile.in
